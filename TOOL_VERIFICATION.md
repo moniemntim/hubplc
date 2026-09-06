@@ -1,5 +1,20 @@
 # 工具區驗證紀錄（2026-09-07）
 
+## 文字亂碼修復與常用電力工具
+
+- 工具區由 25 增加至 29：文字亂碼修復與檔案轉碼、電池續航估算、電容放電、dBm／W。路由、搜尋分類、SEO 與 sitemap 由工具登錄資料統一更新。
+- 參考 [DigiKey 工具清單](https://www.digikey.tw/zh/resources/online-conversion-calculators)及 [ifreesite 文字亂碼轉換](https://www.ifreesite.com/textconvert.htm)。DigiKey 多數基礎電路功能已有對應頁，本輪補上上述三個常用缺項，未宣稱涵蓋其全部工具或所有進階模式。
+- 亂碼工具包含候選比較、手動指定、原文保留、背景 Worker、鍵盤快捷鍵、複製、12 種編碼下載及 UTF-8 BOM。檔案上限 1 MiB，貼上文字上限 20,000 UTF-16 字元單位；ISO-2022-CN／KR 不支援。候選需要使用者確認，遺失字元不能保證恢復。
+- 所有資料在瀏覽器處理；未增加依賴、登入、後端、資料庫或追蹤。原 Big5 工具與既有公式未修改。新工具使用既有套件編碼器及原生嚴格 TextDecoder，避開套件 EUC-KR 無效位元組會產生 NUL 的問題。
+- `npm test`：53 項通過，包括 12 種編碼、已知位元組、BOM、不可表示字元、EUC-KR 無效資料、電池單位、放電正反算、dBm 邊界與溢位。
+- `tsc --noEmit`、全部變更檔案 `oxlint`／`oxfmt --check`、`git diff --check` 通過。Vite `?worker` 的預設匯出由編譯器提供，僅該匯入行針對靜態分析誤判加註 `import/default` 例外；型別、實際瀏覽器與正式組建均驗證其可用性。全專案舊 lint 問題見下方紀錄。
+- `npm run build`：35 個靜態路由、0 跳過；Wrangler 部署乾跑通過（134 個資產）。背景轉換程式獨立輸出，只在執行轉換時載入。
+- 正式輸出經本機 Wrangler 執行 `tests/text-and-power-browser.mjs`，1280／390／320 px 全通過。涵蓋候選選取、下載位元組、UTF-8 BOM、Big5 CRLF、UTF-16、複製、無效／超大檔案、清空時取消非同步讀取、文字當文字顯示、電池單位、放電反算及 dBm 雙向切換；沒有上傳請求或瀏覽器錯誤。
+- `tests/circuit-browser.mjs`：23 組互動情境通過；另驗證極大 RC 時間常數圖中不產生 NaN／Infinity，以及容量換單位溢位時清除結果。
+- `tests/browser-smoke.mjs`：29 工具 × 桌面／手機共 58 組路由檢查通過，含搜尋、分類、鍵盤、類比預設、Big5 複製／快捷鍵及 QR PNG／SVG 獨立解碼；無瀏覽器錯誤。
+- `scripts/verify-site.mjs`：34 頁、sitemap、robots、404 及 ads.txt 的精確內容、檔尾換行、200／text/plain 通過。
+- 部署前回復基準：`3c6302381c247fb7f1066f76bccd0169dca17df3`，保留 Git 歷史。
+
 ## 元件圖示與代碼文字修正
 
 - SMD 電容與電阻改用無長接腳的片狀封裝 SVG；電容外觀與代碼拆解分開，文字改為可換行的 HTML 說明格。電阻印字在聚焦時保持原字型且不加底線。

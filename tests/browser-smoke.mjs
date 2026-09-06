@@ -87,6 +87,7 @@ try {
         'register-converter',
         'qrcode',
         'big5',
+        'text-repair',
         'unit-converter',
         'resistor-color',
       ].includes(tool.slug);
@@ -139,12 +140,18 @@ try {
   await expect(page.locator('.tool-card')).toHaveCount(2);
   await page.getByRole('searchbox').fill('');
   await page.getByRole('tab', { name: '編碼', exact: true }).click();
-  await expect(page.locator('.tool-card')).toHaveCount(2);
+  await expect(page.locator('.tool-card')).toHaveCount(3);
+  await expect(
+    page.locator('.tool-card[href="/tool/text-repair"]'),
+  ).toBeVisible();
   await page
     .getByRole('tab', { name: '編碼', exact: true })
     .press('ArrowRight');
   await page.getByRole('tab', { name: '單位', exact: true }).press('Enter');
-  await expect(page.locator('.tool-card')).toHaveCount(1);
+  await expect(page.locator('.tool-card')).toHaveCount(2);
+  await expect(
+    page.locator('.tool-card[href="/tool/dbm-watts"]'),
+  ).toBeVisible();
   await page.getByRole('tab', { name: '全部', exact: true }).click();
   await page.getByRole('link').filter({ hasText: '類比訊號換算' }).click();
   await page.waitForURL('**/tool/analog');

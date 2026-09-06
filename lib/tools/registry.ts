@@ -7,6 +7,39 @@ export const categories = [
 ] as const;
 export const tools = [
   {
+    slug: 'text-repair',
+    name: '文字亂碼修復與檔案轉碼',
+    category: '編碼',
+    code: 'UTF ↔ 字',
+    description: '比較中日韓亂碼修復候選，讀取文字檔並轉換編碼。',
+    keywords:
+      '文字轉換 亂碼還原 Big5 GBK GB18030 UTF-8 Shift JIS EUC 日文 韓文 檔案 轉碼',
+  },
+  {
+    slug: 'battery-life',
+    name: '電池續航估算',
+    category: '電路',
+    code: 'Ah / A',
+    description: '依電池容量、固定耗電與可用容量比例估算運作時間。',
+    keywords: '電池 續航 壽命 mAh Ah mA 容量 battery',
+  },
+  {
+    slug: 'capacitor-discharge',
+    name: '電容放電計算',
+    category: '電路',
+    code: 'V(t)',
+    description: '計算放電至目標電壓的時間，或反推電阻與初始功耗。',
+    keywords: 'RC 放電 時間 電阻 能量 焦耳 電容',
+  },
+  {
+    slug: 'dbm-watts',
+    name: 'dBm 與瓦特換算',
+    category: '單位',
+    code: 'dBm ↔ W',
+    description: 'dBm、dBW、瓦特與毫瓦的功率換算。',
+    keywords: 'RF 無線 射頻 功率 dBW mW 分貝 毫瓦',
+  },
+  {
     slug: 'analog',
     name: '類比訊號換算',
     category: 'PLC 與通訊',
@@ -213,6 +246,13 @@ export function getTool(slug: ToolSlug) {
 }
 
 export const toolExamples: Record<ToolSlug, string> = {
+  'text-repair':
+    'UTF-8「中文」被 Windows-1252 誤讀成「ä¸­æ–‡」；選取相對應候選可還原。',
+  'battery-life':
+    '2000 mAh 電池、100 mA 固定耗電、100% 可用容量：理想續航 20 小時。',
+  'capacitor-discharge':
+    '100 µF 電容經 10 kΩ 電阻從 24 V 放電至 5 V，理論上約需 1.5686 秒。',
+  'dbm-watts': '0 dBm = 1 mW；30 dBm = 1 W = 0 dBW。',
   'capacitor-network': '兩顆 100 nF 電容串聯為 50 nF，並聯為 200 nF。',
   'smd-capacitor': '104 = 100000 pF = 100 nF = 0.1 µF；104K 表示 ±10% 容差。',
   'led-resistor':

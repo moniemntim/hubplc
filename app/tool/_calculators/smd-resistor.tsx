@@ -1,5 +1,6 @@
 'use client';
 import { useState } from 'react';
+import { ChipPackage } from '@/app/tool/_components/chip-package';
 import { attempt, formatNumber } from '@/lib/tools/core';
 import {
   decodeSmdResistor,
@@ -8,7 +9,6 @@ import {
 } from '@/lib/tools/markings';
 import {
   Choice,
-  DiagramPart,
   Notice,
   ResultRows,
   TextField,
@@ -25,30 +25,20 @@ const formats = [
 ] as const;
 function MarkDiagram({ code, field }: { code: string; field: string }) {
   return (
-    <svg viewBox="0 0 300 100" aria-label={`SMD 電阻標記 ${code}`}>
-      <title>SMD 電阻標記</title>
-      <path d="M0 50h55m190 0h55" stroke="currentColor" />
-      <DiagramPart field={field}>
-        <rect
-          x="55"
-          y="30"
-          width="190"
-          height="40"
-          rx="6"
-          fill="#d9e6e2"
-          stroke="currentColor"
-        />
-        <text
-          x="150"
-          y="57"
-          textAnchor="middle"
-          fontSize="25"
-          fontFamily="monospace"
-        >
-          {code || '---'}
-        </text>
-      </DiagramPart>
-    </svg>
+    <figure className="component-visual resistor-chip-visual">
+      <div className="component-eyebrow">SMD · 晶片電阻</div>
+      <ChipPackage kind="resistor" code={code} field={field} />
+      <figcaption>
+        <p className="component-caption">黑色保護層 · 兩端金屬端電極</p>
+        <div className="component-mark-readout">
+          <span>元件標記</span>
+          <strong>{code || '—'}</strong>
+        </div>
+        <p className="component-footnote">
+          外觀與印字為示意；實際尺寸、字型與標記方式依系列而異。
+        </p>
+      </figcaption>
+    </figure>
   );
 }
 export default function SmdResistor() {
@@ -78,7 +68,11 @@ export default function SmdResistor() {
       notes={
         <>
           三位與四位數標記以前段為有效數字、末位為 10 的冪次；EIA-96 使用 01–96
-          基數與字母倍率。零歐姆跳線可用 0、000 或 0000 表示。
+          基數與字母倍率。零歐姆跳線可用 0、000 或 0000 表示。 外觀參考：
+          <a href="https://www.vishay.com/docs/20035/dcrcwe3.pdf">
+            Vishay D/CRCW 晶片電阻
+          </a>
+          。
         </>
       }
       result={

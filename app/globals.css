@@ -1318,6 +1318,109 @@ output.results-count {
   line-height: 1.7;
   overflow-wrap: anywhere;
 }
+.component-visual {
+  margin: 0;
+  min-width: 0;
+}
+.component-eyebrow {
+  color: #526c60;
+  font-size: 12px;
+  font-weight: 600;
+  letter-spacing: 0.08em;
+}
+.component-visual .component-caption {
+  margin: 0 0 20px;
+  color: #52675d;
+  text-align: center;
+}
+.component-visual .component-footnote {
+  color: #64756b;
+  margin: 16px 0 0;
+  font-size: 12px;
+}
+.component-visual .diagram-part .chip-marking {
+  font-family: Consolas, 'Courier New', monospace;
+  font-weight: 600;
+  letter-spacing: 1px;
+  text-decoration: none;
+}
+.component-focus-outline {
+  fill: none;
+  stroke: #08755d;
+  stroke-width: 2;
+  opacity: 0;
+}
+.component-visual .diagram-part.is-focused {
+  filter: none;
+}
+.component-visual .is-focused > .component-focus-outline,
+.component-visual .is-focused > .band-focus-pointer {
+  opacity: 1;
+}
+.band-focus-pointer {
+  opacity: 0;
+}
+.marking-breakdown {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+.marking-token {
+  flex: 1 1 72px;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 12px 6px;
+  border: 1px solid #d7e3db;
+  border-radius: 10px;
+  background: #fff;
+}
+.marking-token strong {
+  color: #204d3b;
+  font:
+    600 30px/1.3 Consolas,
+    'Courier New',
+    monospace;
+  overflow-wrap: anywhere;
+}
+.marking-token span {
+  margin-top: 8px;
+  color: #52675d;
+}
+.marking-token small {
+  font-size: 13px;
+}
+.component-mark-readout {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 12px 16px;
+  border: 1px solid #d7e3db;
+  border-radius: 10px;
+  background: #fff;
+}
+.component-mark-readout strong {
+  font:
+    600 25px/1.3 Consolas,
+    'Courier New',
+    monospace;
+  overflow-wrap: anywhere;
+}
+.band-legend {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 12px;
+}
+.band-legend > div {
+  border-top: 1px solid #d7e3db;
+  padding-top: 10px;
+}
+.band-legend strong {
+  display: block;
+}
 @media (max-width: 900px) {
   .has-diagram .fields-grid {
     grid-template-columns: 1fr;

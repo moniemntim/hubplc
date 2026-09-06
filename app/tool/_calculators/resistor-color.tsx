@@ -1,5 +1,5 @@
 'use client';
-import { useState } from 'react';
+import { useId, useState } from 'react';
 import { QuantityField } from '@/app/tool/_components/quantity';
 import {
   electricalFormat,
@@ -45,151 +45,134 @@ function BandDiagram({
   bands: string[];
   reverse?: boolean;
 }) {
+  const id = useId().replace(/:/g, '');
   const digits = bands.length - 2;
-  const role = (i: number) => {
-    if (i < digits) return `有效數字 ${i + 1}`;
-    return i === digits ? '倍率' : '容差';
-  };
+  const role = (i: number) =>
+    i < digits ? `有效數字 ${i + 1}` : i === digits ? '倍率' : '容差';
   const detail = (band: string, i: number) => {
     if (i < digits)
-      return `${name(band)} ${resistorBands.colors.indexOf(
-        band as (typeof resistorBands.colors)[number],
-      )}`;
+      return `${name(band)} ${resistorBands.colors.indexOf(band as (typeof resistorBands.colors)[number])}`;
     if (i === digits) return multiplierLabel(band);
     return `${name(band)} ±${resistorBands.tolerances[band]}%`;
   };
-  const ringPositions =
-    bands.length === 4 ? [205, 265, 325, 435] : [185, 235, 285, 335, 445];
-  const ring = (band: string, i: number, field: string) => (
-    <DiagramPart key={`${band}-${i}`} field={field}>
-      <title>{`${role(i)}：${detail(band, i)}`}</title>
-      <rect
-        className="resistor-band"
-        x={ringPositions[i]}
-        y="53"
-        width="24"
-        height="94"
-        rx="3"
-        fill={resistorBands.colorHex[band]}
-      />
-    </DiagramPart>
-  );
+  const silhouette =
+    'M110 102Q110 78 132 78H154Q163 78 170 87Q176 92 188 92H332Q344 92 350 83Q354 78 364 78H388Q410 78 410 102V138Q410 162 388 162H364Q354 162 350 157Q344 148 332 148H188Q176 148 170 153Q163 162 154 162H132Q110 162 110 138Z';
+  const positions =
+    bands.length === 4 ? [137, 204, 258, 371] : [137, 190, 235, 280, 371];
   return (
-    <figure style={{ margin: 0 }}>
+    <figure className="component-visual axial-visual">
+      <div className="component-eyebrow">
+        AXIAL ·{' '}
+        {bands.length
+          ? `${bands.length === 5 ? '五' : '四'}環軸向電阻`
+          : '軸向電阻'}
+      </div>
       <svg
         className="resistor-illustration"
-        viewBox="80 20 460 160"
-        aria-label={`電阻色環：${bands.map(name).join('、')}`}
+        viewBox="0 35 520 180"
+        aria-label={
+          bands.length
+            ? `電阻色環：${bands.map(name).join('、')}`
+            : '電阻色環：尚未輸入有效值'
+        }
       >
-        <title>互動式陶瓷電阻色碼圖</title>
+        <title>軸向電阻色環示意</title>
         <defs>
-          <linearGradient
-            id="lead-metal"
-            gradientUnits="userSpaceOnUse"
-            x1="0"
-            x2="0"
-            y1="96"
-            y2="104"
-          >
-            <stop stopColor="#dbe4e1" />
-            <stop offset=".46" stopColor="#7d8c8a" />
-            <stop offset="1" stopColor="#d6dfdc" />
+          <clipPath id={`${id}-body-clip`}>
+            <path d={silhouette} />
+          </clipPath>
+          <linearGradient id={`${id}-lead`} x1="0" x2="0" y1="0" y2="1">
+            <stop stopColor="#84928f" />
+            <stop offset=".35" stopColor="#f4f6f4" />
+            <stop offset=".65" stopColor="#a7b1ac" />
+            <stop offset="1" stopColor="#6d7a75" />
           </linearGradient>
-          <linearGradient id="ceramic-body" x1="0" x2="0" y1="0" y2="1">
-            <stop stopColor="#fff8df" />
-            <stop offset=".45" stopColor="#e8d9b7" />
-            <stop offset="1" stopColor="#cbb58d" />
+          <linearGradient id={`${id}-round`} x1="0" x2="0" y1="0" y2="1">
+            <stop stopColor="#473a26" stopOpacity=".22" />
+            <stop offset=".23" stopColor="#fff" stopOpacity=".24" />
+            <stop offset=".46" stopColor="#fff" stopOpacity="0" />
+            <stop offset=".75" stopColor="#443822" stopOpacity=".08" />
+            <stop offset="1" stopColor="#443822" stopOpacity=".3" />
           </linearGradient>
-          <linearGradient id="cap-metal" x1="0" x2="0" y1="0" y2="1">
-            <stop stopColor="#f3f6f3" />
-            <stop offset=".45" stopColor="#b9c4be" />
-            <stop offset="1" stopColor="#76847e" />
-          </linearGradient>
-          <filter id="body-shadow" x="-20%" y="-30%" width="140%" height="180%">
-            <feDropShadow
-              dx="0"
-              dy="5"
-              stdDeviation="4"
-              floodColor="#27342f"
-              floodOpacity=".28"
-            />
-          </filter>
-          <style>{`.resistor-illustration{width:100%;height:auto;display:block}.resistor-illustration .resistor-band{stroke:#3b403c;stroke-width:1.5;transition:stroke .12s ease,stroke-width .12s ease,filter .12s ease}.resistor-illustration .diagram-part:hover .resistor-band,.resistor-illustration .diagram-part.is-focused .resistor-band{stroke:#08755d;stroke-width:4;filter:drop-shadow(0 0 3px #32b88a)}.resistor-illustration .label-connector{stroke:#697671;stroke-width:1.25}.resistor-illustration .band-label-title{font:600 12px system-ui,sans-serif;fill:#315048;text-anchor:middle}.resistor-illustration .band-label-value{font:12px system-ui,sans-serif;fill:#193a33;text-anchor:middle}.resistor-illustration .diagram-part.is-focused .band-label-title,.resistor-illustration .diagram-part.is-focused .band-label-value{fill:#08755d;font-weight:700}`}</style>
+          <radialGradient id={`${id}-shadow`}>
+            <stop stopColor="#263832" stopOpacity=".18" />
+            <stop offset="1" stopColor="#263832" stopOpacity="0" />
+          </radialGradient>
         </defs>
-        <g aria-hidden="true" filter="url(#body-shadow)">
-          <path
-            d="M18 100H145M475 100H602"
-            stroke="url(#lead-metal)"
-            strokeWidth="8"
-            strokeLinecap="round"
-          />
-          <path
-            d="M138 83H163V117H138ZM457 83H482V117H457Z"
-            fill="url(#cap-metal)"
-            stroke="#67746e"
-          />
-          <path
-            d="M158 75C180 54 204 47 232 47H400C430 47 452 59 462 78V122C451 141 429 153 400 153H232C204 153 180 146 158 125Z"
-            fill="url(#ceramic-body)"
-            stroke="#9a8968"
-            strokeWidth="2"
-          />
-          <path
-            d="M183 72C217 57 246 57 298 57H390"
-            fill="none"
-            stroke="#fffdf4"
-            strokeWidth="8"
-            strokeLinecap="round"
-            opacity=".62"
-          />
-        </g>
-        {reverse ? (
-          <DiagramPart field="阻值">
-            {bands.map((band, i) =>
-              ring(band, i, i === bands.length - 1 ? '容差色環' : '阻值'),
-            )}
-          </DiagramPart>
-        ) : (
-          bands.map((band, i) => ring(band, i, role(i)))
-        )}
-      </svg>
-      {bands.length > 0 && (
-        <figcaption
-          style={{
-            display: 'grid',
-            gridTemplateColumns: 'repeat(2,minmax(0,1fr))',
-            gap: '12px',
-            marginTop: '12px',
-          }}
-        >
-          {bands.map((band, i) => (
-            <div
-              key={i}
-              style={{
-                fontSize: '14px',
-                borderTop: '1px solid #d3e2d9',
-                paddingTop: '9px',
-              }}
-            >
-              <span
-                style={{
-                  display: 'inline-block',
-                  width: 12,
-                  height: 12,
-                  marginRight: 6,
-                  background: resistorBands.colorHex[band],
-                  border: '1px solid #66776e',
-                  borderRadius: 2,
-                }}
-                aria-hidden="true"
+        <ellipse
+          cx="260"
+          cy="171"
+          rx="170"
+          ry="12"
+          fill={`url(#${id}-shadow)`}
+        />
+        <rect
+          x="18"
+          y="117"
+          width="484"
+          height="6"
+          rx="3"
+          fill={`url(#${id}-lead)`}
+        />
+        <path
+          d={silhouette}
+          fill="#decc9f"
+          stroke="#a49372"
+          strokeWidth="1.2"
+        />
+        {bands.map((band, i) => (
+          <DiagramPart
+            key={i}
+            field={
+              reverse ? (i === bands.length - 1 ? '容差色環' : '阻值') : role(i)
+            }
+          >
+            <title>{`${role(i)}：${detail(band, i)}`}</title>
+            <g clipPath={`url(#${id}-body-clip)`}>
+              <rect
+                className="resistor-band"
+                x={positions[i]}
+                y="76"
+                width="18"
+                height="88"
+                fill={resistorBands.colorHex[band]}
               />
-              {role(i)}
-              <br />
-              <strong>{detail(band, i)}</strong>
-            </div>
-          ))}
-        </figcaption>
-      )}
+            </g>
+            <path
+              className="band-focus-pointer"
+              d={`M${positions[i] + 9} 183v-12m-4 4 4-4 4 4`}
+              fill="none"
+              stroke="#08755d"
+              strokeWidth="2.5"
+              strokeLinecap="round"
+              strokeLinejoin="round"
+            />
+          </DiagramPart>
+        ))}
+        <path d={silhouette} fill={`url(#${id}-round)`} pointerEvents="none" />
+      </svg>
+      <figcaption>
+        <p className="component-caption">
+          {bands.length
+            ? '由左至右讀取 · 最右環為容差'
+            : '輸入有效值後顯示色環'}
+        </p>
+        {bands.length > 0 && (
+          <div className="band-legend">
+            {bands.map((band, i) => (
+              <div key={i}>
+                <span
+                  className="color-swatch"
+                  style={{ background: resistorBands.colorHex[band] }}
+                  aria-hidden="true"
+                />
+                <span>{role(i)}</span>
+                <strong>{detail(band, i)}</strong>
+              </div>
+            ))}
+          </div>
+        )}
+      </figcaption>
     </figure>
   );
 }
@@ -267,7 +250,12 @@ export default function ResistorColor() {
       diagram={diagram ?? <BandDiagram bands={[]} />}
       notes={
         <>
-          四色環為兩位有效數字；五色環為三位。反算僅輸出可精確表示的阻值，容差不改變標稱阻值。
+          四色環為兩位有效數字；五色環為三位。反算僅輸出可精確表示的阻值，容差不改變標稱阻值。{' '}
+          資料參考：
+          <a href="https://www.vishay.com/docs/49478/_dale_resistor_color_code_chart_vmn_ms0002_1612.pdf">
+            Vishay 電阻色碼圖表
+          </a>
+          。
         </>
       }
       result={mode === 'forward' ? forwardResult : reverseResult}

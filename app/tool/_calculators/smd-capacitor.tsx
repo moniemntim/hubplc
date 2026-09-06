@@ -1,5 +1,6 @@
 'use client';
-import { useId, useState } from 'react';
+import { useState } from 'react';
+import { ChipPackage } from '@/app/tool/_components/chip-package';
 import { attempt, formatNumber } from '@/lib/tools/core';
 import {
   decodeSmdCapacitor,
@@ -9,7 +10,6 @@ import {
 import { QuantityField } from '@/app/tool/_components/quantity';
 import {
   Choice,
-  DiagramPart,
   Notice,
   ResultRows,
   TextField,
@@ -17,183 +17,60 @@ import {
   ToolPanel,
 } from '@/app/tool/_components/controls';
 function Diagram({ code, field }: { code: string; field: string }) {
-  const id = useId().replace(/:/g, '');
   const match = /^(\d{3}|(?:\d{1,3})?R\d{1,3})([JKM])?$/.exec(code);
   const marking = match?.[1] ?? '';
   const tolerance = match?.[2] ?? '';
-  const isNumeric = /^\d{3}$/.test(marking);
-  const significant = isNumeric ? marking.slice(0, 2) : '';
-  const multiplier = isNumeric ? marking[2] : '';
+  const numeric = /^\d{3}$/.test(marking);
   return (
-    <svg
-      viewBox="0 0 360 190"
-      aria-label={code ? `SMD 電容代碼 ${code} 分解圖` : 'SMD 電容代碼示意圖'}
-    >
-      <title>SMD 電容代碼分解圖</title>
-      <defs>
-        <linearGradient id={`${id}-ceramic`} x1="0" x2="0" y1="0" y2="1">
-          <stop offset="0" stopColor="#d7c29d" />
-          <stop offset="0.45" stopColor="#b89562" />
-          <stop offset="1" stopColor="#84633c" />
-        </linearGradient>
-        <linearGradient id={`${id}-metal`} x1="0" x2="1">
-          <stop offset="0" stopColor="#89949a" />
-          <stop offset="0.3" stopColor="#e5ebeb" />
-          <stop offset="0.66" stopColor="#a0aaae" />
-          <stop offset="1" stopColor="#657178" />
-        </linearGradient>
-        <filter
-          id={`${id}-shadow`}
-          x="-20%"
-          y="-40%"
-          width="140%"
-          height="180%"
-        >
-          <feDropShadow dx="0" dy="4" stdDeviation="3" floodOpacity="0.25" />
-        </filter>
-      </defs>
-      <path d="M18 92h58m208 0h58" stroke="#55646a" strokeWidth="2" />
-      <DiagramPart field={field}>
-        <g filter={`url(#${id}-shadow)`}>
-          <rect
-            x="76"
-            y="58"
-            width="208"
-            height="68"
-            rx="12"
-            fill={`url(#${id}-ceramic)`}
-            stroke="#604728"
-            strokeWidth="1.5"
-          />
-          <path
-            d="M88 68h184"
-            stroke="#f2e3c6"
-            strokeOpacity="0.5"
-            strokeWidth="2"
-          />
-          <rect
-            x="64"
-            y="67"
-            width="34"
-            height="50"
-            rx="5"
-            fill={`url(#${id}-metal)`}
-            stroke="#68747a"
-          />
-          <rect
-            x="262"
-            y="67"
-            width="34"
-            height="50"
-            rx="5"
-            fill={`url(#${id}-metal)`}
-            stroke="#68747a"
-          />
-          <path d="M73 77v30m214-30v30" stroke="#f4f7f8" strokeOpacity="0.6" />
-          <text
-            x="180"
-            y="103"
-            textAnchor="middle"
-            fontSize="31"
-            fontWeight="700"
-            letterSpacing="3"
-            fill="#382617"
-            fontFamily="ui-monospace, SFMono-Regular, Consolas, monospace"
-          >
-            {marking || '—'}
-          </text>
-          {tolerance && (
-            <text
-              x="244"
-              y="103"
-              textAnchor="middle"
-              fontSize="17"
-              fontWeight="700"
-              fill="#382617"
-              fontFamily="ui-monospace, SFMono-Regular, Consolas, monospace"
-            >
-              {tolerance}
-            </text>
+    <figure className="component-visual capacitor-visual">
+      <div className="component-eyebrow">MLCC · 積層陶瓷電容</div>
+      <ChipPackage kind="capacitor" field={field} />
+      <figcaption>
+        <p className="component-caption">
+          陶瓷本體 · 兩端金屬端電極 · 外觀示意
+        </p>
+        <div className="marking-breakdown" aria-label="電容代碼拆解">
+          {marking ? (
+            <>
+              <div className="marking-token">
+                <strong>{numeric ? marking.slice(0, 2) : marking}</strong>
+                <span>{numeric ? '有效數字' : 'R 是小數點'}</span>
+                {!numeric && <small>{marking.replace('R', '.')} pF</small>}
+              </div>
+              {numeric && (
+                <div className="marking-token">
+                  <strong>{marking[2]}</strong>
+                  <span>倍率</span>
+                  <small>
+                    × 10<sup>{marking[2]}</sup> pF
+                  </small>
+                </div>
+              )}
+              {tolerance && (
+                <div className="marking-token">
+                  <strong>{tolerance}</strong>
+                  <span>容差</span>
+                  <small>
+                    ±
+                    {
+                      ({ J: 5, K: 10, M: 20 } as Record<string, number>)[
+                        tolerance
+                      ]
+                    }
+                    %
+                  </small>
+                </div>
+              )}
+            </>
+          ) : (
+            <p>輸入有效代碼後顯示拆解</p>
           )}
-        </g>
-      </DiagramPart>
-      {isNumeric ? (
-        <>
-          <path
-            d="M157 110v34H82"
-            fill="none"
-            stroke="#65757a"
-            strokeDasharray="4 3"
-          />
-          <circle cx="157" cy="110" r="3" fill="#65757a" />
-          <text x="30" y="153" fontSize="12" fill="#29434a">
-            有效數字
-          </text>
-          <text x="30" y="170" fontSize="17" fontWeight="700" fill="#17333a">
-            {significant}
-          </text>
-          <path
-            d="M181 110v34h42"
-            fill="none"
-            stroke="#65757a"
-            strokeDasharray="4 3"
-          />
-          <circle cx="181" cy="110" r="3" fill="#65757a" />
-          <text x="226" y="153" fontSize="12" fill="#29434a">
-            倍率（10 的冪次）
-          </text>
-          <text x="226" y="170" fontSize="17" fontWeight="700" fill="#17333a">
-            {multiplier}
-          </text>
-          {tolerance && (
-            <text
-              x="292"
-              y="153"
-              textAnchor="middle"
-              fontSize="12"
-              fill="#29434a"
-            >
-              容差 {tolerance}
-            </text>
-          )}
-        </>
-      ) : marking ? (
-        <>
-          <path
-            d="M180 112v26"
-            fill="none"
-            stroke="#65757a"
-            strokeDasharray="4 3"
-          />
-          <circle cx="180" cy="112" r="3" fill="#65757a" />
-          <text
-            x="180"
-            y="154"
-            textAnchor="middle"
-            fontSize="12"
-            fill="#29434a"
-          >
-            R 表示小數點（pF）
-          </text>
-          {tolerance && (
-            <text
-              x="180"
-              y="172"
-              textAnchor="middle"
-              fontSize="14"
-              fontWeight="700"
-              fill="#17333a"
-            >
-              容差 {tolerance}
-            </text>
-          )}
-        </>
-      ) : (
-        <text x="180" y="158" textAnchor="middle" fontSize="13" fill="#65757a">
-          輸入代碼後顯示分解說明
-        </text>
-      )}
-    </svg>
+        </div>
+        <p className="component-footnote">
+          下方為容量代碼解讀，並非上方元件的實際印字；請以元件料號與製造商資料確認標示。
+        </p>
+      </figcaption>
+    </figure>
   );
 }
 export default function SmdCapacitor() {
@@ -222,7 +99,16 @@ export default function SmdCapacitor() {
       notes={
         <>
           通用三位數代碼以 pF 為基準：104 = 10 × 10⁴ pF = 100 nF。J、K、M
-          分別表示 ±5%、±10%、±20% 容差；不解讀廠商專用耐壓或系列標記。
+          分別表示 ±5%、±10%、±20% 容差；不解讀廠商專用耐壓或系列標記。{' '}
+          資料參考：
+          <a href="https://ele.kyocera.com/sites/default/files/assets/products/capacitor/aboutnewpn_e.pdf">
+            KYOCERA 容量代碼
+          </a>
+          、
+          <a href="https://www.murata.com/en-global/products/capacitor/ceramiccapacitor/overview/lineup">
+            Murata 陶瓷電容外觀
+          </a>
+          。
         </>
       }
       result={

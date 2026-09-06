@@ -1,14 +1,67 @@
 'use client';
 import { useState } from 'react';
+import { QuantityField } from '@/app/tool/_components/quantity';
 import { electricalFormat, rcTime } from '@/lib/tools/electrical';
 import { attempt } from '@/lib/tools/core';
 import {
-  NumberField,
   Choice,
   ToolPanel,
   ResultRows,
   Notice,
+  DiagramPart,
+  ToolActions,
 } from '@/app/tool/_components/controls';
+function RcCircuit({
+  r,
+  c,
+  supply,
+  mode,
+}: {
+  r?: number;
+  c?: number;
+  supply?: number;
+  mode: 'charge' | 'discharge';
+}) {
+  return (
+    <svg viewBox="0 0 360 165" aria-label="RC 充放電標準電路">
+      <title>{`RC ${mode === 'charge' ? '充電' : '放電'}電路`}</title>
+      <g fill="none" stroke="currentColor" strokeWidth="2">
+        <path d="M55 25H115M165 25H225V62M225 72V105H55V80M55 25V50" />
+        {mode === 'charge' ? (
+          <>
+            <circle cx="55" cy="65" r="15" />
+            <path d="M47 65h16m-8-8v16" />
+          </>
+        ) : (
+          <path d="M55 50V80" />
+        )}
+        <rect x="115" y="15" width="50" height="20" />
+        <path d="M207 62h36m-36 10h36" />
+      </g>
+      <DiagramPart field="輸入電壓">
+        <text x="25" y="140" fontSize="14">
+          {mode === 'charge' ? 'Vin' : '初始電壓'}{' '}
+          {supply ? `${electricalFormat(supply)} V` : ''}
+        </text>
+      </DiagramPart>
+      <DiagramPart field="R">
+        <text x="116" y="12">
+          R {r ? `${electricalFormat(r)} Ω` : ''}
+        </text>
+      </DiagramPart>
+      <DiagramPart field="C">
+        <text x="245" y="75" fontSize="12">
+          C {c ? `${electricalFormat(c)} F` : ''}
+        </text>
+      </DiagramPart>
+      <DiagramPart field="時間 t">
+        <text x="210" y="140" fontSize="14">
+          {mode === 'charge' ? '充電' : '放電'}，t
+        </text>
+      </DiagramPart>
+    </svg>
+  );
+}
 function RcCurve({
   tau,
   time,
@@ -66,18 +119,41 @@ export default function RcTime() {
     [time, setTime] = useState('1'),
     [mode, setMode] = useState<'charge' | 'discharge'>('charge'),
     [supply, setSupply] = useState('5');
+  const example = () => {
+    setR('10000');
+    setC('.0001');
+    setTime('1');
+    setMode('charge');
+    setSupply('5');
+  };
+  const clear = () => {
+    setR('');
+    setC('');
+    setTime('');
+    setSupply('');
+  };
   const res = attempt(() => rcTime(r, c, time, mode, supply));
   const numericTime = Number(time);
   return (
     <ToolPanel
       diagram={
         res.data ? (
-          <RcCurve
-            tau={res.data.tau}
-            time={Number.isFinite(numericTime) ? numericTime : 0}
-            mode={mode}
-          />
-        ) : undefined
+          <>
+            <RcCircuit
+              r={Number(r)}
+              c={Number(c)}
+              supply={Number(supply)}
+              mode={mode}
+            />
+            <RcCurve
+              tau={res.data.tau}
+              time={Number.isFinite(numericTime) ? numericTime : 0}
+              mode={mode}
+            />
+          </>
+        ) : (
+          <RcCircuit mode={mode} />
+        )
       }
       notes={
         mode === 'charge' ? (
@@ -133,16 +209,36 @@ export default function RcTime() {
         ]}
       />
       <div className="fields-grid">
-        <NumberField label="R" value={r} onChange={setR} unit="Ω" />
-        <NumberField label="C" value={c} onChange={setC} unit="F" />
-        <NumberField label="時間 t" value={time} onChange={setTime} unit="s" />
-        <NumberField
+        <QuantityField
+          label="R"
+          value={r}
+          onChange={setR}
+          kind="resistance"
+          initialUnit="kΩ"
+        />
+        <QuantityField
+          label="C"
+          value={c}
+          onChange={setC}
+          kind="capacitance"
+          initialUnit="µF"
+        />
+        <QuantityField
+          label="時間 t"
+          value={time}
+          onChange={setTime}
+          kind="time"
+          initialUnit="s"
+        />
+        <QuantityField
           label="輸入電壓"
           value={supply}
           onChange={setSupply}
-          unit="V"
+          kind="voltage"
+          initialUnit="V"
         />
       </div>
+      <ToolActions onExample={example} onClear={clear} />
     </ToolPanel>
   );
 }

@@ -1,5 +1,6 @@
 'use client';
 import { useState } from 'react';
+import { QuantityField } from '@/app/tool/_components/quantity';
 import {
   electricalFormat,
   timer555Astable,
@@ -14,8 +15,16 @@ import {
   ToolPanel,
   ResultRows,
   Notice,
+  DiagramPart,
+  ToolActions,
 } from '@/app/tool/_components/controls';
-function Circuit({ type }: { type: string }) {
+function Circuit({
+  type,
+  values,
+}: {
+  type: string;
+  values?: { ra?: number; rb?: number; c?: number };
+}) {
   const mono = type === 'mono';
   return (
     <svg
@@ -51,17 +60,24 @@ function Circuit({ type }: { type: string }) {
         <text x="112" y="14">
           VCC
         </text>
-        <text x="77" y="60">
-          {mono ? 'R' : 'RA (R1)'}
-        </text>
-        {!mono && (
-          <text x="77" y="132">
-            RB (R2)
+        <DiagramPart field={mono ? 'R' : 'RA'}>
+          <text x="77" y="60">
+            {mono ? 'R' : 'RA (R1)'}{' '}
+            {values?.ra ? `${electricalFormat(values.ra)} Ω` : ''}
           </text>
+        </DiagramPart>
+        {!mono && (
+          <DiagramPart field="RB">
+            <text x="77" y="132">
+              RB (R2) {values?.rb ? `${electricalFormat(values.rb)} Ω` : ''}
+            </text>
+          </DiagramPart>
         )}
-        <text x="77" y="190">
-          C
-        </text>
+        <DiagramPart field="C">
+          <text x="77" y="190">
+            C {values?.c ? `${electricalFormat(values.c)} F` : ''}
+          </text>
+        </DiagramPart>
         <text x="168" y="104">
           7 DISCH
         </text>
@@ -120,7 +136,9 @@ function Wave({ type, duty }: { type: string; duty?: number }) {
       }
     >
       <title>555 輸出波形</title>
-      <path d={path} fill="none" stroke="currentColor" strokeWidth="2" />
+      <DiagramPart field={type === 'mono' ? '目標時間' : '目標頻率'}>
+        <path d={path} fill="none" stroke="currentColor" strokeWidth="2" />
+      </DiagramPart>
       <text x="10" y="16">
         OUT
       </text>
@@ -133,12 +151,14 @@ function Wave({ type, duty }: { type: string; duty?: number }) {
         </text>
       ) : (
         <>
-          <text x={40 + h / 2} y="90">
-            tH
-          </text>
-          <text x={40 + h + (150 - h) / 2} y="90">
-            tL
-          </text>
+          <DiagramPart field="目標占空比">
+            <text x={40 + h / 2} y="90">
+              tH
+            </text>
+            <text x={40 + h + (150 - h) / 2} y="90">
+              tL
+            </text>
+          </DiagramPart>
         </>
       )}
     </svg>
@@ -153,6 +173,24 @@ export default function Timer555() {
     [time, setTime] = useState('.01'),
     [freq, setFreq] = useState('72'),
     [duty, setDuty] = useState('66.7');
+  const example = () => {
+    setType('astable');
+    setInverse('forward');
+    setRa('10000');
+    setRb('10000');
+    setC('0.000001');
+    setTime('.01');
+    setFreq('72');
+    setDuty('66.7');
+  };
+  const clear = () => {
+    setRa('');
+    setRb('');
+    setC('');
+    setTime('');
+    setFreq('');
+    setDuty('');
+  };
   const monoForward = attempt(() => timer555Mono(ra, c)),
     monoInverse = attempt(() => timer555MonoInverse(time, c)),
     astableForward = attempt(() => timer555Astable(ra, rb, c)),
@@ -257,10 +295,40 @@ export default function Timer555() {
       diagram={
         active.data ? (
           <>
-            <Circuit type={type} />
+            <Circuit
+              type={type}
+              values={
+                type === 'mono'
+                  ? inverse === 'forward'
+                    ? {
+                        ra: monoForward.data?.time ? Number(ra) : undefined,
+                        c: monoForward.data?.time ? Number(c) : undefined,
+                      }
+                    : { ra: monoInverse.data?.r, c: Number(c) }
+                  : inverse === 'forward'
+                    ? {
+                        ra: astableForward.data?.frequency
+                          ? Number(ra)
+                          : undefined,
+                        rb: astableForward.data?.frequency
+                          ? Number(rb)
+                          : undefined,
+                        c: astableForward.data?.frequency
+                          ? Number(c)
+                          : undefined,
+                      }
+                    : {
+                        ra: astableInverse.data?.ra,
+                        rb: astableInverse.data?.rb,
+                        c: Number(c),
+                      }
+              }
+            />
             <Wave type={type} duty={waveDuty} />
           </>
-        ) : undefined
+        ) : (
+          <Circuit type={type} values={{}} />
+        )
       }
       notes={
         <>
@@ -313,30 +381,39 @@ export default function Timer555() {
       <div className="fields-grid">
         {inverse === 'forward' ? (
           <>
-            <NumberField
+            <QuantityField
               label={type === 'mono' ? 'R' : 'RA'}
               value={ra}
               onChange={setRa}
-              unit="Ω"
+              kind="resistance"
+              initialUnit="kΩ"
             />
             {type === 'astable' && (
-              <NumberField label="RB" value={rb} onChange={setRb} unit="Ω" />
+              <QuantityField
+                label="RB"
+                value={rb}
+                onChange={setRb}
+                kind="resistance"
+                initialUnit="kΩ"
+              />
             )}
           </>
         ) : type === 'mono' ? (
-          <NumberField
+          <QuantityField
             label="目標時間"
             value={time}
             onChange={setTime}
-            unit="s"
+            kind="time"
+            initialUnit="ms"
           />
         ) : (
           <>
-            <NumberField
+            <QuantityField
               label="目標頻率"
               value={freq}
               onChange={setFreq}
-              unit="Hz"
+              kind="frequency"
+              initialUnit="Hz"
             />
             <NumberField
               label="目標占空比"
@@ -346,8 +423,15 @@ export default function Timer555() {
             />
           </>
         )}
-        <NumberField label="C" value={c} onChange={setC} unit="F" />
+        <QuantityField
+          label="C"
+          value={c}
+          onChange={setC}
+          kind="capacitance"
+          initialUnit="µF"
+        />
       </div>
+      <ToolActions onExample={example} onClear={clear} />
     </ToolPanel>
   );
 }

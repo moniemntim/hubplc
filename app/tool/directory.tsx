@@ -21,7 +21,7 @@ export default function Directory() {
     <main className="shell directory">
       <div className="directory-heading">
         <div>
-          <p className="eyebrow">ENGINEERING TOOLBOX / 15 TOOLS</p>
+          <p className="eyebrow">ENGINEERING TOOLBOX / {tools.length} TOOLS</p>
           <h1>
             把計算交給工具，
             <br />
@@ -32,7 +32,7 @@ export default function Directory() {
           </p>
         </div>
         <div className="directory-mark" aria-hidden="true">
-          [ 15 ]<small>READY TO USE</small>
+          [ {tools.length} ]<small>READY TO USE</small>
         </div>
       </div>
       <div className="directory-toolbar">

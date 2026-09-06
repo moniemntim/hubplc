@@ -35,7 +35,6 @@ const fields = {
   'voltage-divider': 'Vin',
   electrical: '數值 1',
   '555-timer': 'RA',
-  'resistor-network': '電阻值（Ω）',
   'rc-time': 'R',
   'unit-converter': '輸入數值',
 };
@@ -79,10 +78,26 @@ try {
       );
       await page.reload();
       await page.waitForLoadState('networkidle');
-      if (fields[tool.slug]) {
-        await page
-          .getByRole('textbox', { name: fields[tool.slug], exact: true })
-          .fill('');
+      const newCircuit = ![
+        'analog',
+        'plc-scaling',
+        'base-converter',
+        'modbus-address',
+        'modbus-crc',
+        'register-converter',
+        'qrcode',
+        'big5',
+        'unit-converter',
+        'resistor-color',
+      ].includes(tool.slug);
+      if (fields[tool.slug] || newCircuit) {
+        const input = fields[tool.slug]
+          ? page.getByRole('textbox', { name: fields[tool.slug], exact: true })
+          : page
+              .getByRole('region', { name: '輸入條件' })
+              .getByRole('textbox')
+              .first();
+        await input.fill('');
         assert.equal(
           await page
             .getByRole('region', { name: '計算結果' })
@@ -91,6 +106,27 @@ try {
           0,
           `stale result ${tool.slug}`,
         );
+        if (newCircuit) {
+          await page
+            .getByRole('button', { name: '載入範例', exact: true })
+            .click();
+          assert.ok(
+            await page
+              .getByRole('region', { name: '計算結果' })
+              .locator('dd')
+              .count(),
+            `example ${tool.slug}`,
+          );
+          await page.getByRole('button', { name: '清空', exact: true }).click();
+          assert.equal(
+            await page
+              .getByRole('region', { name: '計算結果' })
+              .locator('dd')
+              .count(),
+            0,
+            `clear ${tool.slug}`,
+          );
+        }
       }
       checks.push(
         `${size.width}: ${tool.slug} direct/reload/metadata/layout/invalid`,

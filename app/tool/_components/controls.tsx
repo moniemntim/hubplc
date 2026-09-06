@@ -1,6 +1,12 @@
 'use client';
 
-import { useId, useState, type ReactNode } from 'react';
+import {
+  createContext,
+  useContext,
+  useId,
+  useState,
+  type ReactNode,
+} from 'react';
 import { formatNumber } from '@/lib/tools/core';
 import {
   Select,
@@ -24,7 +30,7 @@ export function NumberField({
 }: FieldProps & { unit?: string }) {
   const id = useId();
   return (
-    <div className="tool-field">
+    <div className="tool-field" data-field={label}>
       <label htmlFor={id}>{label}</label>
       <div className="input-wrap">
         <input
@@ -50,7 +56,7 @@ export function TextField({
 }: FieldProps & { multiline?: boolean; type?: string }) {
   const id = useId();
   return (
-    <div className="tool-field">
+    <div className="tool-field" data-field={label}>
       <label htmlFor={id}>{label}</label>
       {multiline ? (
         <textarea
@@ -78,11 +84,24 @@ export function Choice({
   value,
   onChange,
   options,
-}: FieldProps & { options: readonly { value: string; label: string }[] }) {
+  shortLabel,
+}: FieldProps & {
+  shortLabel?: string;
+  options: readonly { value: string; label: string; color?: string }[];
+}) {
   const id = useId();
   return (
-    <div className="tool-field">
-      <label id={id}>{label}</label>
+    <div className="tool-field" data-field={label}>
+      <label id={id}>
+        {shortLabel ? (
+          <>
+            <span className="sr-only">{label}</span>
+            <span aria-hidden="true">{shortLabel}</span>
+          </>
+        ) : (
+          label
+        )}
+      </label>
       <Select
         value={value}
         items={options}
@@ -99,11 +118,59 @@ export function Choice({
         >
           {options.map((option) => (
             <SelectItem key={option.value} value={option.value}>
+              {option.color && (
+                <span
+                  className="color-swatch"
+                  style={{ background: option.color }}
+                  aria-hidden="true"
+                />
+              )}
               {option.label}
             </SelectItem>
           ))}
         </SelectContent>
       </Select>
+    </div>
+  );
+}
+
+const DiagramFocus = createContext('');
+
+export function DiagramPart({
+  field,
+  children,
+}: {
+  field: string;
+  children: ReactNode;
+}) {
+  const currentField = useContext(DiagramFocus);
+  const focused = field !== '' && currentField === field;
+  return (
+    <g
+      className={focused ? 'diagram-part is-focused' : 'diagram-part'}
+      data-diagram-field={field}
+      data-focused={focused ? 'true' : 'false'}
+    >
+      {children}
+    </g>
+  );
+}
+
+export function ToolActions({
+  onExample,
+  onClear,
+}: {
+  onExample: () => void;
+  onClear: () => void;
+}) {
+  return (
+    <div className="action-row">
+      <button type="button" className="action secondary" onClick={onExample}>
+        載入範例
+      </button>
+      <button type="button" className="action secondary" onClick={onClear}>
+        清空
+      </button>
     </div>
   );
 }
@@ -119,27 +186,56 @@ export function ToolPanel({
   notes: ReactNode;
   diagram?: ReactNode;
 }) {
+  const [focus, setFocus] = useState('');
   return (
-    <div className="calculator">
-      <div className="calculator-grid">
-        <section className="calculator-inputs" aria-label="輸入條件">
-          {children}
-        </section>
-        <section
-          className="result tool-result"
-          aria-label="計算結果"
-          aria-live="polite"
+    <DiagramFocus.Provider value={focus}>
+      <div className="calculator">
+        <div
+          className={
+            diagram ? 'calculator-grid has-diagram' : 'calculator-grid'
+          }
         >
-          <p className="eyebrow">RESULT / 計算結果</p>
-          {result}
-        </section>
+          <section
+            className="calculator-inputs"
+            aria-label="輸入條件"
+            onFocusCapture={(event) =>
+              setFocus(
+                (event.target as HTMLElement).closest<HTMLElement>(
+                  '.quantity-field',
+                )?.dataset.field ??
+                  (event.target as HTMLElement).closest<HTMLElement>(
+                    '[data-field]',
+                  )?.dataset.field ??
+                  '',
+              )
+            }
+            onBlurCapture={(event) => {
+              if (
+                !event.currentTarget.contains(
+                  event.relatedTarget as Node | null,
+                )
+              )
+                setFocus('');
+            }}
+          >
+            {children}
+          </section>
+          {diagram && <div className="tool-diagram">{diagram}</div>}
+          <section
+            className="result tool-result"
+            aria-label="計算結果"
+            aria-live="polite"
+          >
+            <p className="eyebrow">RESULT / 計算結果</p>
+            {result}
+          </section>
+        </div>
+        <div className="tool-foot">
+          <span>公式與說明</span>
+          <div>{notes}</div>
+        </div>
       </div>
-      {diagram && <div className="tool-diagram">{diagram}</div>}
-      <div className="tool-foot">
-        <span>公式與說明</span>
-        <div>{notes}</div>
-      </div>
-    </div>
+    </DiagramFocus.Provider>
   );
 }
 

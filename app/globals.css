@@ -1233,3 +1233,106 @@ output.results-count {
   max-width: 560px !important;
   min-width: 320px;
 }
+
+/* Circuit tools keep controls beside the live schematic, with results below. */
+.calculator-grid.has-diagram {
+  align-items: start;
+}
+.has-diagram > .tool-diagram {
+  border: 1px solid #d8e7df;
+  border-radius: 8px;
+  padding: 20px 12px;
+  min-width: 0;
+}
+.has-diagram > .tool-result {
+  grid-column: 1 / -1;
+  min-height: 0;
+}
+.has-diagram .output-rows {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(min(230px, 100%), 1fr));
+  gap: 12px 26px;
+  width: 100%;
+}
+.quantity-field {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) 95px;
+  gap: 8px;
+  min-width: 0;
+}
+.quantity-field .tool-select {
+  min-width: 0;
+}
+.quantity-field > .tool-field:last-child > label {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.color-swatch {
+  display: inline-block;
+  width: 18px;
+  height: 18px;
+  flex-shrink: 0;
+  border-radius: 3px;
+  border: 1px solid #87958d;
+  vertical-align: middle;
+  margin-right: 6px;
+}
+.diagram-part {
+  transition: color 120ms ease;
+}
+.diagram-part.is-focused {
+  color: #08755d;
+  filter: drop-shadow(0 0 3px #32b88a88);
+}
+.diagram-part.is-focused text {
+  font-weight: 700;
+  text-decoration: underline;
+}
+.network-row {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  gap: 10px;
+  align-items: center;
+}
+.network-row > button {
+  margin-top: 9px;
+}
+.network-visual {
+  max-height: 560px;
+  overflow: auto;
+}
+.network-schematic {
+  min-width: 360px;
+  max-width: 420px !important;
+}
+.calculator-inputs > .action-row:first-child {
+  margin: 0 0 24px;
+}
+.tool-diagram svg {
+  color: #234c40;
+}
+.tool-diagram figcaption,
+.tool-diagram p {
+  font-size: 14px;
+  line-height: 1.7;
+  overflow-wrap: anywhere;
+}
+@media (max-width: 900px) {
+  .has-diagram .fields-grid {
+    grid-template-columns: 1fr;
+  }
+}
+@media (max-width: 650px) {
+  .calculator-grid.has-diagram {
+    grid-template-columns: minmax(0, 1fr);
+  }
+  .has-diagram > .tool-result {
+    grid-column: 1;
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .diagram-part {
+    transition: none;
+  }
+}

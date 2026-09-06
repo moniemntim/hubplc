@@ -126,6 +126,86 @@ export const tools = [
     description: '壓力、流量、時間、質量、體積等九類常用單位。',
     keywords: '重量 溫度 長度 面積 速度 psi bar kg L',
   },
+  {
+    slug: 'capacitor-network',
+    name: '串並聯電容',
+    category: '電路',
+    code: 'ΣC',
+    description: '多顆電容串聯或並聯，計算等效容量並連動電路圖。',
+    keywords: '電容量 電容器 pF nF μF µF',
+  },
+  {
+    slug: 'smd-capacitor',
+    name: 'SMD 電容代碼',
+    category: '電路',
+    code: '104',
+    description: '電容三位數與 R 小數代碼、容量及容差雙向換算。',
+    keywords: '貼片 陶瓷 代碼 J K M 104',
+  },
+  {
+    slug: 'led-resistor',
+    name: 'LED 串聯電阻',
+    category: '電路',
+    code: 'LED',
+    description: '依 LED 數量、壓降與目標電流計算限流電阻及功耗。',
+    keywords: '發光二極體 限流 電阻 E24',
+  },
+  {
+    slug: 'smd-resistor',
+    name: 'SMD 電阻代碼',
+    category: '電路',
+    code: 'EIA96',
+    description: '三位數、四位數、R 小數與 EIA-96 阻值雙向換算。',
+    keywords: '貼片 472 1001 零歐姆 01A',
+  },
+  {
+    slug: 'current-divider',
+    name: '支路電流分配',
+    category: '電路',
+    code: 'I₁+I₂',
+    description: '並聯電阻各支路電流、占比與功耗計算。',
+    keywords: '分流 並聯 支路 電流分配',
+  },
+  {
+    slug: 'shunt-resistor',
+    name: '量測分流電阻',
+    category: '電路',
+    code: 'mV/A',
+    description: '由壓降、電流與阻值計算分流電阻，換算實測電流。',
+    keywords: '分流器 shunt 75mV 電流量測 毫歐',
+  },
+  {
+    slug: 'rc-filter',
+    name: 'RC 濾波器',
+    category: '電路',
+    code: 'fᶜ',
+    description: '一階低通與高通截止頻率、增益、相位及頻率曲線。',
+    keywords: 'RC 低通 高通 LPF HPF 截止',
+  },
+  {
+    slug: 'reactance',
+    name: '容抗／感抗',
+    category: '電路',
+    code: 'Xᶜ·Xᴸ',
+    description: '電容、電感與頻率雙向換算電抗，查看頻率曲線。',
+    keywords: '容抗 感抗 阻抗 Hz 電感',
+  },
+  {
+    slug: 'lc-resonance',
+    name: 'LC 諧振',
+    category: '電路',
+    code: 'LC',
+    description: '由電感、電容或理想諧振頻率中的兩項計算第三項。',
+    keywords: '共振 諧振 電感 頻率',
+  },
+  {
+    slug: 'preferred-resistor',
+    name: '標準電阻選值',
+    category: '電路',
+    code: 'E6–96',
+    description: '查找 E 系列相鄰標準阻值、最接近阻值與誤差。',
+    keywords: 'E6 E12 E24 E48 E96 優選 標準電阻',
+  },
 ] as const;
 export type ToolSlug = (typeof tools)[number]['slug'];
 export function getTool(slug: ToolSlug) {
@@ -133,6 +213,20 @@ export function getTool(slug: ToolSlug) {
 }
 
 export const toolExamples: Record<ToolSlug, string> = {
+  'capacitor-network': '兩顆 100 nF 電容串聯為 50 nF，並聯為 200 nF。',
+  'smd-capacitor': '104 = 100000 pF = 100 nF = 0.1 µF；104K 表示 ±10% 容差。',
+  'led-resistor':
+    '5 V 電源、一顆 Vf = 2 V 的 LED、目標 20 mA：理論電阻 150 Ω、功耗 0.06 W。',
+  'smd-resistor': '472 = 4.7 kΩ；1001 = 1 kΩ；EIA-96 的 01A = 100 Ω。',
+  'current-divider': '兩顆 100 Ω 並聯接 10 V：各支路 0.1 A，總電流 0.2 A。',
+  'shunt-resistor':
+    '額定 100 A／75 mV 的分流器為 0.75 mΩ；量到 37.5 mV 對應 50 A。',
+  'rc-filter':
+    'R = 10 kΩ、C = 10 nF：截止頻率約 1591.55 Hz，截止點增益約 −3.01 dB。',
+  reactance: '1 kHz、100 nF 電容的容抗約 1591.55 Ω。',
+  'lc-resonance': 'L = 10 mH、C = 100 nF：理想諧振頻率約 5032.92 Hz。',
+  'preferred-resistor':
+    'E24 目標 128 Ω：下方 120 Ω、上方 130 Ω，最接近為 130 Ω。',
   analog: '4–20 mA 對應 0–100：輸入 12 mA 得到 50；轉成 0–10 V 時為 5 V。',
   'plc-scaling': '原始量程 0–27648 對應 0–100：13824 換成工程值 50。',
   'base-converter':

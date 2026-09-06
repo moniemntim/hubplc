@@ -1,4 +1,5 @@
 import Link from '@/components/site-link';
+import { tools } from '@/lib/tools/registry';
 export const metadata = { alternates: { canonical: 'https://hubplc.com/' } };
 export default function Home() {
   return (
@@ -16,7 +17,7 @@ export default function Home() {
       </div>
       <section id="tools" className="home-tools">
         <div>
-          <p className="eyebrow">15 TOOLS / 免費使用</p>
+          <p className="eyebrow">{tools.length} TOOLS / 免費使用</p>
           <h2>工程師的工具箱</h2>
           <p>類比訊號、Modbus、電路計算、QR Code 與單位換算。</p>
         </div>

@@ -42,3 +42,5 @@ next-env.d.ts
 
 *.tsbuildinfo
 
+/public/sitemap.xml
+/deployment/.wrangler/

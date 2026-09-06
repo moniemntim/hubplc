@@ -1,0 +1,2 @@
+import Workbench from './workbench';
+export default function Home(){return <main className="shell"><div className="intro"><div><p className="eyebrow">PLC ENGINEERING / TOOLBOX</p><h1>現場的問題，<br/>在這裡算清楚<span>。</span></h1><p className="lead">給自動化工程師的實用工具與 PLC 技術筆記。</p></div><div className="intro-note"><i/>免費使用 · 無須註冊<br/><span>輸入數值，即時換算</span></div></div><Workbench/><section className="article-strip"><div><p className="eyebrow">FIELD NOTES</p><h2>PLC 技術筆記</h2><p>從程式邏輯到現場除錯，記錄實際遇到的問題與解法。</p></div><a className="text-link" href="/articles/">前往文章區 ↗</a></section></main>}

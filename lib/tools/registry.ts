@@ -7,6 +7,14 @@ export const categories = [
 ] as const;
 export const tools = [
   {
+    slug: 'password-generator',
+    name: '密碼產生器',
+    category: '編碼',
+    code: 'A7#x',
+    description: '在瀏覽器產生隨機密碼、好記片語或 PIN，自訂長度與字元。',
+    keywords: '密碼 隨機 安全 password generator PIN 片語 亂數',
+  },
+  {
     slug: 'text-repair',
     name: '文字亂碼修復與檔案轉碼',
     category: '編碼',
@@ -246,6 +254,8 @@ export function getTool(slug: ToolSlug) {
 }
 
 export const toolExamples: Record<ToolSlug, string> = {
+  'password-generator':
+    '預設為 20 字元，包含大小寫字母、數字及符號。按下產生後才會建立新密碼。',
   'text-repair':
     'UTF-8「中文」被 Windows-1252 誤讀成「ä¸­æ–‡」；選取相對應候選可還原。',
   'battery-life':

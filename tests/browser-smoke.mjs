@@ -88,6 +88,7 @@ try {
         'qrcode',
         'big5',
         'text-repair',
+        'password-generator',
         'unit-converter',
         'resistor-color',
       ].includes(tool.slug);
@@ -140,7 +141,10 @@ try {
   await expect(page.locator('.tool-card')).toHaveCount(2);
   await page.getByRole('searchbox').fill('');
   await page.getByRole('tab', { name: '編碼', exact: true }).click();
-  await expect(page.locator('.tool-card')).toHaveCount(3);
+  await expect(page.locator('.tool-card')).toHaveCount(4);
+  await expect(
+    page.locator('.tool-card[href="/tool/password-generator"]'),
+  ).toBeVisible();
   await expect(
     page.locator('.tool-card[href="/tool/text-repair"]'),
   ).toBeVisible();

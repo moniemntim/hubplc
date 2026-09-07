@@ -1421,6 +1421,220 @@ output.results-count {
 .band-legend strong {
   display: block;
 }
+.password-tool {
+  min-width: 0;
+}
+.password-privacy {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 14px 0 22px;
+  color: #345c49;
+  font-size: 14px;
+}
+.password-privacy svg {
+  flex: 0 0 auto;
+}
+.password-grid {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1.25fr);
+  border: 1px solid #d1ded5;
+  border-radius: 18px;
+  overflow: hidden;
+}
+.password-settings {
+  min-width: 0;
+  padding: clamp(20px, 3vw, 36px);
+  background: #fff;
+}
+.password-length {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  margin-top: 24px;
+}
+.password-length label {
+  font-weight: 600;
+}
+.password-length label span {
+  display: block;
+  font-weight: 400;
+  font-size: 14px;
+  color: #536b5d;
+}
+.password-length input {
+  width: 88px;
+  min-width: 0;
+  border: 1px solid #a6beae;
+  border-radius: 8px;
+  padding: 8px 12px;
+  color: #193b2d;
+  background: #fff;
+  text-align: center;
+  font-size: 24px;
+}
+.password-range {
+  width: 100%;
+  min-height: 44px;
+  margin: 8px 0 20px;
+  accent-color: #08775c;
+}
+.password-choices {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 14px;
+  margin: 0 0 22px;
+  padding: 0;
+  border: 0;
+}
+.password-choices legend {
+  margin-bottom: 14px;
+  font-weight: 600;
+}
+.password-choices label,
+.password-check {
+  display: flex;
+  align-items: center;
+  gap: 9px;
+  font-size: 14px;
+  min-height: 30px;
+}
+.password-choices input,
+.password-check input {
+  width: 18px;
+  height: 18px;
+  flex: 0 0 auto;
+  accent-color: #08775c;
+}
+.password-help {
+  color: #526758;
+  font-size: 14px;
+  margin: 12px 0 20px;
+  line-height: 1.7;
+}
+.password-generate {
+  width: 100%;
+  justify-content: center;
+  gap: 10px;
+  margin-top: 12px;
+}
+.password-reset {
+  display: block;
+  margin: 16px auto 0;
+  padding: 6px;
+  font-size: 14px;
+  color: #3e6250;
+  text-decoration: underline;
+  text-underline-offset: 4px;
+}
+.password-result {
+  min-width: 0;
+  padding: clamp(20px, 3vw, 36px);
+  background: #103e31;
+  color: #f5fff9;
+  display: flex;
+  flex-direction: column;
+}
+.password-result .eyebrow {
+  color: #b9dbbd;
+}
+.password-display {
+  display: flex;
+  align-items: center;
+  min-height: 164px;
+  border-bottom: 1px solid #507568;
+  padding: 24px 0;
+}
+.password-display textarea {
+  width: 100%;
+  resize: vertical;
+  border: 0;
+  background: transparent;
+  color: inherit;
+  margin: 0;
+  white-space: pre-wrap;
+  overflow-wrap: anywhere;
+  font-family: Consolas, 'Courier New', monospace;
+  font-size: clamp(22px, 2.5vw, 30px);
+  line-height: 1.65;
+}
+.password-placeholder {
+  margin: 0;
+  color: #d3e4d9;
+  font-size: 24px;
+}
+.password-masked {
+  margin: 0;
+  font-size: 28px;
+  letter-spacing: 0.1em;
+  overflow-wrap: anywhere;
+}
+.password-meta {
+  color: #c7dfd1;
+  font-size: 14px;
+  margin: 16px 0 26px;
+}
+.password-buttons {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+}
+.password-buttons .action {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  background: #d9f2b5;
+  border: 1px solid #d9f2b5;
+  color: #183d2b;
+}
+.password-buttons .secondary {
+  border-color: #8bad9a;
+  background: transparent;
+  color: #f1fff6;
+}
+.password-tool button:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+.password-status {
+  display: block;
+  margin-top: 22px;
+  font-size: 14px;
+  min-height: 24px;
+  color: #e3f4e9;
+}
+.password-clipboard-note {
+  font-size: 14px;
+  color: #bfd6c8;
+  margin: auto 0 0;
+  padding-top: 28px;
+  line-height: 1.7;
+}
+.password-error {
+  display: block;
+  color: #a62b2b;
+  font-size: 14px;
+  margin-top: 12px;
+}
+.password-symbols {
+  overflow-wrap: anywhere;
+}
+@media (max-width: 760px) {
+  .password-grid {
+    grid-template-columns: minmax(0, 1fr);
+  }
+  .password-display {
+    min-height: 100px;
+  }
+}
+@media (max-width: 360px) {
+  .password-choices {
+    grid-template-columns: minmax(0, 1fr);
+    gap: 8px;
+  }
+}
 .repair-privacy {
   border-left: 3px solid #23845f;
   background: #eff7f1;

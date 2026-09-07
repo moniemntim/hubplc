@@ -93,6 +93,8 @@ try {
         'hash',
         'key-derivation',
         'byte-encoding',
+        'rmb-uppercase',
+        'text-case',
         'unit-converter',
         'resistor-color',
       ].includes(tool.slug);
@@ -166,7 +168,9 @@ try {
     .getByRole('tab', { name: '編碼', exact: true })
     .press('ArrowRight');
   await page.getByRole('tab', { name: '單位', exact: true }).press('Enter');
-  await expect(page.locator('.tool-card')).toHaveCount(2);
+  await expect(page.locator('.tool-card')).toHaveCount(
+    tools.filter((tool) => tool.category === '單位').length,
+  );
   await expect(
     page.locator('.tool-card[href="/tool/dbm-watts"]'),
   ).toBeVisible();

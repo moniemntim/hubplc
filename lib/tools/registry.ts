@@ -1,3 +1,4 @@
+import { conversionTools, conversionExamples } from './conversion-registry.ts';
 export const categories = [
   '全部',
   'PLC 與通訊',
@@ -6,6 +7,7 @@ export const categories = [
   '單位',
 ] as const;
 export const tools = [
+  ...conversionTools,
   {
     slug: 'key-derivation',
     name: '密鑰派生 PBKDF2／EvpKDF',
@@ -290,6 +292,7 @@ export function getTool(slug: ToolSlug) {
 }
 
 export const toolExamples: Record<ToolSlug, string> = {
+  ...conversionExamples,
   'key-derivation':
     'PBKDF2-HMAC-SHA256，密碼 password、UTF-8 鹽值 salt、迭代 1 次、256 bits：120fb6cffcf8b32c43e7225256c4f837a86548c92ccc35480805987cb70be17b。此為公開測試向量。',
   'byte-encoding':

@@ -1,5 +1,21 @@
 # 工具區驗證紀錄（2026-09-07）
 
+## 文字加密／解密與雜湊 HMAC
+
+- 參考 [菜鳥加密工具](https://www.jyshare.com/crypto/)，新增 `/tool/crypto` 與 `/tool/hash`，總數 32；沿用本站分類、搜尋、獨立頁面、SEO、canonical 與 sitemap。
+- 新加密預設 AES-256-GCM；HPLC1. 格式固定 PBKDF2-HMAC-SHA-256 600,000 次、16-byte salt、12-byte IV、128-bit tag 與 HPLC1. AAD。Salt 與 IV 每次使用原生安全亂數產生。版本固定 KDF 工作量，密文不能指定任意迭代次數。最大 1 MiB 原文與 1,024-byte UTF-8 密碼，不截斷或正規化原文／密碼。
+- 舊格式支援 CryptoJS 密碼字串模式的 AES／DES／TripleDES（CBC＋PKCS7）、RC4、RC4Drop、Rabbit、RabbitLegacy；嚴格檢查 Base64、Salted__、salt 長度、區塊長度、PKCS7 每個填充位元組與 UTF-8。RC4Drop 0～4096 個 32-bit 字，預設 192。舊格式無驗證標籤，不能可靠識別所有錯誤密碼或篡改，介面有明確限制說明。
+- 雜湊與 HMAC 支援 SHA-224／256／384／512、SHA-1、MD5、RIPEMD-160；原文允許空字串，HMAC 金鑰使用非空 UTF-8 文字。HEX 大小寫與 Base64 只用於摘要輸出，不會對密文轉大寫。不把雜湊誤稱為可解密，不把 CryptoJS Keccak 誤稱為標準 SHA-3。
+- 參考頁的其他模式／填充選項、獨立 PBKDF2／EvpKDF、SHA-3 與編碼轉換項目未納入本輪；不是完整複製參考站。既有文字修復、Big5 與密碼產生器維持原功能。
+- 共用背景 Worker 僅在操作時啟動；文字、密碼與金鑰不送往外部服務、不寫入網址或儲存空間。修改輸入／設定、清空或離頁會終止作業，修訂序號防止過期回覆恢復結果。複製／下載均為使用者明確操作。文字加密提供密碼確認及結果帶入反向操作。
+- `npm test`：71 項通過；AES-GCM 與 Node crypto 雙向互通、隨機 salt／IV、錯誤密碼、修改 salt／IV／密文／tag 均驗證。七個舊式 wrapper 與 CryptoJS passphrase helpers 雙向互通；AES 另以 Node EVP_BytesToKey MD5 衍生驗證。七個摘要與 HMAC 全部對照 Node；另實際執行 1 MiB AES-GCM 正反算通過。
+- `tsc --noEmit`、所有變更程式 `oxlint`、變更檔案格式檢查通過。鎖檔保留原有 CRLF，Git 空白檢查將 CR 視為行尾，其餘預設空白檢查維持；JSON 已解析驗證。`npm run build` 輸出 38 個靜態路由、0 跳過，Wrangler 部署乾跑通過（145 個資產）。
+- `tests/crypto-browser.mjs` 在 Wrangler 正式輸出通過 1280／390／320 px 的密碼確認、加密／解密、錯誤密碼、損壞格式、複製、下載、反向帶入、空摘要、HEX／Base64、HMAC、清空、重載與取消；七個舊演算法皆經 UI 往返驗證，無瀏覽器錯誤或非 GET 請求。
+- `scripts/verify-site.mjs`：37 頁、sitemap、robots、真正 404，及 ads.txt 精確內容／檔尾換行／200／text/plain 通過。
+- `tests/browser-smoke.mjs`：32 工具 × 桌面／手機共 64 組路由檢查，搜尋分類、鍵盤、類比預設、Big5 複製與 QR PNG／SVG 獨立解碼通過；無瀏覽器錯誤。
+- 新依賴僅 `crypto-js@4.2.0` 與 `@types/crypto-js@4.2.2`；既有所有套件版本與部署前鎖檔相同。CryptoJS 已停止維護，只供舊格式及摘要相容實作；AES-GCM／PBKDF2 使用原生 Web Crypto。`npm audit` 仍有 11 個警示（1 low、2 moderate、8 high），涉及既有 Vinext、Vite、Wrangler 等套件，未在本次升級或自動修復；新加入套件沒有列入該次警示。完整 JSON 存於忽略版控的 outputs/crypto-npm-audit.json。
+- 部署前回復基準：`6e07ef8564b05a7e6115e7cc13e8428233b5b32a`。
+
 ## 密碼產生器
 
 - 新增 `/tool/password-generator`，工具總數 30；納入搜尋、編碼分類、SEO、canonical 與 sitemap。參考 [1Password 密碼產生器](https://1password.com/zh-tw/password-generator)的產生、刷新、複製及密碼類型概念，沿用本站版型。

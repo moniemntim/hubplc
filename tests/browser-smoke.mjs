@@ -89,6 +89,8 @@ try {
         'big5',
         'text-repair',
         'password-generator',
+        'crypto',
+        'hash',
         'unit-converter',
         'resistor-color',
       ].includes(tool.slug);
@@ -141,7 +143,9 @@ try {
   await expect(page.locator('.tool-card')).toHaveCount(2);
   await page.getByRole('searchbox').fill('');
   await page.getByRole('tab', { name: '編碼', exact: true }).click();
-  await expect(page.locator('.tool-card')).toHaveCount(4);
+  await expect(page.locator('.tool-card')).toHaveCount(6);
+  await expect(page.locator('.tool-card[href="/tool/crypto"]')).toBeVisible();
+  await expect(page.locator('.tool-card[href="/tool/hash"]')).toBeVisible();
   await expect(
     page.locator('.tool-card[href="/tool/password-generator"]'),
   ).toBeVisible();

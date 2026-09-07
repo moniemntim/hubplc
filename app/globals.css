@@ -1228,6 +1228,7 @@ output.results-count {
 }
 .tool-example p {
   margin: 5px 0 0;
+  overflow-wrap: anywhere;
 }
 .timer-schematic {
   max-width: 560px !important;
@@ -1420,6 +1421,148 @@ output.results-count {
 }
 .band-legend strong {
   display: block;
+}
+.crypto-tool {
+  min-width: 0;
+}
+.crypto-private {
+  color: #345c49;
+  padding: 8px 0 18px;
+  font-size: 14px;
+}
+.crypto-grid {
+  display: grid;
+  grid-template-columns: minmax(0, 1.1fr) minmax(0, 1fr);
+  border: 1px solid #d1ded5;
+  border-radius: 16px;
+  overflow: hidden;
+}
+.crypto-inputs,
+.crypto-result {
+  min-width: 0;
+  padding: clamp(20px, 3vw, 32px);
+}
+.crypto-inputs {
+  background: #fff;
+}
+.crypto-inputs .tool-field > input {
+  width: 100%;
+  padding: 11px 12px;
+  border: 1px solid #b7cbbf;
+  border-radius: 8px;
+  font-size: 16px;
+  background: #fff;
+  color: #183b2c;
+}
+.crypto-inputs textarea {
+  width: 100%;
+  min-height: 190px;
+  padding: 12px;
+  resize: vertical;
+  border: 1px solid #b7cbbf;
+  border-radius: 8px;
+  background: #fff;
+  color: #183b2c;
+  font-size: 16px;
+  line-height: 1.6;
+}
+.crypto-inputs .fields-grid {
+  margin-bottom: 18px;
+}
+.crypto-format-note {
+  font-size: 14px;
+  line-height: 1.75;
+  border-left: 3px solid #438c64;
+  padding: 12px;
+  background: #eff7f1;
+  margin-bottom: 18px;
+}
+.crypto-warning {
+  display: block;
+  background: #fff4d9;
+  color: #705015;
+  padding: 10px 12px;
+  line-height: 1.65;
+  font-size: 14px;
+  margin: 12px 0 18px;
+}
+.crypto-check {
+  display: flex;
+  align-items: center;
+  gap: 9px;
+  font-size: 14px;
+  margin-bottom: 18px;
+}
+.crypto-check input {
+  flex: 0 0 auto;
+  width: 18px;
+  height: 18px;
+  accent-color: #08775c;
+}
+.crypto-status {
+  display: block;
+  min-height: 24px;
+  margin-top: 18px;
+  font-size: 14px;
+  color: #365b48;
+}
+.crypto-result {
+  background: #103e31;
+  color: #effff6;
+}
+.crypto-result .eyebrow {
+  color: #bcddc8;
+  margin-bottom: 25px;
+}
+.crypto-result > label {
+  display: block;
+  margin-bottom: 10px;
+}
+.crypto-result textarea {
+  width: 100%;
+  min-height: 320px;
+  border: 1px solid #759685;
+  border-radius: 8px;
+  padding: 16px;
+  background: #f9fffb;
+  color: #193e2d;
+  resize: vertical;
+  font-family: Consolas, 'Courier New', monospace;
+  font-size: 16px;
+  line-height: 1.7;
+  overflow-wrap: anywhere;
+}
+.crypto-result-size,
+.crypto-result-note {
+  font-size: 14px;
+  color: #c8e1d2;
+  line-height: 1.7;
+}
+.crypto-result-note {
+  margin-top: 22px;
+}
+.crypto-result .action.secondary {
+  background: transparent;
+  color: #effff6;
+  border-color: #8aac9a;
+}
+.crypto-tool button:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+.crypto-tool .tool-foot code {
+  overflow-wrap: anywhere;
+}
+@media (max-width: 850px) {
+  .crypto-grid {
+    grid-template-columns: minmax(0, 1fr);
+  }
+  .crypto-inputs .fields-grid {
+    grid-template-columns: minmax(0, 1fr);
+  }
+  .crypto-result textarea {
+    min-height: 220px;
+  }
 }
 .password-tool {
   min-width: 0;

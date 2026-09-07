@@ -7,6 +7,24 @@ export const categories = [
 ] as const;
 export const tools = [
   {
+    slug: 'crypto',
+    name: '文字加密／解密',
+    category: '編碼',
+    code: 'AES',
+    description: 'AES-GCM 文字加解密，以及 AES、DES、RC4 等舊格式相容工具。',
+    keywords: '加密 解密 AES GCM CBC DES TripleDES RC4 Rabbit CryptoJS 密碼',
+  },
+  {
+    slug: 'hash',
+    name: '雜湊與 HMAC',
+    category: '編碼',
+    code: 'SHA',
+    description:
+      '計算 SHA、MD5、RIPEMD-160 摘要或 HMAC，支援 HEX 與 Base64 輸出。',
+    keywords:
+      '雜湊 哈希 hash HMAC SHA256 SHA512 SHA384 SHA224 SHA1 MD5 RIPEMD160 摘要',
+  },
+  {
     slug: 'password-generator',
     name: '密碼產生器',
     category: '編碼',
@@ -254,6 +272,9 @@ export function getTool(slug: ToolSlug) {
 }
 
 export const toolExamples: Record<ToolSlug, string> = {
+  crypto:
+    '輸入原文與密碼進行加密，再用「將結果帶入反向操作」驗證還原。請勿將測試用密碼用於真實敏感資料。',
+  hash: 'SHA-256 的 abc 摘要為 ba7816bf8f01cfea414140de5dae2223b00361a396177a9cb410ff61f20015ad。',
   'password-generator':
     '預設為 20 字元，包含大小寫字母、數字及符號。按下產生後才會建立新密碼。',
   'text-repair':

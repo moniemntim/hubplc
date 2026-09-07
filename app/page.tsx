@@ -1,9 +1,11 @@
 import Link from '@/components/site-link';
+import AdSense from '@/components/adsense';
 import { tools } from '@/lib/tools/registry';
 export const metadata = { alternates: { canonical: 'https://hubplc.com/' } };
 export default function Home() {
   return (
     <main className="shell">
+      <AdSense />
       <div className="intro">
         <div>
           <p className="eyebrow">PLC ENGINEERING / FIELD NOTES</p>

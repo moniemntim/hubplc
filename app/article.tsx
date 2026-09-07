@@ -1,4 +1,5 @@
 import Link from '@/components/site-link';
+import AdSense from '@/components/adsense';
 export default function Article({
   article,
 }: {
@@ -12,6 +13,7 @@ export default function Article({
 }) {
   return (
     <main className="prose">
+      <AdSense />
       <Link href="/articles/">← 所有文章</Link>
       <h1>{article.title}</h1>
       <p className="muted">

@@ -1,3 +1,4 @@
+import { mockAdsense, ADSENSE_URL } from './adsense-mock.mjs';
 import assert from 'node:assert/strict';
 import { mkdir } from 'node:fs/promises';
 import { chromium } from 'playwright';
@@ -17,6 +18,7 @@ try {
       permissions: ['clipboard-read', 'clipboard-write'],
     });
     const page = await context.newPage();
+    await mockAdsense(page);
     const errors = [];
     const external = [];
     page.on('pageerror', (error) => errors.push(error.message));
@@ -73,10 +75,10 @@ try {
       fullPage: true,
     });
     assert.deepEqual(errors, []);
-    assert.deepEqual(external, []);
+    assert.deepEqual(external, [ADSENSE_URL, ADSENSE_URL]);
     await context.close();
     console.log(
-      `PASS world-clock ${width}px: Taipei default independent of device timezone, Taiwan, search, keyboard, pause/copy/resume, reload, no external requests or overflow`,
+      `PASS world-clock ${width}px: Taipei default independent of device timezone, Taiwan, search, keyboard, pause/copy/resume, reload, only expected mocked ad requests, no overflow`,
     );
   }
 } finally {

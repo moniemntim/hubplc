@@ -1,3 +1,4 @@
+import { mockAdsense } from './adsense-mock.mjs';
 import assert from 'node:assert/strict';
 import { mkdir } from 'node:fs/promises';
 import { chromium } from 'playwright';
@@ -10,6 +11,7 @@ const browser = await chromium.launch(
     : {},
 );
 const page = await browser.newPage();
+await mockAdsense(page);
 const errors = [];
 page.on('pageerror', (error) => errors.push(error.message));
 page.on('console', (message) => {

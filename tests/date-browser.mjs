@@ -1,3 +1,4 @@
+import { mockAdsense } from './adsense-mock.mjs';
 import assert from 'node:assert/strict';
 import { chromium } from 'playwright';
 import { expect } from 'playwright/test';
@@ -13,6 +14,7 @@ const context = await browser.newContext({
   timezoneId: 'America/Los_Angeles',
 });
 const page = await context.newPage();
+await mockAdsense(page);
 const errors = [];
 page.on('pageerror', (error) => errors.push(error.message));
 

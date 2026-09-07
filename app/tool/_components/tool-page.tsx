@@ -1,4 +1,5 @@
 import Link from '@/components/site-link';
+import AdSense from '@/components/adsense';
 import type { Metadata } from 'next';
 import { getTool, toolExamples, type ToolSlug } from '@/lib/tools/registry';
 export function toolMetadata(slug: ToolSlug): Metadata {
@@ -19,6 +20,7 @@ export default function ToolPage({
   const tool = getTool(slug);
   return (
     <main className="shell tool-page">
+      {tool.category !== '編碼' && <AdSense />}
       <nav className="breadcrumbs" aria-label="所在位置">
         <Link href="/tool">工具總覽</Link>
         <span>/</span>

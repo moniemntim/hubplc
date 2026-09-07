@@ -1,3 +1,4 @@
+import { mockAdsense } from './adsense-mock.mjs';
 import { chromium } from 'playwright';
 import { expect } from 'playwright/test';
 import assert from 'node:assert/strict';
@@ -20,6 +21,7 @@ const context = await browser.newContext({
   permissions: ['clipboard-read', 'clipboard-write'],
 });
 const page = await context.newPage();
+await mockAdsense(page);
 const errors = [];
 page.on('pageerror', (e) => errors.push(e.message));
 page.on('console', (e) => {

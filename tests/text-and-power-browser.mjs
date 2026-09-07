@@ -1,3 +1,4 @@
+import { mockAdsense } from './adsense-mock.mjs';
 import assert from 'node:assert/strict';
 import { mkdir } from 'node:fs/promises';
 import { chromium } from 'playwright';
@@ -13,6 +14,7 @@ const context = await browser.newContext({
   permissions: ['clipboard-read', 'clipboard-write'],
 });
 const page = await context.newPage();
+await mockAdsense(page);
 await page.addInitScript(() => {
   File.prototype.arrayBuffer = async function () {
     if (this.name === 'delayed.txt')

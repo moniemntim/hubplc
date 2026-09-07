@@ -1,3 +1,4 @@
+import { mockAdsense } from './adsense-mock.mjs';
 import assert from 'node:assert/strict';
 import { createHash, createHmac, pbkdf2Sync } from 'node:crypto';
 import { mkdir } from 'node:fs/promises';
@@ -14,6 +15,7 @@ const context = await browser.newContext({
   permissions: ['clipboard-read', 'clipboard-write'],
 });
 const page = await context.newPage();
+await mockAdsense(page);
 const errors = [],
   writes = [];
 page.on('pageerror', (error) => errors.push(error.message));

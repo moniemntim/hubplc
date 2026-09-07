@@ -32,6 +32,23 @@ export default function ToolPage({
         </div>
         <span className="local-badge">● 在瀏覽器內運算</span>
       </header>
+      {['world-clock', 'timestamp-converter', 'date-calculator'].includes(
+        slug,
+      ) && (
+        <nav className="crypto-related" aria-label="時間與日期工具">
+          {(
+            ['world-clock', 'timestamp-converter', 'date-calculator'] as const
+          ).map((item) => (
+            <Link
+              key={item}
+              href={`/tool/${item}`}
+              aria-current={slug === item ? 'page' : undefined}
+            >
+              {getTool(item).name}
+            </Link>
+          ))}
+        </nav>
+      )}
       {['crypto', 'hash', 'key-derivation', 'byte-encoding'].includes(slug) && (
         <nav className="crypto-related" aria-label="加密與編碼工具">
           {(['crypto', 'hash', 'key-derivation', 'byte-encoding'] as const).map(

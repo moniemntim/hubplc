@@ -95,6 +95,7 @@ try {
         'byte-encoding',
         'rmb-uppercase',
         'text-case',
+        'world-clock', // Live clock/search interactions have a dedicated browser test.
         'unit-converter',
         'resistor-color',
       ].includes(tool.slug);

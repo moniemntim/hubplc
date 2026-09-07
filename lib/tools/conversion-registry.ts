@@ -1,5 +1,33 @@
 export const conversionTools = [
   {
+    slug: 'world-clock',
+    name: '世界時間・台北時鐘',
+    category: '單位',
+    code: 'UTC+08',
+    description: '以台灣台北為預設的即時世界時鐘，搜尋城市、國家／地區與時差。',
+    keywords:
+      '時間 時鐘 台灣 台北 世界 國家 時區 夏令時間 world clock Taipei Taiwan UTC',
+    example: '台北 16:00 時，UTC 為 08:00；跨城市日期與時差會隨夏令時間更新。',
+  },
+  {
+    slug: 'timestamp-converter',
+    name: 'Unix 時間戳轉換',
+    category: '單位',
+    code: 'UNIX ↔ 時間',
+    description: 'Unix 秒／毫秒與台北日期時間雙向轉換，顯示目前時間戳。',
+    keywords: '時間戳 Unix timestamp 秒 毫秒 台北 台灣 日期 轉換',
+    example: 'Unix 1767196800 秒對應台北 2026-01-01 00:00:00。',
+  },
+  {
+    slug: 'date-calculator',
+    name: '日期計算器',
+    category: '單位',
+    code: '日期 ± 天',
+    description: '計算兩日期相差天數或指定天數前後的日期，今天以台北時間判定。',
+    keywords: '日期 計算 天數 相差 幾天 台北 台灣 date 日曆 閏年',
+    example: '2024-02-28 加 2 天為 2024-03-01；日期差以日曆天計算。',
+  },
+  {
     slug: 'length-converter',
     name: '長度單位換算',
     category: '單位',

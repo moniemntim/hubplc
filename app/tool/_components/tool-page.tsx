@@ -34,12 +34,20 @@ export default function ToolPage({
         </div>
         <span className="local-badge">● 在瀏覽器內運算</span>
       </header>
-      {['world-clock', 'timestamp-converter', 'date-calculator'].includes(
-        slug,
-      ) && (
+      {[
+        'stopwatch',
+        'world-clock',
+        'timestamp-converter',
+        'date-calculator',
+      ].includes(slug) && (
         <nav className="crypto-related" aria-label="時間與日期工具">
           {(
-            ['world-clock', 'timestamp-converter', 'date-calculator'] as const
+            [
+              'stopwatch',
+              'world-clock',
+              'timestamp-converter',
+              'date-calculator',
+            ] as const
           ).map((item) => (
             <Link
               key={item}

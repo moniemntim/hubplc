@@ -89,7 +89,7 @@ await test('uses Unicode code points for the text length limit', () => {
   );
 });
 
-test('NTD uses traditional characters and preserves exact amounts', () => {
+void test('NTD uses traditional characters and preserves exact amounts', () => {
   assert.equal(convertTwdUppercase('0'), '新臺幣零圓整');
   assert.equal(convertTwdUppercase('1001'), '新臺幣壹仟零壹圓整');
   assert.equal(convertTwdUppercase('1001.05'), '新臺幣壹仟零壹圓零伍分');

@@ -1,5 +1,32 @@
-import test from 'node:test';import assert from 'node:assert/strict';import {analogScale,convertBase,modbusAddress} from '../lib/calculators.ts';
-test('analog endpoints, midpoint and negative range',()=>{assert.equal(analogScale('4','-50','150').value,-50);assert.equal(analogScale('12','-50','150').value,50);assert.equal(analogScale('20','-50','150').value,150);assert.equal(analogScale('2','0','100').outside,true)});
-test('invalid input never leaves a numeric result',()=>{for(const v of ['', 'NaN', 'Infinity'])assert.throws(()=>analogScale(v,'0','100'));assert.throws(()=>analogScale('12','100','100'));assert.throws(()=>analogScale('12','100','0'))});
-test('base conversion round trips and unsigned limits',()=>{assert.equal(convertBase('FFFFFFFF',16).decimal,'4294967295');assert.equal(convertBase('11111111',2).decimal,'255');assert.equal(convertBase('0',10).hex,'0000');assert.equal(convertBase('65535',10).binary,'1111111111111111');for(const v of ['-1','1.5','4294967296',''])assert.throws(()=>convertBase(v,10));assert.throws(()=>convertBase('102',2));assert.throws(()=>convertBase('FFZZ',16))});
-test('Modbus legacy reference boundaries',()=>{assert.deepEqual(modbusAddress('40001'),{offset:0,hex:'0000'});assert.equal(modbusAddress('40101').offset,100);assert.equal(modbusAddress('49999').offset,9998);for(const v of ['40000','50000','40001.5',''])assert.throws(()=>modbusAddress(v))});
+import test from 'node:test';
+import assert from 'node:assert/strict';
+import { analogScale, convertBase, modbusAddress } from '../lib/calculators.ts';
+void test('analog endpoints, midpoint and negative range', () => {
+  assert.equal(analogScale('4', '-50', '150').value, -50);
+  assert.equal(analogScale('12', '-50', '150').value, 50);
+  assert.equal(analogScale('20', '-50', '150').value, 150);
+  assert.equal(analogScale('2', '0', '100').outside, true);
+});
+void test('invalid input never leaves a numeric result', () => {
+  for (const v of ['', 'NaN', 'Infinity'])
+    assert.throws(() => analogScale(v, '0', '100'));
+  assert.throws(() => analogScale('12', '100', '100'));
+  assert.throws(() => analogScale('12', '100', '0'));
+});
+void test('base conversion round trips and unsigned limits', () => {
+  assert.equal(convertBase('FFFFFFFF', 16).decimal, '4294967295');
+  assert.equal(convertBase('11111111', 2).decimal, '255');
+  assert.equal(convertBase('0', 10).hex, '0000');
+  assert.equal(convertBase('65535', 10).binary, '1111111111111111');
+  for (const v of ['-1', '1.5', '4294967296', ''])
+    assert.throws(() => convertBase(v, 10));
+  assert.throws(() => convertBase('102', 2));
+  assert.throws(() => convertBase('FFZZ', 16));
+});
+void test('Modbus legacy reference boundaries', () => {
+  assert.deepEqual(modbusAddress('40001'), { offset: 0, hex: '0000' });
+  assert.equal(modbusAddress('40101').offset, 100);
+  assert.equal(modbusAddress('49999').offset, 9998);
+  for (const v of ['40000', '50000', '40001.5', ''])
+    assert.throws(() => modbusAddress(v));
+});

@@ -98,6 +98,7 @@ try {
         'rmb-uppercase',
         'text-case',
         'world-clock', // Live clock/search interactions have a dedicated browser test.
+        'stopwatch', // Stopwatch has no calculator input/result form.
         'unit-converter',
         'resistor-color',
       ].includes(tool.slug);

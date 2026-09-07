@@ -1,5 +1,15 @@
 export const conversionTools = [
   {
+    slug: 'stopwatch',
+    name: '線上碼錶',
+    category: '單位',
+    code: '00:00',
+    description:
+      '開始、暫停與單圈計時，支援全螢幕、快捷鍵、低功耗模式與分享連結。',
+    keywords: '碼錶 碼表 秒錶 秒表 計時器 單圈 分段 stopwatch timer ECO',
+    example: '第一圈累計 10 秒，第二圈累計 25 秒，第二圈的單圈時間為 15 秒。',
+  },
+  {
     slug: 'world-clock',
     name: '世界時間・台北時鐘',
     category: '單位',

@@ -1,0 +1,100 @@
+.stopwatch {
+  min-width: 0;
+}
+.stopwatch-face {
+  text-align: center;
+  background: #f4f7f1;
+  border: 1px solid #d8ddd9;
+  border-radius: 18px;
+  padding: clamp(1rem, 4vw, 2.5rem);
+}
+.stopwatch-time {
+  font-size: clamp(2rem, 8vw, 6rem);
+  font-weight: 650;
+  font-variant-numeric: tabular-nums;
+  letter-spacing: -0.04em;
+  line-height: 1.3;
+  color: #294d43;
+  overflow-wrap: anywhere;
+  margin: 1rem 0;
+}
+.stopwatch-split {
+  font-variant-numeric: tabular-nums;
+  font-size: 1rem;
+}
+.stopwatch-actions {
+  display: flex;
+  justify-content: center;
+  flex-wrap: wrap;
+  gap: 0.75rem;
+  margin-top: 1.5rem;
+}
+.stopwatch-actions button {
+  min-height: 44px;
+  padding: 0.65rem 1.3rem;
+  font-size: 1rem;
+  cursor: pointer;
+}
+.stopwatch-options button {
+  font-size: 0.875rem;
+}
+.stopwatch-options button[aria-pressed='true'] {
+  background: #294d43;
+  color: white;
+}
+.stopwatch-records {
+  margin: 1.5rem 0;
+}
+.stopwatch-records h2 {
+  font-size: 1.25rem;
+}
+.stopwatch-records h2 span {
+  font-size: 0.875rem;
+  font-weight: 400;
+}
+.stopwatch-records table {
+  font-variant-numeric: tabular-nums;
+  font-size: 1rem;
+}
+.stopwatch-records th,
+.stopwatch-records td {
+  padding: 0.85rem 0.6rem;
+}
+.stopwatch-share {
+  display: grid;
+  gap: 0.5rem;
+}
+.stopwatch-share input {
+  width: 100%;
+  min-width: 0;
+  padding: 0.75rem;
+  border: 1px solid #aebbb4;
+  border-radius: 8px;
+}
+.stopwatch-help {
+  font-size: 0.875rem;
+  line-height: 1.8;
+  color: #526158;
+}
+.stopwatch:fullscreen,
+.stopwatch-fullscreen {
+  background: #fff;
+  overflow: auto;
+  padding: clamp(1rem, 3vw, 3rem);
+}
+.stopwatch-fullscreen {
+  position: fixed;
+  inset: 0;
+  z-index: 100;
+}
+@media (max-width: 480px) {
+  .stopwatch-actions {
+    gap: 0.5rem;
+  }
+  .stopwatch-actions button {
+    padding: 0.6rem 0.8rem;
+  }
+  .stopwatch-records table {
+    font-size: 0.875rem;
+  }
+}

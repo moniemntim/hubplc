@@ -50,6 +50,7 @@ function ComboboxClear({ className, ...props }: ComboboxPrimitive.Clear.Props) {
 }
 
 function ComboboxInput({
+  id,
   className,
   children,
   disabled = false,
@@ -60,9 +61,12 @@ function ComboboxInput({
   showTrigger?: boolean;
   showClear?: boolean;
 }) {
+  const generatedId = React.useId();
+  const inputId = id ?? generatedId;
   return (
-    <InputGroup className={cn('w-auto', className)}>
+    <InputGroup inputId={inputId} className={cn('w-auto', className)}>
       <ComboboxPrimitive.Input
+        id={inputId}
         render={<InputGroupInput disabled={disabled} />}
         {...props}
       />

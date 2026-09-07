@@ -110,12 +110,13 @@ export const conversionTools = [
   },
   {
     slug: 'rmb-uppercase',
-    name: '人民幣數字轉大寫',
+    name: '新台幣數字轉大寫',
     category: '編碼',
     code: '123 → 壹',
-    description: '人民幣金額轉中文財務大寫，精確處理元、角、分與零位。',
-    keywords: '人民幣 金額 大寫 小寫 財務 中文 數字 RMB CNY 支票',
-    example: '1001.05 → 人民币壹仟零壹元零伍分。',
+    description: '新台幣金額轉繁體中文大寫，精確處理圓、角、分與零位。',
+    keywords:
+      '新台幣 新臺幣 台幣 臺幣 金額 大寫 小寫 財務 中文 數字 TWD NTD 支票',
+    example: '1001.05 → 新臺幣壹仟零壹圓零伍分。',
   },
   {
     slug: 'text-case',

@@ -149,12 +149,8 @@ try {
     await page
       .getByRole('button', { name: /^(轉為大寫|轉換文字)$/ })
       .press('Enter');
-    await expect(output).toHaveValue('人民币壹仟零壹元零伍分');
-    await copyDownload('人民币壹仟零壹元零伍分');
-    await choose('字形', '繁體中文金額（人民幣／圓）');
-    await expect(output).toHaveCount(0);
-    await page.getByRole('button', { name: /^(轉為大寫|轉換文字)$/ }).click();
-    await expect(output).toHaveValue('人民幣壹仟零壹圓零伍分');
+    await expect(output).toHaveValue('新臺幣壹仟零壹圓零伍分');
+    await copyDownload('新臺幣壹仟零壹圓零伍分');
     await page.locator('#rmb-uppercase-input').fill('1.001');
     await expect(output).toHaveCount(0);
     await page.getByRole('button', { name: /^(轉為大寫|轉換文字)$/ }).click();

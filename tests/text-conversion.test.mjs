@@ -1,3 +1,4 @@
+import { convertTwdUppercase } from '../lib/tools/text-conversion.ts';
 import assert from 'node:assert/strict';
 import test from 'node:test';
 import {
@@ -86,4 +87,17 @@ await test('uses Unicode code points for the text length limit', () => {
       convertTextCase('😀'.repeat(MAX_TEXT_CASE_CODE_POINTS + 1), 'uppercase'),
     /Unicode 碼點/,
   );
+});
+
+test('NTD uses traditional characters and preserves exact amounts', () => {
+  assert.equal(convertTwdUppercase('0'), '新臺幣零圓整');
+  assert.equal(convertTwdUppercase('1001'), '新臺幣壹仟零壹圓整');
+  assert.equal(convertTwdUppercase('1001.05'), '新臺幣壹仟零壹圓零伍分');
+  assert.equal(
+    convertTwdUppercase('123456.78'),
+    '新臺幣壹拾貳萬參仟肆佰伍拾陸圓柒角捌分',
+  );
+  assert.equal(convertTwdUppercase('100000001'), '新臺幣壹億零壹圓整');
+  for (const input of ['', '-1', '1.001', '1000000000000', '1e3'])
+    assert.throws(() => convertTwdUppercase(input));
 });

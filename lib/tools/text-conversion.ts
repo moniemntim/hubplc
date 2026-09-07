@@ -242,3 +242,11 @@ export function convertRmbUppercase(
   }
   return includePrefix ? characters.prefix + result : result;
 }
+
+/** Formats an NTD amount using traditional financial characters. */
+export function convertTwdUppercase(input: string | bigint): string {
+  return (
+    '新臺幣' +
+    convertRmbUppercase(input, { style: 'traditional', includePrefix: false })
+  );
+}

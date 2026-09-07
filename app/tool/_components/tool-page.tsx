@@ -32,6 +32,21 @@ export default function ToolPage({
         </div>
         <span className="local-badge">● 在瀏覽器內運算</span>
       </header>
+      {['crypto', 'hash', 'key-derivation', 'byte-encoding'].includes(slug) && (
+        <nav className="crypto-related" aria-label="加密與編碼工具">
+          {(['crypto', 'hash', 'key-derivation', 'byte-encoding'] as const).map(
+            (item) => (
+              <Link
+                key={item}
+                href={`/tool/${item}`}
+                aria-current={slug === item ? 'page' : undefined}
+              >
+                {getTool(item).name}
+              </Link>
+            ),
+          )}
+        </nav>
+      )}
       {children}
       <aside className="tool-example">
         <strong>試算範例</strong>

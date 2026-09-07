@@ -1890,3 +1890,26 @@ output.results-count {
     transition: none;
   }
 }
+.crypto-related {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  margin-bottom: 1.5rem;
+}
+.crypto-related a {
+  padding: 0.65rem 0.85rem;
+  border: 1px solid #cadbd2;
+  border-radius: 0.6rem;
+  font-size: 0.85rem;
+  background: #fff;
+  color: #285746;
+}
+.crypto-related a[aria-current='page'] {
+  background: #174d3d;
+  color: #fff;
+  border-color: #174d3d;
+}
+.crypto-related a:focus-visible {
+  outline: 3px solid #248661;
+  outline-offset: 3px;
+}

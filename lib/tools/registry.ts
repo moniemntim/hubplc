@@ -7,6 +7,24 @@ export const categories = [
 ] as const;
 export const tools = [
   {
+    slug: 'key-derivation',
+    name: '密鑰派生 PBKDF2／EvpKDF',
+    category: '編碼',
+    code: 'KDF',
+    description:
+      '自訂密碼、鹽值、雜湊與迭代次數，派生密鑰並輸出 HEX 或 Base64。',
+    keywords: 'PBKDF2 EvpKDF EVP 密鑰派生 金鑰 salt 鹽 HMAC 密碼',
+  },
+  {
+    slug: 'byte-encoding',
+    name: 'Base64 與文字編碼轉換',
+    category: '編碼',
+    code: '64 ↔ 字',
+    description: 'Base64、Base64URL、HEX、Latin1 與 UTF-8／UTF-16 位元組轉換。',
+    keywords:
+      'Base64 Base64URL HEX Latin1 UTF8 UTF16 UTF-8 UTF-16 編碼 解碼 位元組',
+  },
+  {
     slug: 'crypto',
     name: '文字加密／解密',
     category: '編碼',
@@ -22,7 +40,7 @@ export const tools = [
     description:
       '計算 SHA、MD5、RIPEMD-160 摘要或 HMAC，支援 HEX 與 Base64 輸出。',
     keywords:
-      '雜湊 哈希 hash HMAC SHA256 SHA512 SHA384 SHA224 SHA1 MD5 RIPEMD160 摘要',
+      '雜湊 哈希 hash HMAC SHA3 Keccak SHA256 SHA512 SHA384 SHA224 SHA1 MD5 RIPEMD160 摘要',
   },
   {
     slug: 'password-generator',
@@ -272,6 +290,10 @@ export function getTool(slug: ToolSlug) {
 }
 
 export const toolExamples: Record<ToolSlug, string> = {
+  'key-derivation':
+    'PBKDF2-HMAC-SHA256，密碼 password、UTF-8 鹽值 salt、迭代 1 次、256 bits：120fb6cffcf8b32c43e7225256c4f837a86548c92ccc35480805987cb70be17b。此為公開測試向量。',
+  'byte-encoding':
+    'UTF-8 文字「中文」的 Base64 為 5Lit5paH，HEX 為 e4b8ade69687。',
   crypto:
     '輸入原文與密碼進行加密，再用「將結果帶入反向操作」驗證還原。請勿將測試用密碼用於真實敏感資料。',
   hash: 'SHA-256 的 abc 摘要為 ba7816bf8f01cfea414140de5dae2223b00361a396177a9cb410ff61f20015ad。',

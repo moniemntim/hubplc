@@ -91,6 +91,8 @@ try {
         'password-generator',
         'crypto',
         'hash',
+        'key-derivation',
+        'byte-encoding',
         'unit-converter',
         'resistor-color',
       ].includes(tool.slug);
@@ -143,7 +145,15 @@ try {
   await expect(page.locator('.tool-card')).toHaveCount(2);
   await page.getByRole('searchbox').fill('');
   await page.getByRole('tab', { name: '編碼', exact: true }).click();
-  await expect(page.locator('.tool-card')).toHaveCount(6);
+  await expect(page.locator('.tool-card')).toHaveCount(
+    tools.filter((tool) => tool.category === '編碼').length,
+  );
+  await expect(
+    page.locator('.tool-card[href="/tool/key-derivation"]'),
+  ).toBeVisible();
+  await expect(
+    page.locator('.tool-card[href="/tool/byte-encoding"]'),
+  ).toBeVisible();
   await expect(page.locator('.tool-card[href="/tool/crypto"]')).toBeVisible();
   await expect(page.locator('.tool-card[href="/tool/hash"]')).toBeVisible();
   await expect(

@@ -1,5 +1,19 @@
 # 工具區驗證紀錄（2026-09-07）
 
+## SHA-3、密鑰派生與編碼補齊
+
+- 新增 `/tool/key-derivation` 與 `/tool/byte-encoding`，工具總數 34。加密、雜湊、密鑰派生、編碼頁提供共同切換入口，保留原生連結、搜尋、分類、canonical 與 sitemap。
+- SHA-3 與 Keccak 各提供 224／256／384／512 bits 摘要及 HMAC。明確區分 FIPS SHA-3 與參考站 CryptoJS SHA3 的 Keccak 行為；新依賴僅 `@noble/hashes@2.4.0`，鎖檔其餘套件版本未變。未變更先前的 AES-GCM 封包或舊密文行為。
+- PBKDF2 使用原生 Web Crypto，支援 HMAC-SHA1／256／384／512，預設 SHA256、600,000 次。EvpKDF 以 CryptoJS 支援 MD5／SHA1／256／384／512，預設 MD5、1 次，只供舊格式相容。輸出長度 128／192／256／384／512 bits；UTF-8 密碼與文字／HEX 鹽值各限 1,024 bytes。密碼不得為空，空鹽值允許相容測試並明確提示。可產生原生安全亂數 16-byte 鹽值。
+- 迭代次數嚴格正整數，PBKDF2 上限 2,000,000、EvpKDF 上限 100,000；輸入變動、清空、取消及離頁會終止 Worker 並清除結果。派生輸出只有密鑰，不包含參數或 IV。獨立檢查找到的 Web Crypto 不可用錯誤已改為中文 HTTPS 提示，並加入回歸測試。
+- 編碼支援 UTF-8 文字、Base64、無 padding Base64URL、HEX、Latin-1 及 UTF-16BE／LE 文字 HEX。嚴格檢查 canonical padding、偶數 HEX、Latin-1 範圍、Unicode 與 UTF-16 surrogate；不默默補字或截斷。UTF-16 選項為透過 UTF-8 中介的文字轉碼，介面明示與原始位元組檢視不同。輸入解碼限 1 MiB，輸出有界，保留 BOM／換行／空白，空結果有效。
+- `npm test`：82 項通過。SHA-3／HMAC 對照 Node，Keccak／HMAC 對照另一套 CryptoJS 實作；PBKDF2 對照 Node，EvpKDF 以 Node 雜湊獨立實作區塊遞推核對全部支援長度／算法。編碼使用 Buffer 驗證格式、UTF-16 位元序、BOM、無效值與大小邊界。
+- `tsc --noEmit`、17 個變更程式檔案 scoped `oxlint`、變更檔案 `oxfmt --check` 通過。鎖檔保持原 CRLF；以 `git -c core.whitespace=blank-at-eol,blank-at-eof,space-before-tab,cr-at-eol diff --check` 檢查空白。全專案既有 lint 與 11 個依賴警示見前輪紀錄，本輪沒有自動升級或停用檢查。
+- `npm run build`：40 個靜態路由、0 跳過；Wrangler `deploy --dry-run` 通過，153 個資產。`scripts/verify-site.mjs`：39 頁、sitemap、robots、真正 404 與 ads.txt 精確內容／換行／200／text/plain 通過。
+- `tests/browser-smoke.mjs`：34 工具 × 桌面／手機共 68 組檢查通過，含搜尋分類、鍵盤、類比、Big5 與 QR PNG／SVG 獨立解碼。`tests/crypto-browser.mjs` 原有 GCM、七種舊加密、雜湊等完整操作在 1280／390／320 px 通過。
+- `tests/crypto-extras-browser.mjs` 在 1280／390／320 px 驗證 SHA3／Keccak／HMAC、PBKDF2／EvpKDF、隨機鹽、取消與清空、UTF-16、Base64 正反向、無效格式、複製／下載、鍵盤與版面；零瀏覽器錯誤、零非 GET 請求。測試等待既有 smooth scroll 與選單關閉動畫完成，避免自動操作期間 popup 被捲動關閉。
+- 部署前回復基準：`505ce80e5a00fcacceeeb4391a9c8996e9d0e1f8`。正式驗證另記錄於忽略版控的 `outputs/production-crypto-extras-verification.json`；不新增追蹤、廣告碼、登入、資料庫或文章內容。
+
 ## 文字加密／解密與雜湊 HMAC
 
 - 參考 [菜鳥加密工具](https://www.jyshare.com/crypto/)，新增 `/tool/crypto` 與 `/tool/hash`，總數 32；沿用本站分類、搜尋、獨立頁面、SEO、canonical 與 sitemap。

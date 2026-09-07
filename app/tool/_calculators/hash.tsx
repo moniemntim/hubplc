@@ -187,7 +187,9 @@ export default function HashTool() {
           <p>
             所有運算在瀏覽器完成，不上傳、不儲存原文或金鑰。參考{' '}
             <a href="https://www.jyshare.com/crypto/">菜鳥加密工具</a>
-            ，提供本頁所列的七種雜湊演算法及對應 HMAC。
+            ，提供本頁所列雜湊演算法及對應 HMAC。SHA-3 是 FIPS 標準，與 CryptoJS
+            的 SHA3（實際為 Keccak）不同；兩者均提供 224、256、384、512
+            位元輸出。
           </p>
         </div>
       </div>

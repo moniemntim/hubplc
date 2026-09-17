@@ -38,6 +38,8 @@ next-env.d.ts
 /work/
 
 /lib/articles.generated.json
+/lib/article-index.generated.json
+/public/article-search.json
 /app/articles/(posts)/
 
 *.tsbuildinfo

@@ -5,6 +5,7 @@ import os from 'node:os';
 import path from 'node:path';
 import { execFileSync } from 'node:child_process';
 import { fileURLToPath } from 'node:url';
+import { stripTypeScriptTypes } from 'node:module';
 void test('article publishing excludes drafts and strips active HTML', async () => {
   const temp = await fs.mkdtemp(path.join(os.tmpdir(), 'hubplc-article-test-'));
   assert.equal(path.dirname(temp), os.tmpdir(), 'Unexpected test directory');
@@ -35,19 +36,37 @@ void test('article publishing excludes drafts and strips active HTML', async () 
     );
     assert.equal(data.length, 1);
     assert.equal(data[0].slug, 'published');
-    assert.match(data[0].html, /<h2>正文<\/h2>/);
+    assert.match(data[0].html, /<h2 id="section-1">正文<\/h2>/);
+    assert.deepEqual(data[0].toc, [
+      { id: 'section-1', title: '正文', level: 2 },
+    ]);
+    const index = JSON.parse(
+      await fs.readFile(
+        path.join(temp, 'lib/article-index.generated.json'),
+        'utf8',
+      ),
+    );
+    assert.equal(index.length, 1);
+    assert.equal(index[0].slug, 'published');
+    assert.equal('html' in index[0], false);
+    const fulltext = JSON.parse(
+      await fs.readFile(path.join(temp, 'public/article-search.json'), 'utf8'),
+    );
+    assert.equal(Object.keys(fulltext).length, 1);
+    assert.match(fulltext.published, /正文/);
+    assert.doesNotMatch(fulltext.published, /alert|<script/);
     assert.doesNotMatch(data[0].html, /<script|javascript:/);
     const page = await fs.readFile(
       path.join(temp, 'app/articles/(posts)/published/page.tsx'),
       'utf8',
     );
     const metadataModule = page.slice(
-      page.indexOf('const article='),
+      page.indexOf('const article'),
       page.indexOf('export default'),
     );
     const { metadata } = await import(
       'data:text/javascript;base64,' +
-        Buffer.from(metadataModule).toString('base64')
+        Buffer.from(stripTypeScriptTypes(metadataModule)).toString('base64')
     );
     assert.equal(
       metadata.alternates.canonical,
@@ -66,6 +85,15 @@ void test('article publishing excludes drafts and strips active HTML', async () 
         ),
       ),
       [],
+    );
+    assert.deepEqual(
+      JSON.parse(
+        await fs.readFile(
+          path.join(temp, 'public/article-search.json'),
+          'utf8',
+        ),
+      ),
+      {},
     );
     await assert.rejects(
       fs.access(path.join(temp, 'app/articles/(posts)/published/page.tsx')),

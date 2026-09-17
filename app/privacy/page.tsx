@@ -1,4 +1,7 @@
-export const metadata = { title: '隱私說明' };
+export const metadata = {
+  title: '隱私說明',
+  alternates: { canonical: 'https://hubplc.com/privacy' },
+};
 export default function Privacy() {
   return (
     <main className="prose">

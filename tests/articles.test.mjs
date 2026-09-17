@@ -37,7 +37,22 @@ void test('article publishing excludes drafts and strips active HTML', async () 
     assert.equal(data[0].slug, 'published');
     assert.match(data[0].html, /<h2>正文<\/h2>/);
     assert.doesNotMatch(data[0].html, /<script|javascript:/);
-    await fs.access(path.join(temp, 'app/articles/(posts)/published/page.tsx'));
+    const page = await fs.readFile(
+      path.join(temp, 'app/articles/(posts)/published/page.tsx'),
+      'utf8',
+    );
+    const metadataModule = page.slice(
+      page.indexOf('const article='),
+      page.indexOf('export default'),
+    );
+    const { metadata } = await import(
+      'data:text/javascript;base64,' +
+        Buffer.from(metadataModule).toString('base64')
+    );
+    assert.equal(
+      metadata.alternates.canonical,
+      'https://hubplc.com/articles/published',
+    );
     await fs.writeFile(
       path.join(temp, 'content/articles/published.md'),
       meta + 'true\n---\n已撤回',

@@ -2,6 +2,7 @@ import Link from '@/components/site-link';
 import articles from '@/lib/articles.generated.json';
 export const metadata = {
   title: 'PLC 技術文章',
+  alternates: { canonical: 'https://hubplc.com/articles' },
   description: 'PLC 程式設計、通訊與現場除錯的實務筆記。',
 };
 export default function Articles() {
@@ -25,7 +26,7 @@ export default function Articles() {
           <Link
             className="article-card"
             key={post.slug}
-            href={'/articles/' + post.slug + '/'}
+            href={'/articles/' + post.slug}
           >
             <time>{post.date}</time>
             <h2>{post.title}</h2>

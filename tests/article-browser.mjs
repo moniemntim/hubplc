@@ -9,6 +9,8 @@ await mkdir(output, { recursive: true });
 const articles = JSON.parse(
   await readFile('lib/article-index.generated.json', 'utf8'),
 );
+const lastPage = Math.ceil(articles.length / 12);
+const lastPageCount = articles.length - (lastPage - 1) * 12;
 const browser = await chromium.launch({
   headless: true,
   executablePath:
@@ -54,7 +56,7 @@ try {
   );
   assert.equal(indexRequests, 0);
   checks.push(
-    '249 published articles; first 12 rendered; fulltext not loaded initially',
+    `${articles.length} published articles; first 12 rendered; fulltext not loaded initially`,
   );
   await page.screenshot({
     path: `${output}/directory-desktop.png`,
@@ -117,8 +119,10 @@ try {
   await page.getByRole('combobox', { name: '文章排序' }).selectOption('newest');
   await page.getByRole('button', { name: '卡片顯示' }).click();
   await expect(page.locator('.library-articles-grid')).toBeVisible();
-  await page.getByRole('combobox', { name: '跳至頁碼' }).selectOption('21');
-  await expect(cards).toHaveCount(9);
+  await page
+    .getByRole('combobox', { name: '跳至頁碼' })
+    .selectOption(String(lastPage));
+  await expect(cards).toHaveCount(lastPageCount);
   await page.getByRole('combobox', { name: '跳至頁碼' }).selectOption('3');
   await expect(cards).toHaveCount(12);
   await expect(
@@ -163,11 +167,11 @@ try {
   );
 
   await open('/articles?page=999999');
-  await expect(cards).toHaveCount(9);
+  await expect(cards).toHaveCount(lastPageCount);
   await expect(page.getByRole('combobox', { name: '跳至頁碼' })).toHaveValue(
-    '21',
+    String(lastPage),
   );
-  await expect(page).toHaveURL(/page=21/);
+  await expect(page).toHaveURL(new RegExp(`page=${lastPage}(?:&|$)`));
   checks.push('Out-of-range shared URL clamps to real last page');
 
   for (const width of [390, 768, 320]) {

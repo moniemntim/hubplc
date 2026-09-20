@@ -111,6 +111,14 @@ draft: false
 
 本篇依通用布林控制概念撰寫；未引用特定廠牌指令。案例和偽碼均為教學推導。
 
+## 參考依據
+
+以單一決策層集中寫入的目的，是讓輸出結果可追溯，並避免多個工作或程式段對同一變數寫入而出現難以預期的狀態。CODESYS 的工作組態文件列出程式呼叫順序與工作優先權；其靜態分析規則也把多工作寫入同一變數標為高重要性風險。這些資料支持本文「先固定矩陣、再固定唯一寫入點」的檢查方式，並不把一般 PLC 邏輯延伸成安全功能。
+
+參考：[CODESYS Task Configuration](https://content.helpme-codesys.com/en/CODESYS%20Development%20System/_cds_f_task_configuration.html)
+
+參考：[CODESYS SA0006：多工作寫入](https://content.helpme-codesys.com/en/CODESYS%20Static%20Analysis/_san_rule_sa0006.html)
+
 ## 延伸閱讀
 
 - [自保持電路與 SET RESET 的差別 狀態如何建立與解除](/articles/plc-self-hold-set-reset-q-series)

@@ -116,6 +116,14 @@ CompletePrev := Complete
 
 本篇未選定計數器平台，未虛構特定指令、保持區或溢位規則；平台差異列為待確認。
 
+## 參考依據
+
+上升緣入口的概念可對照 CODESYS Standard 函式庫的 R_TRIG；該功能塊在布林訊號出現上升緣時才輸出 TRUE。保持資料的實際可用範圍仍取決於控制器與保存媒介；CODESYS 文件也說明，RETAIN 在未受硬體支援的非正常斷電情況未必能保留數值。因此，本文的批次快照和斷電復原步驟仍須按目標 PLC 的保持規格驗收。
+
+參考：[CODESYS R_TRIG（上升緣觸發）](https://content.helpme-codesys.com/en/libs/Standard/Current/Trigger/R_TRIG.html)
+
+參考：[CODESYS RETAIN 資料保存行為](https://content.helpme-codesys.com/en/CODESYS%20Development%20System/_cds_preserve_data_with_retain_variables.html)
+
 ## 延伸閱讀
 
 - [PLC 每秒觸發為什麼會越跑越慢 週期事件與時間累積誤差](/articles/plc-periodic-event-accumulated-timing-error)

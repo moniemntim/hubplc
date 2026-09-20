@@ -104,6 +104,14 @@ draft: false
 
 本篇未選定單一 PLC 平台，因此不虛構時間 API。時間排程、週期任務、解析度與回捲規則列為待依目標 PLC 官方手冊確認。
 
+## 參考依據
+
+CODESYS 的工作組態將循環工作定義為依設定週期重啟，並會在執行期顯示相對於目標週期的抖動；其工作物件文件也區分一般工作看門狗與漏週期看門狗。這支持本文把「目標時間、實際開始、實際完成與 missed」分欄記錄的做法。實際週期、抖動與看門狗門檻仍必須以目標 PLC 的任務設定和量測結果為準。
+
+參考：[CODESYS Task Configuration](https://content.helpme-codesys.com/en/CODESYS%20Development%20System/_cds_f_task_configuration.html)
+
+參考：[CODESYS Task 物件與週期抖動](https://content.helpme-codesys.com/en/CODESYS%20Development%20System/_cds_f_reference_task.html)
+
 ## 延伸閱讀
 
 - [TON TOF 與 TP 計時器怎麼選 以輸入輸出時間線比較](/articles/plc-ton-tof-tp-timer-selection)

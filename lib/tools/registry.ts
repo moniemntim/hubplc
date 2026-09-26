@@ -31,7 +31,8 @@ export const tools = [
     name: '文字加密／解密',
     category: '編碼',
     code: 'AES',
-    description: 'AES-GCM 文字加解密，以及 AES、DES、RC4 等舊格式相容工具。',
+    description:
+      '提供 AES-GCM 文字加解密，以及 AES、DES、RC4 等舊格式的相容模式。',
     keywords: '加密 解密 AES GCM CBC DES TripleDES RC4 Rabbit CryptoJS 密碼',
   },
   {
@@ -66,7 +67,7 @@ export const tools = [
     name: '電池續航估算',
     category: '電路',
     code: 'Ah / A',
-    description: '依電池容量、固定耗電與可用容量比例估算運作時間。',
+    description: '依電池容量、平均負載電流與可用容量比例估算續航時間。',
     keywords: '電池 續航 壽命 mAh Ah mA 容量 battery',
   },
   {
@@ -115,7 +116,7 @@ export const tools = [
     category: 'PLC 與通訊',
     code: '4xxxx',
     description: '四種資料區、參考編號與零起算位址換算。',
-    keywords: 'Modbos 寄存器 暫存器 register offset 40001',
+    keywords: 'Modbus 寄存器 暫存器 register offset 40001',
   },
   {
     slug: 'modbus-crc',
@@ -146,7 +147,7 @@ export const tools = [
     name: '電壓・電流・功率',
     category: '電路',
     code: 'V·A·W',
-    description: '直流歐姆定律，以及單相、三相交流功率換算。',
+    description: '以歐姆定律計算直流電路，以及單相、三相交流功率。',
     keywords: '瓦數 消耗 電阻 歐姆 功率因數 PF Ω',
   },
   {
@@ -178,7 +179,7 @@ export const tools = [
     name: 'RC 時間常數',
     category: '電路',
     code: 'τ=RC',
-    description: '時間常數、充放電電壓與響應曲線。',
+    description: '計算時間常數、充放電電壓，並顯示響應曲線。',
     keywords: '電容 充電 放電',
   },
   {
@@ -187,7 +188,7 @@ export const tools = [
     category: '編碼',
     code: 'QR',
     description: '文字、網址、Wi-Fi 與聯絡人名片 QR Code。',
-    keywords: 'QRCored 二維碼 wifi PNG SVG',
+    keywords: 'QRCode 二維碼 Wi-Fi PNG SVG',
   },
   {
     slug: 'big5',
@@ -282,7 +283,7 @@ export const tools = [
     name: '標準電阻選值',
     category: '電路',
     code: 'E6–96',
-    description: '查找 E 系列相鄰標準阻值、最接近阻值與誤差。',
+    description: '查詢 E 系列相鄰標準阻值、最接近阻值與誤差。',
     keywords: 'E6 E12 E24 E48 E96 優選 標準電阻',
   },
 ] as const;
@@ -298,8 +299,8 @@ export const toolExamples: Record<ToolSlug, string> = {
   'byte-encoding':
     'UTF-8 文字「中文」的 Base64 為 5Lit5paH，HEX 為 e4b8ade69687。',
   crypto:
-    '輸入原文與密碼進行加密，再用「將結果帶入反向操作」驗證還原。請勿將測試用密碼用於真實敏感資料。',
-  hash: 'SHA-256 的 abc 摘要為 ba7816bf8f01cfea414140de5dae2223b00361a396177a9cb410ff61f20015ad。',
+    '輸入原文與密碼加密，再按「將結果帶入反向操作」並解密，確認能否還原。請勿將測試用密碼用於真實敏感資料。',
+  hash: '字串 abc 的 SHA-256 摘要為 ba7816bf8f01cfea414140de5dae2223b00361a396177a9cb410ff61f20015ad。',
   'password-generator':
     '預設為 20 字元，包含大小寫字母、數字及符號。按下產生後才會建立新密碼。',
   'text-repair':
@@ -343,7 +344,7 @@ export const toolExamples: Record<ToolSlug, string> = {
   'rc-time':
     'R = 10000 Ω、C = 0.0001 F、Vin = 5 V：τ = 1 s，充電 1 s 約為 3.1606 V。',
   qrcode:
-    '選擇「文字」輸入繁體中文即可產生 QR；Wi-Fi 模式會組成掃碼器可辨識的連線資料。',
+    '選擇「文字」並輸入繁體中文即可產生 QR Code；Wi-Fi 模式會建立掃描器可辨識的連線資料。',
   big5: '「你好」每字分組為 A741 A66E；整段位元組為 A7 41 A6 6E。',
   'unit-converter': '1 bar = 100 kPa；1 L/min = 0.06 m³/h；0 °C = 32 °F。',
 };

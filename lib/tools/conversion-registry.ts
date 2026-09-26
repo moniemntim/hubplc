@@ -148,10 +148,10 @@ export const conversionTools = [
   },
   {
     slug: 'rmb-uppercase',
-    name: '新台幣數字轉大寫',
+    name: '新臺幣數字轉大寫',
     category: '編碼',
     code: '123 → 壹',
-    description: '新台幣金額轉繁體中文大寫，精確處理圓、角、分與零位。',
+    description: '將新臺幣金額轉為繁體中文大寫，保留圓、角、分與零位。',
     keywords:
       '新台幣 新臺幣 台幣 臺幣 金額 大寫 小寫 財務 中文 數字 TWD NTD 支票',
     example: '1001.05 → 新臺幣壹仟零壹圓零伍分。',
@@ -170,7 +170,7 @@ export const conversionTools = [
     name: '匯率換算器',
     category: '單位',
     code: 'USD ↔ TWD',
-    description: '新台幣、美元、人民幣等 20 種貨幣換算，顯示參考匯率日期。',
+    description: '新臺幣、美元、人民幣等 20 種貨幣換算，顯示參考匯率日期。',
     keywords:
       '匯率 貨幣 外幣 新台幣 美元 人民幣 日圓 歐元 exchange TWD USD CNY',
     example: '手動匯率 1 USD = 32 TWD 時，100 USD = 3200 TWD；此為示範值。',

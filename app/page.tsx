@@ -4,7 +4,7 @@ import { tools } from '@/lib/tools/registry';
 export const metadata = { alternates: { canonical: 'https://hubplc.com/' } };
 export default function Home() {
   return (
-    <main className="shell">
+    <main className="shell home-page">
       <AdSense />
       <div className="intro">
         <div>
@@ -31,7 +31,7 @@ export default function Home() {
         <div>
           <p className="eyebrow">FIELD NOTES</p>
           <h2>PLC 技術筆記</h2>
-          <p>從程式邏輯到現場除錯，記錄實際遇到的問題與解法。</p>
+          <p>整理 PLC 程式邏輯、設備通訊與現場除錯的操作步驟和判讀方式。</p>
         </div>
         <Link className="text-link" href="/articles">
           前往文章區 ↗

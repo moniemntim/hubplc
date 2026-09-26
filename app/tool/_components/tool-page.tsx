@@ -1,5 +1,6 @@
 import Link from '@/components/site-link';
 import AdSense from '@/components/adsense';
+import PlcGuide from './plc-guide';
 import type { Metadata } from 'next';
 import { getTool, toolExamples, type ToolSlug } from '@/lib/tools/registry';
 export function toolMetadata(slug: ToolSlug): Metadata {
@@ -79,6 +80,7 @@ export default function ToolPage({
         <strong>試算範例</strong>
         <p>{toolExamples[slug]}</p>
       </aside>
+      <PlcGuide slug={slug} />
       <div className="tool-page-end">
         <Link href="/tool">← 返回工具總覽</Link>
         <Link href="/articles">閱讀 PLC 技術文章 ↗</Link>

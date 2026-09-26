@@ -23,7 +23,7 @@ const dedicatedPages = [
   ['angle', '角度'],
   ['capacitance', '電容量'],
   ['speed', '速度'],
-  ['storage', '資料容量'],
+  ['storage', '儲存容量'],
 ] as const;
 
 const groupExamples: Record<

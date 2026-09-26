@@ -1,6 +1,6 @@
 ---
 title: 屏蔽接地變更後的50Hz干擾比較
-description: 以固定負載、波形與RMS統計比較屏蔽接地方案
+description: 以固定負載、波形與 RMS 統計比較屏蔽接地方案。
 date: 2026-09-21
 author: 站長
 draft: false

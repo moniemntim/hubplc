@@ -92,6 +92,11 @@
 .library-suggestions button:hover {
   border-color: #9ebeb6;
 }
+
+.article-library :where(button, a):focus-visible {
+  outline: 3px solid #13ac95;
+  outline-offset: 3px;
+}
 .library-layout {
   display: grid;
   grid-template-columns: 215px minmax(0, 1fr);
@@ -430,6 +435,9 @@
     border-color: #d6e0df;
     background: white;
     font-size: 13px;
+  }
+  .library-category-options button span:last-child {
+    display: none;
   }
   .library-categories h2 {
     margin-bottom: 10px;

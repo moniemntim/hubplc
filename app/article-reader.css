@@ -27,6 +27,11 @@
   text-decoration: underline;
 }
 
+.article-reader :where(a, summary):focus-visible {
+  outline: 3px solid #13ac95;
+  outline-offset: 3px;
+}
+
 .article-reader__eyebrow {
   margin: 0 0 10px;
   color: #59706f;
@@ -273,11 +278,27 @@
   }
 
   .article-reader__toc-mobile summary {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
     padding: 14px 4px;
     color: #36564e;
     font-size: 14px;
     font-weight: 800;
     cursor: pointer;
+  }
+
+  .article-reader__toc-mobile summary::after {
+    color: #59706f;
+    content: '+';
+    font-size: 20px;
+    font-weight: 400;
+    line-height: 1;
+  }
+
+  .article-reader__toc-mobile[open] summary::after {
+    content: '−';
   }
 
   .article-reader__toc-mobile nav {

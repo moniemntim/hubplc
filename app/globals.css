@@ -45,7 +45,9 @@ a:hover {
   color: #08796b;
 }
 button,
-input {
+input,
+select,
+textarea {
   font: inherit;
 }
 button,
@@ -58,7 +60,10 @@ button {
 }
 a:focus-visible,
 button:focus-visible,
-input:focus-visible {
+input:focus-visible,
+select:focus-visible,
+textarea:focus-visible,
+summary:focus-visible {
   outline: 3px solid #13ac95;
   outline-offset: 4px;
 }
@@ -80,6 +85,7 @@ input:focus-visible {
   align-items: center;
   justify-content: space-between;
   border-bottom: 1px solid var(--border);
+  gap: 24px;
 }
 .brand {
   display: flex;
@@ -112,11 +118,12 @@ input:focus-visible {
   padding-left: 22px;
   color: #65747c;
 }
-nav {
+.site-header nav {
   display: flex;
   gap: 32px;
   font-size: 14px;
   font-weight: 600;
+  flex-shrink: 0;
 }
 .shell {
   max-width: 1200px;
@@ -436,12 +443,15 @@ h1 span {
   margin: 0 auto;
   padding: 48px 32px;
   min-height: 60vh;
+  overflow-wrap: anywhere;
 }
 .prose h1 {
   font-size: 36px;
 }
 .prose h2 {
   font-size: 24px;
+  font-weight: 650;
+  line-height: 1.5;
   margin-top: 36px;
 }
 .prose p {
@@ -493,6 +503,12 @@ h1 span {
 .prose td {
   border: 1px solid #cad6d8;
   padding: 8px 12px;
+  text-align: left;
+  vertical-align: top;
+}
+.prose th {
+  background: #eaf2ee;
+  color: #234a37;
 }
 .prose ul,
 .prose ol {
@@ -511,7 +527,7 @@ h1 span {
   .brand small {
     display: none;
   }
-  nav {
+  .site-header nav {
     gap: 18px;
   }
   .shell {
@@ -647,7 +663,8 @@ h1 span {
   border: 0;
   background: transparent;
   outline: none;
-  font: 16px inherit;
+  font: inherit;
+  font-size: 16px;
 }
 .tool-search:focus-within {
   outline: 2px solid #08796b;
@@ -749,6 +766,7 @@ h1 span {
   color: #637c73;
   display: flex;
   gap: 13px;
+  flex-wrap: wrap;
 }
 .breadcrumbs a {
   text-decoration: underline;
@@ -852,6 +870,11 @@ h1 span {
   background: #fcfdfd;
   font-size: 15px;
   white-space: normal;
+}
+.tool-select [data-slot='select-value'] {
+  min-width: 0;
+  overflow-wrap: anywhere;
+  -webkit-line-clamp: unset;
 }
 .tool-select-popup {
   background: #fff;
@@ -1170,8 +1193,20 @@ button:disabled {
   .brand {
     font-size: 24px;
   }
-  nav {
+  .site-header nav {
     gap: 12px;
+  }
+}
+
+@media (max-width: 480px) {
+  .home-page h1,
+  .directory-heading h1 {
+    font-size: clamp(25px, 7.5vw, 32px);
+    letter-spacing: -0.6px;
+  }
+  .site-header {
+    gap: 12px;
+    flex-wrap: wrap;
   }
 }
 

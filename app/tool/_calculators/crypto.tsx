@@ -88,7 +88,7 @@ export default function CryptoTool() {
           <div className="crypto-format-note">
             {modern
               ? 'AES-GCM 會驗證密文是否遭修改，輸出 HPLC1. 開頭的 HubPLC 格式。'
-              : '舊格式相容模式：使用 CryptoJS 密碼字串及 Salted__ Base64 格式，不是原始 HEX 金鑰。舊格式没有完整性驗證，無法可靠判斷所有錯誤密碼或篡改。'}
+              : '舊格式相容模式：使用 CryptoJS 密碼字串及 Salted__ Base64 格式，不是原始 HEX 金鑰。舊格式沒有完整性驗證，無法可靠判斷所有錯誤密碼或篡改。'}
           </div>
           {!modern && (
             <p className="crypto-warning">

@@ -1,5 +1,5 @@
 ---
-title: 序列ASCII框架解析_STX長度ETX與逾時重組
+title: 序列 ASCII 框架解析：STX、長度、ETX 與逾時重組
 description: 用自訂STX加三字元長度加ETX框架，練習串列分段重組、長度上限、逾時及不完整資料拒絕。
 date: 2026-09-21
 author: 站長

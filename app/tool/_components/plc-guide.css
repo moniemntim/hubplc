@@ -1,0 +1,84 @@
+.plc-guide {
+  max-width: 880px;
+  margin: 40px auto;
+  padding: 32px;
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  background: #fff;
+  color: #234a37;
+  line-height: 1.85;
+  overflow-wrap: anywhere;
+}
+.plc-guide h2 {
+  font-size: 26px;
+  margin: 8px 0 24px;
+}
+.plc-guide h3 {
+  font-size: 20px;
+  margin: 28px 0 12px;
+}
+.plc-guide p,
+.plc-guide ul,
+.plc-guide ol {
+  margin: 12px 0;
+}
+.plc-guide ul,
+.plc-guide ol {
+  padding-left: 24px;
+  list-style: revert;
+}
+.plc-guide li + li {
+  margin-top: 10px;
+}
+.plc-guide a {
+  color: #08796b;
+  text-decoration: underline;
+  text-underline-offset: 3px;
+}
+.plc-guide a:focus-visible {
+  outline: 3px solid #248661;
+  outline-offset: 3px;
+}
+.plc-guide code {
+  background: #eff7f1;
+  padding: 2px 5px;
+  border-radius: 4px;
+}
+.plc-guide table {
+  width: 100%;
+  border-collapse: collapse;
+  margin: 24px 0;
+  font-size: 14px;
+}
+.plc-guide caption {
+  text-align: left;
+  margin-bottom: 10px;
+  font-weight: 600;
+}
+.plc-guide th,
+.plc-guide td {
+  padding: 10px;
+  border: 1px solid #cadbd2;
+  text-align: left;
+}
+.plc-guide th {
+  background: #eff7f1;
+}
+.plc-guide-footer {
+  border-top: 1px solid #cadbd2;
+  margin-top: 28px;
+  padding-top: 12px;
+  font-size: 14px;
+}
+@media (max-width: 600px) {
+  .plc-guide {
+    padding: 20px 16px;
+  }
+  .plc-guide h2 {
+    font-size: 23px;
+  }
+  .plc-guide th,
+  .plc-guide td {
+    padding: 7px;
+  }
+}

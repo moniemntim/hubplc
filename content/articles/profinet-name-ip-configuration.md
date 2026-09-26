@@ -1,6 +1,6 @@
 ---
 title: PROFINET裝置名稱與IP配置排查
-description: 分清裝置名、IP、GSDML、硬體配置、AR與拓撲診斷
+description: 分清裝置名、IP、GSDML、硬體配置、AR 與拓撲診斷。
 date: 2026-09-21
 author: 站長
 draft: false

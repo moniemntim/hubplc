@@ -34,7 +34,7 @@ export default function RmbUppercaseCalculator() {
       <div className="crypto-grid">
         <section className="crypto-inputs" aria-label="新臺幣大寫金額輸入">
           <div className="tool-field">
-            <label htmlFor="rmb-uppercase-input">新台幣金額（元）</label>
+            <label htmlFor="rmb-uppercase-input">新臺幣金額（元）</label>
             <input
               id="rmb-uppercase-input"
               inputMode="decimal"

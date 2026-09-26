@@ -1,6 +1,6 @@
 ---
 title: 光電感測器反射率重新校準
-description: 區分對射、反射板與漫反射模式，建立固定正負樣本盲測與安全限制
+description: 區分對射、反射板與漫反射模式，建立固定正負樣本盲測與安全限制。
 date: 2026-09-21
 author: 站長
 draft: false

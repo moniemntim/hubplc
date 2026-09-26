@@ -121,7 +121,7 @@ export default function QrcodeCalculator() {
         {/* eslint-disable-next-line @next/next/no-img-element */}
         <img src={activeGeneration.image} alt="可掃描的 QR Code" />
       </div>
-      <p>內容會保留在此瀏覽器中處理。</p>
+      <p>內容僅在此瀏覽器中處理。</p>
       <div className="action-row">
         <button
           type="button"
@@ -252,7 +252,7 @@ export default function QrcodeCalculator() {
       notes={
         <Notice>
           更正等級越高越耐損，但可容納的內容會較少。Wi-Fi
-          與名片格式依常見掃碼器慣例產生。
+          與名片格式依常見掃描器慣例產生。
         </Notice>
       }
     >

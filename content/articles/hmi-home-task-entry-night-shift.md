@@ -2,7 +2,7 @@
 title: HMI首頁的值班任務入口
 description: 以虛構夜班接手三條產線為例，設計警報、待確認事件與交班報表入口，說明摘要、路由、返回、權限和導覽驗收。
 date: 2026-09-17
-author: 站長
+author: 茂伯
 draft: false
 ---
 

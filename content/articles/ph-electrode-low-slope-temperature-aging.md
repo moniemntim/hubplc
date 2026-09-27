@@ -2,7 +2,7 @@
 title: pH探頭斜率偏低的溫度與老化判讀
 description: 以 Nernst 數值分辨溫度、污染、參考與老化。
 date: 2026-09-21
-author: 站長
+author: 茂伯
 draft: false
 category: 感測器與量測
 ---

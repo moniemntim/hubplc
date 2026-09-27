@@ -2,7 +2,7 @@
 title: 非同步亂序回覆如何用待回覆表配對
 description: 以A101慢、B102快先回案例，使用pending map、每請求deadline與一次性狀態轉移，分流unknown、duplicate、expired並定義batch all/partial。
 date: 2026-09-21
-author: 站長
+author: 茂伯
 draft: false
 category: 工業通訊與網路
 ---

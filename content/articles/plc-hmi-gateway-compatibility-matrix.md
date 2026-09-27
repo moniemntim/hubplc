@@ -2,7 +2,7 @@
 title: PLC HMI 閘道版本不一致如何建立相容矩陣
 description: 把完整版本、配置與功能證據放入相容矩陣，分清官方支援、實測通過與未驗證組合。
 date: 2026-09-21
-author: 站長
+author: 茂伯
 draft: false
 category: 維護與故障排查
 ---

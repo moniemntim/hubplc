@@ -2,7 +2,7 @@
 title: 離線顯示模式如何標示不可操作元件
 description: 以資料 age／quality、讀查寫分層、後端授權與重連同步規則，清楚標示離線不可操作元件。
 date: 2026-09-21
-author: 站長
+author: 茂伯
 draft: false
 category: HMI 畫面與操作
 ---

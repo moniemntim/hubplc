@@ -2,7 +2,7 @@
 title: GX Works2交叉參照與裝置變更影響檢查
 description: 透過GX Works2官方交叉參照功能，展開標籤、索引、多字範圍和外部寫入，完成可重現的變更影響分析。
 date: 2026-09-17
-author: 站長
+author: 茂伯
 draft: false
 ---
 

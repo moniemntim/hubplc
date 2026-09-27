@@ -2,7 +2,7 @@
 title: MQTT遺囑訊息與離線狀態
 description: 以虛構gateway時間線拆分Will、Will Delay、Session Expiry、Message Expiry、正常DISCONNECT與reason 4，並分開連線、來源健康、資料新鮮度與製程警報。
 date: 2026-09-17
-author: 站長
+author: 茂伯
 draft: false
 ---
 

@@ -2,7 +2,7 @@
 title: 增量編碼器的TTL HTL差動輸出與計數倍率
 description: 區分TTL電平與RS422差動傳輸，從A/B/Z、PPR、最高轉速、四倍計數到線路負載建立編碼器介面驗收表。
 date: 2026-09-17
-author: 站長
+author: 茂伯
 draft: false
 ---
 

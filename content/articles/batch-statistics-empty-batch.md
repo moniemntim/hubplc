@@ -2,7 +2,7 @@
 title: 批次統計的最小值 最大值與平均 如何處理空批次
 description: 透過批次範例示範有效筆數、空批次、全 Bad、負值極值與結算快照，明確區分 totalcount 與 validcount。
 date: 2026-09-21
-author: 站長
+author: 茂伯
 draft: false
 category: PLC 程式與控制
 ---

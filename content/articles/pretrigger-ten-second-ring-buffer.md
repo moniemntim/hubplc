@@ -2,7 +2,7 @@
 title: 異常發生前十秒資料如何設計環形紀錄
 description: 以端點筆數、環形索引和觸發前後窗口，設計能保留缺口證據的異常資料紀錄。
 date: 2026-09-17
-author: 站長
+author: 茂伯
 draft: false
 ---
 

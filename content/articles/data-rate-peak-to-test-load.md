@@ -2,7 +2,7 @@
 title: 資料流量峰值如何從需求換算成測試負載
 description: 把資料需求拆成 payload、線路估算、burst 與可驗收門檻，形成可重現負載。
 date: 2026-09-21
-author: 站長
+author: 茂伯
 draft: false
 category: 維護與故障排查
 ---

@@ -2,7 +2,7 @@
 title: 從OPC UA瀏覽結果建立可重連的點位清單
 description: 從OPC UA Browse結果建立可追溯點位契約，分清NodeId、BrowseName、DisplayName、Namespace URI與會變動的NamespaceIndex，並設計重連與升級後失效檢查。
 date: 2026-09-17
-author: 站長
+author: 茂伯
 draft: false
 ---
 

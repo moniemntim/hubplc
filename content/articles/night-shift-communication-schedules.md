@@ -2,7 +2,7 @@
 title: 夜班才發生的通訊中斷如何排除排程因素
 description: 用實際排程、通訊事件與資源時間線排查夜間中斷。
 date: 2026-09-21
-author: 站長
+author: 茂伯
 draft: false
 category: 維護與故障排查
 ---

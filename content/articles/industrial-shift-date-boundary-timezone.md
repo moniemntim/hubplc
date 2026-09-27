@@ -2,7 +2,7 @@
 title: 工業日報與班報的跨日邊界
 description: 用Asia/Taipei夜班22:00至06:00逐筆分配跨午夜資料，區分自然日、班別、時區與DST。
 date: 2026-09-17
-author: 站長
+author: 茂伯
 draft: false
 ---
 

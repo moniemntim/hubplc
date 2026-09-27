@@ -2,7 +2,7 @@
 title: 換線後才出現故障如何比較兩套參數差異
 description: 比較產品換線前後配方與線上設定，找出單位、生效與關聯參數差異。
 date: 2026-09-21
-author: 站長
+author: 茂伯
 draft: false
 category: 維護與故障排查
 ---

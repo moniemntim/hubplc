@@ -2,7 +2,7 @@
 title: 操作程序完成條件如何留下可驗收證據
 description: 把操作程序的accepted、applied與實際完成條件分開，為每一步留下可追溯版本、操作識別與未知狀態證據。
 date: 2026-09-21
-author: 站長
+author: 茂伯
 draft: false
 category: HMI 畫面與操作
 ---

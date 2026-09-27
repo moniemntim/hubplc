@@ -2,7 +2,7 @@
 title: Modbus寫入功能05 06 0F 10的選用與回讀
 description: 用十點線圈與三個寄存器的離線封包，教你選05、06、0F、10，確認位元排列、長度、正常回覆及寫入逾時後的回讀。
 date: 2026-09-17
-author: 站長
+author: 茂伯
 draft: false
 ---
 

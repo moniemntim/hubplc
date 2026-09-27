@@ -2,7 +2,7 @@
 title: 多站輪詢如何隔離單站故障仍服務其他站
 description: 用60ms正常三站與故障站500ms案例，設計單一outstanding、單站budget、隔離探測及late RTU frame處理。
 date: 2026-09-21
-author: 站長
+author: 茂伯
 draft: false
 category: 工業通訊與網路
 ---

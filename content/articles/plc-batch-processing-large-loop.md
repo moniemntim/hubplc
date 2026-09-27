@@ -2,7 +2,7 @@
 title: 大量迴圈拖慢 PLC 掃描 如何分批處理工作
 description: 以Capacity=1000、每批25筆的千筆案例，處理索引邊界、無號下溢、來源快照、批次取消與整批發布。
 date: 2026-09-17
-author: 站長
+author: 茂伯
 draft: false
 ---
 

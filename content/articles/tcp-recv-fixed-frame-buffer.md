@@ -2,7 +2,7 @@
 title: TCP分次recv如何組成完整固定長度訊息
 description: 以固定5 byte HELLO 分成 HE、L、LO 示範 TCP recv 分段、buffer/cursor、EOF截斷、WouldBlock與總deadline。
 date: 2026-09-21
-author: 站長
+author: 茂伯
 draft: false
 category: 工業通訊與網路
 ---

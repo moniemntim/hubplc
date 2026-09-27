@@ -2,7 +2,7 @@
 title: 權限降級後已開啟的畫面如何重新套用限制
 description: 將已開畫面、舊工作階段、背景佇列與執行端授權一起檢查，讓權限降級與恢復都有清楚可驗收的行為。
 date: 2026-09-21
-author: 站長
+author: 茂伯
 draft: false
 category: HMI 畫面與操作
 ---

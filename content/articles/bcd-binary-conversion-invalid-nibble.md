@@ -2,7 +2,7 @@
 title: BCD與二進位轉換如何攔截非法 nibble
 description: 說明 packed BCD 每個 nibble 只能是0到9，區分BCD與普通BIN的數值意義、4位與8位容量、轉換方向、非法資料攔截、raw保留與本次完成狀態。
 date: 2026-09-21
-author: 站長
+author: 茂伯
 draft: false
 category: PLC 程式與控制
 ---

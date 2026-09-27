@@ -2,7 +2,7 @@
 title: Modbus TCP資料分塊與最大讀取量
 description: 200個word位置含12個禁讀、六區塊實讀188個word，說明PDU、雙word與快慢輪詢。
 date: 2026-09-17
-author: 站長
+author: 茂伯
 draft: false
 ---
 

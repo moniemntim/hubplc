@@ -2,7 +2,7 @@
 title: 排序資料時如何保持產品索引不錯配
 description: 以本例的 P3、P1、P2 產品量測示範整列排序、相等值次鍵、缺值分流與版本保護回寫。
 date: 2026-09-21
-author: 站長
+author: 茂伯
 draft: false
 category: PLC 程式與控制
 ---

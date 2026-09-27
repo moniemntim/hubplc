@@ -2,7 +2,7 @@
 title: 多個相似工站怎麼共用程式 建立可重用的工站介面
 description: 以 A、B 兩個虛擬檢測工站示範獨立實例、100 ms 呼叫時序、命令優先級、外層 I/O 映射與可追溯結果。
 date: 2026-09-17
-author: 站長
+author: 茂伯
 draft: false
 ---
 

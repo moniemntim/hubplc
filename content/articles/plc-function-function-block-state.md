@@ -2,7 +2,7 @@
 title: Function 與 Function Block 的選擇和實例隔離
 description: 用換算函式和兩個獨立邊緣偵測實例，理解純計算與前值狀態。
 date: 2026-09-17
-author: 站長
+author: 茂伯
 draft: false
 ---
 

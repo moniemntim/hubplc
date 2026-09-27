@@ -2,7 +2,7 @@
 title: OPC UA端點的安全政策與使用者身分核對
 description: 以三列虛構GetEndpoints摘要，分開核對SecurityPolicy、MessageSecurityMode、User Token與Application Certificate，建立可追溯的端點選擇表。
 date: 2026-09-17
-author: 站長
+author: 茂伯
 draft: false
 ---
 

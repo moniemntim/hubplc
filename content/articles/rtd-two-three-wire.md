@@ -2,7 +2,7 @@
 title: RTD二線與三線接法及引線電阻
 description: 核對端子、補償前提與三點驗收，避免把線阻誤當溫度。
 date: 2026-09-21
-author: 站長
+author: 茂伯
 draft: false
 category: 感測器與量測
 ---

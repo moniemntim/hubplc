@@ -2,7 +2,7 @@
 title: 故障重現率如何以試驗次數而非印象描述
 description: 定義故障與有效輪次，分開觀察比例、未知結果與零故障的信賴上限。
 date: 2026-09-21
-author: 站長
+author: 茂伯
 draft: false
 category: 維護與故障排查
 ---

@@ -2,7 +2,7 @@
 title: NAT來源port變更如何追蹤交易
 description: 以內外五元組、時間、connection epoch與request_id追蹤NAT映射，示範51000到62001、重連62002、映射過期與TLS可見性限制。
 date: 2026-09-21
-author: 站長
+author: 茂伯
 draft: false
 category: 工業通訊與網路
 ---

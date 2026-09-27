@@ -2,7 +2,7 @@
 title: HMI 趨勢游標與事件標記如何協助回看一次異常
 description: 以虛構泵浦切換後流量波動案例，分開 sourceTimestamp、收取時間、操作時間與游標時間，建立事件標記、對齊、插值辨識與證據保存流程。
 date: 2026-09-17
-author: 站長
+author: 茂伯
 draft: false
 ---
 

@@ -2,7 +2,7 @@
 title: Q系列I/O事件與製程狀態時間線調查
 description: 以唯讀證據重建I/O異常、遠端斷線、CPU停止與信號凍結的時間線，並處理時鐘偏差。
 date: 2026-09-17
-author: 站長
+author: 茂伯
 draft: false
 ---
 

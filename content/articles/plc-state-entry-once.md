@@ -2,7 +2,7 @@
 title: 狀態進入時只執行一次 如何分開初始化與每掃描動作
 description: 把狀態進入、持續與離開分開，以逐掃描案例確認初始化只執行一次。
 date: 2026-09-17
-author: 站長
+author: 茂伯
 draft: false
 ---
 

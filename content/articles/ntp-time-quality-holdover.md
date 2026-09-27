@@ -2,7 +2,7 @@
 title: NTP失敗時如何判定時間品質
 description: 以synchronized、holdover、unsynchronized與20ppm×3600秒案例建立NTP失效時間品質、漂移不確定度及step/slew恢復記錄。
 date: 2026-09-21
-author: 站長
+author: 茂伯
 draft: false
 category: 工業通訊與網路
 ---

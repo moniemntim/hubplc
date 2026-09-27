@@ -2,7 +2,7 @@
 title: MTU與MSS怎麼分 用PMTUD和封包證據查路徑問題
 description: 分清MTU、advertised MSS、TCP工作量與wire封包，使用IPv4/IPv6 PMTUD回報、capture和重傳證據排查中間路徑。
 date: 2026-09-21
-author: 站長
+author: 茂伯
 draft: false
 category: 工業通訊與網路
 ---

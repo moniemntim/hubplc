@@ -2,7 +2,7 @@
 title: 不穩定測試如何用重跑統計判斷是否為環境問題
 description: 用受控重跑與原始序列描述不穩定性，避免把成功一次誤當環境歸因。
 date: 2026-09-21
-author: 站長
+author: 茂伯
 draft: false
 category: 維護與故障排查
 ---

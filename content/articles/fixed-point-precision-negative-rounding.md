@@ -2,7 +2,7 @@
 title: 固定小數點運算如何保留精度與處理負數捨入
 description: 以整數刻度、較寬中間值與正負捨入向量，建立可重算的固定小數點運算流程。
 date: 2026-09-17
-author: 站長
+author: 茂伯
 draft: false
 ---
 

@@ -2,7 +2,7 @@
 title: 移動平均窗口如何配合取樣週期與反應時間
 description: 以五筆平均的窗口跨度、步階序列與不等間隔案例，驗證初始化、缺樣和延遲。
 date: 2026-09-17
-author: 站長
+author: 茂伯
 draft: false
 ---
 

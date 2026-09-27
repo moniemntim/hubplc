@@ -2,7 +2,7 @@
 title: 尖峰值被過濾時如何保留原始資料可追溯
 description: 分開取得、濾波、保存與顯示層，保留原始窗口與演算法版本追查消失的尖峰。
 date: 2026-09-21
-author: 站長
+author: 茂伯
 draft: false
 category: 資料記錄與報表
 ---

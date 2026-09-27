@@ -2,7 +2,7 @@
 title: PLC 功能塊錯誤輸出怎麼設計 給操作員可採取的下一步
 description: 以虛擬讀取模組建立 Status、Reason、Retryable、Context 與 first cause，區分參數錯、設備忙、逾時和來源無效。
 date: 2026-09-17
-author: 站長
+author: 茂伯
 draft: false
 ---
 

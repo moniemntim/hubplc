@@ -2,7 +2,7 @@
 title: 光耦隔離數位輸入怎麼設計 輸入電阻 CTR降額與安全工作區
 description: 以24 V隔離數位輸入為例，推導LED限流、功率與CTR最壞裕度，並說明溫度老化、輸出負載、脈波速度及爬電距離的核對方法。
 date: 2026-09-17
-author: 站長
+author: 茂伯
 draft: false
 ---
 

@@ -2,7 +2,7 @@
 title: 序號重用遇到舊回覆如何安全丟棄
 description: 處理有限交易序號回捲與舊回覆，使用connection epoch、peer、可得協定欄位及pending狀態，避免只比較seq造成late response誤配。
 date: 2026-09-21
-author: 站長
+author: 茂伯
 draft: false
 category: 工業通訊與網路
 ---

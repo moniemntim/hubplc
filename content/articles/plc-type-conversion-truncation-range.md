@@ -2,7 +2,7 @@
 title: PLC 型別轉換的小數 截斷與超範圍處理
 description: 從正負小數到16位上下界，建立轉換前的有效性檢查，分清截斷、取整與位元解讀。
 date: 2026-09-17
-author: 站長
+author: 茂伯
 draft: false
 ---
 

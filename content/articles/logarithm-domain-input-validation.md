@@ -2,7 +2,7 @@
 title: 對數計算如何在運算前攔截無效輸入
 description: 以常用與自然對數向量分辨底數，攔截零負輸入並區分工程下限和顯示夾限。
 date: 2026-09-21
-author: 站長
+author: 茂伯
 draft: false
 category: PLC 程式與控制
 ---

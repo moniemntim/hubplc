@@ -2,7 +2,7 @@
 title: 旋轉編碼器計數回捲如何算出正確增量
 description: 用雙向最短差值與半圈前提，驗證編碼器跨零增量、取樣速度及方向不確定情況。
 date: 2026-09-21
-author: 站長
+author: 茂伯
 draft: false
 category: PLC 程式與控制
 ---

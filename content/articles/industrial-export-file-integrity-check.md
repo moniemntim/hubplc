@@ -2,7 +2,7 @@
 title: 工業資料匯出完整性檢查
 description: 以一週每分鐘取樣檔中途截斷案例，分辨筆數、欄位、檔尾、連續性與SHA-256能證明的範圍。
 date: 2026-09-17
-author: 站長
+author: 茂伯
 draft: false
 ---
 

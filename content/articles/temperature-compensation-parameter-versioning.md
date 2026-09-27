@@ -2,7 +2,7 @@
 title: 溫度補償參數更新如何避免混合資料
 description: 以自訂線性溫度補償公式與 P1/P2 參數版本示範候選驗證、批次凍結、邊界切換及失敗保留舊版。
 date: 2026-09-21
-author: 站長
+author: 茂伯
 draft: false
 category: PLC 程式與控制
 ---

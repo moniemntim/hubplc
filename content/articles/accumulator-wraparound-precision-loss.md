@@ -2,7 +2,7 @@
 title: 累加器長時間運算如何檢查回捲與精度損失
 description: 以uint32回捲、old 4294967290到new 7與binary32在2^24附近精度損失案例，建立整數權威、reset epoch與顯示分離流程。
 date: 2026-09-17
-author: 站長
+author: 茂伯
 draft: false
 ---
 

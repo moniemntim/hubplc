@@ -2,7 +2,7 @@
 title: 儀表板快取延遲如何顯示資料最後更新時間
 description: 把來源時間、快取產生與畫面取得分開，讓儀表板準確呈現資料年齡與停更狀態。
 date: 2026-09-21
-author: 站長
+author: 茂伯
 draft: false
 category: 資料記錄與報表
 ---
@@ -73,3 +73,4 @@ Cache-Control中的no-cache通常要求使用前重新驗證，並非完全不�
 
 - [刪除錯誤匯入資料前如何保留處置證據](/articles/wrong-import-removal-evidence)
 - [資料缺口的產量估算如何分開呈現估算旗標](/articles/production-gap-estimation-flags)
+- [SCADA標籤品質與最後更新時間如何同時呈現](/articles/scada-quality-value-age-display)

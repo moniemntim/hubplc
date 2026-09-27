@@ -2,7 +2,7 @@
 title: 手動模式正常自動模式失敗如何比較額外前提
 description: 用模式條件表與命令時間線，定位手動正常但自動失敗的額外前提。
 date: 2026-09-21
-author: 站長
+author: 茂伯
 draft: false
 category: 維護與故障排查
 ---

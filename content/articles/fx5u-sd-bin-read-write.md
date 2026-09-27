@@ -2,7 +2,7 @@
 title: FX5U BIN 讀寫教學
 description: 使用 GX Works3 與 SP.FWRITE、SP.FREAD 讀寫 SD 卡 BIN 檔，圖解控制資料、檔案位置、單次驗證與常見錯誤。
 date: 2026-09-08
-author: 站長
+author: 茂伯
 draft: false
 ---
 

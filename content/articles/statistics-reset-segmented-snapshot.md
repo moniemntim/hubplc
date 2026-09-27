@@ -2,7 +2,7 @@
 title: 統計重置如何保存前段結算
 description: 按batch或segment切段，以一次受控snapshot與新段初始化保存前段結算，示範10、20、30與5、15案例及失敗恢復、容量與冪等策略。
 date: 2026-09-21
-author: 站長
+author: 茂伯
 draft: false
 category: PLC 程式與控制
 ---

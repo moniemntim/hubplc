@@ -2,7 +2,7 @@
 title: 多感測器投票如何處理一個來源失效
 description: 分開處理失效和不一致，驗證有效來源、對齊、降級與共因限制。
 date: 2026-09-21
-author: 站長
+author: 茂伯
 draft: false
 category: 感測器與量測
 ---

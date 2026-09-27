@@ -2,7 +2,7 @@
 title: HMI數值顯示溢位與診斷
 description: 區分版面裁切、數值溢位與精度損失，建立可追溯的驗收流程。
 date: 2026-09-21
-author: 站長
+author: 茂伯
 draft: false
 category: HMI 畫面與操作
 ---

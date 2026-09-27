@@ -2,7 +2,7 @@
 title: HMI 確認警報的流程怎麼避免只按掉提示
 description: 以虛構壓縮空氣偏低事件建立 Active、Acknowledged、Clear、InProgress、Resolved 與 Reset 的分離流程，處理備註、來源時間、重發與重新發生。
 date: 2026-09-17
-author: 站長
+author: 茂伯
 draft: false
 ---
 

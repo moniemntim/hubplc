@@ -2,7 +2,7 @@
 title: 濕度100%RH與凝露如何分辨
 description: 以露點與感測器溫度判斷凝露風險，並處理100%RH、恢復滯後、污染與資料品質。
 date: 2026-09-21
-author: 站長
+author: 茂伯
 draft: false
 category: 感測器與量測
 ---

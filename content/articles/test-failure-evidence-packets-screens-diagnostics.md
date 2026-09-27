@@ -2,7 +2,7 @@
 title: 測試失敗時如何保存封包 畫面與控制器診斷證據
 description: 用同一案例識別保存封包、畫面與控制器診斷，保留原檔、時間限制及可重現的分析線索。
 date: 2026-09-21
-author: 站長
+author: 茂伯
 draft: false
 category: 維護與故障排查
 ---

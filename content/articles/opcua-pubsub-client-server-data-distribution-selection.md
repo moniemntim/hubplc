@@ -2,7 +2,7 @@
 title: OPC UA資料分發架構選型
 description: 以六台現場監看與四台分析端的需求，比較Subscription、聚合服務及UDP或MQTT PubSub，附來源流量試算與metadata驗收。
 date: 2026-09-17
-author: 站長
+author: 茂伯
 draft: false
 ---
 

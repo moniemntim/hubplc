@@ -2,7 +2,7 @@
 title: M8 M12感測器接頭的腳位與防護等級 接得上不等於接得對
 description: 以四芯A-coded M12更換案例，核對視角針位、性別、直角出線、彎折半徑、IP配對、鎖緊扭矩、屏蔽與未使用針。
 date: 2026-09-17
-author: 站長
+author: 茂伯
 draft: false
 ---
 

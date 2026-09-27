@@ -2,7 +2,7 @@
 title: HEX 十進位與二補數判讀
 description: 從 HEX、十進位與 16 位元二補數理解有號無號、資料寬度、符號延伸與溢位，附完整算例。
 date: 2026-09-17
-author: 站長
+author: 茂伯
 draft: false
 ---
 

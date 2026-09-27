@@ -2,7 +2,7 @@
 title: 登入逾時時未送出的設定值如何明確提示
 description: 把登入逾時時的未送出草稿、已送出操作與結果不明分開提示，重新登入後核對版本及權限再操作。
 date: 2026-09-21
-author: 站長
+author: 茂伯
 draft: false
 category: HMI 畫面與操作
 ---

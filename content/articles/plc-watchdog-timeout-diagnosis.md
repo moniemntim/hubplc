@@ -2,7 +2,7 @@
 title: PLC Watchdog 觸發時 辨別執行超時與遺漏週期
 description: 以執行過久與遺漏週期兩種案例辨別 Watchdog 原因，建立負載證據與不放寬門檻的排查順序。
 date: 2026-09-17
-author: 站長
+author: 茂伯
 draft: false
 ---
 

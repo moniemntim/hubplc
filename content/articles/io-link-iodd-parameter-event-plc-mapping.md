@@ -2,7 +2,7 @@
 title: IO-Link裝置參數與事件如何映射到PLC診斷
 description: 串起IO-Link裝置描述、主站Port、資料有效性、參數讀回與事件診斷，避免把連線成功當成完整驗收。
 date: 2026-09-21
-author: 站長
+author: 茂伯
 draft: false
 category: 工業通訊與網路
 ---

@@ -2,7 +2,7 @@
 title: 斷電保持資料該存哪些 PLC 記憶體保存範圍與初始化
 description: 區分配方、累計、動作請求與流程狀態的保存需求，建立 Q06UDVCPU M/L 保持限制與重啟初始化矩陣。
 date: 2026-09-17
-author: 站長
+author: 茂伯
 draft: false
 ---
 

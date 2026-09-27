@@ -2,7 +2,7 @@
 title: 量測資料品質位元如何跟隨原始值傳到HMI
 description: 以原子值品質更新或一致快照把量測狀態可靠傳到HMI。
 date: 2026-09-21
-author: 站長
+author: 茂伯
 draft: false
 category: 感測器與量測
 ---

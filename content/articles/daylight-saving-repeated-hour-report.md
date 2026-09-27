@@ -2,7 +2,7 @@
 title: 夏令時間重複小時如何避免報表重算一小時
 description: 用UTC桶身分保留重複小時，區分不存在時間與缺資料，正確計算跨夏令時間的日長與產量。
 date: 2026-09-21
-author: 站長
+author: 茂伯
 draft: false
 category: 資料記錄與報表
 ---

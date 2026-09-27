@@ -2,7 +2,7 @@
 title: Modbus TCP Idle Timeout 與 Keepalive 把連線 資料新鮮度與重連分開
 description: 區分連線狀態DISCONNECTED/CONNECTING/WAIT_VALID/READY與品質GOOD/STALE/INVALID，以兩條精確時間線處理請求逾時、資料age、Idle Timeout、OS Keepalive與重連。
 date: 2026-09-17
-author: 站長
+author: 茂伯
 draft: false
 ---
 

@@ -2,7 +2,7 @@
 title: 工業CSV附檔包與查詢快照
 description: 用manifest、schema、README與query snapshot組成可驗證CSV附檔包，說明產生者、範圍、完整性與接收驗收。
 date: 2026-09-17
-author: 站長
+author: 茂伯
 draft: false
 ---
 

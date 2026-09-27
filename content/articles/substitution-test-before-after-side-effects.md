@@ -2,7 +2,7 @@
 title: 替換法診斷如何記錄換前換後與副作用
 description: 記錄替換配置與附帶變動，讓換件結果可以支持診斷而不掩蓋其他因素。
 date: 2026-09-21
-author: 站長
+author: 茂伯
 draft: false
 category: 維護與故障排查
 ---

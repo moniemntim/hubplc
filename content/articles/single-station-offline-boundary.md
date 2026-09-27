@@ -2,7 +2,7 @@
 title: 單一站點失聯時如何確認網路與站點電源邊界
 description: 從供電、鏈路與應用服務分界，定位單站失聯並保留可追溯的測試條件。
 date: 2026-09-21
-author: 站長
+author: 茂伯
 draft: false
 category: 維護與故障排查
 ---

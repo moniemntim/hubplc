@@ -2,7 +2,7 @@
 title: 連線恢復後第一筆資料的新鮮度判斷
 description: 以連線epoch、device sequence/version、fresh request與source/receive timestamp區分恢復後快取與新資料，證據不足維持Unknown/Uncertain。
 date: 2026-09-21
-author: 站長
+author: 茂伯
 draft: false
 category: 工業通訊與網路
 ---

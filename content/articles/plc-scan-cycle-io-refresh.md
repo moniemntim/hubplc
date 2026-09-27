@@ -2,7 +2,7 @@
 title: PLC 掃描週期與輸入輸出更新
 description: 用五次掃描表追蹤輸入快照、兩個內部位元與輸出命令，說明程式順序如何改變結果，以及短脈衝為什麼可能被漏掉。
 date: 2026-09-17
-author: 站長
+author: 茂伯
 draft: false
 ---
 

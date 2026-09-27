@@ -2,7 +2,7 @@
 title: 報表四捨五入與原始總量不一致如何解釋
 description: 用具體十進位算例分清逐筆與總計捨入，核對型別、模式與可追溯的顯示差額。
 date: 2026-09-21
-author: 站長
+author: 茂伯
 draft: false
 category: 資料記錄與報表
 ---

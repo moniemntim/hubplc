@@ -2,7 +2,7 @@
 title: PLC線上修改後如何安排回歸測試範圍
 description: 用門檻邊界、資料有效性、共用FB與外部依賴建立PLC線上修改回歸範圍，分開內容、功能與現場證據。
 date: 2026-09-17
-author: 站長
+author: 茂伯
 draft: false
 ---
 

@@ -2,7 +2,7 @@
 title: PLC任務超時如何檢查重入與工作積壓
 description: 用工作身份與時間線區分跨掃描等待、請求積壓及共同狀態覆寫，再依Q系列排程限制設計驗證。
 date: 2026-09-17
-author: 站長
+author: 茂伯
 draft: false
 ---
 

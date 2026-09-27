@@ -2,7 +2,7 @@
 title: HMI備份與隔離還原驗收
 description: 拆分HMI專案備份、Gateway組態、外部資料庫與憑證私鑰，建立隔離還原和核對流程；還原測試不得對真機輸出。
 date: 2026-09-17
-author: 站長
+author: 茂伯
 draft: false
 ---
 

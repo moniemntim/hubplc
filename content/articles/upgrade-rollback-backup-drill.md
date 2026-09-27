@@ -2,7 +2,7 @@
 title: 版本升級的回復演練如何確認備份真的可用
 description: 從備份範圍、乾淨環境還原到新資料處置，驗證升級失敗後是否能恢復指定功能。
 date: 2026-09-21
-author: 站長
+author: 茂伯
 draft: false
 category: 維護與故障排查
 ---

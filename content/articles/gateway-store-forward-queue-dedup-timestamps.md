@@ -2,7 +2,7 @@
 title: 閘道斷線暫存的容量計算與重送去重
 description: 用10秒採樣、600秒斷線與每筆400 bytes算出61筆及24400 bytes佇列需求，區分三種時間並以sourceID、bootEpoch、sequence處理ACK遺失重送、溢位與時鐘變動。
 date: 2026-09-17
-author: 站長
+author: 茂伯
 draft: false
 ---
 

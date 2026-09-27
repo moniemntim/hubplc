@@ -2,7 +2,7 @@
 title: 接近開關偏移與重複定位驗收
 description: 固定速度、方向與目標，分開觸發、釋放、遲滯與機械位置
 date: 2026-09-21
-author: 站長
+author: 茂伯
 draft: false
 category: 感測器與量測
 ---

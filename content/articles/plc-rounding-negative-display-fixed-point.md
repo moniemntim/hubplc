@@ -2,7 +2,7 @@
 title: 工程數值的四捨五入 負數邊界與顯示格式
 description: 分開原值、取整值與畫面格式，用正負中點及固定小數演算法避免取整規則混用。
 date: 2026-09-17
-author: 站長
+author: 茂伯
 draft: false
 ---
 

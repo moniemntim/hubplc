@@ -2,7 +2,7 @@
 title: 匯出失敗如何分辨權限路徑與資料錯誤
 description: 將匯出失敗分成 notfound、accessdenied、diskfull、encodingbad 與查詢空結果，驗證完整資料後才在同一檔案系統發布。
 date: 2026-09-21
-author: 站長
+author: 茂伯
 draft: false
 category: 資料記錄與報表
 ---

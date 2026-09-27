@@ -2,7 +2,7 @@
 title: 截圖報表與原始資料的證據索引
 description: 保存截圖、報表、原始CSV與查詢條件的證據索引。
 date: 2026-09-17
-author: 站長
+author: 茂伯
 draft: false
 ---
 

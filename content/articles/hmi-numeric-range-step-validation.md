@@ -2,7 +2,7 @@
 title: HMI數值輸入範圍步距雙層驗證
 description: 以 0～100.0 的輸入範圍、0.1 步距與 0～1000 的原始值，說明雙層驗證及輸入 100.04 時的處理規則。
 date: 2026-09-21
-author: 站長
+author: 茂伯
 draft: false
 category: HMI 畫面與操作
 ---

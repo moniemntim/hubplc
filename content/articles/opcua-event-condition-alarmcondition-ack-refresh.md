@@ -2,7 +2,7 @@
 title: OPC UA告警的確認恢復與狀態同步
 description: 區分DataChange、Event、Condition與AlarmCondition，透過HighHigh觸發、Ack、恢復與ConditionRefresh時序說明Ack不等於恢復，Refresh也不是歷史回放。
 date: 2026-09-17
-author: 站長
+author: 茂伯
 draft: false
 ---
 

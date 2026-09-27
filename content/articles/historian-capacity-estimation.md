@@ -2,7 +2,7 @@
 title: 工業歷史資料容量估算與實測校正
 description: 從保存筆數、實測每筆成本到備份與空間餘裕，建立可覆核的一年歷史資料容量估算。
 date: 2026-09-17
-author: 站長
+author: 茂伯
 draft: false
 ---
 

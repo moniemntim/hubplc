@@ -2,7 +2,7 @@
 title: 工業報表取樣週期與彙總週期的定義
 description: 用五秒採集、一分鐘彙總與八小時班報，核對筆數、缺測權重、時間邊界及平均算法。
 date: 2026-09-17
-author: 站長
+author: 茂伯
 draft: false
 ---
 

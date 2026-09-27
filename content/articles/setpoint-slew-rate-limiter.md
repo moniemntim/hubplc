@@ -2,7 +2,7 @@
 title: 斜率限制器如何防止設定值一步跳到不合理範圍
 description: 用 target 0→100、rise 20、fall 10、dt 0.1 的案例，逐步驗證斜率限制、反向、overshoot與無效輸入。
 date: 2026-09-17
-author: 站長
+author: 茂伯
 draft: false
 ---
 

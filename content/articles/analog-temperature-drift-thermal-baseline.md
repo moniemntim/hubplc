@@ -2,7 +2,7 @@
 title: 溫度升高後類比值漂移如何建立熱穩態對照
 description: 用固定參考、低中高點與回程資料，分辨熱漂移的來源及適用範圍。
 date: 2026-09-21
-author: 站長
+author: 茂伯
 draft: false
 category: 維護與故障排查
 ---

@@ -2,7 +2,7 @@
 title: 輸送帶產品漏檢如何用觸發到位結果三訊號重播
 description: 用產品識別與入口、到位、結果的時間線，定位漏檢和錯件配對。
 date: 2026-09-21
-author: 站長
+author: 茂伯
 draft: false
 category: 維護與故障排查
 ---

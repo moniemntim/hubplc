@@ -2,7 +2,7 @@
 title: 雙NIC路由怎麼判斷 最長前綴 metric與回程證據
 description: 以兩張網卡與多條路由案例，按最長前綴、metric、來源IP和回程路徑建立可重現的Windows排查流程。
 date: 2026-09-21
-author: 站長
+author: 茂伯
 draft: false
 category: 工業通訊與網路
 ---

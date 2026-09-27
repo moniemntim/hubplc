@@ -2,7 +2,7 @@
 title: 封包遺失注入如何驗證品質標記不會留舊值
 description: 用固定中斷與隨機丟包驗證值、品質及確認時間，避免舊快取或補送資料冒充即時量測。
 date: 2026-09-21
-author: 站長
+author: 茂伯
 draft: false
 category: 維護與故障排查
 ---

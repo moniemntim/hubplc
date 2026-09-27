@@ -2,7 +2,7 @@
 title: 廣播探索如何維護受控設備清單
 description: 以20 collector每5秒查詢、每次50設備回覆，區分broadcast/multicast/mDNS/unicast，計算4 queries/s與理想200 replies/s並建立inventory驗證。
 date: 2026-09-21
-author: 站長
+author: 茂伯
 draft: false
 category: 工業通訊與網路
 ---

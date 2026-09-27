@@ -2,7 +2,7 @@
 title: 維護操作後如何留下可追溯的變更摘要
 description: 把維護計畫、操作請求、設備回覆、讀回與功能驗證分開，留下可供交班查證的變更摘要。
 date: 2026-09-17
-author: 站長
+author: 茂伯
 draft: false
 ---
 

@@ -2,7 +2,7 @@
 title: HMI 警報洪水時怎麼設計事件摘要與後續處理
 description: 以公用系統停機造成50筆連鎖警報的離線案例，設計原始事件保留、摘要聚合、候選root cause、ACK/Clear/Shelved狀態與洪水後檢討。
 date: 2026-09-17
-author: 站長
+author: 茂伯
 draft: false
 ---
 

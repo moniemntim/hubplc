@@ -2,7 +2,7 @@
 title: Modbus Gateway 多從站路由 Unit Identifier 不等於固定站號的情況
 description: 用唯一Unit Identifier映射與三筆獨立Transaction，核對TCP端點、下游串口、RTU站號、回覆來源及閘道例外，避免把MBAP當成含SerialPort的路由指令。
 date: 2026-09-17
-author: 站長
+author: 茂伯
 draft: false
 ---
 

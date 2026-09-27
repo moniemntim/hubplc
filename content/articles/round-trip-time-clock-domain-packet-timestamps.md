@@ -2,7 +2,7 @@
 title: 封包時間戳如何量測往返時間而不混用設備時鐘
 description: 以同一本機單調時鐘拆解送出、首資料、完整回覆與解析時間，避免跨設備時鐘及重試配對造成錯誤RTT。
 date: 2026-09-21
-author: 站長
+author: 茂伯
 draft: false
 category: 工業通訊與網路
 ---

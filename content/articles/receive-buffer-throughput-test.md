@@ -2,7 +2,7 @@
 title: 接收buffer不足如何做流量測試
 description: 以socket、framing與application queue分層，計算100KB/s輸入、80KB/s消費10秒堆積約200KB並設計overflow與背壓測試。
 date: 2026-09-21
-author: 站長
+author: 茂伯
 draft: false
 category: 工業通訊與網路
 ---

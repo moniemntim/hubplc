@@ -2,7 +2,7 @@
 title: 24 V直流入口的反接突波與TVS保護選型
 description: 以24 V感測器盒入口為例，核算串聯二極體與MOSFET壓降熱耗散，分清反接回灌、TVS三種電壓與保險絲故障協調。
 date: 2026-09-17
-author: 站長
+author: 茂伯
 draft: false
 ---
 

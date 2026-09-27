@@ -2,7 +2,7 @@
 title: 設備模擬器如何提供可重複的正常與異常腳本
 description: 以固定初始狀態、時間線與輸入序列建立正常及異常案例，明確區分模擬覆蓋與現場驗證。
 date: 2026-09-21
-author: 站長
+author: 茂伯
 draft: false
 category: 維護與故障排查
 ---

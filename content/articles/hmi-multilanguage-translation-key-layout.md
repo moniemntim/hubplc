@@ -2,7 +2,7 @@
 title: HMI 多語系排版 避免標籤 按鈕與警報被截斷
 description: 以泵浦雙語頁面分離翻譯鍵、locale、工程單位、數值與日期，處理長字串、字型缺字、截斷、小數輸入與逐頁雙語驗收。
 date: 2026-09-17
-author: 站長
+author: 茂伯
 draft: false
 ---
 

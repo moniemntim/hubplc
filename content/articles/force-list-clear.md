@@ -2,7 +2,7 @@
 title: 測試用強制值如何在測試結束自動列出並清除
 description: 以隔離測試台驗證強制值能逐項列出、受控解除並留下證據，避免殘留狀態影響後續測試。
 date: 2026-09-21
-author: 站長
+author: 茂伯
 draft: false
 category: 維護與故障排查
 ---

@@ -2,7 +2,7 @@
 title: 整合驗收未完成時如何清楚標示限制與後續證據
 description: 以分項狀態、證據邊界與後續任務清楚表達整合驗收尚未完成的限制。
 date: 2026-09-21
-author: 站長
+author: 茂伯
 draft: false
 category: 維護與故障排查
 ---

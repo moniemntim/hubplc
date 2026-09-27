@@ -2,7 +2,7 @@
 title: 類比輸入通道串擾的單通道激勵測試
 description: 以受控單通道激勵分辨串擾、共同電源與掃描影響。
 date: 2026-09-21
-author: 站長
+author: 茂伯
 draft: false
 category: 感測器與量測
 ---

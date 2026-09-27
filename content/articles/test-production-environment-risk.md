@@ -2,7 +2,7 @@
 title: 測試環境與正式環境差異如何列入風險說明
 description: 以差異矩陣說明測試與正式環境的未知風險，讓每個缺口都有證據與後續動作。
 date: 2026-09-21
-author: 站長
+author: 茂伯
 draft: false
 category: 維護與故障排查
 ---

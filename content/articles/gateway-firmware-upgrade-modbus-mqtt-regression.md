@@ -2,7 +2,7 @@
 title: 閘道韌體升級前後的通訊回歸測試
 description: 以虛構Modbus到MQTT gateway示範韌體升級前後的設定、映射、緩衝、憑證與網路規則離線回歸；建立可稽核差異與回退條件。
 date: 2026-09-17
-author: 站長
+author: 茂伯
 draft: false
 ---
 

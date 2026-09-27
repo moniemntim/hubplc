@@ -2,7 +2,7 @@
 title: 長度前綴如何拆解多個變長訊息
 description: 以2 byte big-endian length前綴示範多訊息迴圈、尾端保留、0/超限拒絕、EOF與跨連線清buffer。
 date: 2026-09-21
-author: 站長
+author: 茂伯
 draft: false
 category: 工業通訊與網路
 ---

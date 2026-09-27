@@ -2,7 +2,7 @@
 title: PLC 浮點數的容差比較
 description: 分開數值表示誤差與製程公差，使用絕對及相對容差驗收浮點比較，處理近零及無效數值。
 date: 2026-09-17
-author: 站長
+author: 茂伯
 draft: false
 ---
 

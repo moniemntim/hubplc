@@ -2,7 +2,7 @@
 title: 振動感測器安裝方向如何在三軸資料中確認
 description: 以直流六姿態、動態方向激勵與基底向量測試，確認振動資料的實體軸向與轉換映射。
 date: 2026-09-21
-author: 站長
+author: 茂伯
 draft: false
 category: 感測器與量測
 ---

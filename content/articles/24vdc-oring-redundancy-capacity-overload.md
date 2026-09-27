@@ -2,7 +2,7 @@
 title: 24 VDC電源ORing隔離 容量與真正冗餘
 description: 解釋24 VDC ORing只負責來源隔離與反灌阻斷，透過單台最壞容量、壓降、溫升、均流與失效測試判斷真正冗餘。
 date: 2026-09-17
-author: 站長
+author: 茂伯
 draft: false
 ---
 

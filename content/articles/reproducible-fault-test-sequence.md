@@ -2,7 +2,7 @@
 title: 重現測試如何固定輸入順序與環境條件
 description: 從初始狀態、實際輸入時序與環境條件建立可重播的故障試驗。
 date: 2026-09-21
-author: 站長
+author: 茂伯
 draft: false
 category: 維護與故障排查
 ---

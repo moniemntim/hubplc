@@ -2,7 +2,7 @@
 title: 平方根與除法遇到無效輸入如何回報狀態
 description: 分開數學定義域、工程範圍與結果有效性，驗收平方根負值、合法零及除法邊界。
 date: 2026-09-21
-author: 站長
+author: 茂伯
 draft: false
 category: PLC 程式與控制
 ---

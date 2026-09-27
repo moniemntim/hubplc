@@ -2,7 +2,7 @@
 title: 模組診斷緩衝區如何整理成可搜尋的故障紀錄
 description: 依模組契約保存原始診斷資料，整理批次、去重鍵、環形覆蓋與搜尋案例。
 date: 2026-09-17
-author: 站長
+author: 茂伯
 draft: false
 ---
 

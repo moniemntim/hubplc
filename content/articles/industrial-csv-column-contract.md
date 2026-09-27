@@ -2,7 +2,7 @@
 title: 工業 CSV 欄位規格與匯入驗收
 description: 訂定CSV欄位、單位、空值與版本，透過合法與拒收案例驗證跨工具交換結果。
 date: 2026-09-17
-author: 站長
+author: 茂伯
 draft: false
 ---
 

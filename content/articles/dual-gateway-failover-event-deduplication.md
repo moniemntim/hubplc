@@ -2,7 +2,7 @@
 title: 雙閘道主備切換與事件去重設計
 description: 以主機50後失聯、備機48起補送的事件表，拆解唯一主站權、fencing、跨閘道去重、缺口與晚到資料。
 date: 2026-09-17
-author: 站長
+author: 茂伯
 draft: false
 ---
 

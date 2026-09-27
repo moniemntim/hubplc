@@ -2,7 +2,7 @@
 title: 兩點校正如何分辨零點偏移與增益錯誤
 description: 用三組兩點案例求偏移與增益，反算修正讀值，再以獨立中點檢查模型限制。
 date: 2026-09-21
-author: 站長
+author: 茂伯
 draft: false
 category: PLC 程式與控制
 ---

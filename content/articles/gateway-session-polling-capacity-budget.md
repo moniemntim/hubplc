@@ -2,7 +2,7 @@
 title: 閘道連線容量與下游輪詢負載試算
 description: 以八條連線的三組需求計算到達率、單埠服務率與queue成長，教讀者辨識連線、輪詢、快取及CPU的不同限制。
 date: 2026-09-17
-author: 站長
+author: 茂伯
 draft: false
 ---
 

@@ -2,7 +2,7 @@
 title: 24 VDC 高側與低側開關 BJT MOSFET 與智慧驅動器怎麼選
 description: 以24 VDC指示燈、感測器與小型線圈案例，區分BJT的PNP/NPN與MOSFET的P/N通道，比較高側低側參考點、損耗、續流路徑與智慧驅動診斷。
 date: 2026-09-17
-author: 站長
+author: 茂伯
 draft: false
 ---
 

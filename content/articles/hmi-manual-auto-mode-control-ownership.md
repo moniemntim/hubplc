@@ -2,7 +2,7 @@
 title: HMI 手動與自動模式怎麼在畫面上清楚區分
 description: 以輸送線案例分開modeRequest、modeConfirmed、controlOwner與互鎖，設計手自動切換、品質、逾時、復歸與HMI文字狀態。
 date: 2026-09-17
-author: 站長
+author: 茂伯
 draft: false
 ---
 
@@ -105,3 +105,4 @@ FAQ4：HMI重開後可用最後按鈕值恢復模式嗎？不可，應重新讀�
 
 - [HMI 趨勢游標與事件標記如何協助回看一次異常](/articles/hmi-trend-cursor-event-marker-time-alignment)
 - [HMI 設定值變更畫面怎麼降低輸入錯誤](/articles/hmi-setting-value-change-confirm-readback)
+- [HMI 維護模式的畫面與一般操作畫面要怎麼分開](/articles/hmi-maintenance-mode-screen-permissions)

@@ -2,7 +2,7 @@
 title: 浮點NaN與Inf在控制前如何攔截
 description: 以明示端序和IEEE binary32位元例，建立finite、quality、range三道控制前閘門，分離來源無效與運算溢位。
 date: 2026-09-21
-author: 站長
+author: 茂伯
 draft: false
 category: PLC 程式與控制
 ---

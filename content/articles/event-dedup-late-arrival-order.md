@@ -2,7 +2,7 @@
 title: 事件資料庫去重與遲到事件以事件ID和來源時間重建順序
 description: 以穩定事件身分去重，分開衝突、遲到與排序，重建可信的事件及報表區間。
 date: 2026-09-21
-author: 站長
+author: 茂伯
 draft: false
 category: 資料記錄與報表
 ---

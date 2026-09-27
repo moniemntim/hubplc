@@ -2,7 +2,7 @@
 title: 繼電器線圈的反電動勢保護 二極體 TVS 和 RC 吸收的取捨
 description: 說明直流繼電器斷電反電動勢的成因，依驅動器耐壓、線圈能量與釋放時間比較二極體、TVS與RC，並提供選型計算與排查流程。
 date: 2026-09-17
-author: 站長
+author: 茂伯
 draft: false
 ---
 

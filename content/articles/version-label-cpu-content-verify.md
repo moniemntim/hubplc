@@ -2,7 +2,7 @@
 title: 版本標籤與CPU內容比對
 description: 區分版本修訂、SHA256、Verify with PLC與CPU自診斷，建立V12同名檔、未選項、保護狀態與RUN動態D值的完整比對方法。
 date: 2026-09-17
-author: 站長
+author: 茂伯
 draft: false
 ---
 

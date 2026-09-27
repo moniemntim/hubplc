@@ -2,7 +2,7 @@
 title: 韌體更新後如何做通訊與資料格式回歸測試
 description: 保存更新前介面基準，以相同案例檢查資料型別、寫入、品質與恢復，清楚分類新版差異。
 date: 2026-09-21
-author: 站長
+author: 茂伯
 draft: false
 category: 維護與故障排查
 ---

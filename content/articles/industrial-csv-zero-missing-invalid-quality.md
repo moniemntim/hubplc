@@ -2,7 +2,7 @@
 title: CSV 的空值 零值和無效值怎麼分開記錄
 description: 用四種流量紀錄區分有效零、待到、來源錯誤與缺漏，建立品質欄、匯入驗收與平均值規則。
 date: 2026-09-17
-author: 站長
+author: 茂伯
 draft: false
 ---
 

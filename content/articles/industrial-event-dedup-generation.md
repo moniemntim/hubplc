@@ -2,7 +2,7 @@
 title: 工業事件去重與重啟世代
 description: 以source、transitionId、bootId建立事件身份，保留arrivalAt並區分重送、重啟後新事件與外部副作用。
 date: 2026-09-17
-author: 站長
+author: 茂伯
 draft: false
 ---
 

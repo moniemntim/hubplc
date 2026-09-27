@@ -2,7 +2,7 @@
 title: 氣壓不足造成動作慢如何區分命令延遲與機械延遲
 description: 用獨立時間軸、原始證據和重播測試驗收氣壓不足與動作延遲。
 date: 2026-09-21
-author: 站長
+author: 茂伯
 draft: false
 category: 維護與故障排查
 ---

@@ -2,7 +2,7 @@
 title: 測試資料重播如何保留原始時間間隔與順序
 description: 保存原時間、順序與重播時間軸，量測排程誤差並分清加速、背壓及狀態對測試的影響。
 date: 2026-09-21
-author: 站長
+author: 茂伯
 draft: false
 category: 維護與故障排查
 ---

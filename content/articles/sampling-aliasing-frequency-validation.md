@@ -2,7 +2,7 @@
 title: 取樣頻率不足如何辨識混疊
 description: 以fs=100、f=70計算30 Hz混疊，說明相位、Nyquist邊界與ADC前抗混疊濾波的驗收流程。
 date: 2026-09-21
-author: 站長
+author: 茂伯
 draft: false
 category: 感測器與量測
 ---

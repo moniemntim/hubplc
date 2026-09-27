@@ -2,7 +2,7 @@
 title: 區域變數 全域變數與保持變數 PLC 資料生命週期
 description: 以產量、暫存索引、Busy與配方校驗，分開作用域、跨呼叫生命週期與斷電保持。
 date: 2026-09-17
-author: 站長
+author: 茂伯
 draft: false
 ---
 

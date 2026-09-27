@@ -2,7 +2,7 @@
 title: 介面需求中的單位與品質欄位如何轉成驗收項
 description: 將單位轉換、精度、品質、過期與恢復寫成具體輸入輸出案例，驗證資料一路到報表的語意。
 date: 2026-09-21
-author: 站長
+author: 茂伯
 draft: false
 category: 維護與故障排查
 ---

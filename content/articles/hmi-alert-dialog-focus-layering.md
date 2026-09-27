@@ -2,7 +2,7 @@
 title: 彈窗層級怎麼排 警報可見 焦點可操作與確認分工
 description: 教你區分固定警報區、非模態訊息與alertdialog，設計焦點、鍵盤與關閉行為，不把z-index或HMI畫面冒充安全功能。
 date: 2026-09-21
-author: 站長
+author: 茂伯
 draft: false
 category: HMI 畫面與操作
 ---

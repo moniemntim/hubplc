@@ -2,7 +2,7 @@
 title: 多語系切換單位與小數格式
 description: 以 25.3 與 25,3 區分顯示格式與傳輸格式，拒絕歧義輸入，並說明 °C／°F 換算的偏移量。
 date: 2026-09-21
-author: 站長
+author: 茂伯
 draft: false
 category: HMI 畫面與操作
 ---

@@ -2,7 +2,7 @@
 title: HMI 批次流程畫面如何呈現步驟 等待和失敗原因
 description: 以清洗流程Drain步驟說明目前/完成/下一條件、等待原因、逾時、重試、返回、失敗、HMI重開與控制器重啟限制。
 date: 2026-09-17
-author: 站長
+author: 茂伯
 draft: false
 ---
 

@@ -2,7 +2,7 @@
 title: 旁路測試如何標示限制避免被當成正式運轉
 description: 用測試識別、範圍限制與復原確認，避免局部模擬結果被誤當整機驗收。
 date: 2026-09-21
-author: 站長
+author: 茂伯
 draft: false
 category: 維護與故障排查
 ---

@@ -2,7 +2,7 @@
 title: 多系統同時啟動如何驗證服務依賴與等待策略
 description: 依功能定義就緒證據與等待策略，驗證同時啟動、依賴延遲及運行中恢復的可預測行為。
 date: 2026-09-21
-author: 站長
+author: 茂伯
 draft: false
 category: 維護與故障排查
 ---

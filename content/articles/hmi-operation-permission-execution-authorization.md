@@ -2,7 +2,7 @@
 title: HMI 操作權限頁面如何讓使用者知道自己能做什麼
 description: 以虛構 Operator 申請修改配方上限為例，建立檢視、確認、設定、維護矩陣，分開 UI 隱藏、執行端授權、session timeout、角色變更與共用帳號稽核。
 date: 2026-09-17
-author: 站長
+author: 茂伯
 draft: false
 ---
 

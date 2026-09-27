@@ -2,7 +2,7 @@
 title: 兩個流程共用一個資源 PLC 排他控制與公平排程
 description: 用單一仲裁器分配共用模組，處理等待、釋放、取消及逾時鎖定。
 date: 2026-09-17
-author: 站長
+author: 茂伯
 draft: false
 ---
 

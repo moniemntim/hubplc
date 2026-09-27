@@ -2,7 +2,7 @@
 title: 介面欄位新增時如何驗證舊客戶仍能解析
 description: 用JSON訊息與雙版本客戶案例驗證新增欄位，區分可忽略、必填、缺省與語意改變。
 date: 2026-09-21
-author: 站長
+author: 茂伯
 draft: false
 category: 維護與故障排查
 ---

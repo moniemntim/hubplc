@@ -2,7 +2,7 @@
 title: 同一批次跨兩台設備如何建立共同批次鍵
 description: 以共同批次鍵連結各設備執行，處理分批、合批與重工，避免跨表查詢重複加總。
 date: 2026-09-21
-author: 站長
+author: 茂伯
 draft: false
 category: 資料記錄與報表
 ---

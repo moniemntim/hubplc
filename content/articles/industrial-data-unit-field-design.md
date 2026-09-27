@@ -2,7 +2,7 @@
 title: 工業資料的單位欄位怎麼設計才能避免報表誤讀
 description: 以bar/kPa與表壓/絕壓案例建立raw、scale、unit、canonical、display五欄，保存換算版本、參考壓力、品質與跨設備拒收規則。
 date: 2026-09-17
-author: 站長
+author: 茂伯
 draft: false
 ---
 

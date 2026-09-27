@@ -2,7 +2,7 @@
 title: 欄位編碼不同造成亂碼時如何定位轉碼環節
 description: 逐站比對原始位元組、解碼字元與資料庫讀回結果，找出亂碼首次發生的位置及是否可恢復。
 date: 2026-09-21
-author: 站長
+author: 茂伯
 draft: false
 category: 資料記錄與報表
 ---

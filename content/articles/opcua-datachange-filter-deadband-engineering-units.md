@@ -2,7 +2,7 @@
 title: OPC UA Deadband門檻與工程單位核對
 description: 以溫度序列說明last queued value、嚴格大於門檻、StatusCode例外，並比較Absolute、Percent與EURange及品質更新策略。
 date: 2026-09-17
-author: 站長
+author: 茂伯
 draft: false
 ---
 

@@ -2,7 +2,7 @@
 title: MQTT保留訊息與陳舊命令
 description: 以虛構泵浦契約說明 retained state、metadata、Message Expiry與Retain Handling，並用空payload清除流程避免陳舊命令重放。
 date: 2026-09-17
-author: 站長
+author: 茂伯
 draft: false
 ---
 

@@ -2,7 +2,7 @@
 title: 事件狀態由啟動到清除如何計算持續時間
 description: 分開活動、確認與結案，正確配對事件並計算跨班與重疊區間。
 date: 2026-09-21
-author: 站長
+author: 茂伯
 draft: false
 category: 資料記錄與報表
 ---

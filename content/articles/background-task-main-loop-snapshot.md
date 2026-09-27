@@ -2,7 +2,7 @@
 title: 背景通訊任務與主循環共享資料快照
 description: 以完整snapshot與版本驗收說明背景通訊任務和主循環如何避免欄位混搭，並比較lock、single writer與double buffer。
 date: 2026-09-21
-author: 站長
+author: 茂伯
 draft: false
 category: 工業通訊與網路
 ---

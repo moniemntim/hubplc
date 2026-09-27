@@ -2,7 +2,7 @@
 title: Modbus Security/TLS怎麼導入 802 憑證與角色授權的邊界
 description: 依Modbus Security官方規格區分802與502，說明TLS互認、憑證更新、過期/錯身分拒絕與產品特定角色授權。
 date: 2026-09-17
-author: 站長
+author: 茂伯
 draft: false
 ---
 

@@ -2,7 +2,7 @@
 title: PLC 整數運算的順序 精度與中間溢位
 description: 用同一比例比較三種計算順序，再用最終結果小但中間乘積大的案例檢查位寬。
 date: 2026-09-17
-author: 站長
+author: 茂伯
 draft: false
 ---
 

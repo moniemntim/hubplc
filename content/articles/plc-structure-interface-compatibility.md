@@ -2,7 +2,7 @@
 title: PLC 結構資料改版時如何保持模組介面相容
 description: 用五欄工站狀態說明新增欄位、型別、排序與單位變更的相容性，建立版本和能力判斷。
 date: 2026-09-17
-author: 站長
+author: 茂伯
 draft: false
 ---
 

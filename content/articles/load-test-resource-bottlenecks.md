@@ -2,7 +2,7 @@
 title: 高資料量壓力測試如何觀察 CPU 網路與資料庫瓶頸
 description: 沿產生器、服務、網路與資料庫追蹤負載，分辨積壓、等待及實際成功吞吐量。
 date: 2026-09-21
-author: 站長
+author: 茂伯
 draft: false
 category: 維護與故障排查
 ---

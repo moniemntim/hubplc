@@ -2,7 +2,7 @@
 title: 導電度量測的 cell constant 量程 溫度補償與電極極化怎麼搭配
 description: 用κ=K×G=K/R與cm⁻¹、µS/cm單位示例，區分二極、四極與感應式電導池，說明25°C溫補係數需配對液體，並以極化、髒污、純水CO2污染和校正紀錄排查量測失敗。
 date: 2026-09-17
-author: 站長
+author: 茂伯
 draft: false
 ---
 

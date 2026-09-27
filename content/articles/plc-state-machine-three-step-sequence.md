@@ -2,7 +2,7 @@
 title: 用狀態機寫 PLC 順序控制 從三個步驟開始
 description: 用 WAIT、RUN、DONE、FAULT 建立三步驟狀態機，透過狀態表、逐掃描案例與逾時／非法狀態處理，讓順序控制可觀察、可復歸。
 date: 2026-09-17
-author: 站長
+author: 茂伯
 draft: false
 ---
 

@@ -2,7 +2,7 @@
 title: 設備累計值歸零後 日報產量怎麼計算
 description: 用累計值980、995、5逐筆比較人工歸零、固定modulus回捲與無證據負差，處理跨班、缺測和補送。
 date: 2026-09-17
-author: 站長
+author: 茂伯
 draft: false
 ---
 

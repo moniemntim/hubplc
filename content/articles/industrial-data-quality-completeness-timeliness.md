@@ -2,7 +2,7 @@
 title: 工業資料品質的完整性即時性一致性與有效性
 description: 以1440個日槽檢查完整性、即時性、一致性與有效性；1410個unique中20個invalid，10個late可與有效資料重疊，另有30筆duplicate，分母分開計算。
 date: 2026-09-17
-author: 站長
+author: 茂伯
 draft: false
 ---
 

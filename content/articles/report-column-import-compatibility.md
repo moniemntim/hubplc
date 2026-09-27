@@ -2,7 +2,7 @@
 title: 報表欄位新增後如何檢查下游匯入相容性
 description: 建立新舊檔與匯入器版本矩陣，逐欄驗證新增欄位後的解析、型別與業務結果。
 date: 2026-09-21
-author: 站長
+author: 茂伯
 draft: false
 category: 資料記錄與報表
 ---

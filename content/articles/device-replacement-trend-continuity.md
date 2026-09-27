@@ -2,7 +2,7 @@
 title: 同一設備換序號後如何銜接長期趨勢
 description: 以位置鍵、資產鍵與安裝有效期間銜接趨勢，保存更換、量程及計數世代的追溯關係。
 date: 2026-09-21
-author: 站長
+author: 茂伯
 draft: false
 category: 資料記錄與報表
 ---

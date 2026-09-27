@@ -2,7 +2,7 @@
 title: DNS名稱變更後如何驗證設備連線沒有吃舊快取
 description: 以權威、遞迴、Windows用戶端與應用socket四層證據，驗證DNS改名或改址的實際收斂狀態。
 date: 2026-09-21
-author: 站長
+author: 茂伯
 draft: false
 category: 工業通訊與網路
 ---

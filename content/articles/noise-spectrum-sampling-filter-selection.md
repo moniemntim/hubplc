@@ -2,7 +2,7 @@
 title: 量測雜訊頻譜不同時如何選取取樣與濾波方法
 description: 依漂移、窄帶干擾、隨機雜訊與尖峰選取處理方法，同時驗證頻帶、延遲與資料品質。
 date: 2026-09-21
-author: 站長
+author: 茂伯
 draft: false
 category: 感測器與量測
 ---

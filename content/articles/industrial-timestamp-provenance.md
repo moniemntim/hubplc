@@ -2,7 +2,7 @@
 title: 工業記錄時間戳與時鐘校正的追溯
 description: 分開設備、接收與寫入時間，用慢十八秒案例說明原始時間、版本化校正與不確定度。
 date: 2026-09-17
-author: 站長
+author: 茂伯
 draft: false
 ---
 

@@ -2,7 +2,7 @@
 title: 交換器鏡像埠的封包擷取準備
 description: 以四埠交換器與PLC請求回覆，教你規劃Port Mirroring來源方向、監看容量、VLAN及擷取品質，避免把鏡像缺包當成設備故障。
 date: 2026-09-17
-author: 站長
+author: 茂伯
 draft: false
 ---
 

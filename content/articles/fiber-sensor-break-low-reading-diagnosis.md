@@ -2,7 +2,7 @@
 title: 光纖感測器斷纖與低讀值診斷
 description: 教你區分光纖感測器斷纖、低讀值與放大器故障，建立多證據且可回復的排查流程。
 date: 2026-09-21
-author: 站長
+author: 茂伯
 draft: false
 category: 感測器與量測
 ---

@@ -2,7 +2,7 @@
 title: 流量脈衝如何用K值換算並驗收
 description: 以K pulses/L與f×60/K換算流量，說明250 Hz、100 pulses/L為150 L/min，並處理窗口量化、零pulse與平台限制。
 date: 2026-09-21
-author: 站長
+author: 茂伯
 draft: false
 category: 感測器與量測
 ---

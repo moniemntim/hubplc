@@ -2,7 +2,7 @@
 title: Modbus裝置識別2B0E的讀取與資產核對
 description: 用LAB、T1、1.2離線回覆練習裝置識別物件解析，分清存取code、支援等級、More Follows及資產完整性。
 date: 2026-09-17
-author: 站長
+author: 茂伯
 draft: false
 ---
 

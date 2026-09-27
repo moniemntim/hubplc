@@ -2,7 +2,7 @@
 title: 驗收紀錄如何區分通過未測與不適用
 description: 建立可追溯的驗收狀態與明確分母，讓未測項、偏差及版本限制不被摘要掩蓋。
 date: 2026-09-21
-author: 站長
+author: 茂伯
 draft: false
 category: 維護與故障排查
 ---

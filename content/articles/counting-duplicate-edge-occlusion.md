@@ -2,7 +2,7 @@
 title: 計數多一件如何追查重複邊緣與感測器遮蔽時間
 description: 用邊緣、遮蔽時間與事件 ID 追查計數多一件。
 date: 2026-09-21
-author: 站長
+author: 茂伯
 draft: false
 category: 維護與故障排查
 ---

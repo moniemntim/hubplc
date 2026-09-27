@@ -2,7 +2,7 @@
 title: 歷史查詢跨月時如何確認邊界筆沒有遺漏
 description: 以半開時間區間、時區換算與唯一排序核對跨月資料，避免月底最後一筆及零點事件遺漏。
 date: 2026-09-21
-author: 站長
+author: 茂伯
 draft: false
 category: 資料記錄與報表
 ---

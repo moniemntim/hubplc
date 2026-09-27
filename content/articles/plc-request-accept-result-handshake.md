@@ -2,7 +2,7 @@
 title: 請求 接受 完成與失敗 如何設計 PLC 模組間握手
 description: 以請求識別碼與保持到確認的旗標，建立接受、處理、成功及失敗的完整交接。
 date: 2026-09-17
-author: 站長
+author: 茂伯
 draft: false
 ---
 
@@ -17,21 +17,15 @@ draft: false
 | Busy | 等待處理 | 可覆蓋新資料 |
 | Done/Fail | 等待結果 | 同時成立 |
 
-教學先用虛擬狀態與監看欄位，不接實體輸出。每一步都寫前置、操作、預期結果與失敗先查位置；這樣你在工程軟體中才能逐項核對，而不是只看最後一盞燈。
+驗證狀態：本文為虛擬邏輯推演與練習規格，未附模擬器執行或實體設備測試紀錄；請用內部狀態觀察，不接實體輸出。
+
+這是跨模組交接契約，不是模式切換或設備順序的通用狀態機教學。驗收時把 Sender 與 Receiver 的欄位並列，逐項以 ReqId 對照資料所有權與結果，而不是只看任一邊的完成燈號。
 
 ## 建立流程 先做狀態表 再寫轉移
 
 先建立Req、ReqId、Accept、Busy、Done、Fail、ResultAck及各自的識別碼。Sender寫好資料後保持Req，Receiver在IDLE看見尚未處理的ReqId時鎖存請求，接受時複製快照。Accept保持到Sender清除Req，不用一掃描脈衝跨任務傳遞。Done或Fail保持到ResultAck核對同一ReqId；確認完才回IDLE。
 
-1. 建立 Req、ReqId、Accept、Busy、Done、Fail、DoneId、FailId、ErrorCode。
-
-2. ReqId=17 保持到 Accept，確認只接受一次。
-
-3. Busy 期間送 ReqId=18，依規格拒絕，不覆蓋 17。
-
-4. 完成三步後核對 DoneId=17；逾時則 FailId=17。
-
-完成後應看到：狀態、操作請求、資料欄位與虛擬輸出一致。若不同，先查是否有其他程式段改寫狀態、在錯誤分支清除記憶，或取樣時機不一致。
+先以 ReqId=17 跑一次完整交接：保持 Req 到 Accept、Busy 期間送 ReqId=18 並確認不覆蓋17、最後核對 DoneId=17；若逾時則 FailId仍須為17。這三個觀察分別驗證請求保持、資料快照與結果對應。
 
 資料接收失敗而尚未接受時，應帶原ReqId回覆拒絕原因；已接受後的執行失敗才使用Fail。識別碼回捲與重啟要有會話編號或等效規則，不能讓舊結果碰巧等於新請求。此握手是本文自訂協議，不是任何模組內建的固定旗標。
 
@@ -49,8 +43,6 @@ draft: false
 | S6 | 成功且未逾時 | RESULT | Done=1 Fail=0 Id=17 |
 | S7 | ResultAck=17 | RESULT | 確認結果已取走 |
 | S8 | 確認完成 | IDLE | 清結果 可接受下一件 |
-
-本例每次只採用一個狀態轉移，故障優先於一般操作；取消、停止與完成的細節依下列固定案例核對。不同設備改用其他政策時，文字、事件表與程式必須一起修改。
 
 ## 把晚到回覆與重複請求分開測試
 
@@ -92,3 +84,4 @@ Req一定要脈衝嗎？本例保持到Accept才清除。Done代表成功嗎？�
 
 - [PLC 主程式 週期任務與中斷任務如何分工](/articles/plc-main-cycle-periodic-interrupt-task-design)
 - [用狀態機寫 PLC 順序控制 從三個步驟開始](/articles/plc-state-machine-three-step-sequence)
+- [自動與手動模式切換時 PLC 應如何處理既有動作](/articles/plc-auto-manual-mode-switch)

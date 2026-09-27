@@ -2,7 +2,7 @@
 title: 4 至 20 mA 零點偏移與倍率錯誤判讀
 description: 用低點、中點、高點與五點驗收分辨 4–20 mA 零點偏移、跨度錯誤及非線性，逐段檢查傳送器與 PLC。
 date: 2026-09-17
-author: 站長
+author: 茂伯
 draft: false
 ---
 

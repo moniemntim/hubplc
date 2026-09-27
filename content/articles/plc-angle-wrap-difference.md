@@ -2,7 +2,7 @@
 title: PLC 角度跨越零點的差值計算
 description: 用358度到2度案例學會最短角度差，釐清半圈規則、取樣限制與多圈累積風險。
 date: 2026-09-17
-author: 站長
+author: 茂伯
 draft: false
 ---
 

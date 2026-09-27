@@ -2,7 +2,7 @@
 title: 系統邊界責任如何在整合問題單中明確分派
 description: 以PLC來源、閘道傳輸、HMI呈現三層案例示範依第一個不符觀測點分派責任，避免互相轉派。
 date: 2026-09-21
-author: 站長
+author: 茂伯
 draft: false
 category: 維護與故障排查
 ---

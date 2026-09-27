@@ -2,7 +2,7 @@
 title: OPC UA歷史讀取的分頁續傳與資料品質
 description: 以一小時每10秒資料分成四頁的離線案例，說明OPC UA HistoryRead時間範圍、numValuesPerNode、opaque ContinuationPoint、釋放、失效重查、排序去重與品質缺口。
 date: 2026-09-17
-author: 站長
+author: 茂伯
 draft: false
 ---
 

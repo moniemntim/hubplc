@@ -2,7 +2,7 @@
 title: 維修備品更換後如何確認規格與韌體相容
 description: 以Q系列示範由實際功能反查型號、功能版本、序號與工具條件，再確認設定與行為。
 date: 2026-09-21
-author: 站長
+author: 茂伯
 draft: false
 category: 維護與故障排查
 ---

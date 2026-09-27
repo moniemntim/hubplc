@@ -2,7 +2,7 @@
 title: 二進位協定的大小端如何用已知封包驗證
 description: 用0x1234與0x12345678逐層核對byte順序、跨word順序與型別，避免以倍率修補端序錯誤。
 date: 2026-09-21
-author: 站長
+author: 茂伯
 draft: false
 category: 工業通訊與網路
 ---

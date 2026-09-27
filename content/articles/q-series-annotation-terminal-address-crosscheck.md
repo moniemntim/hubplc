@@ -2,7 +2,7 @@
 title: Q系列註解 端子與地址互證
 description: 以Q06UDVCPU與GX Works2為例，互證PLC符號、端子、導線、圖紙、HMI與互鎖依賴，並區分NC物理接點和梯形圖條件。
 date: 2026-09-17
-author: 站長
+author: 茂伯
 draft: false
 ---
 

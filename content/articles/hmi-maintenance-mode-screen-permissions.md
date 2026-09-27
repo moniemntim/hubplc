@@ -2,7 +2,7 @@
 title: HMI 維護模式的畫面與一般操作畫面要怎麼分開
 description: 以週末更換執行器案例分開UI授權、Maintenance模式、控制器確認、互鎖、品質與能源隔離，建立維護頁、測試與復原記錄。
 date: 2026-09-17
-author: 站長
+author: 茂伯
 draft: false
 ---
 
@@ -111,3 +111,4 @@ FAQ4：離開維護頁就算復原完成嗎？不算，需確認測試停止、�
 
 - [HMI 設定值變更畫面怎麼降低輸入錯誤](/articles/hmi-setting-value-change-confirm-readback)
 - [HMI 批次流程畫面如何呈現步驟 等待和失敗原因](/articles/hmi-batch-step-wait-failure-reason)
+- [HMI 手動與自動模式怎麼在畫面上清楚區分](/articles/hmi-manual-auto-mode-control-ownership)

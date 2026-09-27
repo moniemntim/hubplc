@@ -2,7 +2,7 @@
 title: PLC 功能塊輸入怎麼檢查 無效參數的回報與替代行為
 description: 用虛構縮放功能塊驗證 Raw 與工程值的合法範圍，示範 Valid、Value、ErrorCode 和執行中設定版本快照。
 date: 2026-09-17
-author: 站長
+author: 茂伯
 draft: false
 ---
 

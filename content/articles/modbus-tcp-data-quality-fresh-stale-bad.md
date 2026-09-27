@@ -2,7 +2,7 @@
 title: Modbus TCP資料品質 Fresh Stale Bad如何定義與驗收
 description: 以自訂Fresh、Stale、Bad規則處理Modbus TCP溫度資料，分清有效PDU、timeout、無效碼、超範圍，以及receivedAt和sourceTimestamp。
 date: 2026-09-17
-author: 站長
+author: 茂伯
 draft: false
 ---
 

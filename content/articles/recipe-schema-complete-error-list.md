@@ -2,7 +2,7 @@
 title: 批次配方欄位缺漏如何產生完整錯誤清單
 description: 以明示schema版本及required、type、range、cross-field順序建立完整配方錯誤清單，區分缺值、零、原字串與候選版本狀態。
 date: 2026-09-21
-author: 站長
+author: 茂伯
 draft: false
 category: PLC 程式與控制
 ---

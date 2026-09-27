@@ -2,7 +2,7 @@
 title: 多點校正表遇到表外輸入如何選擇處理方式
 description: 以四節點表對照拒絕、夾限與外推，驗證表格合法性、末端等號與版本一致性。
 date: 2026-09-21
-author: 站長
+author: 茂伯
 draft: false
 category: PLC 程式與控制
 ---

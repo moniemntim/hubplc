@@ -2,7 +2,7 @@
 title: HMI字型與圖片遺失的尋找與封裝
 description: 盤點HMI字型、圖片、字串、元件庫和外部檔案相依，建立搬移與封裝驗收。
 date: 2026-09-17
-author: 站長
+author: 茂伯
 draft: false
 ---
 

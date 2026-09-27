@@ -2,7 +2,7 @@
 title: NTP閘道時間同步與事件追溯
 description: 以NTP同步UTC為基礎，分清source、received與display時間，計算offset並設計斷線漂移、重新校時跳變與資料品質追溯。
 date: 2026-09-17
-author: 站長
+author: 茂伯
 draft: false
 ---
 

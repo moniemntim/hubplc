@@ -2,7 +2,7 @@
 title: 日結後補登資料如何留下修訂版本與原因
 description: 把補登事件轉成可覆核的日報修訂，保存舊版、差異原因與一致發布狀態。
 date: 2026-09-21
-author: 站長
+author: 茂伯
 draft: false
 category: 資料記錄與報表
 ---

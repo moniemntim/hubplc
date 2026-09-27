@@ -2,7 +2,7 @@
 title: PLC 上下限裁切與超範圍診斷
 description: 把原始110%、裁切100%與超界旗標分開保存，並區分來源無效、參數錯誤及真正飽和。
 date: 2026-09-17
-author: 站長
+author: 茂伯
 draft: false
 ---
 

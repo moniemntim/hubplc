@@ -2,7 +2,7 @@
 title: 輸入抖動造成診斷誤報如何用時間條件過濾
 description: 以連續100ms判定與固定冷卻窗口範例，分清狀態去抖動、資料中斷及重複通知合併。
 date: 2026-09-17
-author: 站長
+author: 茂伯
 draft: false
 ---
 

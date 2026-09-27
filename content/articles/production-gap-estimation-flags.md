@@ -2,7 +2,7 @@
 title: 資料缺口的產量估算如何分開呈現估算旗標
 description: 分開已確認產量、估算增量與未知區間，保存方法假設並在補送後正確替換估算。
 date: 2026-09-21
-author: 站長
+author: 茂伯
 draft: false
 category: 資料記錄與報表
 ---

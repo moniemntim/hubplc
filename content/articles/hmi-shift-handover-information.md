@@ -2,7 +2,7 @@
 title: HMI 班次交接頁應該留下哪些現場資訊
 description: 以早班07:00接手夜班案例，設計未結警報、旁路、手動模式、待辦、作者時間設備範圍與責任移轉，並分開交接與Ack/Clear。
 date: 2026-09-17
-author: 站長
+author: 茂伯
 draft: false
 ---
 

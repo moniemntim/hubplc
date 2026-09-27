@@ -2,7 +2,7 @@
 title: PLC記憶體不足時如何找出陣列與暫存使用量
 description: 以Q06UDVCPU與GX Works2背景，計算陣列有效payload，區分FB實例、alias、程式/檔案/保持區與編譯配置，建立控制站14的離線盤點流程。
 date: 2026-09-17
-author: 站長
+author: 茂伯
 draft: false
 ---
 

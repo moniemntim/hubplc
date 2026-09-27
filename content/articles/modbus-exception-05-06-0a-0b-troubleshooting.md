@@ -2,7 +2,7 @@
 title: Modbus例外碼05 06 0A 0B 忙碌與閘道路徑怎麼分開查
 description: 用83 06與83 0B離線案例教讀者區分忙碌、處理中與閘道路徑問題，建立有限重試、交易追溯及資料品質規則。
 date: 2026-09-17
-author: 站長
+author: 茂伯
 draft: false
 ---
 

@@ -2,7 +2,7 @@
 title: PNP 與 NPN 感測器接 PLC 輸入 Source Sink 和共用端的接線判斷
 description: 教你用電流箭頭判讀 PNP、NPN、Source、Sink 與共用端，從資料表、量測到 PLC 監看逐步確認，避免把輸入不動作誤判成程式錯誤。
 date: 2026-09-17
-author: 站長
+author: 茂伯
 draft: false
 ---
 

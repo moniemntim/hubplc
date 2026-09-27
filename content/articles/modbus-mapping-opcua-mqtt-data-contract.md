@@ -2,7 +2,7 @@
 title: Modbus點位映射至OPC UA與MQTT的欄位契約
 description: 用三個虛構Modbus點位建立一個OPC UA Variable與兩個MQTT topic的欄位契約，涵蓋寬度、符號、倍率、品質、時間與版本。
 date: 2026-09-17
-author: 站長
+author: 茂伯
 draft: false
 ---
 

@@ -2,7 +2,7 @@
 title: 回歸測試如何涵蓋正常邊界與中斷恢復
 description: 依變更影響選擇正常、門檻與中斷恢復案例，保存可重跑的回歸證據。
 date: 2026-09-21
-author: 站長
+author: 茂伯
 draft: false
 category: 維護與故障排查
 ---

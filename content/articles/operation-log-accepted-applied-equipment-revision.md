@@ -2,7 +2,7 @@
 title: 操作log怎麼記才可追查 從畫面變更到設備結果
 description: 設計包含畫面、tag、權威old/new、單位、使用者、可信時間、operationId、result與設備revision的操作log。
 date: 2026-09-21
-author: 站長
+author: 茂伯
 draft: false
 category: HMI 畫面與操作
 ---

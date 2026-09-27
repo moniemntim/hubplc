@@ -2,7 +2,7 @@
 title: 閥門回饋卡住時如何驗證命令位置與時間軸
 description: 以命令接受、原始回饋、獨立行程與時間分辨閥卡住和資料卡住。
 date: 2026-09-21
-author: 站長
+author: 茂伯
 draft: false
 category: 維護與故障排查
 ---

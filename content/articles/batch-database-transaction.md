@@ -2,7 +2,7 @@
 title: 資料庫交易如何讓一批紀錄一起提交或回滾
 description: 以三筆批次明細示範同一交易的提交與取消，分清確定回滾、提交成功與回覆遺失後的結果不明。
 date: 2026-09-21
-author: 站長
+author: 茂伯
 draft: false
 category: 資料記錄與報表
 ---

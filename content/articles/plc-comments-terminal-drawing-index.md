@@ -2,7 +2,7 @@
 title: PLC註解如何連到端子線號與接線圖
 description: 以命令、回饋和故障三種信號建立PLC短註解、端子索引及圖紙版次，分清NC接點和邏輯真值。
 date: 2026-09-17
-author: 站長
+author: 茂伯
 draft: false
 ---
 

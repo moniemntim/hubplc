@@ -2,7 +2,7 @@
 title: 資料封存後如何抽樣驗證仍可回查原始事件
 description: 從封存清冊、分層抽樣到隔離還原，驗證事件與工程意義仍能回查並留下可重複證據。
 date: 2026-09-21
-author: 站長
+author: 茂伯
 draft: false
 category: 資料記錄與報表
 ---

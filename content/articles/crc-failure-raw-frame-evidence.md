@@ -2,7 +2,7 @@
 title: CRC驗證失敗時如何保存原始封包供追查
 description: 以Modbus RTU向量保存原始框架、收到CRC與計算CRC，分開不完整框架、CRC不符及後續資料有效性。
 date: 2026-09-21
-author: 站長
+author: 茂伯
 draft: false
 category: 工業通訊與網路
 ---

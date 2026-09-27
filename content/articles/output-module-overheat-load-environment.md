@@ -2,7 +2,7 @@
 title: 輸出模組過熱如何分辨負載與環境原因
 description: 以QY40P額定值及離線負載、溫度案例，分開檢查每點、共用端、啟動電流與環境因素。
 date: 2026-09-17
-author: 站長
+author: 茂伯
 draft: false
 ---
 

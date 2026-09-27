@@ -2,7 +2,7 @@
 title: Q 系列 RS485 Modbus RTU 讀寫教學
 description: 使用 Q06UDVCPU、QJ71C24N 與 GX Works2，從 RS485 接線、預定義協定設定到 GP.CPRTCL 單筆讀寫，附 21 張操作圖與錯誤排查步驟。
 date: 2026-09-13
-author: 站長
+author: 茂伯
 draft: false
 ---
 

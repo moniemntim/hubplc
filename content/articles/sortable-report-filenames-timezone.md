@@ -2,7 +2,7 @@
 title: 報表檔名含時區與區間如何建立可排序規則
 description: 設計固定寬度的UTC區間與修訂檔名，兼顧跨時區排序、Windows限制與發布碰撞檢查。
 date: 2026-09-21
-author: 站長
+author: 茂伯
 draft: false
 category: 資料記錄與報表
 ---

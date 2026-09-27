@@ -2,7 +2,7 @@
 title: 類比輸入飽和時如何保留原始值與超量程旗標
 description: 教你保存類比輸入raw與時間品質，設計不填零的濾波策略，並分辨超量程、故障碼與恢復條件。
 date: 2026-09-21
-author: 站長
+author: 茂伯
 draft: false
 category: 感測器與量測
 ---

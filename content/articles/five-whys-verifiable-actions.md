@@ -2,7 +2,7 @@
 title: 五個為什麼分析如何連到可執行的驗證動作
 description: 每一層追問都配上支持與反證，把五個為什麼落成可執行的調查與驗收。
 date: 2026-09-21
-author: 站長
+author: 茂伯
 draft: false
 category: 維護與故障排查
 ---

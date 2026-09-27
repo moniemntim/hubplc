@@ -2,7 +2,7 @@
 title: 故障樹如何從可觀察症狀往可驗證原因展開
 description: 將頂端症狀分成原因組合，再為每個葉端建立可觀察的驗證與反證。
 date: 2026-09-21
-author: 站長
+author: 茂伯
 draft: false
 category: 維護與故障排查
 ---

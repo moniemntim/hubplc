@@ -2,7 +2,7 @@
 title: RS485 A/B標示不一致 用差動極性建立端子對照
 description: 用自訂A/B與D+/D−設備矩陣、差動及共模計算，建立有文件依據的極性核對、動態量測與排查流程。
 date: 2026-09-17
-author: 站長
+author: 茂伯
 draft: false
 ---
 

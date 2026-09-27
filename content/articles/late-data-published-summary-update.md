@@ -2,7 +2,7 @@
 title: 資料補送到達較晚時如何更新已發布摘要
 description: 以去重、影響範圍與一致版本發布處理晚到資料，避免摘要越補越多。
 date: 2026-09-21
-author: 站長
+author: 茂伯
 draft: false
 category: 資料記錄與報表
 ---

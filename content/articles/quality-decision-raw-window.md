@@ -2,7 +2,7 @@
 title: 品質判定偶發失敗如何保存原始量測視窗
 description: 保存品質判定的原始前後視窗、邊界與版本，重建偶發NG和不可判定原因。
 date: 2026-09-21
-author: 站長
+author: 茂伯
 draft: false
 category: 維護與故障排查
 ---

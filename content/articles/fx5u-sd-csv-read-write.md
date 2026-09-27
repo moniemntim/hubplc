@@ -2,7 +2,7 @@
 title: FX5U CSV 讀寫教學
 description: 使用 FX5U 將資料寫入 SD 卡 CSV，圖解檔尾追加、列欄設定與 SP.FREAD 讀回，附官方範例和單次驗證步驟。
 date: 2026-09-08
-author: 站長
+author: 茂伯
 draft: false
 ---
 

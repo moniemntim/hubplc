@@ -2,7 +2,7 @@
 title: HMI品質Bad如何避免把舊值誤認新值
 description: 以 value、quality、source/receive timestamp 與 age 分離新鮮度，避免 HMI 把 Bad 狀態的舊值當成新測量。
 date: 2026-09-21
-author: 站長
+author: 茂伯
 draft: false
 category: HMI 畫面與操作
 ---

@@ -2,7 +2,7 @@
 title: 報表產量與現場計數不符如何建立守恆核對表
 description: 用在製品、投入與移出建立件數守恆，再追查跨班、重工、重送與累計重置。
 date: 2026-09-21
-author: 站長
+author: 茂伯
 draft: false
 category: 維護與故障排查
 ---

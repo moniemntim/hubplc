@@ -2,7 +2,7 @@
 title: 現場驗收案例如何把每個輸入映射到可觀察輸出
 description: 以三種輸入、兩個狀態與多個觀測點建立現場驗收映射，讓差異能定位到來源、轉換或呈現層。
 date: 2026-09-21
-author: 站長
+author: 茂伯
 draft: false
 category: 維護與故障排查
 ---

@@ -2,7 +2,7 @@
 title: HMI 畫面版本更新後如何讓操作員快速看懂改了什麼
 description: 以HMI篩選器與按鈕移位案例建立版本更新通知、任務回歸、相容性及回復流程。
 date: 2026-09-17
-author: 站長
+author: 茂伯
 draft: false
 ---
 

@@ -2,7 +2,7 @@
 title: Ladder 與 ST 寫同一組布林條件 用真值表對照邏輯
 description: 用三個布林輸入的八列真值表，對照 Ladder 與 ST 的同一組教學邏輯並排查時序差異。
 date: 2026-09-17
-author: 站長
+author: 茂伯
 draft: false
 ---
 

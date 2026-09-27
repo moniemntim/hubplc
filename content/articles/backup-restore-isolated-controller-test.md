@@ -2,7 +2,7 @@
 title: 備份檔能否還原如何用隔離備用控制器驗證
 description: 以檔案、內容比對與隔離功能三層驗證，確認備份能恢復的範圍並找出缺失。
 date: 2026-09-17
-author: 站長
+author: 茂伯
 draft: false
 ---
 

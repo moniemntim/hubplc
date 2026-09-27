@@ -2,7 +2,7 @@
 title: HMI 警報優先級如何轉成值班人員看得懂的顯示規則
 description: 以後果、可用反應時間與操作動作建立警報排序，分開priority、顏色、Active/Clear/Ack/Shelved狀態，並提供色盲與誤標審查方法。
 date: 2026-09-17
-author: 站長
+author: 茂伯
 draft: false
 ---
 

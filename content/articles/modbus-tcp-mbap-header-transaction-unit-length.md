@@ -2,7 +2,7 @@
 title: Modbus TCP MBAP Header Transaction ID Unit ID 與 Length 欄位判讀
 description: 拆解 Modbus TCP MBAP Header 的 Transaction ID、Protocol ID、Length、Unit ID 與 PDU，並用離線十六進位封包手算 Length 和配對回覆。
 date: 2026-09-17
-author: 站長
+author: 茂伯
 draft: false
 ---
 

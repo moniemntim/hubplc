@@ -2,7 +2,7 @@
 title: 工業MQTT資產階層與十二條Topic命名範例
 description: 以site、area、line、asset階層為兩條產線建立telemetry、state、event、command、ack、config共12條topic，說明filter、schema、retain與雙寫遷移。
 date: 2026-09-17
-author: 站長
+author: 茂伯
 draft: false
 ---
 

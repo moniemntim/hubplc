@@ -2,7 +2,7 @@
 title: 32位元累計值拆成兩個暫存器如何驗證組合順序
 description: 用已知32位元測試值核對byte與word順序，再以低word進位案例辨識撕裂與快照限制。
 date: 2026-09-17
-author: 站長
+author: 茂伯
 draft: false
 ---
 

@@ -2,7 +2,7 @@
 title: 振動監測先選感測器再談頻段 MEMS 壓電與 IEPE 的應用界線
 description: 從馬達頻段與方向需求，選擇MEMS、電荷型或IEPE加速度計，核對靈敏度、雜訊、安裝及擷取限制。
 date: 2026-09-17
-author: 站長
+author: 茂伯
 draft: false
 ---
 

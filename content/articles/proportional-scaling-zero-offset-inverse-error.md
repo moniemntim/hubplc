@@ -2,7 +2,7 @@
 title: 比例換算的零點偏移如何避免反算誤差
 description: 以 raw 4000..20000 對應 -1..9 bar 的可重現案例，教導零點偏移、正反算、夾限不可逆與最後一次捨入。
 date: 2026-09-17
-author: 站長
+author: 茂伯
 draft: false
 ---
 

@@ -2,7 +2,7 @@
 title: 通訊閘道資料映射如何用雙向測試表驗收
 description: 用已知圖樣、獨立回讀與異常案例逐方向驗證閘道映射，分清通訊成功與設備接受。
 date: 2026-09-21
-author: 站長
+author: 茂伯
 draft: false
 category: 工業通訊與網路
 ---

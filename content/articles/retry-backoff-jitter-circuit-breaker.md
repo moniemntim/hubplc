@@ -2,7 +2,7 @@
 title: 重試如何避免通訊恢復風暴
 description: 以base1秒、倍增2、cap8秒與full jitter案例，說明單一重試責任、27次風暴、deadline、限流與breaker半開探測。
 date: 2026-09-21
-author: 站長
+author: 茂伯
 draft: false
 category: 工業通訊與網路
 ---

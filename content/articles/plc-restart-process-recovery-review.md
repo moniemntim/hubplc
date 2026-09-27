@@ -2,7 +2,7 @@
 title: PLC重啟後流程位置與恢復條件判讀
 description: 從步號來源、流程版本、批次資料與外部動作結果判斷重啟後恢復條件，避免重複動作及錯用保持資料。
 date: 2026-09-17
-author: 站長
+author: 茂伯
 draft: false
 ---
 

@@ -2,7 +2,7 @@
 title: 第三方設備黑盒測試如何以可觀察介面定義通過
 description: 以未知內部實作的替身定義可觀察輸入、狀態、結果、時間與未知限制，建立可重播的黑盒驗收。
 date: 2026-09-21
-author: 站長
+author: 茂伯
 draft: false
 category: 維護與故障排查
 ---

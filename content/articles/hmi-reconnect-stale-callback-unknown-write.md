@@ -2,7 +2,7 @@
 title: HMI重連後怎麼刷新 查詢重建與舊命令防重送
 description: 設計HMI重連後的查詢重建、command outbox、generation防舊回呼、unknown write查詢與按鈕edge復位。
 date: 2026-09-21
-author: 站長
+author: 茂伯
 draft: false
 category: HMI 畫面與操作
 ---

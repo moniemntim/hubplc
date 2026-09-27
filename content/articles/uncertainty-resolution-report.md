@@ -2,7 +2,7 @@
 title: 量測不確定度如何在報表中與顯示解析度分開
 description: 分清解析度、標準與擴展不確定度，完成可重算的預算與報表。
 date: 2026-09-21
-author: 站長
+author: 茂伯
 draft: false
 category: 感測器與量測
 ---

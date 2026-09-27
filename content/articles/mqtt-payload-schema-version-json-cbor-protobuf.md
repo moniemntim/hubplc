@@ -2,7 +2,7 @@
 title: MQTT Payload格式與版本相容
 description: 以能源量測v1及v2契約教你比較JSON、CBOR及Protobuf，定義品質、單位、版本相容與離線驗證。
 date: 2026-09-17
-author: 站長
+author: 茂伯
 draft: false
 ---
 

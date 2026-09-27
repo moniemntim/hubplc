@@ -2,7 +2,7 @@
 title: 工業系統未完事項與已知限制交接
 description: 以未完事項、缺陷、假設與風險建立跨日報表追蹤；每項有owner、期限、證據、退出條件與逾期升級。
 date: 2026-09-17
-author: 站長
+author: 茂伯
 draft: false
 ---
 

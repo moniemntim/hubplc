@@ -2,7 +2,7 @@
 title: 不良品重測怎麼記錄 PLC 流程避免重算產量
 description: 分開產品、測試嘗試與良品統計，保留首次失敗並拒絕重送與晚到結果。
 date: 2026-09-17
-author: 站長
+author: 茂伯
 draft: false
 ---
 

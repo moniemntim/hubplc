@@ -2,7 +2,7 @@
 title: 初始化未完成時如何阻擋自動啟動
 description: 把本次初始化證據、模式、設備許可與新啟動請求分開，避免舊旗標或按住按鈕造成非預期啟動。
 date: 2026-09-17
-author: 站長
+author: 茂伯
 draft: false
 ---
 

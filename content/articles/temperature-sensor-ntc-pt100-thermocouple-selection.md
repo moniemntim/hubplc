@@ -2,7 +2,7 @@
 title: NTC PT100 與熱電偶 依溫度範圍 精度與佈線選擇溫度感測器
 description: 以溫度範圍、精度、反應時間和佈線條件比較 NTC、PT100 與熱電偶，並用 30 m 概念案例說明三線 PT100 與 Type K 延長線、冷端補償的選擇差異。
 date: 2026-09-17
-author: 站長
+author: 茂伯
 draft: false
 ---
 

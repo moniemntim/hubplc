@@ -2,7 +2,7 @@
 title: SCADA標籤品質與最後更新時間如何同時呈現
 description: 用目前值、最後良好值、品質原碼與不同時間來源，建立可驗收的SCADA資料時效顯示。
 date: 2026-09-21
-author: 站長
+author: 茂伯
 draft: false
 category: HMI 畫面與操作
 ---
@@ -75,3 +75,4 @@ FAQ4：沒有來源時間就無法顯示嗎？仍可顯示接收時間及已知�
 
 - [畫面回上一頁時如何保留或清除暫存篩選](/articles/restore-filter-navigation-state)
 - [大量標籤畫面如何用分組更新降低負載](/articles/grouped-tag-updates-backpressure)
+- [儀表板快取延遲如何顯示資料最後更新時間](/articles/dashboard-cache-data-freshness)

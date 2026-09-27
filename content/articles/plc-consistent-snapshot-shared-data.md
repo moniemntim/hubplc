@@ -2,7 +2,7 @@
 title: 不同任務共用變數為什麼會讀到一半 PLC一致性快照
 description: 以單一寫入者、奇偶序號和錯開更新案例，說明跨任務一致性快照與seqlock必要條件。
 date: 2026-09-17
-author: 站長
+author: 茂伯
 draft: false
 ---
 

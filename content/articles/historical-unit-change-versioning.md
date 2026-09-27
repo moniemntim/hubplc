@@ -2,7 +2,7 @@
 title: 歷史資料單位變更如何在查詢中保留版本
 description: 保留原始單位與生效版本，區分倍率、偏移及物理基準，再統一歷史查詢。
 date: 2026-09-21
-author: 站長
+author: 茂伯
 draft: false
 category: 資料記錄與報表
 ---

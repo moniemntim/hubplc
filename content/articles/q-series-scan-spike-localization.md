@@ -2,7 +2,7 @@
 title: Q系列掃描時間尖峰的量測與分段定位
 description: 以Q06UDVCPU官方掃描時間欄位、完整樣本計算與隔離分段測試，分清目前值、最大值及性能結論。
 date: 2026-09-17
-author: 站長
+author: 茂伯
 draft: false
 ---
 

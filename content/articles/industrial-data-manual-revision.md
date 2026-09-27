@@ -2,7 +2,7 @@
 title: 工業資料人工修正與撤回版本
 description: 保留原始null與原始列，將observed、estimated、manual分開，以版本、審核和撤回事件支援可追溯報表。
 date: 2026-09-17
-author: 站長
+author: 茂伯
 draft: false
 ---
 

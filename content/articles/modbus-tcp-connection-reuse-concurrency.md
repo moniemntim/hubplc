@@ -2,7 +2,7 @@
 title: Modbus TCP連線重用與併發請求 TID 逾時與MBAP封包邊界
 description: 以C1/C2時間線說明Modbus TCP連線重用、TID逾時晚到、session epoch、單一outstanding與MBAP Length重組。
 date: 2026-09-17
-author: 站長
+author: 茂伯
 draft: false
 ---
 

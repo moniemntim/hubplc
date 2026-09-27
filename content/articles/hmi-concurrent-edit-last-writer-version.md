@@ -2,7 +2,7 @@
 title: 多個操作員同時改值如何顯示最後寫入者與時間
 description: 以版本7同時修改案例說明條件提交、衝突提示、最後寫入者及設備套用狀態，避免多操作員互相覆蓋。
 date: 2026-09-21
-author: 站長
+author: 茂伯
 draft: false
 category: HMI 畫面與操作
 ---

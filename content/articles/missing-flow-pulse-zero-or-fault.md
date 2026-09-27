@@ -2,7 +2,7 @@
 title: 脈衝遺失如何區分零流量與輸入故障
 description: 區分脈衝流量的真零、窗口暫空與輸入故障，使用timeout、電氣、計數器與過程訊號等多證據診斷。
 date: 2026-09-21
-author: 站長
+author: 茂伯
 draft: false
 category: 感測器與量測
 ---

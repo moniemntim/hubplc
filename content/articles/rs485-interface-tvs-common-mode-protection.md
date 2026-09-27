@@ -2,7 +2,7 @@
 title: RS485端口保護 TVS 共模扼流圈與回流路徑
 description: 說明RS485介面TVS、串聯保護、共模與接地回流的配合，含兩個計算案例、故障排查與元件限制。
 date: 2026-09-17
-author: 站長
+author: 茂伯
 draft: false
 ---
 

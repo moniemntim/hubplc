@@ -2,7 +2,7 @@
 title: 資料接收重試如何用唯一鍵防止重複入庫
 description: 從穩定事件鍵、唯一限制到交易內業務更新，讓重試不重複計入產量。
 date: 2026-09-21
-author: 站長
+author: 茂伯
 draft: false
 category: 資料記錄與報表
 ---

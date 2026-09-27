@@ -2,7 +2,7 @@
 title: 工控資料庫交易與 PLC 斷線補送 唯一鍵 冪等寫入與失敗佇列
 description: 把PLC到資料庫的保存與確認責任分段，設計完整事件交易、補送水位及可診斷的失敗佇列。
 date: 2026-09-21
-author: 站長
+author: 茂伯
 draft: false
 category: 資料記錄與報表
 ---

@@ -2,7 +2,7 @@
 title: PLC時鐘漂移如何用外部時間比對而不改動控制邏輯
 description: 用外部參考時間量測PLC時鐘差異，分開事件時間、接收時間、延遲與解析度，不修改PLC時鐘或控制邏輯。
 date: 2026-09-17
-author: 站長
+author: 茂伯
 draft: false
 ---
 

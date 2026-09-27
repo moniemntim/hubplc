@@ -2,7 +2,7 @@
 title: 工業HMI變更申請的驗收與回退流程
 description: 建立工業HMI變更申請，要求before/after、影響範圍、驗收與rollback外部依賴，並以單一變更紀錄避免重複發布通知。
 date: 2026-09-17
-author: 站長
+author: 茂伯
 draft: false
 ---
 

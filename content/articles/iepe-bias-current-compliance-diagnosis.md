@@ -2,7 +2,7 @@
 title: IEPE感測器供電不足如何從偏壓診斷
 description: 以偏壓、恆流源順應電壓與長線電容分辨IEPE供電、接線及動態失真問題。
 date: 2026-09-21
-author: 站長
+author: 茂伯
 draft: false
 category: 感測器與量測
 ---

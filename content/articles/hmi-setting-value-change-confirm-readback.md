@@ -2,7 +2,7 @@
 title: HMI 設定值變更畫面怎麼降低輸入錯誤
 description: 用 Current、Pending、Confirmed 三個概念設計 HMI 設定值畫面，將取消不寫入、確認後讀回、空值／小數／超界與設備忙碌納入同一條可驗收流程，並以 80→82.5 的虛構案例示範。
 date: 2026-09-17
-author: 站長
+author: 茂伯
 draft: false
 ---
 

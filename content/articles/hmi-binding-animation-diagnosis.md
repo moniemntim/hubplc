@@ -2,7 +2,7 @@
 title: HMI數值更新但動畫不動的排查
 description: 從資料值、綁定型別、品質、可見條件與層級遮蔽逐步排查動畫不動。
 date: 2026-09-17
-author: 站長
+author: 茂伯
 draft: false
 ---
 

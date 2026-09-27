@@ -2,7 +2,7 @@
 title: 荷重元四點校正 遲滯與重複性檢查
 description: 教你用0、1、2、3 kg上下載回檢查荷重系統的遲滯、重複性與校正限制。
 date: 2026-09-21
-author: 站長
+author: 茂伯
 draft: false
 category: 感測器與量測
 ---

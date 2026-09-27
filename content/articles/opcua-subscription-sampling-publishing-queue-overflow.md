@@ -2,7 +2,7 @@
 title: OPC UA取樣發布間隔與通知佇列設計
 description: 用100ms取樣、1秒發布、queue size 2與discardOldest案例分清OPC UA Subscription的取樣、發布、Client處理、Overflow與KeepAlive，建立可觀察的新鮮度契約。
 date: 2026-09-17
-author: 站長
+author: 茂伯
 draft: false
 ---
 

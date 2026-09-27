@@ -2,7 +2,7 @@
 title: 端到端命令追蹤如何串起請求 執行與回覆
 description: 以穩定命令識別串接請求、接受、執行與回覆，分清重試、未知結果及實際完成證據。
 date: 2026-09-21
-author: 站長
+author: 茂伯
 draft: false
 category: 維護與故障排查
 ---

@@ -2,7 +2,7 @@
 title: 濁度異常如何分辨氣泡 真顆粒與遮光
 description: 以流量、壓力、安裝狀態與對照實驗分辨濁度異常可能來自氣泡、真顆粒或光學遮光。
 date: 2026-09-21
-author: 站長
+author: 茂伯
 draft: false
 category: 感測器與量測
 ---

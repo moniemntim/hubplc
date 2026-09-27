@@ -2,7 +2,7 @@
 title: 刪除錯誤匯入資料前如何保留處置證據
 description: 以匯入工作識別與變更前後資料界定處置範圍，保留證據並核對關聯與下游修訂。
 date: 2026-09-21
-author: 站長
+author: 茂伯
 draft: false
 category: 資料記錄與報表
 ---

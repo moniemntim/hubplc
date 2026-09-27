@@ -2,7 +2,7 @@
 title: 設備時間錯開時如何驗證事件排序規則
 description: 用偏移、補送、同時戳與重啟案例，驗證事件時間與接收時間的排序界線。
 date: 2026-09-21
-author: 站長
+author: 茂伯
 draft: false
 category: 維護與故障排查
 ---

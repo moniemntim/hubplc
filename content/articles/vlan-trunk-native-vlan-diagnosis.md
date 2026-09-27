@@ -2,7 +2,7 @@
 title: VLAN與Trunk不通的排查順序
 description: 用VLAN20 PLC與VLAN30資料收集拓撲，沿MAC、ARP、tag、allowed list、PVID、native與L3 ACL路徑定位trunk漏VLAN問題。
 date: 2026-09-17
-author: 站長
+author: 茂伯
 draft: false
 ---
 

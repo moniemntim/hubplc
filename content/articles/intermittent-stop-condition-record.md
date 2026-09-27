@@ -2,7 +2,7 @@
 title: 間歇性停機如何用發生條件而非猜測建立紀錄
 description: 以故障前後視窗、運轉暴露量與條件分組，建立可驗證的間歇停機調查。
 date: 2026-09-21
-author: 站長
+author: 茂伯
 draft: false
 category: 維護與故障排查
 ---

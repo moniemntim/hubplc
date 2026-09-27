@@ -2,7 +2,7 @@
 title: 時間差跨越午夜如何以日期時間計算
 description: 以合成批次資料集D021教你用完整年月日與時區計算跨午夜、跨月、閏日時間差，並分離UTC事件時間、接收時間、牆鐘校時、monotonic間隔、重啟epoch與時間品質。
 date: 2026-09-21
-author: 站長
+author: 茂伯
 draft: false
 category: PLC 程式與控制
 ---

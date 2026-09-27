@@ -2,7 +2,7 @@
 title: 模擬輸入正常實機輸入異常如何拆分I/O與感測器
 description: 明確模擬注入邊界，分段驗證公式、I/O硬體與現場感測器。
 date: 2026-09-21
-author: 站長
+author: 茂伯
 draft: false
 category: 維護與故障排查
 ---

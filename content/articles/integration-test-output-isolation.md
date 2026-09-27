@@ -2,7 +2,7 @@
 title: 整合測試環境如何隔離真實輸出避免誤動作
 description: 盤點所有輸出與外部服務通道，建立可核對的隔離邊界、阻止條件與測試後恢復紀錄。
 date: 2026-09-21
-author: 站長
+author: 茂伯
 draft: false
 category: 維護與故障排查
 ---

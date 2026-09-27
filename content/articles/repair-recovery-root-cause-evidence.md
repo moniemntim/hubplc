@@ -2,7 +2,7 @@
 title: 維修後故障消失如何避免沒有證據就宣稱根因
 description: 把恢復服務、原因假設與修正驗證分開，寫出維修後不復發的證據與限制。
 date: 2026-09-21
-author: 站長
+author: 茂伯
 draft: false
 category: 維護與故障排查
 ---

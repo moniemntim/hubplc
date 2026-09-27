@@ -2,7 +2,7 @@
 title: HMI 趨勢圖怎麼選時間範圍才能支援值班判斷
 description: 以虛構溫度十分鐘升高但日平均正常的案例，分辨即時、班次、日、週視圖，重算 time-weighted、SimpleAverage、MinMax 與 raw 查詢的差異。
 date: 2026-09-17
-author: 站長
+author: 茂伯
 draft: false
 ---
 

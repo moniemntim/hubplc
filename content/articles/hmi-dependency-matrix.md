@@ -2,7 +2,7 @@
 title: HMI畫面與報表的相依性矩陣
 description: 用畫面、資料源、報表、角色與外部檔建立相依矩陣，推導欄位變更後的回歸測試。
 date: 2026-09-17
-author: 站長
+author: 茂伯
 draft: false
 ---
 

@@ -2,7 +2,7 @@
 title: 多來源同名標籤如何在資料模型中避免混淆
 description: 用穩定點位鍵與來源對照分開顯示名稱，避免同名標籤、命名空間與設備更名造成歷史串線。
 date: 2026-09-21
-author: 站長
+author: 茂伯
 draft: false
 category: 資料記錄與報表
 ---

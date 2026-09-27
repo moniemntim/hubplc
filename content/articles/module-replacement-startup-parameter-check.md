@@ -2,7 +2,7 @@
 title: 模組更換後如何建立上電參數比對表
 description: 沿參數保存位置、生效時機與資料路徑建立比對表，用三點案例辨識量程設定錯誤。
 date: 2026-09-17
-author: 站長
+author: 茂伯
 draft: false
 ---
 

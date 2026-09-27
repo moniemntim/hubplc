@@ -2,7 +2,7 @@
 title: CSV 內含換行備註時如何保證欄位不錯位
 description: 用真正的CSV解析器保留備註換行、逗號與引號，核對邏輯記錄而不是實體文字行。
 date: 2026-09-21
-author: 站長
+author: 茂伯
 draft: false
 category: 資料記錄與報表
 ---

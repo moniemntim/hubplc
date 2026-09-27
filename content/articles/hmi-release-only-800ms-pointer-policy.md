@@ -2,7 +2,7 @@
 title: 同一元件的長按與短按如何判定
 description: 採release-only長按政策：放開時以event timestamp判799ms短按、800ms長按，按住只顯示狀態，owner cancel、失焦與換頁取消，第二pointer忽略。
 date: 2026-09-21
-author: 站長
+author: 茂伯
 draft: false
 category: HMI 畫面與操作
 ---

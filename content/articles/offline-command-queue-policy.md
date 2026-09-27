@@ -2,7 +2,7 @@
 title: 斷線期間命令是否排隊如何建立明確策略
 description: 把未送出、完成與結果不明分開，依命令語意和期限決定斷線時拒絕、合併、保存或恢復後核實。
 date: 2026-09-21
-author: 站長
+author: 茂伯
 draft: false
 category: 工業通訊與網路
 ---

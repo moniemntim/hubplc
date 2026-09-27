@@ -2,7 +2,7 @@
 title: 設備回應過長被截斷如何拒絕不完整資料
 description: 區分TCP分段與應用截斷，以length、maxframe、EOF、deadline、checksum和平台UDP截斷語意拒絕不完整回應，不補零。
 date: 2026-09-21
-author: 站長
+author: 茂伯
 draft: false
 category: 工業通訊與網路
 ---

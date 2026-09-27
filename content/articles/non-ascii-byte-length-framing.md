@@ -2,7 +2,7 @@
 title: 非 ASCII 長度以 byte 正確拆包
 description: 以中、A中B、emoji與NFC/NFD案例區分 bytes、Unicode code points與UTF-16 code units，建立byte length前綴及strict decode驗收。
 date: 2026-09-21
-author: 站長
+author: 茂伯
 draft: false
 category: 工業通訊與網路
 ---

@@ -2,7 +2,7 @@
 title: PLC 查表與分段線性插值
 description: 從五點合成曲線尋找相鄰區間，完整算出中點，並拒絕重複X與超量程輸入。
 date: 2026-09-17
-author: 站長
+author: 茂伯
 draft: false
 ---
 

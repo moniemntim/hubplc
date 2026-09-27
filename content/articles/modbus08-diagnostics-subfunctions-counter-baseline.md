@@ -2,7 +2,7 @@
 title: Modbus 0x08診斷 讀計數器 回送測試與會改狀態的子功能
 description: 以回送PDU與計數增量案例教讀者辨認0x08診斷的副作用，保存清除前資料並避免把逾時當零。
 date: 2026-09-17
-author: 站長
+author: 茂伯
 draft: false
 ---
 

@@ -2,7 +2,7 @@
 title: Modbus 0x16 Mask Write Register 位元遮罩寫入何時比讀改寫安全
 description: 以000Ah與bit4案例拆解0x16的AND/OR mask，對比0x06讀改寫競態。
 date: 2026-09-17
-author: 站長
+author: 茂伯
 draft: false
 ---
 

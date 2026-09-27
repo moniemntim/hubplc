@@ -2,7 +2,7 @@
 title: 配方欄位變更怎麼確認 canonical diff與有效期
 description: 教你以canonical diff分辨數值、單位、null、未提供與hidden欄位，並用revision、diffHash、device、version與期限防止確認內容被替換。
 date: 2026-09-21
-author: 站長
+author: 茂伯
 draft: false
 category: HMI 畫面與操作
 ---

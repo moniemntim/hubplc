@@ -2,7 +2,7 @@
 title: 斜坡升降速計算如何處理週期不固定
 description: 以0→10、2 units/s與dt 0.1/0.25/0.15的案例，說明實際週期、固定週期、長停頓與時間倒退處理。
 date: 2026-09-17
-author: 站長
+author: 茂伯
 draft: false
 ---
 

@@ -2,7 +2,7 @@
 title: 維護窗口前後如何比較關鍵指標確認沒有回歸
 description: 用同條件基準、前後窗口和事前門檻判斷維護後是否出現回歸。
 date: 2026-09-21
-author: 站長
+author: 茂伯
 draft: false
 category: 維護與故障排查
 ---

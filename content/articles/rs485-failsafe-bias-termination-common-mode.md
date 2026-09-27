@@ -2,7 +2,7 @@
 title: RS-485偏壓與Fail-safe 終端 共模與A/B極性不確定時怎麼算
 description: 以5 V、680 Ω上拉下拉與兩個120 Ω終端計算約211 mV閒置差動，說明終端負載、共模、A/B命名和Fail-safe邊界。
 date: 2026-09-17
-author: 站長
+author: 茂伯
 draft: false
 ---
 

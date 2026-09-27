@@ -2,7 +2,7 @@
 title: 荷重元 mV/V 輸出怎麼用 激勵電壓 接線盒 秤台偏載
 description: 從mV/V、四線六線到四顆並聯，利用同砝碼四角顯示值判斷偏載，先排機械問題再依手冊校正。
 date: 2026-09-17
-author: 站長
+author: 茂伯
 draft: false
 ---
 

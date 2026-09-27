@@ -2,7 +2,7 @@
 title: 24VDC UPS分路事件關聯
 description: 把AC、UPS、母線、分路、PLC重啟與採樣限制放在同一時間線
 date: 2026-09-21
-author: 站長
+author: 茂伯
 draft: false
 category: 電氣介面與配線
 ---

@@ -2,7 +2,7 @@
 title: 鍵盤與觸控輸入事件一致性
 description: 以單一提交入口、IME 規則與操作 ID 避免重複命令。
 date: 2026-09-21
-author: 站長
+author: 茂伯
 draft: false
 category: HMI 畫面與操作
 ---

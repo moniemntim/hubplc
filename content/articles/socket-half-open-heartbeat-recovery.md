@@ -2,7 +2,7 @@
 title: Socket半開心跳逾時如何回收連線
 description: 區分half-open失聯與half-close方向，使用自訂heartbeat序號、單調deadline和epoch，依suspect、close、清buffer、backoff順序安全回收socket。
 date: 2026-09-21
-author: 站長
+author: 茂伯
 draft: false
 category: 工業通訊與網路
 ---

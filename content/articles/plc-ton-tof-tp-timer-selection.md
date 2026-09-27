@@ -2,7 +2,7 @@
 title: TON TOF 與 TP 計時器怎麼選 以輸入輸出時間線比較
 description: 用同一組輸入時間線比較 TON、TOF、TP，處理輸入提早消失、重觸發與中途修改 PT，並標明 Schneider 文件平台與 QCPU 的限制。
 date: 2026-09-17
-author: 站長
+author: 茂伯
 draft: false
 ---
 

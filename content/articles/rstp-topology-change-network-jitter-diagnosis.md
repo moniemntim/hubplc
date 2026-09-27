@@ -2,7 +2,7 @@
 title: RSTP 拓撲變更與網路抖動 從 Topology Change Log 找到迴路線索
 description: 以三台交換器自訂priority與cost推導RSTP角色，再用TC、link flap、MAC flapping與應用timeout交叉判斷迴路線索，並說明edge限制。
 date: 2026-09-17
-author: 站長
+author: 茂伯
 draft: false
 ---
 

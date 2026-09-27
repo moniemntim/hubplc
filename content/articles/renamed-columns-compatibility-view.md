@@ -2,7 +2,7 @@
 title: 資料欄位改名後如何維持舊報表的相容層
 description: 將舊報表契約固定在版本介面，逐欄核對名稱、型別、順序與語意再移轉。
 date: 2026-09-21
-author: 站長
+author: 茂伯
 draft: false
 category: 資料記錄與報表
 ---

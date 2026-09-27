@@ -2,7 +2,7 @@
 title: RS485節點數與Unit Load 超量前先做負載核算
 description: 以Unit Load模型核算RS485混合節點數，並把終端、偏壓、保護、拓撲與中繼器納入實務驗收。
 date: 2026-09-17
-author: 站長
+author: 茂伯
 draft: false
 ---
 

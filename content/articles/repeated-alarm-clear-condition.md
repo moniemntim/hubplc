@@ -2,7 +2,7 @@
 title: 同一警報反覆出現如何找出真正清除條件
 description: 分清物理恢復、確認、鎖存與重送，以時間線驗證警報真正清除條件。
 date: 2026-09-21
-author: 站長
+author: 茂伯
 draft: false
 category: 維護與故障排查
 ---

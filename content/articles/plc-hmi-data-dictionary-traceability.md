@@ -2,7 +2,7 @@
 title: PLC 到 HMI 的資料字典如何由來源一路追到畫面
 description: 建立來源、PLC處理、通訊映射與HMI物件的資料字典，逐層驗證型別、倍率、品質與寫入責任。
 date: 2026-09-21
-author: 站長
+author: 茂伯
 draft: false
 category: 維護與故障排查
 ---

@@ -2,7 +2,7 @@
 title: HMI大螢幕與平板共用資訊 響應式版面 權限與防誤觸要分開
 description: 以四台泵浦的共用資料模型，設計大螢幕與平板的版面、觸控、權限與新鮮度驗收。
 date: 2026-09-17
-author: 站長
+author: 茂伯
 draft: false
 ---
 

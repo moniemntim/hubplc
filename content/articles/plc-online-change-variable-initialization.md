@@ -2,7 +2,7 @@
 title: PLC 線上修改後哪些變數會重新初始化
 description: 以CODESYS 3.5待確認版本規劃線上修改、完整下載與重新RUN的變數快照和初始化驗證。
 date: 2026-09-17
-author: 站長
+author: 茂伯
 draft: false
 ---
 

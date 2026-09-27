@@ -2,7 +2,7 @@
 title: RS485 沒有回應的逐步排查方法
 description: RS485 沒有回應時，從單一主從站測試開始，逐步檢查電源、極性、終端、封包、方向切換與逾時。
 date: 2026-09-17
-author: 站長
+author: 茂伯
 draft: false
 ---
 

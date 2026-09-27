@@ -2,7 +2,7 @@
 title: 跨時區設備的班次產量如何轉換後再彙總
 description: 先定義全球時窗或地方班別，再以UTC端點配對事件，避免跨日與偏移造成產量錯班。
 date: 2026-09-21
-author: 站長
+author: 茂伯
 draft: false
 category: 資料記錄與報表
 ---

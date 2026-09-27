@@ -2,7 +2,7 @@
 title: RTD 三線與四線量測 導線電阻何時會成為溫度誤差
 description: 以二線1Ω導線、明訂三線量測拓樸與四線殘差案例，說明導線電阻、配對前提及固定電阻模擬步驟。
 date: 2026-09-17
-author: 站長
+author: 茂伯
 draft: false
 ---
 

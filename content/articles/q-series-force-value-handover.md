@@ -2,7 +2,7 @@
 title: Q系列強制值盤點與解除交接
 description: 建立逐點強制值盤點、解除前預測與交接核准窗口，避免清除後程式立即接管造成未預期動作。
 date: 2026-09-17
-author: 站長
+author: 茂伯
 draft: false
 ---
 

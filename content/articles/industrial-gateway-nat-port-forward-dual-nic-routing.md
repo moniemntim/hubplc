@@ -2,7 +2,7 @@
 title: 工業閘道的 NAT Port Forward 與雙網卡路由 資料流怎麼畫才不誤導
 description: 以雙網卡虛構工業閘道與四條具體流向，分清NAT、Port Forward、靜態路由和防火牆，並建立回程、版本化與離線封包審核方法。
 date: 2026-09-17
-author: 站長
+author: 茂伯
 draft: false
 ---
 

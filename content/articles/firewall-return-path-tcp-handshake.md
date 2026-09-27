@@ -2,7 +2,7 @@
 title: 防火牆回程被擋如何用兩側證據判斷
 description: 以SYN→SYNACK→ACK兩側觀測定位回程缺失，區分stateful與stateless規則、路由、ACL、介面和capture證據，避免盲目關閉防火牆。
 date: 2026-09-21
-author: 站長
+author: 茂伯
 draft: false
 category: 工業通訊與網路
 ---

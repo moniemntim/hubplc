@@ -2,7 +2,7 @@
 title: 感測器極性與反向量程如何從校正斜率分辨
 description: 分辨接線極性、工程方向與合法反向4–20mA量程，避免用絕對值掩蓋錯誤。
 date: 2026-09-21
-author: 站長
+author: 茂伯
 draft: false
 category: 感測器與量測
 ---

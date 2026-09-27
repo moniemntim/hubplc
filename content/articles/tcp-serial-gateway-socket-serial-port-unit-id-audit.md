@@ -2,7 +2,7 @@
 title: TCP-to-Serial Gateway 設定審核 Socket Serial Port Unit ID 三層不要混寫
 description: 以離線匯出檔拆分TCP Socket、實體串口與Unit ID，比較透明轉發、Modbus TCP gateway與協定轉換，並建立變更回退與封包驗收表。
 date: 2026-09-17
-author: 站長
+author: 茂伯
 draft: false
 ---
 

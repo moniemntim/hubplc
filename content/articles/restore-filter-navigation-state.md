@@ -2,7 +2,7 @@
 title: 畫面回上一頁時如何保留或清除暫存篩選
 description: 教你區分篩選、草稿、快照與游標，定義回頁恢復和清除政策並用事件識別驗收。
 date: 2026-09-21
-author: 站長
+author: 茂伯
 draft: false
 category: HMI 畫面與操作
 ---

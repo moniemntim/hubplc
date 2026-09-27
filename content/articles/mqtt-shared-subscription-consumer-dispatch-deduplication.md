@@ -2,7 +2,7 @@
 title: MQTT共享訂閱的分工與去重
 description: 以三個analytics consumer的離線案例說明$share群組、分派不確定性、QoS重送、eventId去重、DB commit與consumer失聯監測。
 date: 2026-09-17
-author: 站長
+author: 茂伯
 draft: false
 ---
 

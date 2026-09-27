@@ -2,7 +2,7 @@
 title: 強制值與模擬輸入有什麼不同 PLC 測試資料的使用範圍
 description: 在隔離CODESYS專案中比較SimInput、一次性Write Values與持續Force Values，並以Target每掃描寫0的時間線說明差異。
 date: 2026-09-17
-author: 站長
+author: 茂伯
 draft: false
 ---
 

@@ -2,7 +2,7 @@
 title: 警報抑制怎麼管 原因 期限與恢復條件要分開
 description: 教你區分設計抑制、操作員擱置、維護離線與停用，建立期限、責任、到期重評估及歷史保留。
 date: 2026-09-21
-author: 站長
+author: 茂伯
 draft: false
 category: HMI 畫面與操作
 ---

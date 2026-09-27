@@ -2,7 +2,7 @@
 title: PLC 系統 Tick 回繞後的經過時間計算
 description: 用八位元Tick示範回繞差值，說明模數與最大值的差異，以及重啟和超過一圈時的限制。
 date: 2026-09-17
-author: 站長
+author: 茂伯
 draft: false
 ---
 

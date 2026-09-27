@@ -2,7 +2,7 @@
 title: 感測器階躍響應時間如何驗收
 description: 用一階階躍響應定義τ、T90=2.303τ與T10-90=2.197τ，並分離輸入源、感測器與採集鏈延遲。
 date: 2026-09-21
-author: 站長
+author: 茂伯
 draft: false
 category: 感測器與量測
 ---

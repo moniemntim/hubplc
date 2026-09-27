@@ -2,7 +2,7 @@
 title: 兩來源同時更新同一資料如何仲裁
 description: 以中央權威版本、CAS與單一寫入者仲裁兩來源更新，示範A/B同持v7時僅一方形成v8，並處理重試、epoch與fencing。
 date: 2026-09-21
-author: 站長
+author: 茂伯
 draft: false
 category: PLC 程式與控制
 ---

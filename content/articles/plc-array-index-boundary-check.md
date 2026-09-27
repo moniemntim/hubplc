@@ -2,7 +2,7 @@
 title: 陣列索引超出範圍會怎樣 PLC 批次資料的邊界檢查
 description: 用 Buffer[0..9] 與 ValidCount 0..10 示範空資料、合法邊界、無效資料與越界拒絕。
 date: 2026-09-17
-author: 站長
+author: 茂伯
 draft: false
 ---
 

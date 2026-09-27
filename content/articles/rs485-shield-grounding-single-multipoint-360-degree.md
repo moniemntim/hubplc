@@ -2,7 +2,7 @@
 title: RS485屏蔽接地 單端 多點與360度端接的工程判斷
 description: 以30 m兩箱案例說明RS485屏蔽、訊號參考、PE與FE的差異，依等電位、頻率與隔離條件選擇單端、兩端或多點端接。
 date: 2026-09-17
-author: 站長
+author: 茂伯
 draft: false
 ---
 

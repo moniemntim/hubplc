@@ -2,7 +2,7 @@
 title: HMI十個畫面的索引與權限
 description: 以十個HMI畫面ID建立用途、route、view、permission、data與version索引，說明Perspective pages與views的關係及離線驗收。
 date: 2026-09-17
-author: 站長
+author: 茂伯
 draft: false
 ---
 

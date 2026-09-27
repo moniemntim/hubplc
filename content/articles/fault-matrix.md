@@ -2,7 +2,7 @@
 title: 異常注入矩陣如何涵蓋單點與同時故障
 description: 以來源、映射、服務三類異常建立單點與組合案例，區分主因、附因、未知結果與恢復證據。
 date: 2026-09-21
-author: 站長
+author: 茂伯
 draft: false
 category: 維護與故障排查
 ---

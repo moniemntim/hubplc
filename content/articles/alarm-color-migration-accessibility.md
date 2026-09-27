@@ -2,7 +2,7 @@
 title: 警報色彩改版如何保留既有辨識習慣
 description: 以文字、圖示、對比與任務測試保留警報辨識習慣，並分開 active、ack、suppressed 與 cleared 狀態。
 date: 2026-09-21
-author: 站長
+author: 茂伯
 draft: false
 category: HMI 畫面與操作
 ---

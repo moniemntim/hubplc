@@ -2,7 +2,7 @@
 title: 設備重啟後第一批失敗如何檢查初始化順序
 description: 用依賴圖和啟動矩陣檢查第一批失敗，分清保持狀態與物理就緒。
 date: 2026-09-21
-author: 站長
+author: 茂伯
 draft: false
 category: 維護與故障排查
 ---

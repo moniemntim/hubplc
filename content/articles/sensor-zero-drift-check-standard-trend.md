@@ -2,7 +2,7 @@
 title: 感測器零點漂移如何用定期基準點建立趨勢
 description: 以三個基準點、調整前後紀錄與數字案例分辨零點漂移、倍率變化及檢查條件差異。
 date: 2026-09-21
-author: 站長
+author: 茂伯
 draft: false
 category: 感測器與量測
 ---

@@ -2,7 +2,7 @@
 title: 等間隔重採樣如何標示原始點與填補點
 description: 保留格點來源、插值支點與缺口限制，讓重採樣結果可用且不冒充實測。
 date: 2026-09-21
-author: 站長
+author: 茂伯
 draft: false
 category: 資料記錄與報表
 ---

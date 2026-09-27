@@ -2,7 +2,7 @@
 title: 執行中修改參數會發生什麼 PLC 工作參數快照設計
 description: 以編輯、確認及工作快照固定本批參數，讓新設定在明確邊界生效。
 date: 2026-09-17
-author: 站長
+author: 茂伯
 draft: false
 ---
 

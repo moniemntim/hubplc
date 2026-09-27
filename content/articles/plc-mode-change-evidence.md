@@ -2,7 +2,7 @@
 title: CPU模式切換的來源取證與判讀
 description: 將CPU模式觀察、遠端請求與操作者證據分開，以時間窗口和證據等級判讀切換來源。
 date: 2026-09-17
-author: 站長
+author: 茂伯
 draft: false
 ---
 

@@ -2,7 +2,7 @@
 title: MQTT憑證與TLS連線排查
 description: 以三張虛構Server leaf憑證及其信任鏈案例，依DNS、SNI、SAN、信任鏈、mTLS與MQTT ACL順序排查TLS連線問題。
 date: 2026-09-17
-author: 站長
+author: 茂伯
 draft: false
 ---
 

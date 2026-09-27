@@ -2,7 +2,7 @@
 title: OPC UA應用憑證的信任與輪替
 description: 區分ApplicationUri、URI/DNS SAN、Application Instance Certificate與雙方trust list，建立自訂60天提醒及新舊指紋輪替表，不保存私鑰。
 date: 2026-09-17
-author: 站長
+author: 茂伯
 draft: false
 ---
 

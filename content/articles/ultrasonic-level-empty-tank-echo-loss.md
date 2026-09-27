@@ -2,7 +2,7 @@
 title: 超音波液位如何區分空罐與回波遺失
 description: 區分超音波液位的空罐、盲區與回波遺失，保留距離、換算液位、回波品質、量程與安裝證據。
 date: 2026-09-21
-author: 站長
+author: 茂伯
 draft: false
 category: 感測器與量測
 ---

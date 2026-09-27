@@ -2,7 +2,7 @@
 title: MQTT命令與回覆的關聯追蹤
 description: 以虛構泵浦 start request/response 示範 MQTT 5 properties 與 payload schema 如何追蹤命令，並處理逾時、重複、晚到回覆及 MQTT 3 相容。
 date: 2026-09-17
-author: 站長
+author: 茂伯
 draft: false
 ---
 

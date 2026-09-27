@@ -2,7 +2,7 @@
 title: PLC 最小可重現專案 保留兩模組資料偏移案例
 description: 用兩個模組與不同測試值建立最小重現專案，追蹤資料偏移發生在組態、索引或更新時序。
 date: 2026-09-17
-author: 站長
+author: 茂伯
 draft: false
 ---
 

@@ -2,7 +2,7 @@
 title: 霍爾磁性位置開關 單極 雙極 全極與氣缸磁鐵配對
 description: 用霍爾開關檢出氣缸磁性位置，區分單極、雙極鎖存、全極與線性型，說明BOP/BRP遲滯、磁鐵配對、接線與往返診斷。
 date: 2026-09-17
-author: 站長
+author: 茂伯
 draft: false
 ---
 

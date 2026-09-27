@@ -2,7 +2,7 @@
 title: Modbus File Record 0x14讀取與0x15寫入的檔案編號和長度
 description: 用兩組離線File Record請求推導子請求、子回覆及外層長度，並說明寫入回聲、設備映射與資料一致性限制。
 date: 2026-09-17
-author: 站長
+author: 茂伯
 draft: false
 ---
 

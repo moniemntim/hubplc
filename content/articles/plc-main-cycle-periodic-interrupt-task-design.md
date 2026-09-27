@@ -2,7 +2,7 @@
 title: PLC 主程式 週期任務與中斷任務如何分工
 description: 把快速取樣、順序流程與低頻統計分工，提醒優先級、搶占、週期和共享資料一致性不能跨品牌猜測。
 date: 2026-09-17
-author: 站長
+author: 茂伯
 draft: false
 ---
 

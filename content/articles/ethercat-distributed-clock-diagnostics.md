@@ -2,7 +2,7 @@
 title: EtherCAT分散式時鐘異常如何讀懂診斷資料
 description: 分清TwinCAT任務偏差分布與EtherCAT從站事件間隔，按配置、量測範圍與時間軸建立可重現的DC診斷流程。
 date: 2026-09-21
-author: 站長
+author: 茂伯
 draft: false
 category: 工業通訊與網路
 ---

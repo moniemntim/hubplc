@@ -2,7 +2,7 @@
 title: TCP連線成功但應用無回覆如何分層定位
 description: 把TCP問題分成connect、完整send、peer應用處理與完整response，分別設timeout，使用兩端日誌和封包證據定位，避免把ACK當成應用完成。
 date: 2026-09-21
-author: 站長
+author: 茂伯
 draft: false
 category: 工業通訊與網路
 ---

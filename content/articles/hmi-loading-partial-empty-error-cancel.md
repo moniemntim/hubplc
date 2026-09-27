@@ -2,7 +2,7 @@
 title: 畫面載入慢怎麼設計 loading partial empty error與cancel
 description: 設計畫面載入的loading、partial、empty、error與cancel狀態，使用request epoch避免舊回覆污染新查詢。
 date: 2026-09-21
-author: 站長
+author: 茂伯
 draft: false
 category: HMI 畫面與操作
 ---

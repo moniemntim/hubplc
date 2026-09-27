@@ -2,7 +2,7 @@
 title: HMI 事件時間線如何把警報 操作和備註放在同一脈絡
 description: 以輸送帶停機案例建立可重建事件時間線，分離來源時間、收取時間、操作者、事件ID與週期ID。
 date: 2026-09-17
-author: 站長
+author: 茂伯
 draft: false
 ---
 

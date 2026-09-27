@@ -2,7 +2,7 @@
 title: 工業事件資料如何保留來源與處理狀態
 description: 用虛構低流量警報建立raw、驗證、轉換、發布狀態及事件血緣。
 date: 2026-09-17
-author: 站長
+author: 茂伯
 draft: false
 ---
 

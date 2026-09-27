@@ -2,7 +2,7 @@
 title: MQTT QoS交付語意與應用資料去重
 description: 比較MQTT QoS 0/1/2的協定交付語意，建立QoS1 eventID去重、同ID異payload衝突、Broker重啟與命令副作用的兩段驗收模型。
 date: 2026-09-17
-author: 站長
+author: 茂伯
 draft: false
 ---
 

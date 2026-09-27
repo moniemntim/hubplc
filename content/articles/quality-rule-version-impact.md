@@ -2,7 +2,7 @@
 title: 資料品質規則變更後如何比較前後統計影響
 description: 固定輸入資料並逐事件比較新舊品質規則，呈現改判集合、樣本數與統計差異。
 date: 2026-09-21
-author: 站長
+author: 茂伯
 draft: false
 category: 資料記錄與報表
 ---

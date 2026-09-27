@@ -2,7 +2,7 @@
 title: 部分下載後如何核對未變更的PLC內容
 description: 按程式、設定、編譯依賴與動態資料分層核對部分下載範圍，避免把未選取當成已證實未變更。
 date: 2026-09-17
-author: 站長
+author: 茂伯
 draft: false
 ---
 

@@ -2,7 +2,7 @@
 title: 自動化測試報告如何附上版本 輸入與結果摘要
 description: 以版本、輸入與結果三層摘要建立可重現的自動化測試報告。
 date: 2026-09-21
-author: 站長
+author: 茂伯
 draft: false
 category: 維護與故障排查
 ---

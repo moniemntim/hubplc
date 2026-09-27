@@ -2,7 +2,7 @@
 title: PLC與HMI標籤對照與命名實作
 description: 用五個槽體變數建立PLC來源、HMI標籤、型別、單位與畫面用途對照，示範差異檢查及交接驗收。
 date: 2026-09-17
-author: 站長
+author: 茂伯
 draft: false
 ---
 

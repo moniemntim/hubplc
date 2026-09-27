@@ -2,7 +2,7 @@
 title: HMI 操作按鈕的回饋狀態如何讓使用者知道命令是否生效
 description: 以封存已結案通知建立按鈕回饋狀態與冪等重試規則。
 date: 2026-09-17
-author: 站長
+author: 茂伯
 draft: false
 ---
 

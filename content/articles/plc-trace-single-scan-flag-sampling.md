@@ -2,7 +2,7 @@
 title: PLC Trace 用單掃描旗標與取樣條件重現瞬間事件
 description: 用單掃描旗標、事件序號與取樣條件說明 Trace 看得見與看不見的差異。
 date: 2026-09-17
-author: 站長
+author: 茂伯
 draft: false
 ---
 

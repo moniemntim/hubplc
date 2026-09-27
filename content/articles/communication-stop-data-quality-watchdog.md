@@ -2,7 +2,7 @@
 title: 通訊服務停止後怎麼保持資料品質與時間可信
 description: 分開connection state與data quality，說明停止、watchdog、last value、OPC UA StatusCode及普通自動寫入閘門。
 date: 2026-09-21
-author: 站長
+author: 茂伯
 draft: false
 category: 工業通訊與網路
 ---

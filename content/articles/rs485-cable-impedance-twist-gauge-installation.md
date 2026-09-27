@@ -2,7 +2,7 @@
 title: RS485纜線怎麼挑 特性阻抗 雙絞結構與線徑各在解決什麼問題
 description: 從Belden 3106A資料表拆解RS485纜線的特性阻抗、雙絞、線徑、電容、波速與彎曲規格，並以100 m案例區分固定、拖鏈和戶外選型。
 date: 2026-09-17
-author: 站長
+author: 茂伯
 draft: false
 ---
 

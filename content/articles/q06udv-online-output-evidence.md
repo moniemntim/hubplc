@@ -2,7 +2,7 @@
 title: 線上監看看到的值與實際輸出不一致怎麼取證
 description: 區分線上監看、端子量測與負載功能證據，建立不強制試出的差異取證流程。
 date: 2026-09-17
-author: 站長
+author: 茂伯
 draft: false
 ---
 

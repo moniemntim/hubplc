@@ -2,7 +2,7 @@
 title: OPC UA方法呼叫的參數與結果判讀
 description: 以虛構CalculateVolume與ResetCounter方法示範OPC UA參數schema、Executable/UserExecutable、設備狀態、三層錯誤、審計與timeout未知結果的安全判讀。
 date: 2026-09-17
-author: 站長
+author: 茂伯
 draft: false
 ---
 

@@ -2,7 +2,7 @@
 title: PLC故障影響分級與操作員處置
 description: 把原始PLC診斷、製程影響與操作員動作分開，透過三個情境設計可執行的維護分級。
 date: 2026-09-17
-author: 站長
+author: 茂伯
 draft: false
 ---
 

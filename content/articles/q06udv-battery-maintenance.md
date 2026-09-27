@@ -2,7 +2,7 @@
 title: PLC電池警告出現時如何保存資料與安排更換
 description: 以單一時間線保存Q06UDVCPU程式、參數、D配方持有值、錯誤歷史與檔案，分開驗證可解析性、內容比對和雜湊，再依型號手冊安排Q6BAT維護。
 date: 2026-09-17
-author: 站長
+author: 茂伯
 draft: false
 ---
 

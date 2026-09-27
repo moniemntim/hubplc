@@ -2,7 +2,7 @@
 title: 長時間無資料如何顯示停機還是資料源中斷
 description: 將設備運轉狀態與資料品質分開，正確呈現穩定值、斷線、補送及未知時間。
 date: 2026-09-21
-author: 站長
+author: 茂伯
 draft: false
 category: 資料記錄與報表
 ---

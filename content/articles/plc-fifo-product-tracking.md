@@ -2,7 +2,7 @@
 title: 用 FIFO 追蹤輸送線產品 避免結果和產品對錯筆
 description: 以容量五的簡化FIFO練習識別碼、空滿判斷、索引回繞與跳站事件。
 date: 2026-09-17
-author: 站長
+author: 茂伯
 draft: false
 ---
 

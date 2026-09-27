@@ -2,7 +2,7 @@
 title: 超音波感測器安裝幾何 從盲區 波束到液位驗收
 description: 以直徑600毫米、高800毫米的自訂圓桶計算距離、液位、盲區與理想波束足跡，分開說明Pepperl+Fuchs、Banner、SICK型號資料，並以泡沫、斜面、軟材與失波三點驗收建立安裝判斷。
 date: 2026-09-17
-author: 站長
+author: 茂伯
 draft: false
 ---
 

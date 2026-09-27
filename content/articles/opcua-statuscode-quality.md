@@ -2,7 +2,7 @@
 title: OPC UA品質碼與最後可用值
 description: StatusCode品質分層與最後可用值驗收。
 date: 2026-09-17
-author: 站長
+author: 茂伯
 draft: false
 ---
 

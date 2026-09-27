@@ -2,7 +2,7 @@
 title: 通訊佇列堆積如何分辨設備慢與程式塞
 description: 以arrival10/s、service8/s、60秒初始backlog0案例，分離enqueue/dequeue/send/first_byte/complete並辨識排隊、設備、worker與解析瓶頸。
 date: 2026-09-21
-author: 站長
+author: 茂伯
 draft: false
 category: 工業通訊與網路
 ---

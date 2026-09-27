@@ -2,7 +2,7 @@
 title: 多警報如何按嚴重度與時間穩定排序
 description: 以 OPC UA severity、事件時間與唯一識別建立穩定警報排序，並分開 active、acknowledged 與 cleared 狀態。
 date: 2026-09-21
-author: 站長
+author: 茂伯
 draft: false
 category: HMI 畫面與操作
 ---

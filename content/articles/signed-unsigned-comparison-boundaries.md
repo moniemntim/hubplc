@@ -2,7 +2,7 @@
 title: 有號與無號混用時如何驗證比較結果
 description: 從原始位元、符號邊界與擴展規則，驗證有號無號混用造成的比較與告警錯誤。
 date: 2026-09-17
-author: 站長
+author: 茂伯
 draft: false
 ---
 

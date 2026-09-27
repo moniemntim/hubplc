@@ -2,7 +2,7 @@
 title: 斷電恢復測試如何分段驗證資料與流程狀態
 description: 沿保存、提交與確認邊界分段驗證恢復，分清資料完整性、流程狀態與重新允許動作的條件。
 date: 2026-09-21
-author: 站長
+author: 茂伯
 draft: false
 category: 維護與故障排查
 ---

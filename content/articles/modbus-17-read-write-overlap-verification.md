@@ -2,7 +2,7 @@
 title: Modbus功能17先寫後讀與重疊區域驗證
 description: 以讀0010h起四word、寫0011h起兩word的重疊案例，驗算功能17的欄位、長度、回覆與完成限制。
 date: 2026-09-17
-author: 站長
+author: 茂伯
 draft: false
 ---
 

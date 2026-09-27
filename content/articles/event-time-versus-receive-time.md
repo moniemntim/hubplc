@@ -2,7 +2,7 @@
 title: 事件時間與收件時間不同時報表應採哪個時間
 description: 用跨班補送案例選定報表時間依據，核對時鐘品質與晚到資料的修訂規則。
 date: 2026-09-21
-author: 站長
+author: 茂伯
 draft: false
 category: 資料記錄與報表
 ---

@@ -2,7 +2,7 @@
 title: 設備倍率與 Float32 判讀
 description: 分清整數倍率與 IEEE 754 Float32，正確解讀有號值、word 順序、小數與反向寫入，避免 PLC 與 HMI 重複縮放。
 date: 2026-09-17
-author: 站長
+author: 茂伯
 draft: false
 ---
 

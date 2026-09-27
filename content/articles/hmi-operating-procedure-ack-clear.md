@@ -2,7 +2,7 @@
 title: HMI操作程序的步驟與判斷條件
 description: 把HMI操作程序拆成前置、操作、預期、失敗處理與確認窗口；明確區分非緊急告警Ack與Clear，恢復後才可結案。
 date: 2026-09-17
-author: 站長
+author: 茂伯
 draft: false
 ---
 

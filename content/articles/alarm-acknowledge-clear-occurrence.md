@@ -2,7 +2,7 @@
 title: 警報確認與警報消失怎麼分 建立可追溯的警報狀態
 description: 教你把警報發生、確認、復歸與可選Confirm分開建模，保留occurrence與稽核資料。
 date: 2026-09-21
-author: 站長
+author: 茂伯
 draft: false
 category: HMI 畫面與操作
 ---

@@ -2,7 +2,7 @@
 title: 4–20 mA斷線判斷 分清正常低量程與線路故障
 description: 教你從4–20 mA量程確認、三點換算、開路與超量程品質判讀，到建立可追溯的通道驗收。
 date: 2026-09-21
-author: 站長
+author: 茂伯
 draft: false
 category: 感測器與量測
 ---

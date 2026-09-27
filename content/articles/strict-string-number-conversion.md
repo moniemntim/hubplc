@@ -2,7 +2,7 @@
 title: 字串數字轉換時怎麼保留原始輸入
 description: 以 D023 教學嚴格解析字串數字，保存原文、編碼與時間，區分語法、非有限值、範圍與整數捨入失敗。
 date: 2026-09-21
-author: 站長
+author: 茂伯
 draft: false
 category: PLC 程式與控制
 ---

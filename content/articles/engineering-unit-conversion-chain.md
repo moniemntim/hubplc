@@ -2,7 +2,7 @@
 title: 工程單位換算鏈如何避免重複倍率
 description: 以 raw=253、0.1°C/count、offset=0 示範工程單位換算至25.3°C與77.54°F，防止倍率、偏移及版本重複套用。
 date: 2026-09-21
-author: 站長
+author: 茂伯
 draft: false
 category: PLC 程式與控制
 ---

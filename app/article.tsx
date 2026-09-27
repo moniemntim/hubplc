@@ -72,6 +72,15 @@ export default function Article({
         </div>
 
         <footer className="article-reader__footer">
+          <p>
+            <Link className="text-link" href="/about">
+              作者署名、編輯與驗證方式 →
+            </Link>
+            {' · '}
+            <Link className="text-link" href="/about#report">
+              回報資訊與範本 →
+            </Link>
+          </p>
           {relatedArticles.length ? (
             <section
               className="article-reader__related"

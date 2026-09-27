@@ -2,7 +2,7 @@
 title: 封包重送造成重複寫入如何設計冪等鍵
 description: 以不變operation_id、payload hash衝突、atomic dedup/effect邊界、outbox、TTL與crash unknown設計封包重送的冪等流程。
 date: 2026-09-21
-author: 站長
+author: 茂伯
 draft: false
 category: 工業通訊與網路
 ---

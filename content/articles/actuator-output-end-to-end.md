@@ -2,7 +2,7 @@
 title: 輸出有訊號但致動器無反應如何做端到端量測
 description: 沿命令、端子、線圈電流、閥與位置回饋逐層定位致動器無反應。
 date: 2026-09-21
-author: 站長
+author: 茂伯
 draft: false
 category: 維護與故障排查
 ---

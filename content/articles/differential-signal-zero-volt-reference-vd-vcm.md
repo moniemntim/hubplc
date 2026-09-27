@@ -2,7 +2,7 @@
 title: 差動訊號與0V參考量測 VD VCM與單端讀值
 description: 以VD=V+−V−與VCM=(V++V−)/2說明差動、單端、浮地與0V參考；用兩地+2V、5V訊號案例實算V+=7V、V−=2V、VD=5V、VCM=4.5V。
 date: 2026-09-17
-author: 站長
+author: 茂伯
 draft: false
 ---
 

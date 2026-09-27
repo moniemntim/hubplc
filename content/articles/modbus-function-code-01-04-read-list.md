@@ -2,7 +2,7 @@
 title: Modbus 0x01 0x02 0x03 0x04 怎麼選 從資料表建立讀取清單
 description: 把 Coils、Discrete Inputs、Holding Registers、Input Registers 分開，將設備資料表的權限與位址轉成讀取清單，並用 byte count 驗收回覆。
 date: 2026-09-17
-author: 站長
+author: 茂伯
 draft: false
 ---
 

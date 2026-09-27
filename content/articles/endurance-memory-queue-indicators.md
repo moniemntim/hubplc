@@ -2,7 +2,7 @@
 title: 長時間耐久測試如何定義記憶體與佇列洩漏指標
 description: 以相同循環的基線、尖峰、配置快照與最老佇列年齡，辨別長期成長的原因。
 date: 2026-09-21
-author: 站長
+author: 茂伯
 draft: false
 category: 維護與故障排查
 ---

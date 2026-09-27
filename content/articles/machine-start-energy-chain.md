@@ -2,7 +2,7 @@
 title: 設備不動但啟動命令為真如何按能量鏈逐層排查
 description: 從請求、允許、輸出、驅動到負載回饋逐層定位設備不動。
 date: 2026-09-21
-author: 站長
+author: 茂伯
 draft: false
 category: 維護與故障排查
 ---

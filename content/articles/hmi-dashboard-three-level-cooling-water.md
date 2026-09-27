@@ -2,7 +2,7 @@
 title: HMI儀表板的三層狀態顯示
 description: 以虛構冷卻水系統說明總覽、診斷、點位三層的欄位責任，示範偏差、品質、時間與歷史趨勢如何逐層追查。
 date: 2026-09-17
-author: 站長
+author: 茂伯
 draft: false
 ---
 

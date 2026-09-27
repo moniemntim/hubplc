@@ -2,7 +2,7 @@
 title: 連線池大小如何依設備數與回應時間估算
 description: 以三十台每秒輪詢及平均0.2秒占用，分開連線數、併發名額與等待期限，建立可驗收的容量估算。
 date: 2026-09-21
-author: 站長
+author: 茂伯
 draft: false
 category: 工業通訊與網路
 ---

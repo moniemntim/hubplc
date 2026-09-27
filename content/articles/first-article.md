@@ -2,7 +2,7 @@
 title: 我的第一篇 PLC 技術筆記
 description: 用一句話說明這篇文章解決什麼問題
 date: 2026-09-06
-author: 站長
+author: 茂伯
 draft: true
 ---
 

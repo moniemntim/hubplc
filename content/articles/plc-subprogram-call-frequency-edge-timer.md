@@ -2,7 +2,7 @@
 title: 子程式沒有每掃描執行 內部計時與邊緣判斷會怎樣
 description: 用每100ms時間表比較條件跳過呼叫與每掃描呼叫，追蹤R_TRIG前值、輸出保留、恢復和計時策略。
 date: 2026-09-17
-author: 站長
+author: 茂伯
 draft: false
 ---
 

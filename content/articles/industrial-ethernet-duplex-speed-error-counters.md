@@ -2,7 +2,7 @@
 title: 乙太網路錯誤計數器怎麼看
 description: 以15分鐘虛構counter快照計算FCS與discard增量、每秒速率及流量分母，分流FCS、CRC、pause、queue drop、duplex與應用timeout。
 date: 2026-09-17
-author: 站長
+author: 茂伯
 draft: false
 ---
 

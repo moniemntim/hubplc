@@ -2,7 +2,7 @@
 title: 報表平均值的有效樣本數如何一併呈現
 description: 以有效數、排除原因與時間覆蓋補足平均值的解讀，避免空值與重複資料改變分母。
 date: 2026-09-21
-author: 站長
+author: 茂伯
 draft: false
 category: 資料記錄與報表
 ---

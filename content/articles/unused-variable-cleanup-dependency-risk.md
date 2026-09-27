@@ -2,7 +2,7 @@
 title: 程式中未使用變數如何標示清理風險
 description: 從交叉參照候選追到索引、區塊範圍、外部介面與保持資料，再分批驗證清理影響。
 date: 2026-09-17
-author: 站長
+author: 茂伯
 draft: false
 ---
 

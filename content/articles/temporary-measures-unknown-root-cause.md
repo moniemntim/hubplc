@@ -2,7 +2,7 @@
 title: 根因尚未確定時如何提出安全的暫時措施記錄
 description: 在根因未定時記錄有限措施、風險與解除條件，保留正式修正所需的證據。
 date: 2026-09-21
-author: 站長
+author: 茂伯
 draft: false
 category: 維護與故障排查
 ---

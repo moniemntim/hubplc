@@ -2,7 +2,7 @@
 title: Multicast IGMP Snooping 與工業 UDP 流量 為何非訂閱端也會被塞滿
 description: 以IPv4 multicast 239.10.1.20/VLAN30離線案例比較IGMP snooping正常與空表流量，說明querier、router port、老化、unknown multicast與fast-leave限制。
 date: 2026-09-17
-author: 站長
+author: 茂伯
 draft: false
 ---
 

@@ -2,7 +2,7 @@
 title: PLC 以脈波計算轉速的方法
 description: 以固定時間計數和脈波週期兩種方法計算RPM，處理低速解析度、缺脈波與每轉計數設定。
 date: 2026-09-17
-author: 站長
+author: 茂伯
 draft: false
 ---
 

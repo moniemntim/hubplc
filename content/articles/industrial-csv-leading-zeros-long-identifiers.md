@@ -2,7 +2,7 @@
 title: 工業 CSV 如何保護前導零 長整數和識別碼
 description: 用六碼站點與十八碼批次示範文字型別匯入，避開前導零消失與長數值精度損失，最後以原檔逐字核對。
 date: 2026-09-17
-author: 站長
+author: 茂伯
 draft: false
 ---
 

@@ -2,7 +2,7 @@
 title: 多個站同時慢如何先看共用資源再看個別設備
 description: 用排隊時間、服務時間和共同依賴，找出多站變慢的瓶頸並量化恢復能力。
 date: 2026-09-21
-author: 站長
+author: 茂伯
 draft: false
 category: 維護與故障排查
 ---

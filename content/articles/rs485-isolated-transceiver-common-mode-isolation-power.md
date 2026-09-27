@@ -2,7 +2,7 @@
 title: RS485隔離收發器的選擇 共模電壓 絕緣額定與隔離電源
 description: 以ISO1410為例，分辨RS485總線共模與隔離障壁耐壓，說明CMTI、工作隔離電壓、爬電距離及隔離電源選型。
 date: 2026-09-17
-author: 站長
+author: 茂伯
 draft: false
 ---
 

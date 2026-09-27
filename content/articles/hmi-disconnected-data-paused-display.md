@@ -2,7 +2,7 @@
 title: HMI 斷線與資料暫停的顯示及驗收
 description: 以泵浦斷線時間線分開Good、暫停、零值、lastSourceChange、lastAcquired與receivedAt，設計恢復刷新與新鮮度驗收。
 date: 2026-09-17
-author: 站長
+author: 茂伯
 draft: false
 ---
 

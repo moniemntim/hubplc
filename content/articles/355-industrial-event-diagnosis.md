@@ -2,7 +2,7 @@
 title: 馬達啟動瞬間電壓下降如何與PLC重啟對照
 description: 以時間軸、原始證據與可重播測試驗收馬達啟動電壓下降與PLC重啟。
 date: 2026-09-21
-author: 站長
+author: 茂伯
 draft: false
 category: 維護與故障排查
 ---

@@ -2,7 +2,7 @@
 title: 大量標籤畫面如何用分組更新降低負載
 description: 以分組、可見區訂閱與一致快照降低大量標籤畫面負載，同時保存不可遺失的警報事件。
 date: 2026-09-21
-author: 站長
+author: 茂伯
 draft: false
 category: HMI 畫面與操作
 ---

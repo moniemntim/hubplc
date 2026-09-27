@@ -2,7 +2,7 @@
 title: 報表篩選如何保存成可重現條件
 description: 以 UTC 半開區間、完整篩選契約、資料版本與 export manifest 讓報表查詢可重跑並可解釋差異。
 date: 2026-09-21
-author: 站長
+author: 茂伯
 draft: false
 category: 資料記錄與報表
 ---

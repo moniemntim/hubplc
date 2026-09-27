@@ -2,7 +2,7 @@
 title: OPC UA斷線後如何恢復資料
 description: 重連四層生命週期與三條離線時間線。
 date: 2026-09-17
-author: 站長
+author: 茂伯
 draft: false
 ---
 

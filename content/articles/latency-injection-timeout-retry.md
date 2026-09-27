@@ -2,7 +2,7 @@
 title: 通訊延遲注入如何量測系統的逾時與重試反應
 description: 先量實際延遲再核對逾時與重試時間線，分清注入方向、總期限及結果未知的寫入。
 date: 2026-09-21
-author: 站長
+author: 茂伯
 draft: false
 category: 維護與故障排查
 ---

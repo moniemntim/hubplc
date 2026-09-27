@@ -2,7 +2,7 @@
 title: PLC 模擬測試不只看正常流程 建立異常情境矩陣
 description: 以 WAIT、RUN、DONE、ERROR、CANCELLED 五狀態與 300 ms 固定逾時，驗證正常、缺回饋、重複 Request 與 Cancel 四條獨立時間線。
 date: 2026-09-17
-author: 站長
+author: 茂伯
 draft: false
 ---
 

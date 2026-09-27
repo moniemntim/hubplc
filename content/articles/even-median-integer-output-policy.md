@@ -2,7 +2,7 @@
 title: 偶數窗口中值如何定義與驗證整數輸出
 description: 固定標準、低與高中值定義，從排序副本、偶數平均、負數捨入和污染窗口驗證結果。
 date: 2026-09-17
-author: 站長
+author: 茂伯
 draft: false
 ---
 

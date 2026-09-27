@@ -2,7 +2,7 @@
 title: 配方選取與套用怎麼分 先驗證再提交設備
 description: 區分配方選取與設備套用，建立device、version、checksum、units、scope與verified staging驗證。
 date: 2026-09-21
-author: 站長
+author: 茂伯
 draft: false
 category: HMI 畫面與操作
 ---

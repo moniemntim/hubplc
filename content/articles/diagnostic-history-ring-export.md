@@ -2,7 +2,7 @@
 title: 診斷歷史環形覆蓋與定期匯出
 description: 以自訂容量與事件速率案例教導診斷歷史定期匯出、最大覆蓋間隔、失敗恢復、checkpoint與重複去重，並區分error history與operation history。
 date: 2026-09-17
-author: 站長
+author: 茂伯
 draft: false
 ---
 

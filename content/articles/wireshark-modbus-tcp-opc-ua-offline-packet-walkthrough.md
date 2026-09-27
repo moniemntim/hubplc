@@ -2,7 +2,7 @@
 title: Wireshark 判讀 Modbus TCP 與 OPC UA 從連線到應用回覆
 description: 以隨附十二包離線PCAP逐步判讀TCP、Modbus交易與兩個原始值，以及OPC UA HEL/ACK的適用界線。
 date: 2026-09-17
-author: 站長
+author: 茂伯
 draft: false
 ---
 

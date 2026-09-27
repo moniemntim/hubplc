@@ -2,7 +2,7 @@
 title: 應變規橋路激勵變動與mV/V補償
 description: 教你用mV/V理解應變規橋路，計算激勵變動造成的比例輸出，並評估remote sense、自熱、壓降與共模限制。
 date: 2026-09-21
-author: 站長
+author: 茂伯
 draft: false
 category: 感測器與量測
 ---

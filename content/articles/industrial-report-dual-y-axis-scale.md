@@ -2,7 +2,7 @@
 title: 工業報表雙Y軸的判讀與排錯
 description: 以溫度60至75°C與產量1000至1100件/時案例，說明雙軸尺度、分圖、標準化與因果誤讀。
 date: 2026-09-17
-author: 站長
+author: 茂伯
 draft: false
 ---
 

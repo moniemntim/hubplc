@@ -2,7 +2,7 @@
 title: 趨勢游標插值與原始點
 description: 以t0=0,v20與t1=10,v30示範t4 linear=24、step=20、nearest與tie policy，區分推導與量測。
 date: 2026-09-21
-author: 站長
+author: 茂伯
 draft: false
 category: HMI 畫面與操作
 ---

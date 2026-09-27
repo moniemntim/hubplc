@@ -2,7 +2,7 @@
 title: 感測器更換的相容性比對與校正驗收
 description: 教你在感測器更換前後比對序號、量程、單位、輸出、接線、韌體與校正證據，並完成三點和故障驗收。
 date: 2026-09-21
-author: 站長
+author: 茂伯
 draft: false
 category: 感測器與量測
 ---

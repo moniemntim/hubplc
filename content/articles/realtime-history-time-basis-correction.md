@@ -2,7 +2,7 @@
 title: 即時歷史時間基準校正
 description: 區分source UTC、receive UTC與bucket start，示範台北UTC+8、clock offset、DST歧義與late/reorder分桶。
 date: 2026-09-21
-author: 站長
+author: 茂伯
 draft: false
 category: HMI 畫面與操作
 ---

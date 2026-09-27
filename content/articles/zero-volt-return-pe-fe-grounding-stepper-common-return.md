@@ -2,7 +2,7 @@
 title: 0V回路與PE FE接地分區 步進驅動器共用回流怎麼查
 description: 以三台步進驅動器共用0.08Ω回流、3A造成0.24V壓降的案例，說明感測誤差、星形分支、0V/PE/FE角色與高頻接地差異。
 date: 2026-09-17
-author: 站長
+author: 茂伯
 draft: false
 ---
 

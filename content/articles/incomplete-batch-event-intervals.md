@@ -2,7 +2,7 @@
 title: 批次開始結束事件缺一時如何標記不完整區間
 description: 用實例識別重建批次區間，分開完整、缺漏與衝突，避免以猜測邊界計算製程時間。
 date: 2026-09-21
-author: 站長
+author: 茂伯
 draft: false
 category: 資料記錄與報表
 ---

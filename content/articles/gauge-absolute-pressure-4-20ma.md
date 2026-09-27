@@ -2,7 +2,7 @@
 title: 表壓與絕對壓如何正確解讀4–20mA
 description: 區分表壓與絕對壓，示範-1到1 bar量程的4–20 mA換算，並將合法負壓與電氣故障分流。
 date: 2026-09-21
-author: 站長
+author: 茂伯
 draft: false
 category: 感測器與量測
 ---

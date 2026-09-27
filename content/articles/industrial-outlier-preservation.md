@@ -2,7 +2,7 @@
 title: 工業資料異常值的保留與判定
 description: 用五筆溫度比較原始、排除、裁切與有證據修正，建立可追溯的異常值判定流程。
 date: 2026-09-17
-author: 站長
+author: 茂伯
 draft: false
 ---
 

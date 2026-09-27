@@ -2,7 +2,7 @@
 title: 交換器埠錯誤計數如何對照應用層重試
 description: 分清埠錯誤、TCP重傳和應用重試，使用連續快照、有效差值及相同觀察窗口建立排查證據。
 date: 2026-09-21
-author: 站長
+author: 茂伯
 draft: false
 category: 工業通訊與網路
 ---

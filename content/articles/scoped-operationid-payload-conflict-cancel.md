@@ -2,7 +2,7 @@
 title: 觸控誤觸的確認與取消流程
 description: 以已驗證租戶scope與operationId形成唯一key，處理payload衝突、版本條件與未送命令取消。
 date: 2026-09-21
-author: 站長
+author: 茂伯
 draft: false
 category: HMI 畫面與操作
 ---

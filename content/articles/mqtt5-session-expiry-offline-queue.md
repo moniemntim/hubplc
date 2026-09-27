@@ -2,7 +2,7 @@
 title: MQTT會話保存與離線佇列
 description: 以 edge-07 離線 20 分鐘案例，拆分 MQTT 5 Clean Start、Session Expiry、subscription、inflight、queued 與 Message Expiry，為 telemetry、event、command response 設計保留、過期與去重策略。
 date: 2026-09-17
-author: 站長
+author: 茂伯
 draft: false
 ---
 

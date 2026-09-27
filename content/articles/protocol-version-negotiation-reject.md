@@ -2,7 +2,7 @@
 title: 協定版本協商失敗如何安全拒絕
 description: 以client {2,3}與server {1,2}示範選2、無交集拒絕、必要能力缺少拒絕，以及版本、schema、transport分層。
 date: 2026-09-21
-author: 站長
+author: 茂伯
 draft: false
 category: 工業通訊與網路
 ---

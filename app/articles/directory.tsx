@@ -198,7 +198,7 @@ export default function ArticleDirectory({
       <section className="library-start" aria-labelledby="start-heading">
         <h2 id="start-heading">第一次來，先完成一個操作</h2>
         <p>
-          以下三課可在頁面直接練習，無需安裝。屬於瀏覽器邏輯模型，並非原廠模擬或實機測試。
+          以下教學可在頁面直接操作，無需安裝。範例為瀏覽器計算與邏輯練習，並非原廠模擬或實機測試。
         </p>
         <ol>
           <li>
@@ -214,6 +214,11 @@ export default function ArticleDirectory({
           <li>
             <Link href="/articles/plc-state-machine-three-step-sequence">
               順序控制：分清等待、執行、完成與故障
+            </Link>
+          </li>
+          <li>
+            <Link href="/articles/plc-analog-scaling-pressure-temperature-level">
+              類比換算：分清算式結果與可用量測值
             </Link>
           </li>
         </ol>

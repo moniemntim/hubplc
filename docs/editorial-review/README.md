@@ -33,4 +33,5 @@
 - 第二十二批完成Tick回繞與週期排程兩篇，共用可執行時間模型；累計91篇 reviewed-local、358篇 unreviewed、1篇 draft，詳見batch-22.md。
 - 第二十三批完成角度差與分段插值兩篇，補可執行邊界及修改練習；累計93篇 reviewed-local、356篇 unreviewed、1篇 draft，詳見batch-23.md。
 - 第二十四批為內容整改第一輪：入口操作路徑、故障復歸頁面互動與未編譯ST對照；不是新增篇數，仍93/356/1。驗收方向見remediation-criteria.md，證據見batch-24.md。
+- 第二十五批完成類比換算與異常判讀整改：頁面直接操作、公式與品質分離；累計95/354/1，詳見batch-25.md。
 - 其餘文章依 inventory.json 逐批閱讀；既有抽樣筆記不是全文審查完成證明。

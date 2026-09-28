@@ -837,6 +837,24 @@
       "change": "五點曲線可執行節點/區間及異常案例；先驗證整表，版本比較後切換，拒絕重複X/品質/單位/超量程。",
       "verification": "tests/geometry-table.test.mjs; standalone-batch23.mjs; 415 unit tests; local/production release evidence separately",
       "hardwareVerified": false
+    },
+    "plc-analog-scaling-pressure-temperature-level": {
+      "status": "reviewed-local",
+      "batch": 25,
+      "reviewDate": "2026-09-28",
+      "sha256": "79b2be6e162824abcb7cc61b730adb6dfc74113512463b2a1097c187d79d7ab2",
+      "change": "頁面直接試算mA/counts，重用既有analogConvert，算式與可用值分開；三點/溫度/液位/原始值/錯誤輸入操作。",
+      "verification": "tests/analog-lesson.test.mjs; tests/analog-lesson-browser.mjs; check-analog-record.mjs; 416 unit tests; local/production release evidence separately",
+      "hardwareVerified": false
+    },
+    "4-20ma-scaling-open-overrange-diagnostics": {
+      "status": "reviewed-local",
+      "batch": 25,
+      "reviewDate": "2026-09-28",
+      "sha256": "f8c2cce0bbdbe6381a0422b73494382cd6d465cd6c2588d9e82c4b404822df30",
+      "change": "刪除重複換算與假通用raw比例，聚焦來源品質、量程與原因證據；0mA不直接斷線，NE43依產品配置，附NOT_RUN驗收表。",
+      "verification": "tests/analog-lesson.test.mjs; tests/analog-lesson-browser.mjs; check-analog-record.mjs; 416 unit tests; local/production release evidence separately",
+      "hardwareVerified": false
     }
   }
 }

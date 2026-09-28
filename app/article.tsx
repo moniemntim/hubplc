@@ -2,6 +2,7 @@ import Link from '@/components/site-link';
 import AdSense from '@/components/adsense';
 import PlcPractice from '@/components/plc-practice';
 import FaultResetPractice from '@/components/fault-reset-practice';
+import AnalogLesson from '@/components/analog-lesson';
 import { practiceModes } from '@/lib/plc-practice';
 import ArticleReadingNav, {
   ArticleDirectoryLink,
@@ -72,6 +73,13 @@ export default function Article({
 
         {article.slug === 'plc-fault-reset-single-acceptance' ? (
           <FaultResetPractice />
+        ) : null}
+        {article.slug &&
+        [
+          'plc-analog-scaling-pressure-temperature-level',
+          '4-20ma-scaling-open-overrange-diagnostics',
+        ].includes(article.slug) ? (
+          <AnalogLesson />
         ) : null}
         <div className="article-reader__layout">
           <ArticleReadingNav toc={article.toc} />

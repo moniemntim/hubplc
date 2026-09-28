@@ -1,7 +1,7 @@
 {
   "totals": {
-    "unreviewed": 356,
-    "reviewed-local": 93,
+    "unreviewed": 354,
+    "reviewed-local": 95,
     "draft": 1
   },
   "articles": [
@@ -43,7 +43,7 @@
     },
     {
       "slug": "4-20ma-scaling-open-overrange-diagnostics",
-      "status": "unreviewed"
+      "status": "reviewed-local"
     },
     {
       "slug": "4-20ma-zero-offset-span-errors",
@@ -1047,7 +1047,7 @@
     },
     {
       "slug": "plc-analog-scaling-pressure-temperature-level",
-      "status": "unreviewed"
+      "status": "reviewed-local"
     },
     {
       "slug": "plc-angle-wrap-difference",

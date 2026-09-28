@@ -1,0 +1,10 @@
+case,source_kind,input,input_unit,input_low,input_high,engineering_low,engineering_high,engineering_unit,quality_condition,expected_math,expected_available,observed_input,observed_engineering,observed_quality,sample_time,module_model,channel_config,evidence,status
+low,signal,4,mA,4,20,0,10,bar,Good,0,0,,,,,,,,NOT_RUN
+mid,signal,12,mA,4,20,0,10,bar,Good,5,5,,,,,,,,NOT_RUN
+high,signal,20,mA,4,20,0,10,bar,Good,10,10,,,,,,,,NOT_RUN
+under,signal,3.2,mA,4,20,0,10,bar,Good,-0.5,NONE,,,,,,,,NOT_RUN
+zero-current,signal,0,mA,4,20,0,10,bar,Good,-2.5,NONE,,,,,,,,NOT_RUN
+over,signal,22,mA,4,20,0,10,bar,Good,11.25,NONE,,,,,,,,NOT_RUN
+source-bad,signal,12,mA,4,20,0,10,bar,Bad,5,NONE,,,,,,,,NOT_RUN
+source-unknown,signal,12,mA,4,20,0,10,bar,Unknown,5,NONE,,,,,,,,NOT_RUN
+raw-mid,raw,2000,counts,0,4000,0,10,bar,Good,5,5,,,,,,,,NOT_RUN

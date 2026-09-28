@@ -426,3 +426,57 @@
   display: block;
   margin: 16px 0;
 }
+.analog-lesson-fields {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 16px;
+  margin: 20px 0;
+}
+.analog-lesson-fields label {
+  display: flex;
+  flex-direction: column;
+  align-items: stretch;
+  gap: 6px;
+  padding: 0;
+  min-width: 0;
+}
+.analog-lesson-fields input,
+.analog-lesson-fields select {
+  width: 100%;
+  height: auto;
+  min-width: 0;
+  padding: 9px;
+  border: 1px solid #7c998f;
+  border-radius: 5px;
+  background: white;
+  color: #153c32;
+  font: inherit;
+}
+.analog-lesson-results {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 12px;
+}
+.analog-lesson-results div {
+  padding: 14px;
+  background: white;
+  border-radius: 6px;
+}
+.analog-lesson-results dt {
+  font-size: 14px;
+}
+.analog-lesson-results dd {
+  margin: 5px 0 0;
+  font-size: 20px;
+  font-weight: 700;
+  overflow-wrap: anywhere;
+}
+.analog-lesson p {
+  overflow-wrap: anywhere;
+}
+@media (max-width: 600px) {
+  .analog-lesson-fields,
+  .analog-lesson-results {
+    grid-template-columns: 1fr;
+  }
+}

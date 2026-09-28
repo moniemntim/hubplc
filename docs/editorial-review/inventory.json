@@ -1,7 +1,7 @@
 {
   "totals": {
-    "unreviewed": 360,
-    "reviewed-local": 89,
+    "unreviewed": 358,
+    "reviewed-local": 91,
     "draft": 1
   },
   "articles": [
@@ -1191,7 +1191,7 @@
     },
     {
       "slug": "plc-periodic-event-accumulated-timing-error",
-      "status": "unreviewed"
+      "status": "reviewed-local"
     },
     {
       "slug": "plc-pulse-rpm-measurement",
@@ -1267,7 +1267,7 @@
     },
     {
       "slug": "plc-tick-wrap-elapsed-time",
-      "status": "unreviewed"
+      "status": "reviewed-local"
     },
     {
       "slug": "plc-ton-tof-tp-timer-selection",

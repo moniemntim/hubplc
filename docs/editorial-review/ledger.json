@@ -801,6 +801,24 @@
       "change": "單檔瀏覽器練習：真實pointer與合成799/800/801ms分開，owner/取消/世代/容量與鍵盤替代操作。",
       "verification": "tests/draft-session.test.mjs; tests/release-only-browser.mjs; standalone-batch21.mjs; 413 unit tests; local/production release evidence separately",
       "hardwareVerified": false
+    },
+    "plc-tick-wrap-elapsed-time": {
+      "status": "reviewed-local",
+      "batch": 22,
+      "reviewDate": "2026-09-28",
+      "sha256": "544127f7160fe19733f14ca26616b6dbe905a9845f052a0d3c464fdb592f284b",
+      "change": "共用可執行時間教材：外部間隔上限與boot前提、8位元全域差值、整圈失效、門檻等號及修改練習。",
+      "verification": "tests/tick-scheduling.test.mjs; standalone-batch22.mjs; 414 unit tests; local/production release evidence separately",
+      "hardwareVerified": false
+    },
+    "plc-periodic-event-accumulated-timing-error": {
+      "status": "reviewed-local",
+      "batch": 22,
+      "reviewDate": "2026-09-28",
+      "sha256": "0c3f84ff819975539bc7429568a3735be396f9dbd1a3dc0b30cb307e6e2de99b",
+      "change": "刪除重複驗收段，改為可跑的completion/phase對照、9780/9000時間線、最新一期合併與Busy missed；共用Tick有效性。",
+      "verification": "tests/tick-scheduling.test.mjs; standalone-batch22.mjs; 414 unit tests; local/production release evidence separately",
+      "hardwareVerified": false
     }
   }
 }

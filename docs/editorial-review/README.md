@@ -30,4 +30,5 @@
 - 第十九批完成操作權限與角色降級兩篇，共用授權教材；累計85篇 reviewed-local、364篇 unreviewed、1篇 draft，詳見batch-19.md。
 - 第二十批完成手自動與維護模式兩篇，共用模式案例；累計87篇 reviewed-local、362篇 unreviewed、1篇 draft，詳見batch-20.md。
 - 第二十一批完成登入逾時草稿與長短按兩篇，附離線模型及可操作HTML；累計89篇 reviewed-local、360篇 unreviewed、1篇 draft，詳見batch-21.md。
+- 第二十二批完成Tick回繞與週期排程兩篇，共用可執行時間模型；累計91篇 reviewed-local、358篇 unreviewed、1篇 draft，詳見batch-22.md。
 - 其餘文章依 inventory.json 逐批閱讀；既有抽樣筆記不是全文審查完成證明。

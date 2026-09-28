@@ -3,6 +3,7 @@ import AdSense from '@/components/adsense';
 import PlcPractice from '@/components/plc-practice';
 import FaultResetPractice from '@/components/fault-reset-practice';
 import AnalogLesson from '@/components/analog-lesson';
+import FivePointLesson from '@/components/five-point-lesson';
 import { practiceModes } from '@/lib/plc-practice';
 import ArticleReadingNav, {
   ArticleDirectoryLink,
@@ -80,6 +81,9 @@ export default function Article({
           '4-20ma-scaling-open-overrange-diagnostics',
         ].includes(article.slug) ? (
           <AnalogLesson />
+        ) : null}
+        {article.slug === '4-20ma-zero-offset-span-errors' ? (
+          <FivePointLesson />
         ) : null}
         <div className="article-reader__layout">
           <ArticleReadingNav toc={article.toc} />

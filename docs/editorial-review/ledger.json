@@ -855,6 +855,15 @@
       "change": "刪除重複換算與假通用raw比例，聚焦來源品質、量程與原因證據；0mA不直接斷線，NE43依產品配置，附NOT_RUN驗收表。",
       "verification": "tests/analog-lesson.test.mjs; tests/analog-lesson-browser.mjs; check-analog-record.mjs; 416 unit tests; local/production release evidence separately",
       "hardwareVerified": false
+    },
+    "4-20ma-zero-offset-span-errors": {
+      "status": "reviewed-local",
+      "batch": 26,
+      "reviewDate": "2026-09-28",
+      "sha256": "9e7b1ad28f406f7513080a3d6bb05aad4251b87e875f4403e7a6f4e0cb78b489",
+      "change": "刪除與換算／品質課重複段落，頁面五點比對與四組誤差案例；電流注入和壓力基準分段追查，容差不等於設備允收。",
+      "verification": "418 unit tests; tests/five-point-lesson-browser.mjs at 3 widths; local layout 9 checks; tsc/oxlint/build; deployment evidence recorded separately",
+      "hardwareVerified": false
     }
   }
 }

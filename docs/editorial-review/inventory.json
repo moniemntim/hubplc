@@ -1,7 +1,7 @@
 {
   "totals": {
-    "unreviewed": 354,
-    "reviewed-local": 95,
+    "unreviewed": 353,
+    "reviewed-local": 96,
     "draft": 1
   },
   "articles": [
@@ -47,7 +47,7 @@
     },
     {
       "slug": "4-20ma-zero-offset-span-errors",
-      "status": "unreviewed"
+      "status": "reviewed-local"
     },
     {
       "slug": "acceptance-pass-untested-not-applicable",

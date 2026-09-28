@@ -5,6 +5,7 @@ import FaultResetPractice from '@/components/fault-reset-practice';
 import AnalogLesson from '@/components/analog-lesson';
 import FivePointLesson from '@/components/five-point-lesson';
 import FilterLesson from '@/components/filter-lesson';
+import SensorLesson from '@/components/sensor-lesson';
 import { practiceModes } from '@/lib/plc-practice';
 import ArticleReadingNav, {
   ArticleDirectoryLink,
@@ -91,6 +92,17 @@ export default function Article({
           <FilterLesson
             key={article.slug}
             counts={article.slug === 'analog-raw-quality-filter-overrange'}
+          />
+        ) : null}
+        {article.slug === 'sensor-polarity-reverse-range' ||
+        article.slug === 'sensor-step-response-acceptance' ? (
+          <SensorLesson
+            key={article.slug}
+            mode={
+              article.slug === 'sensor-polarity-reverse-range'
+                ? 'direction'
+                : 'step'
+            }
           />
         ) : null}
         <div className="article-reader__layout">

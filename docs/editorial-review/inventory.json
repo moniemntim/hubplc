@@ -1,7 +1,7 @@
 {
   "totals": {
-    "unreviewed": 349,
-    "reviewed-local": 100,
+    "unreviewed": 345,
+    "reviewed-local": 104,
     "draft": 1
   },
   "articles": [
@@ -79,7 +79,7 @@
     },
     {
       "slug": "analog-input-channel-crosstalk-single-channel-excitation",
-      "status": "unreviewed"
+      "status": "reviewed-local"
     },
     {
       "slug": "analog-output-signal-splitter-load-capacity",
@@ -1563,15 +1563,15 @@
     },
     {
       "slug": "sensor-polarity-reverse-range",
-      "status": "unreviewed"
+      "status": "reviewed-local"
     },
     {
       "slug": "sensor-replacement-compatibility-calibration-check",
-      "status": "unreviewed"
+      "status": "reviewed-local"
     },
     {
       "slug": "sensor-step-response-acceptance",
-      "status": "unreviewed"
+      "status": "reviewed-local"
     },
     {
       "slug": "sensor-zero-drift-check-standard-trend",

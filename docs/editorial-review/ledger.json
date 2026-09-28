@@ -900,6 +900,42 @@
       "change": "固定基準跨週三點紀錄、調整前後留存與斜率/%FS重算，與溫漂分工；NIST來源核對。",
       "verification": "420 unit tests; filter browser 6 checks; 18 layout checks; drift arithmetic; tsc/oxlint/build; release evidence separately",
       "hardwareVerified": false
+    },
+    "sensor-polarity-reverse-range": {
+      "status": "reviewed-local",
+      "batch": 28,
+      "reviewDate": "2026-09-28",
+      "sha256": "1cb9ab19b8824d98221cc1645d34a37949754b9cea52eac9df405cf3e9e2241e",
+      "change": "頁面正反向試算，非中點向量分辨映射與接線證據，刪除重複公式/FAQ。",
+      "verification": "422 unit tests; sensor browser 6; layout 18; replacement/crosstalk arithmetic; tsc/oxlint/build; release evidence separately",
+      "hardwareVerified": false
+    },
+    "sensor-step-response-acceptance": {
+      "status": "reviewed-local",
+      "batch": 28,
+      "reviewDate": "2026-09-28",
+      "sha256": "25cc09f943b34c2dc1ae04fd96612249f1ef74c5a14810b8f3a21d4ae586fd0b",
+      "change": "一階頁面試算，T90/10-90、延遲、取樣跨越和下降門檻，保留實測時基與穩定限制。",
+      "verification": "422 unit tests; sensor browser 6; layout 18; replacement/crosstalk arithmetic; tsc/oxlint/build; release evidence separately",
+      "hardwareVerified": false
+    },
+    "sensor-replacement-compatibility-calibration-check": {
+      "status": "reviewed-local",
+      "batch": 28,
+      "reviewDate": "2026-09-28",
+      "sha256": "7e1dcb3885066f06f21482477608251844474854fcd1a027bb9b48158d0c1cd5",
+      "change": "換件決策、各自序號證書、量程三點、電流注入與整鏈證據分離。",
+      "verification": "422 unit tests; sensor browser 6; layout 18; replacement/crosstalk arithmetic; tsc/oxlint/build; release evidence separately",
+      "hardwareVerified": false
+    },
+    "analog-input-channel-crosstalk-single-channel-excitation": {
+      "status": "reviewed-local",
+      "batch": 28,
+      "reviewDate": "2026-09-28",
+      "sha256": "72ac52041dd6fd27920e327e62d3643d1485ce27c751da3368ecb54b3f00c3c0",
+      "change": "基線/激勵/回程完整五筆，比例分母、獨立參考端案例和多工等待比較，所有資料合成。",
+      "verification": "422 unit tests; sensor browser 6; layout 18; replacement/crosstalk arithmetic; tsc/oxlint/build; release evidence separately",
+      "hardwareVerified": false
     }
   }
 }

@@ -1,7 +1,7 @@
 {
   "totals": {
-    "unreviewed": 366,
-    "reviewed-local": 83,
+    "unreviewed": 364,
+    "reviewed-local": 85,
     "draft": 1
   },
   "articles": [
@@ -511,7 +511,7 @@
     },
     {
       "slug": "hmi-operation-permission-execution-authorization",
-      "status": "unreviewed"
+      "status": "reviewed-local"
     },
     {
       "slug": "hmi-reconnect-stale-callback-unknown-write",
@@ -531,7 +531,7 @@
     },
     {
       "slug": "hmi-role-downgrade-open-screens",
-      "status": "unreviewed"
+      "status": "reviewed-local"
     },
     {
       "slug": "hmi-screen-index-and-navigation",

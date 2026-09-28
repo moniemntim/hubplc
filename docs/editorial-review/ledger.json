@@ -747,6 +747,24 @@
       "change": "接班責任與警報狀態分離，追加備註要求重讀，revision/freshness/容量明示並下載輸出報表。",
       "verification": "tests/shift-handover.test.mjs; independent review; standalone/practice-batch18",
       "hardwareVerified": false
+    },
+    "hmi-operation-permission-execution-authorization": {
+      "status": "reviewed-local",
+      "batch": 19,
+      "reviewDate": "2026-09-28",
+      "sha256": "b90715464784dfdb581a70e4a78e1d5b4acc5205b04c4ecea66a6e7c07c6f700",
+      "change": "共用授權模型的角色/設備/範圍/版本/期限矩陣，明確受理與記憶體套用差異。",
+      "verification": "tests/authorization.test.mjs; standalone-batch19.mjs; 409 unit tests; local and production verification recorded separately",
+      "hardwareVerified": false
+    },
+    "hmi-role-downgrade-open-screens": {
+      "status": "reviewed-local",
+      "batch": 19,
+      "reviewDate": "2026-09-28",
+      "sha256": "0b1fc8c46616957dc7a23b252d4ecf857b280d7d38be2ac0c465d452c5896ff7",
+      "change": "兩份快照重播舊畫面、12→13→14政策、佇列再授權與禁止自動補送。",
+      "verification": "tests/authorization.test.mjs; standalone-batch19.mjs; 409 unit tests; local and production verification recorded separately",
+      "hardwareVerified": false
     }
   }
 }

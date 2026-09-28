@@ -27,5 +27,6 @@
 - 第十七批完成載入、綁定、INT16與裁切、趨勢窗口，詳見batch-17.md。累計79篇 reviewed-local、370篇 unreviewed、1篇 draft。
 - 第十八批已完成趨勢游標、警報報表、步驟畫面與交班，詳見batch-18.md。累計83篇 reviewed-local、366篇 unreviewed、1篇 draft。
 - 使用者要求先發布已完成部分；reviewed-local表示已審查來源狀態，部署證據另記，不代表所有文章完成。
-- 後續優先全文閱讀 hmi-manual-auto-mode-control-ownership、hmi-maintenance-mode-screen-permissions、hmi-operation-permission-execution-authorization、hmi-role-downgrade-open-screens。
+- 第十九批完成操作權限與角色降級兩篇，共用授權教材；累計85篇 reviewed-local、364篇 unreviewed、1篇 draft，詳見batch-19.md。
+- hmi-manual-auto-mode-control-ownership與hmi-maintenance-mode-screen-permissions已全文閱讀但尚未修訂，下一批接續；不得因已閱讀就標記完成。
 - 其餘文章依 inventory.json 逐批閱讀；既有抽樣筆記不是全文審查完成證明。

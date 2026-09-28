@@ -31,4 +31,5 @@
 - 第二十批完成手自動與維護模式兩篇，共用模式案例；累計87篇 reviewed-local、362篇 unreviewed、1篇 draft，詳見batch-20.md。
 - 第二十一批完成登入逾時草稿與長短按兩篇，附離線模型及可操作HTML；累計89篇 reviewed-local、360篇 unreviewed、1篇 draft，詳見batch-21.md。
 - 第二十二批完成Tick回繞與週期排程兩篇，共用可執行時間模型；累計91篇 reviewed-local、358篇 unreviewed、1篇 draft，詳見batch-22.md。
+- 第二十三批完成角度差與分段插值兩篇，補可執行邊界及修改練習；累計93篇 reviewed-local、356篇 unreviewed、1篇 draft，詳見batch-23.md。
 - 其餘文章依 inventory.json 逐批閱讀；既有抽樣筆記不是全文審查完成證明。

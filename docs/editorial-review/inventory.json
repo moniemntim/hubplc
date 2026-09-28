@@ -1,7 +1,7 @@
 {
   "totals": {
-    "unreviewed": 358,
-    "reviewed-local": 91,
+    "unreviewed": 356,
+    "reviewed-local": 93,
     "draft": 1
   },
   "articles": [
@@ -1051,7 +1051,7 @@
     },
     {
       "slug": "plc-angle-wrap-difference",
-      "status": "unreviewed"
+      "status": "reviewed-local"
     },
     {
       "slug": "plc-array-index-boundary-check",
@@ -1259,7 +1259,7 @@
     },
     {
       "slug": "plc-table-piecewise-linear-interpolation",
-      "status": "unreviewed"
+      "status": "reviewed-local"
     },
     {
       "slug": "plc-task-timeout-reentry-backlog",

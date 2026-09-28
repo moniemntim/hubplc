@@ -819,6 +819,24 @@
       "change": "刪除重複驗收段，改為可跑的completion/phase對照、9780/9000時間線、最新一期合併與Busy missed；共用Tick有效性。",
       "verification": "tests/tick-scheduling.test.mjs; standalone-batch22.mjs; 414 unit tests; local/production release evidence separately",
       "hardwareVerified": false
+    },
+    "plc-angle-wrap-difference": {
+      "status": "reviewed-local",
+      "batch": 23,
+      "reviewDate": "2026-09-28",
+      "sha256": "7265e5bec4f86938033ca56c53b3a47d40ce6a263e9aa712622e6d25b9a42d24",
+      "change": "補可執行正規化/最短差/取樣追蹤；幾何半圈規則與可累積位移分離，掉樣、品質與重啟清基準。",
+      "verification": "tests/geometry-table.test.mjs; standalone-batch23.mjs; 415 unit tests; local/production release evidence separately",
+      "hardwareVerified": false
+    },
+    "plc-table-piecewise-linear-interpolation": {
+      "status": "reviewed-local",
+      "batch": 23,
+      "reviewDate": "2026-09-28",
+      "sha256": "c2c5571c68d31a63a44a5cba9368375f933589174d4cd4ece879cced66cf1afb",
+      "change": "五點曲線可執行節點/區間及異常案例；先驗證整表，版本比較後切換，拒絕重複X/品質/單位/超量程。",
+      "verification": "tests/geometry-table.test.mjs; standalone-batch23.mjs; 415 unit tests; local/production release evidence separately",
+      "hardwareVerified": false
     }
   }
 }

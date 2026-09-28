@@ -28,5 +28,6 @@
 - 第十八批已完成趨勢游標、警報報表、步驟畫面與交班，詳見batch-18.md。累計83篇 reviewed-local、366篇 unreviewed、1篇 draft。
 - 使用者要求先發布已完成部分；reviewed-local表示已審查來源狀態，部署證據另記，不代表所有文章完成。
 - 第十九批完成操作權限與角色降級兩篇，共用授權教材；累計85篇 reviewed-local、364篇 unreviewed、1篇 draft，詳見batch-19.md。
-- hmi-manual-auto-mode-control-ownership與hmi-maintenance-mode-screen-permissions已全文閱讀但尚未修訂，下一批接續；不得因已閱讀就標記完成。
+- 第二十批完成手自動與維護模式兩篇，共用模式案例；累計87篇 reviewed-local、362篇 unreviewed、1篇 draft，詳見batch-20.md。
+- 後續優先全文閱讀hmi-session-timeout-unsent-draft、hmi-release-only-800ms-pointer-policy；比對已完成的輸入事件與授權案例，避免重複契約。
 - 其餘文章依 inventory.json 逐批閱讀；既有抽樣筆記不是全文審查完成證明。

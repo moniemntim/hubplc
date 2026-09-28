@@ -765,6 +765,24 @@
       "change": "兩份快照重播舊畫面、12→13→14政策、佇列再授權與禁止自動補送。",
       "verification": "tests/authorization.test.mjs; standalone-batch19.mjs; 409 unit tests; local and production verification recorded separately",
       "hardwareVerified": false
+    },
+    "hmi-manual-auto-mode-control-ownership": {
+      "status": "reviewed-local",
+      "batch": 20,
+      "reviewDate": "2026-09-28",
+      "sha256": "69e966f8dc33c2f90253e4cde9cdbdc83b24cc0dad961516ffea6837937dee38",
+      "change": "共用離線模式狀態機：請求/確認/owner分離，停止與待命條件、原ID查詢、返回Auto與5秒邊界。",
+      "verification": "tests/mode-ownership.test.mjs; standalone-batch20.mjs; 410 unit tests; local/production release evidence separately",
+      "hardwareVerified": false
+    },
+    "hmi-maintenance-mode-screen-permissions": {
+      "status": "reviewed-local",
+      "batch": 20,
+      "reviewDate": "2026-09-28",
+      "sha256": "b71d5aae52169dab337f605fb332d1b8b32240f422eacf1483dcdd97cc9cfc11",
+      "change": "共用模式模型的Maintenance進出，工作單未驗證狀態另列，測試停止/復原核對等待與退出Manual。",
+      "verification": "tests/mode-ownership.test.mjs; standalone-batch20.mjs; 410 unit tests; local/production release evidence separately",
+      "hardwareVerified": false
     }
   }
 }

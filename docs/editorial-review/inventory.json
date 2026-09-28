@@ -1,7 +1,7 @@
 {
   "totals": {
-    "unreviewed": 364,
-    "reviewed-local": 85,
+    "unreviewed": 362,
+    "reviewed-local": 87,
     "draft": 1
   },
   "articles": [
@@ -487,11 +487,11 @@
     },
     {
       "slug": "hmi-maintenance-mode-screen-permissions",
-      "status": "unreviewed"
+      "status": "reviewed-local"
     },
     {
       "slug": "hmi-manual-auto-mode-control-ownership",
-      "status": "unreviewed"
+      "status": "reviewed-local"
     },
     {
       "slug": "hmi-multilanguage-translation-key-layout",

@@ -864,6 +864,42 @@
       "change": "刪除與換算／品質課重複段落，頁面五點比對與四組誤差案例；電流注入和壓力基準分段追查，容差不等於設備允收。",
       "verification": "418 unit tests; tests/five-point-lesson-browser.mjs at 3 widths; local layout 9 checks; tsc/oxlint/build; deployment evidence recorded separately",
       "hardwareVerified": false
+    },
+    "analog-raw-quality-filter-overrange": {
+      "status": "reviewed-local",
+      "batch": 27,
+      "reviewDate": "2026-09-28",
+      "sha256": "f0751851cc9ca30bf3caad0be5d95e960d63493093278b7d42b7ee71fcb2294b",
+      "change": "直接重播八筆恢復，Bad清窗/三筆滿窗、本次值與lastGood年齡分離；移除假通用診斷碼與重複FAQ。",
+      "verification": "420 unit tests; filter browser 6 checks; 18 layout checks; drift arithmetic; tsc/oxlint/build; release evidence separately",
+      "hardwareVerified": false
+    },
+    "filtered-peaks-raw-data-traceability": {
+      "status": "reviewed-local",
+      "batch": 27,
+      "reviewDate": "2026-09-28",
+      "sha256": "4dbb9ee62099d3fb8e14bf5ca29a74e0dd5133a6a10922a0f2ef831ae4a06098",
+      "change": "共用重播模型比較原值、三點平均、整窗摘要及觸發門檻；四層追查與具體存檔欄位。",
+      "verification": "420 unit tests; filter browser 6 checks; 18 layout checks; drift arithmetic; tsc/oxlint/build; release evidence separately",
+      "hardwareVerified": false
+    },
+    "analog-temperature-drift-thermal-baseline": {
+      "status": "reviewed-local",
+      "batch": 27,
+      "reviewDate": "2026-09-28",
+      "sha256": "faa1b575f01f9732f5e994f90f56ff89992be48b1e7732134bee9d686f7fe9b4",
+      "change": "受控溫度三段對照、三點加性/比例變化計算與回程，與長期零漂分工；NI來源核對。",
+      "verification": "420 unit tests; filter browser 6 checks; 18 layout checks; drift arithmetic; tsc/oxlint/build; release evidence separately",
+      "hardwareVerified": false
+    },
+    "sensor-zero-drift-check-standard-trend": {
+      "status": "reviewed-local",
+      "batch": 27,
+      "reviewDate": "2026-09-28",
+      "sha256": "4e0b367cf1216f473af6a907c74de64aed23e798a371c7efea8ba8544d24990e",
+      "change": "固定基準跨週三點紀錄、調整前後留存與斜率/%FS重算，與溫漂分工；NIST來源核對。",
+      "verification": "420 unit tests; filter browser 6 checks; 18 layout checks; drift arithmetic; tsc/oxlint/build; release evidence separately",
+      "hardwareVerified": false
     }
   }
 }

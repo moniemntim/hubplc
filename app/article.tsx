@@ -4,6 +4,7 @@ import PlcPractice from '@/components/plc-practice';
 import FaultResetPractice from '@/components/fault-reset-practice';
 import AnalogLesson from '@/components/analog-lesson';
 import FivePointLesson from '@/components/five-point-lesson';
+import FilterLesson from '@/components/filter-lesson';
 import { practiceModes } from '@/lib/plc-practice';
 import ArticleReadingNav, {
   ArticleDirectoryLink,
@@ -84,6 +85,13 @@ export default function Article({
         ) : null}
         {article.slug === '4-20ma-zero-offset-span-errors' ? (
           <FivePointLesson />
+        ) : null}
+        {article.slug === 'analog-raw-quality-filter-overrange' ||
+        article.slug === 'filtered-peaks-raw-data-traceability' ? (
+          <FilterLesson
+            key={article.slug}
+            counts={article.slug === 'analog-raw-quality-filter-overrange'}
+          />
         ) : null}
         <div className="article-reader__layout">
           <ArticleReadingNav toc={article.toc} />

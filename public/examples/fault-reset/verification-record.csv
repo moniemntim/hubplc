@@ -1,0 +1,12 @@
+case,source_valid,reset_request,cause_active,expected_fault,expected_pulse,observed_fault,observed_pulse,software_version,runtime_or_cpu,evidence,status
+initial-held,1,1,0,1,0,,,,,,NOT_RUN
+release,1,0,0,1,0,,,,,,NOT_RUN
+cause-active,1,1,1,1,0,,,,,,NOT_RUN
+still-held,1,1,0,1,0,,,,,,NOT_RUN
+release-again,1,0,0,1,0,,,,,,NOT_RUN
+accept,1,1,0,0,1,,,,,,NOT_RUN
+hold,1,1,0,0,0,,,,,,NOT_RUN
+invalid-new-fault,0,0,1,1,0,,,,,,NOT_RUN
+recover-held,1,1,0,1,0,,,,,,NOT_RUN
+recover-release,1,0,0,1,0,,,,,,NOT_RUN
+second-accept,1,1,0,0,1,,,,,,NOT_RUN

@@ -195,6 +195,30 @@ export default function ArticleDirectory({
         </div>
       </header>
 
+      <section className="library-start" aria-labelledby="start-heading">
+        <h2 id="start-heading">第一次來，先完成一個操作</h2>
+        <p>
+          以下三課可在頁面直接練習，無需安裝。屬於瀏覽器邏輯模型，並非原廠模擬或實機測試。
+        </p>
+        <ol>
+          <li>
+            <Link href="/articles/plc-self-hold-set-reset-q-series">
+              自保持：啟動後保持，停止優先
+            </Link>
+          </li>
+          <li>
+            <Link href="/articles/plc-fault-reset-single-acceptance">
+              故障復歸：有效釋放後才接受一次
+            </Link>
+          </li>
+          <li>
+            <Link href="/articles/plc-state-machine-three-step-sequence">
+              順序控制：分清等待、執行、完成與故障
+            </Link>
+          </li>
+        </ol>
+        <p>已有特定問題，可用下方搜尋找對應文章。</p>
+      </section>
       <section className="library-search-area" aria-label="搜尋文章">
         <label className="library-search">
           <Search size={22} aria-hidden="true" />

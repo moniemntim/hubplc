@@ -102,11 +102,11 @@
     },
     "plc-fault-reset-single-acceptance": {
       "status": "reviewed-local",
-      "batch": 2,
+      "batch": 24,
       "reviewDate": "2026-09-28",
-      "sha256": "5bf4ad174d8f3b636402af1acc02911133c49536dd147fadc6d40d68e7f7dafd",
-      "change": "縮為可重跑的11掃描故障鎖存復歸；不混入廠牌診斷或網路恰好一次。",
-      "verification": "node public/examples/fault-reset/demo.mjs；tests/fault-reset.test.mjs 4/4",
+      "sha256": "7b7870df495f520f09073f2c425f1b949ed880a59dd6f5d8d163b840e817eb58",
+      "change": "內容整改：頁面直接逐掃描操作，下載降為選配；新增ST完整宣告/實作/呼叫對照及NOT_RUN驗收表。ST尚未編譯或原廠模擬。",
+      "verification": "tests/fault-reset.test.mjs; tests/fault-reset-browser.mjs; 415 unit tests; ST source reference not compiled; local/production release evidence separately",
       "hardwareVerified": false
     },
     "batch-statistics-empty-batch": {

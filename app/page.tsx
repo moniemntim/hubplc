@@ -31,10 +31,10 @@ const featuredTools = [
 ];
 const lessons = [
   {
-    slug: 'plc-analog-scaling-pressure-temperature-level',
-    title: '4–20 mA 換成壓力值',
-    label: '瀏覽器計算案例',
-    text: '從量程填寫到 4、12、20 mA 三點核對，再判讀超量程。',
+    slug: 'plc-fault-reset-single-acceptance',
+    title: '故障解除後，為什麼還要重新按復歸？',
+    label: '頁面直接操作 · 逐掃描練習',
+    text: '切換按鈕、故障與來源品質，觀察一次接受、長按拒絕與故障保持。',
   },
   {
     slug: 'modbus-response-wrong-value',

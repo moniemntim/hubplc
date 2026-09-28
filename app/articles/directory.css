@@ -502,3 +502,25 @@
     transition: none;
   }
 }
+.library-start {
+  padding: 20px;
+  margin: 0 0 24px;
+  border: 1px solid #b7d7ce;
+  border-radius: 12px;
+  background: #f0f7f4;
+  line-height: 1.7;
+}
+.library-start h2 {
+  font-size: 1.25rem;
+  margin: 0 0 8px;
+}
+.library-start ol {
+  padding-left: 24px;
+}
+.library-start li {
+  margin: 10px 0;
+}
+.library-start a {
+  text-decoration: underline;
+  text-underline-offset: 3px;
+}

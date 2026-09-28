@@ -1,6 +1,7 @@
 import Link from '@/components/site-link';
 import AdSense from '@/components/adsense';
 import PlcPractice from '@/components/plc-practice';
+import FaultResetPractice from '@/components/fault-reset-practice';
 import { practiceModes } from '@/lib/plc-practice';
 import ArticleReadingNav, {
   ArticleDirectoryLink,
@@ -69,6 +70,9 @@ export default function Article({
           <PlcPractice mode={practiceModes[article.slug]} />
         ) : null}
 
+        {article.slug === 'plc-fault-reset-single-acceptance' ? (
+          <FaultResetPractice />
+        ) : null}
         <div className="article-reader__layout">
           <ArticleReadingNav toc={article.toc} />
           <article

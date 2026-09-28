@@ -1,0 +1,5 @@
+Node v24.19.0; win32; loopback HTTP application delay only
+{"case":"baseline","result":"completed","elapsedMs":28.02,"detail":null}
+{"case":"delayed","attempts":[{"attempt":1,"sentAtMs":0,"result":"timeout","elapsedMs":202.51,"detail":null},{"attempt":2,"sentAtMs":264.71,"result":"timeout","elapsedMs":205.85,"detail":null},{"attempt":3,"sentAtMs":532.69,"result":"timeout","elapsedMs":204.08,"detail":null}],"clientEndedAtMs":736.96}
+{"serverAfterDrain":{"baseline":{"received":1,"completed":1},"delayed":{"received":3,"completed":3}}}
+PASS: baseline read, three client timeouts, server work still completed

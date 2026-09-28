@@ -1,81 +1,71 @@
 ---
 title: 序號重用遇到舊回覆如何安全丟棄
-description: 處理有限交易序號回捲與舊回覆，使用connection epoch、peer、可得協定欄位及pending狀態，避免只比較seq造成late response誤配。
+description: 下載 Modbus TCP FC03 晚到回覆案例，驗證連線世代、期限、序號用盡與回覆欄位，避免舊 callback 完成新請求。
 date: 2026-09-21
 author: 茂伯
 draft: false
 category: 工業通訊與網路
 ---
 
-## 先承認有限序號會回捲
+## 不能在同一個 epoch 猜測 TID 重用
 
-請求序號不是永久唯一。若欄位只有有限位元，送出足夠多次後一定會wrap；Modbus TCP的Transaction Identifier是16位元，也不能把它當成跨重啟、跨連線永不重複的全域交易ID。只比較seq相等，就可能把舊回覆誤配給新請求。
+Modbus TCP 的 Transaction Identifier 是 2 bytes。官方 TCP implementation guide 說明它由 client 初始化，server 在回覆複製，且同一 TCP connection 上「當時」必須唯一；它不是跨重連永久唯一的交易號。若在同一個通道世代已完成或逾時的 TID 又被重用，兩個 FC03 回覆可能有相同 TID、Unit ID、功能碼與資料長度。本地程式無法從這些欄位證明哪一筆較舊。
 
-安全配對至少考慮connection epoch、peer、function或操作類型、資料位址與長度，以及該筆是否仍在pending。epoch由本端每次建立新應用連線或重置通道時遞增；它不是TCP規格自動提供的欄位，而是本端資料模型。
+這裡採用較保守、可強制檢查的規則：**一個 epoch 內 TID 絕不回收**。`65535` 用完後，matcher 拒絕下一筆，而不是回到 `0`。只有整合程式已關閉舊通道、在通道外部確認它已關閉，再呼叫 `advanceEpoch({ oldChannelClosed: true })`，新 epoch 才重新從 `0` 配發。
 
-回覆能核對哪些欄位，取決於協定實際帶出的欄位。不能假設每種回覆都echo請求地址，也不能擅自把猜出的欄位當作協定證據。以Modbus TCP為例，應依實際封包和例外回覆核對Transaction Identifier、Protocol Identifier、Unit Identifier、功能碼、長度與可得資料；地址是否出現在回覆中要看功能與PDU格式。
+`epoch` 不是 Modbus 或 TCP 欄位，也不是程式能自動從網路得出的事實。它是提交時就捕捉並隨 callback 傳回的本地中繼資料；`oldChannelClosed: true` 同樣是整合程式提供的外部確認。此離線範例不開 socket，不能替任何現場連線宣稱已關閉。
 
-TCP連線關閉後，不能把舊連線位元組直接想成會跑進新socket；但應用層callback、排程佇列或共享buffer仍可能把舊結果交給新邏輯。因此epoch和pending狀態要在callback入口再次驗證，不能只依socket物件地址或seq。
+## 用可驗證的 pending 記錄接收 callback
 
-## 建立可核對的交易鍵
+每次送出 FC03 前，先保存 `epoch`、`peer`、TID、Unit ID、請求位址、register 數量、建立時間、deadline 和 `pending` 狀態。callback 入口依下列順序判讀：
 
-可將待回覆鍵設計為(epoch, peer, protocol, transaction_id, function, address, length)，但只有協定真正提供或本端確實保存的欄位才可比較。送出時保存請求摘要、建立時間、deadline和狀態pending；回覆到達時先找epoch和peer，再依可用欄位核對，最後確認尚未完成且未過期。
+| 條件                                                | 結果                              | 是否接受為正常資料 |
+| --------------------------------------------------- | --------------------------------- | ------------------ |
+| callback 的 epoch 小於目前 epoch                    | `old-epoch`                       | 否                 |
+| peer 不同                                           | `wrong-peer`                      | 否                 |
+| 同一 TID 已 `completed`                             | `duplicate`                       | 否                 |
+| 處理時刻 `>= deadline`                              | `late`，轉 `expired`              | 否                 |
+| FC03 的 Unit ID、功能碼、byte count 或 PDU 長度不符 | 拒絕該 callback，仍等待可驗證回覆 | 否                 |
+| 檢查全部成功                                        | `pending → completed` 一次        | 是                 |
 
-具體案例：epoch=12曾送出TID=0讀取，逾時後關閉並建立epoch=13，新連線重新使用TID=0。舊讀取工作的callback帶epoch=12與TID=0回來，即使功能碼相同也被拒絕；只有epoch=13對應的pending可完成。另一項邊界測試再獨立檢查65535回捲至0，不混成同一請求。
+deadline 使用整合程式提供的單調時間；本例定義剛好在 deadline 的 callback 已經太晚。`nowMs` 與 `receivedAtMs` 都必須是在 matcher 方法執行時，從**同一個單調時鐘**取樣的處理時刻；`receivedAtMs` 不是封包擷取時間，也不是較早保存在 callback 裡的「到達時間」。matcher 拒絕任何比已處理時間更早的值，因此不會接受一個宣稱在請求建立前已處理的 callback。epoch 則相反：它在提交時捕捉，之後隨 callback 原樣傳回。
 
-另一案例是在同一連線內TID=41完成後，序號回捲再出現TID=41。若舊pending已是completed，任何第二個TID=41結果都不能再次更新輸出；若重用前沒有安全隔離，也不能只靠數字相等判定它是新的。
+最重要的案例是：epoch `12` 的 TID `0` 超時，舊通道已由外部確認關閉，然後建立 epoch `13`，新請求再次取得 TID `0`。若延遲排程的舊 callback 保留提交時的 epoch `12`，matcher 會回 `old-epoch`；只有帶 epoch `13` 的 pending 可以完成。這不是宣稱舊 TCP bytes 會穿過新 socket，而是處理應用程式已排程的舊 callback。
 
-function、address和length可協助發現錯配，但不能把未由協定保證的欄位當成唯一ID。若回覆沒有地址，只核對協定確實帶出的欄位，並在序列化之外明訂逾時後通道隔離策略。
+## FC03 回覆只能比對實際存在的欄位
 
-## 逾時與重用前的安全策略
+官方 Application Protocol §6.3 定義 FC03 request 有起始位址與 register 數量；正常 response 則是功能碼 `03`、byte count 和每個 register 兩 bytes。**正常 FC03 回覆沒有 request 的起始位址或數量 echo。** 因此範例將請求的 `startAddress` 和 `quantity` 留在 pending 作審計，但不把 address 當成回覆驗證條件。
 
-逾時不是立即表示對端沒有執行。舊請求可能已在服務端完成，只是回覆晚到。因此late response要進入獨立分流：保存證據、不可更新新請求、不可自動重放有副作用的write。需要重試時，先用結果查詢、冪等request或人工確認，不能只換一個TID繼續寫。
+本例採需辨識下游裝置的閘道情境，固定 Unit ID=1 並嚴格比對。直接連線的裝置如何處理 Unit ID 要依目標規格，不能把這項教學條件當成所有 Modbus TCP 裝置的通則。
 
-若逾時後無法界定遲到回覆上限，本例選擇關閉舊TCP連線、終止其讀寫工作，再建立新連線世代；僅增加本地epoch而不隔離原串流無法辨識無世代欄位的舊回覆。單筆outstanding能避免同時請求混淆，卻不能單獨解決逾時後重用識別的問題。
+已組好 MBAP 的 callback 交給範例時，FC03 正常回覆只核對：
 
-安全窗口要用單調時間計算，包含最長網路延遲、服務處理和callback排隊時間。若無法證明舊回覆已不可能到達，就不能在同一epoch中安全重用容易碰撞的鍵。關閉socket可降低風險，但不能替代應用層epoch和狀態檢查。
+1. callback 的 epoch、peer、TID 和 Unit ID 是否對應仍為 `pending` 的項目；
+2. PDU function 是否為 `03`；
+3. byte count 是否等於請求數量的 `2 × N`；
+4. PDU 的實際長度是否正好為 function、byte count 和資料的總長。
 
-若TID欄位回捲但仍有多筆pending，應暫停產生可能碰撞的新TID，或等待舊項目完成、取消並完成隔離。取消也要有明確結果，不能把本端刪除pending當成對端已停止。若對端沒有取消語意，晚到回覆仍可能出現，必須保留epoch判斷。
+`83 xx` 則走例外回覆分支，不能當 register data。本例只接受剛好兩個 bytes、且 exception code 非零的 FC03 exception PDU，並將 pending 終止為 `exception`。MBAP Protocol ID 與 MBAP Length 的組框／驗證屬前一層，可先用[MBAP 離線組框範例](/articles/modbus-tcp-mbap-header-transaction-unit-length)處理。
 
-地址和長度的比對要注意方向與編碼。請求的起始地址可能不會原樣出現在回覆，資料長度也可能以位元組或暫存器數表示；未經協定確認不可把兩者直接相等。配對邏輯應記錄使用了哪些欄位、哪些欄位不可用，便於審查。
+## 下載後離線重跑
 
-正常結果是新回覆只讓對應pending從sent轉completed一次；失敗結果是舊epoch回覆被記錄為late而不改變新資料。排查時先看epoch、TID、建立與完成時間、socket或callback來源，再查function和長度，不要只看TID。
+下載同一資料夾的 [matcher](/examples/plc-late-response/fc03-late-response-matcher.mjs)、[固定案例 runner](/examples/plc-late-response/demo.mjs) 與 [README](/examples/plc-late-response/README.md)。它們沒有 npm 套件、socket、網路服務或 PLC 依賴；使用 Node.js 22.13.0 或更新版本，在**下載資料夾**執行：
 
-## 驗收向量與限制
+```powershell
+node demo.mjs
+```
 
-離線驗收至少測：TID 65535後回到0、同TID不同epoch、同TID同epoch但已completed、回覆function錯、長度錯、peer錯、逾時後晚到、例外回覆、共享callback延遲，以及重連後第一筆回覆。每列要寫接受、丟棄或待人工查詢及理由。
+固定 runner 以 Node 的 `assert` 自行驗證 epoch `12/13`、重複完成、錯 peer／function／PDU 長度、deadline 的前一刻／剛好／之後、`65535` 後拒絕回捲，以及 `83 02` exception，然後才印出各列結果。專案內另有同樣邊界的測試。FC03 的請求位址加數量不得超過 `65536`，因此最後一個位址 `65535` 可以讀一個 register，不能讀兩個。這些是合成 callback 的狀態驗證，不是對任何 PLC 或網路的實測。
 
-Modbus TCP的標頭欄位可作協定核對參考，但不同功能的PDU回覆格式仍要依Modbus規格確認。不可泛化成所有TCP或所有PLC通訊都會echo地址、長度或自訂request_id。若協定欄位不足，降低併發或加一層已驗證的代理。
+## 範圍與現場整合責任
 
-本文只描述回覆配對與資料狀態，不提供特定PLC函式、寄存器或socket API。實際Q系列PLC的通訊模組、逾時行為、重連和資料保持要查目標手冊。內容已做案例核對。
+範例只處理已組好的 Modbus TCP FC03 callback，沒有實作一般網路 client、重連器、寫入重送或 PLC API。`peer` 必須由整合程式定義為可穩定識別該邏輯通道的值；不應只用可能回收的物件位址。舊 epoch 仍留在記錄中，方便把舊 callback 分流為 `old-epoch`，而不是偷當成新 transaction。範例是短期教學工作階段，保留的 audit records 會跨 epoch 成長；正式系統的保留期間、容量與封存流程不在此示範範圍。
 
-若日誌缺少連線世代、peer和請求摘要，先補可觀測性再調整序號策略。能證明的結論應寫到欄位層級，例如「TID相同但epoch不同而丟棄」，不要只寫「收到舊封包」。
+讀取的逾時表示結果未知或過期，並不證明 server 沒有處理；寫入的未知結果尤其不可藉由換 TID 自動重送。若需要重試或恢復，應依目標設備的結果查詢或冪等語意另行設計。
 
-對於讀取類請求，晚到結果通常可丟棄並重新查詢；對於寫入類請求，晚到結果可能代表設備已改變，必須把未知結果交給業務層處理，不可一律當成無害資料。
+參考：[Modbus Messaging on TCP/IP Implementation Guide V1.0b §3.1.3、§4.2、§4.4.1.3：MBAP 的 Transaction Identifier、Length，以及同 connection 的 transaction pairing。](https://www.modbus.org/file/secure/messagingimplementationguide.pdf)
 
-## 常見問題
-
-若採單一outstanding策略，正常完成後可送下一筆；若逾時或只有本地取消，仍需完成舊回覆隔離，不能立即重用通道與識別。這會降低吞吐量，但在協定沒有足夠識別欄位時，通常比猜測配對更容易驗證。
-
-連線epoch的儲存也要跨callback一致。重連函式先遞增epoch再發布新socket，舊socket的任何錯誤或回覆都只能結束舊流程，不得把新epoch標成healthy或完成新請求。
-
-若設備只回傳功能碼與資料，且沒有足夠欄位辨識請求，應將同時請求限制為一筆，逾時後先隔離舊通道再送下一筆，並記錄這項限制。吞吐量降低是可說明的取捨，錯配寫入則可能造成不可逆製程結果。
-
-每次丟棄late response仍要記錄來源、TID、epoch、收到時間和摘要，避免為了清理資料而失去證據。若同類事件持續增加，先調查服務延遲與重連，再考慮擴大安全窗口。
-
-問：TID不同就一定是不同交易嗎？答：仍需配合peer、epoch、功能與pending狀態；TID只是有限欄位。
-
-問：關閉舊TCP連線後還要檢查epoch嗎？答：要；共享callback、排程或buffer仍可能把舊結果交給新邏輯。
-
-問：Modbus TCP回覆一定會帶回請求地址嗎？答：不能泛化，依功能的實際PDU核對可得欄位，不能自行假設。
-
-問：逾時後換TID重送write安全嗎？答：不一定；舊write可能已完成，應先查結果或使用已定義的冪等策略。
-
-參考：[Modbus Messaging on TCP/IP Implementation Guide V1.0b §3.1.3：MBAP與兩byte Transaction Identifier。](https://www.modbus.org/file/secure/messagingimplementationguide.pdf)
-
-參考：[IETF RFC 9293 TCP規範，說明TCP連線與位元組流背景；應用層交易世代與pending策略由本文資料設計。](https://www.rfc-editor.org/rfc/rfc9293.html)
-
-參考：[Modbus Application Protocol V1.1b3：功能碼與各種回覆PDU欄位。](https://www.modbus.org/file/secure/modbusprotocolspecification.pdf)
+參考：[Modbus Application Protocol V1.1b3 §6.3、§7：FC03 正常／例外 PDU 欄位。](https://www.modbus.org/file/secure/modbusprotocolspecification.pdf)
 
 ## 延伸閱讀
 

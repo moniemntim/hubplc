@@ -1,0 +1,752 @@
+{
+  "scope": "全部發布文章；每篇需閱讀正文，機器掃描不等於完成",
+  "articles": {
+    "plc-self-hold-set-reset-q-series": {
+      "status": "reviewed-local",
+      "batch": 1,
+      "reviewDate": "2026-09-28",
+      "sha256": "f5758dcb4d3165cd3fb027a5de39754e941d5121930d4c8449e36e0af1290106",
+      "change": "Stop 優先與長按再啟動完整案例；瀏覽器逐掃描模型。",
+      "verification": "tests/plc-practice.test.mjs; tests/plc-practice-browser.mjs",
+      "hardwareVerified": false
+    },
+    "plc-state-machine-three-step-sequence": {
+      "status": "reviewed-local",
+      "batch": 1,
+      "reviewDate": "2026-09-28",
+      "sha256": "4fbbe2b13d0ab22bfd60b88fc526196cb374fa42f5ba03096ef4edf8bc0d6a07",
+      "change": "完整 WAIT/RUN/DONE/FAULT 與逾時、Reset 規則；自訂模型非廠牌執行環境。",
+      "verification": "tests/plc-practice.test.mjs; tests/plc-practice-browser.mjs",
+      "hardwareVerified": false
+    },
+    "plc-ton-tof-tp-timer-selection": {
+      "status": "reviewed-local",
+      "batch": 1,
+      "reviewDate": "2026-09-28",
+      "sha256": "cd57df58e1e06f4ac1b041608b0d4fb9329234b82509a06a2266c5ba58426098",
+      "change": "TON 2000ms 完整操作；TOF/TP 文件預期與未模擬範圍分開。",
+      "verification": "tests/plc-practice.test.mjs; tests/plc-practice-browser.mjs",
+      "hardwareVerified": false
+    },
+    "modbus-function-code-01-04-read-list": {
+      "status": "reviewed-local",
+      "batch": 1,
+      "reviewDate": "2026-09-28",
+      "sha256": "f78351c4c4f41bccc56e2071422bd632c37d523b4641e14f66b8b2bcf999a2ec",
+      "change": "重寫 PDU、位址、bit 打包與暫存器解析，依 Modbus 官方規格核對。",
+      "verification": "人工逐位元組核對；layout-browser 320/768/1440",
+      "hardwareVerified": false
+    },
+    "rs485-no-response-troubleshooting": {
+      "status": "reviewed-local",
+      "batch": 1,
+      "reviewDate": "2026-09-28",
+      "sha256": "dbd9875c3e004511907c2b34b888261b94640c3586b3e47a88b13d04df1b68d2",
+      "change": "拆成未送出、未回覆、未接受三種觀察與下一步；非設備實測。",
+      "verification": "Modbus serial V1.02 文件核對；layout-browser",
+      "hardwareVerified": false
+    },
+    "wireshark-modbus-tcp-opc-ua-offline-packet-walkthrough": {
+      "status": "reviewed-local",
+      "batch": 1,
+      "reviewDate": "2026-09-28",
+      "sha256": "7596cac11ba0466aa076c69d064a39ec850c2a88a7ac1a1e571481ecfc6e364d",
+      "change": "撤除不存在 PCAP 與未證實 tshark 宣稱，改完整合成 MBAP/FC03 手算。",
+      "verification": "Node 位元組長度及 readUInt16；Modbus 官方文件；layout-browser",
+      "hardwareVerified": false
+    },
+    "blackbox-observable": {
+      "status": "reviewed-local",
+      "batch": 1,
+      "reviewDate": "2026-09-28",
+      "sha256": "f7bad0b86a3e0863e87b457ffe908bd0d4548a583cf244975ce8650514b812c6",
+      "change": "縮為 FC03 離線驗收表，提供實際 CSV；硬體未測欄明列。",
+      "verification": "附件 HTTP200 與來源位元組相符；Float32 12.5；layout-browser",
+      "hardwareVerified": false
+    },
+    "boundary-ticket": {
+      "status": "reviewed-local",
+      "batch": 1,
+      "reviewDate": "2026-09-28",
+      "sha256": "75f75346cca2dfa313e129f27c18f4699150f7fe0884b2a29d0615e50a30a207",
+      "change": "交付實際跨系統問題單；所有合成觀測及待收集證據明列。",
+      "verification": "MD 附件 HTTP200 與來源一致；layout-browser",
+      "hardwareVerified": false
+    },
+    "industrial-evidence-index": {
+      "status": "reviewed-local",
+      "batch": 1,
+      "reviewDate": "2026-09-28",
+      "sha256": "dbd649598237b9ab2e205f8e8689988afa422084756b62b09eb32742fb1b9a12",
+      "change": "交付來源 CSV、查詢 JSON 與索引；可重算平均 124.9。",
+      "verification": "三附件 HTTP200 與來源一致；數值重算；layout-browser",
+      "hardwareVerified": false
+    },
+    "modbus-security-tls-certificates-roles": {
+      "status": "reviewed-local",
+      "batch": 3,
+      "reviewDate": "2026-09-28",
+      "sha256": "bddec80b8fb860629754a020a392ee460d0059fa3a45b2ce01a5990148b6adf0",
+      "change": "縮為可填寫能力盤點/七項驗收表，文件聲明與觀察分離；角色授權SHOULD及S05適用性修正。",
+      "verification": "7能力unknown、7計畫not_run；官方§8.4 R16/R17核對；獨立review P2已修正；無設備測試",
+      "hardwareVerified": false
+    },
+    "industrial-data-retention-policy": {
+      "status": "reviewed-local",
+      "batch": 3,
+      "reviewDate": "2026-09-28",
+      "sha256": "9d8148e9fa5b9267d4bb651711649e4999f58b2f5554818a0892b8a58b14e2b3",
+      "change": "用自訂30天七筆資料實跑候選預覽，Hold、未知政策、無效時間各有明確狀態。",
+      "verification": "tests/retention-preview.test.mjs 4/4；2候選/1保留/1Hold/3補正；獨立review；無刪除API",
+      "hardwareVerified": false
+    },
+    "plc-fault-reset-single-acceptance": {
+      "status": "reviewed-local",
+      "batch": 2,
+      "reviewDate": "2026-09-28",
+      "sha256": "5bf4ad174d8f3b636402af1acc02911133c49536dd147fadc6d40d68e7f7dafd",
+      "change": "縮為可重跑的11掃描故障鎖存復歸；不混入廠牌診斷或網路恰好一次。",
+      "verification": "node public/examples/fault-reset/demo.mjs；tests/fault-reset.test.mjs 4/4",
+      "hardwareVerified": false
+    },
+    "batch-statistics-empty-batch": {
+      "status": "reviewed-local",
+      "batch": 2,
+      "reviewDate": "2026-09-28",
+      "sha256": "a86d33f2f885f6fcf29f3ab802a912b5cad1a6260cf9119d4cf21ce8959b3f33",
+      "change": "固定整數倍率、4筆上限與有效性；完整模組/fixture/runner/ZIP，修正縮放單位與超限計數。",
+      "verification": "tests/batch-statistics.test.mjs 6/6；ZIP五檔SHA與來源一致",
+      "hardwareVerified": false
+    },
+    "hmi-dependency-matrix": {
+      "status": "reviewed-local",
+      "batch": 2,
+      "reviewDate": "2026-09-28",
+      "sha256": "c518ad98391dbb47f8c4b9afaf6e9eeeadcf5e302d9ea4d7bc535d0d3fd6921b",
+      "change": "可下載相依圖、改名前後資料、報表與PowerShell檢查；明確直接/間接影響。",
+      "verification": "verify-fixtures.ps1 通過4受影響項及平均22；ZIP八檔SHA一致",
+      "hardwareVerified": false
+    },
+    "automated-test-report-reproducibility": {
+      "status": "reviewed-local",
+      "batch": 2,
+      "reviewDate": "2026-09-28",
+      "sha256": "22616cb929ea330d0aeb3b5a2837ca0f0b8b090a9f93dc316520a0c37c9de4a0",
+      "change": "實際FC03離線解析產生results與manifest，每次重跑另存目錄；實際SHA而非虛構證據。",
+      "verification": "主線副本重跑兩次、253/100、SHA、錯值exit1及03zz拒絕通過",
+      "hardwareVerified": false
+    },
+    "acceptance-pass-untested-not-applicable": {
+      "status": "reviewed-local",
+      "batch": 2,
+      "reviewDate": "2026-09-28",
+      "sha256": "da09d8cc5ef6344c006d6ce6fc3b8c7b7ee4aeeb2b7d8032cdeaa60b6ee7eed2",
+      "change": "可填寫CSV分開通過、未測、不適用與核准依據；與報告文分工，不再複製同一段證據提醒。",
+      "verification": "CSV欄位/空列及下載連結核對；NASA原始文件核對；分母9/11、8/11、8/9重算",
+      "hardwareVerified": false
+    },
+    "plc-rising-falling-edge-button-event": {
+      "status": "reviewed-local",
+      "batch": 3,
+      "reviewDate": "2026-09-28",
+      "sha256": "4740ff08ea3abe3c763fc2373b43b18a0134b988b5a43d76e875239d5a3df573",
+      "change": "12+4掃描可執行邊沿案例；首次高電平與fault-reset先釋放政策分開。",
+      "verification": "tests/plc-edges.test.mjs：長按/釋放/重按/計數溢位；demo CSV核對",
+      "hardwareVerified": false
+    },
+    "plc-state-entry-once": {
+      "status": "reviewed-local",
+      "batch": 3,
+      "reviewDate": "2026-09-28",
+      "sha256": "0dea0c39482e16e4fd5131aa33c0977ade875cafdec9330e78242dca4a8a15a9",
+      "change": "固定外部已核准狀態的資料責任模型；初始化、持續取樣、離開快照各一次，S6忽略非RUN樣本。",
+      "verification": "entry-demo.mjs S1–S9與tests/plc-edges.test.mjs；25/3舊快照保留",
+      "hardwareVerified": false
+    },
+    "plc-floating-point-tolerance": {
+      "status": "reviewed-local",
+      "batch": 3,
+      "reviewDate": "2026-09-28",
+      "sha256": "37cd390c9478ad8dfe0897d2ad650ce1f9e45feb99dd7c650290945d952d7932",
+      "change": "加入可下載單檔及實際十進位邊界反例；工程窗口與相對誤差規則分開。",
+      "verification": "tests/plc-numeric.test.mjs；Windows CLI JSON、25.05差值反例、等號與無效/溢位",
+      "hardwareVerified": false
+    },
+    "plc-rounding-negative-display-fixed-point": {
+      "status": "reviewed-local",
+      "batch": 3,
+      "reviewDate": "2026-09-28",
+      "sha256": "ab9e6ec081d703485e9c2d44c6b67813ca6ae060abc75c6f00ddbebc28026c0a",
+      "change": "固定Raw100→Rounded10、中點遠離零，原值/取整/顯示分開。",
+      "verification": "tests/plc-numeric.test.mjs；正負中點/範圍/負零/CLI；CODESYS文件限定引用",
+      "hardwareVerified": false
+    },
+    "modbus-tcp-mbap-header-transaction-unit-length": {
+      "status": "reviewed-local",
+      "batch": 3,
+      "reviewDate": "2026-09-28",
+      "sha256": "6d510b03398adf8d85fbfb2a1113076365de6624affd163890df555c1bf62674",
+      "change": "提供TCP拆分/合併合成bytes與可執行parser/demo；不冒稱PCAP或交易配對已實作。",
+      "verification": "tests/modbus-framing.test.mjs；TID002A/002B及remain0；官方TCP guide核對",
+      "hardwareVerified": false
+    },
+    "modbus-tcp-register-block-read-limits": {
+      "status": "reviewed-local",
+      "batch": 3,
+      "reviewDate": "2026-09-28",
+      "sha256": "ccd7c1a8d374b33fa0b6d89186c549caee19b0ff5ff028b6f91e3fc14ca6fd31",
+      "change": "六區188word手動清單驗算器，標準125與設備50分開，修正40word回覆ADU89bytes及十六進位混淆。",
+      "verification": "tests/modbus-framing.test.mjs 9/9；Buffer長度89/Length83/PDU82；洞位/跨區/非法大值/125上限",
+      "hardwareVerified": false
+    },
+    "plc-scan-cycle-io-refresh": {
+      "status": "reviewed-local",
+      "batch": 4,
+      "reviewDate": "2026-09-28",
+      "sha256": "3d10e5cb2a6cabd29ece26b1eb5b1d3cb56d72f90234d2e6d6e4b6d94609cf5d",
+      "change": "五次掃描正向／交換順序及短脈衝可下載重播；刪除重複 FAQ，明分模型與 QCPU 文件背景。",
+      "verification": "tests/plc-scan.test.mjs; scan-demo; standalone-batch4; layout-batch4",
+      "hardwareVerified": false
+    },
+    "plc-duplicate-coil-multiple-assignment-debug": {
+      "status": "reviewed-local",
+      "batch": 4,
+      "reviewDate": "2026-09-28",
+      "sha256": "b7d1cee6f73da1764c9269326a647d6fc80527b6ebcd8a4aa7179c1a7eeee04f",
+      "change": "AB/BA 覆寫追蹤與 16 組固定決策；明列解除阻擋後恢復請求、不含復歸鎖定。",
+      "verification": "tests/plc-scan.test.mjs; writers-demo; standalone-batch4; independent read-only review",
+      "hardwareVerified": false
+    },
+    "plc-subprogram-call-frequency-edge-timer": {
+      "status": "reviewed-local",
+      "batch": 4,
+      "reviewDate": "2026-09-28",
+      "sha256": "dc512c85cf73866518384deb5c1540338beb87ad29eeee1f75f567546a72f2ae",
+      "change": "條件呼叫、保留 Q、恢復高位與漏取事件可重播；自訂期限及黏住缺口診斷、拒絕時間倒退。",
+      "verification": "tests/plc-call-frequency.test.mjs; demo; standalone-batch4; layout-batch4",
+      "hardwareVerified": false
+    },
+    "plc-forcing-vs-simulated-input": {
+      "status": "reviewed-local",
+      "batch": 4,
+      "reviewDate": "2026-09-28",
+      "sha256": "afb364235da6572a0d7a19541a00c7ef57d0bdbd9834bb4808b6fa598d7fcebd",
+      "change": "隔離 CODESYS Simulation 步驟、ST 與持續診斷欄，七案例空白實測表；刪除無實作的逾時流程。",
+      "verification": "官方文件與 ST 人工核對; CSV 7 rows not_run; attachments byte equality; CODESYS execution not performed",
+      "hardwareVerified": false
+    },
+    "force-list-clear": {
+      "status": "reviewed-local",
+      "batch": 5,
+      "reviewDate": "2026-09-28",
+      "sha256": "d8ae59ae35887317bc0b99dd405d39bd8e5cec4d98f11f457600415a1a67eaea",
+      "change": "刪除未實作的自動化承諾，整合前篇 Force 操作，新增可填清場與範圍表、BOOL 預備值清除步驟。",
+      "verification": "官方文件與前篇ST核對; independent review; worksheets-batch5; layout-batch5; CODESYS not executed",
+      "hardwareVerified": false
+    },
+    "simulation-real-input-io-sensor": {
+      "status": "reviewed-local",
+      "batch": 5,
+      "reviewDate": "2026-09-28",
+      "sha256": "cd50acd0e8cda1aa8e9b29fa3df9c449196d6846d2c4134b3c537b90f7a5658b",
+      "change": "三層 I/O 測試、七筆合成算術與空白量測表，實際操作類比工具核對四個輸入。",
+      "verification": "analog-batch5 browser; worksheets-batch5 21 rows; source arithmetic; hardware not executed",
+      "hardwareVerified": false
+    },
+    "plc-simulation-abnormal-scenario-matrix": {
+      "status": "reviewed-local",
+      "batch": 5,
+      "reviewDate": "2026-09-28",
+      "sha256": "041dce8bc680f25410f08a2d95ba8c19bb1259b3d54fe75dd6e1208cd62c1fea",
+      "change": "完整離線工作狀態模型、四主案例與四邊界案例；Request 保持、ID 不重用與終態清理。",
+      "verification": "tests/plc-abnormal-matrix.test.mjs; standalone-batch5; layout-batch5",
+      "hardwareVerified": false
+    },
+    "plc-trace-single-scan-flag-sampling": {
+      "status": "reviewed-local",
+      "batch": 5,
+      "reviewDate": "2026-09-28",
+      "sha256": "ab5a7ccd86d7825033c6c318b7dfe5355f80bc9b90fa89bf8c69c7858d15faa5",
+      "change": "12列事件與兩個粗取樣相位，計數與波形分開，附完整預期輸出；原廠 Trace 設定不宣稱已執行。",
+      "verification": "tests/plc-trace.test.mjs; exact stdout; standalone-batch5; layout-batch5",
+      "hardwareVerified": false
+    },
+    "plc-minimal-reproduction-module-offset": {
+      "status": "reviewed-local",
+      "batch": 5,
+      "reviewDate": "2026-09-28",
+      "sha256": "1a3ae6e7ae0f0fd102bf63550c08e4e9e93512eb65d42b62ea2f3b171f551bcc",
+      "change": "六筆資料映射偏移可下載單檔重播，兩組輸入與越界檢查；區分邏輯案例和真正 PLC 工程交接。",
+      "verification": "reproduce.mjs assertions; standalone-batch5; official archive docs; layout-batch5",
+      "hardwareVerified": false
+    },
+    "plc-request-accept-result-handshake": {
+      "status": "reviewed-local",
+      "batch": 6,
+      "reviewDate": "2026-09-28",
+      "sha256": "ca63f08c45d25eda8d92aba963409f6cdb0a354a0f1ee44b7320e94c6490dafd",
+      "change": "重寫單筆接收端契約，保留 Accept 跨結果狀態、拒絕衝突新請求、資料快照與匹配確認；七條下載時間線。",
+      "verification": "tests/plc-handshake.test.mjs; standalone-batch6; 9 handshake tests",
+      "hardwareVerified": false
+    },
+    "sequence-reuse-late-response": {
+      "status": "reviewed-local",
+      "batch": 6,
+      "reviewDate": "2026-09-28",
+      "sha256": "ab361899cff789eb6af443bfe5853d2b3b051d6af2c7fdf3b21c3ec46dca0625",
+      "change": "已組框 FC03 callback 配對；同世代不重用 TID、捕捉 epoch、單調處理時間、地址範圍與可下載 assert 邊界案例。",
+      "verification": "tests/plc-late-response.test.mjs; standalone-batch6; official Modbus specifications",
+      "hardwareVerified": false
+    },
+    "plc-step-timeout-recovery": {
+      "status": "reviewed-local",
+      "batch": 6,
+      "reviewDate": "2026-09-28",
+      "sha256": "655c3ba96031da971075ab868f010922f64578e61321742afd279a0b36f21658",
+      "change": "5000 ms 單一步驟等待，4999／5000／5030 觀察、故障快照、拒絕 Reset 長按與新 Start。",
+      "verification": "tests/plc-step-timeout.test.mjs; standalone-batch6; independent read-only review",
+      "hardwareVerified": false
+    },
+    "plc-watchdog-timeout-diagnosis": {
+      "status": "reviewed-local",
+      "batch": 6,
+      "reviewDate": "2026-09-28",
+      "sha256": "988eff288ffdf285897131c4c31862635a95ace23a29fb5ed6997f46fdd9c327",
+      "change": "以三筆合成證據區分執行超時、未啟動候選與缺資料，移除無量測依據的耗時，提供空白 Runtime 表。",
+      "verification": "public/examples/plc-watchdog/replay.mjs; standalone-batch6; worksheet blank-field check; official CODESYS Task; independent review",
+      "hardwareVerified": false
+    },
+    "async-out-of-order-pending-map": {
+      "status": "reviewed-local",
+      "batch": 7,
+      "reviewDate": "2026-09-28",
+      "sha256": "d1e18640b34ac0c81a5984a9d3de5f4078b9a989a4e5d785a1cf398528dbaedc",
+      "change": "沿用既有 FC03 配對器，新增 A/B 亂序、一次更新、格式隔離及 all/partial 完整與缺件顯示。",
+      "verification": "tests/plc-batch-view.test.mjs; public/examples/plc-late-response/batch-demo.mjs; standalone-batch7",
+      "hardwareVerified": false
+    },
+    "plc-task-timeout-reentry-backlog": {
+      "status": "reviewed-local",
+      "batch": 7,
+      "reviewDate": "2026-09-28",
+      "sha256": "1a00235306f7f8b1b0c2d98814309a0c7e6a97a23ab136e3f87909490d4d56e9",
+      "change": "重寫 FIFO 到達/服務/容量完整案例；區分函式返回與外部工作完成，巢狀呼叫重疊不推論資料已覆寫，缺資料拒絕結論。",
+      "verification": "tests/plc-backlog.test.mjs; public/examples/plc-backlog/self-test.mjs; standalone-batch7",
+      "hardwareVerified": false
+    },
+    "latency-injection-timeout-retry": {
+      "status": "reviewed-local",
+      "batch": 7,
+      "reviewDate": "2026-09-28",
+      "sha256": "692b54c10f21a168f12ef4b183c952aa590b9a3dbbdc1c1a67fb1efe1fc47761",
+      "change": "新增真實本機唯讀 HTTP 延遲實驗與當次紀錄；另用虛擬模型驗證199/200/201、三次嘗試及總期限，兩者不混稱。",
+      "verification": "tests/latency-retry.test.mjs; public/examples/latency-retry/local-demo.mjs; saved stdout matches article; standalone-batch7",
+      "hardwareVerified": false
+    },
+    "idempotency-key-duplicate-write": {
+      "status": "reviewed-local",
+      "batch": 7,
+      "reviewDate": "2026-09-28",
+      "sha256": "d8e016d472ac9839e2056e93d554ebf0be04e894296d6166b662560a922053fe",
+      "change": "SQLite 同一交易內去重、計數效果與保存結果；驗證重送/衝突/重開/提交前後受控程序中止，外部 PLC 效果另列未知邊界。",
+      "verification": "tests/idempotency-ledger.test.mjs; public/examples/idempotency-ledger/demo.mjs; standalone-batch7; SQLite/Node official documentation",
+      "hardwareVerified": false
+    },
+    "communication-queue-backlog-diagnosis": {
+      "status": "reviewed-local",
+      "batch": 8,
+      "reviewDate": "2026-09-28",
+      "sha256": "7b86cd9a0229d8ed16f38b56ca5525e91ffaba74db7d3f079d80f745ac1fa3e5",
+      "change": "同時鐘七端點拆六段時間；四筆合成候選與三筆缺欄/跨時鐘/倒退拒絕，容量模型轉連前篇。",
+      "verification": "tests/queue-diagnosis.test.mjs; public self-test; standalone-batch8",
+      "hardwareVerified": false
+    },
+    "retry-backoff-jitter-circuit-breaker": {
+      "status": "reviewed-local",
+      "batch": 8,
+      "reviewDate": "2026-09-28",
+      "sha256": "f534f5910357a36f4b466cc2556016b947cca2cbb52fc1f9fa7f4238082bdb3b",
+      "change": "固定jitter算術與整體期限；單一permit、靜默probe顯式逾時、舊token、窗口及安全整數邊界，明示非並行鎖。",
+      "verification": "tests/retry-breaker.test.mjs; public self-test; standalone-batch8; AWS official retry guidance",
+      "hardwareVerified": false
+    },
+    "batch-database-transaction": {
+      "status": "reviewed-local",
+      "batch": 8,
+      "reviewDate": "2026-09-28",
+      "sha256": "253741ac4dc44af205a6eec82ca33d73100980ea6e8bcfaf4a8b6abe505caf15",
+      "change": "真實本機SQLite B17完整提交、第二筆SQL約束失敗/取消回滾、observer可見性；重複/無效輸入保留既有資料。",
+      "verification": "tests/batch-transaction.test.mjs; standalone-batch8; exact stdout/article match; SQLite official documentation",
+      "hardwareVerified": false
+    },
+    "hmi-reconnect-stale-callback-unknown-write": {
+      "status": "reviewed-local",
+      "batch": 8,
+      "reviewDate": "2026-09-28",
+      "sha256": "90f141a76c079c064f89edd375f0460c9a07c1527f4e2596054cf7495a154249",
+      "change": "離線世代/畫面/查詢識別、unknown命令結果與放開再按；Node EventEmitter十次掛載解除，未冒稱HMI實測。",
+      "verification": "tests/hmi-reconnect.test.mjs; standalone-batch8; independent read-only review; Node Events official documentation",
+      "hardwareVerified": false
+    },
+    "recipe-schema-complete-error-list": {
+      "status": "reviewed-local",
+      "batch": 9,
+      "reviewDate": "2026-09-28",
+      "sha256": "3480f4e65c1608321491346880c49739e9014f01d0bde57153c8594fb3001d9f",
+      "change": "有界原文、重複鍵拒絕、分階段完整錯誤與明示截斷；固定候選 SHA-256、可修改輸入重跑。",
+      "verification": "tests/recipe-validation.test.mjs; standalone-batch9; exact stdout/article; Node 24.19 crypto and Buffer docs",
+      "hardwareVerified": false
+    },
+    "operation-log-accepted-applied-equipment-revision": {
+      "status": "reviewed-local",
+      "batch": 9,
+      "reviewDate": "2026-09-28",
+      "sha256": "b608aea6f13d097ded9835d3fc531187f940cd82c4b79d9f9a75c9b6f252510b",
+      "change": "固定 OP884 事件鏈區分 accepted、sent、unknown 與關聯讀回 applied；序號、UTC 日期、版本衝突與敏感額外欄位拒絕。",
+      "verification": "tests/operation-log.test.mjs; standalone-batch9; exact stdout/article; OWASP Logging",
+      "hardwareVerified": false
+    },
+    "offline-hmi-non-operable-controls": {
+      "status": "reviewed-local",
+      "batch": 9,
+      "reviewDate": "2026-09-28",
+      "sha256": "2854d3b347a1245a7c8ab974a274c029d1d24c490f896d9469c81b3dffbe524c",
+      "change": "單檔離線 HTML 十種合成情境，快取仍可查看；品質、時效、世代、權限與未決命令共同控制按鈕，處理器重新檢查。",
+      "verification": "tests/offline-hmi-browser.mjs; 30 scenario/viewport cases; keyboard; 4999/5000 boundary; no HTTP; independent review",
+      "hardwareVerified": false
+    },
+    "receive-buffer-throughput-test": {
+      "status": "reviewed-local",
+      "batch": 9,
+      "reviewDate": "2026-09-28",
+      "sha256": "598c53cfdf350d01735c7c478b99d45108274961dfa3125cdc129ef6748010f7",
+      "change": "Node Buffer 拆 header/payload、黏包、完整 payload queue 容量與拒絕；EOF、零長度和超長 header 明確分流，修正速率算術。",
+      "verification": "tests/receive-buffer.test.mjs; standalone-batch9; exact stdout/article; RFC 9293 section 2.2",
+      "hardwareVerified": false
+    },
+    "float-nan-inf-control-gate": {
+      "status": "reviewed-local",
+      "batch": 10,
+      "reviewDate": "2026-09-28",
+      "sha256": "36e35c70984a34646a0a601a20c129318bd0a42cc84b9631c321fdef906dc89e",
+      "change": "binary32 BE/LE、代表NaN/Inf、品質與閉區間可下載案例；錯端序可能仍放行、來源與明確f32運算溢位分開。",
+      "verification": "tests/float-gate.test.mjs; standalone-batch10; exact stdout; IEEE/Node/ECMAScript official sources",
+      "hardwareVerified": false
+    },
+    "recipe-canonical-diff-confirmation-revision": {
+      "status": "reviewed-local",
+      "batch": 10,
+      "reviewDate": "2026-09-28",
+      "sha256": "a98ba97d526b346a6d0f51c6b399937d4d3c78affebe59e4d9e26cdd8d2096a6",
+      "change": "重用recipe-v3完整替換驗證；完整內容/目標/使用者/session/revision雜湊、一次確認、相等到期與虛擬時鐘上界。",
+      "verification": "tests/recipe-workflow.test.mjs; standalone-batch10; independent read-only review; OWASP Transaction Authorization",
+      "hardwareVerified": false
+    },
+    "recipe-select-verify-apply-device": {
+      "status": "reviewed-local",
+      "batch": 10,
+      "reviewDate": "2026-09-28",
+      "sha256": "17c0b69d60c492108b1d0f97d814434cf7ebf19d2c213770bdf756a4381b9049",
+      "change": "共用確認工作流、套用前重查scope/hidden/期限/版本，四欄逐步假設備證據；第三欄逾時partial、後續不送、unknown鎖住重試。",
+      "verification": "tests/recipe-workflow.test.mjs; standalone-batch10; exact stdout; independent read-only review",
+      "hardwareVerified": false
+    },
+    "plc-parameter-snapshot": {
+      "status": "reviewed-local",
+      "batch": 10,
+      "reviewDate": "2026-09-28",
+      "sha256": "92853a90452d951c28f648b8d8bb80780ac64b5c21baa1469270cd7991e5f123",
+      "change": "完整Edit確認、Confirmed與RUN快照分離、確認同掃描延後接受、terminal優先拒新工作、版本耗盡；12掃描顯示qty/wait實值。",
+      "verification": "tests/parameter-snapshot.test.mjs; standalone-batch10; exact stdout; primary review of terminal priority and input boundaries",
+      "hardwareVerified": false
+    },
+    "hmi-numeric-range-step-validation": {
+      "status": "reviewed-local",
+      "batch": 11,
+      "reviewDate": "2026-09-28",
+      "sha256": "27822acb36fdbee8dd9bc2fa51affd1422419d1c6d2281ada63ab6da982388e7",
+      "change": "BigInt精確文字範圍/步距再轉wire；100.04範圍拒絕、25.35步距拒絕、raw四欄完整shape獨立驗證、失敗保留值。",
+      "verification": "tests/numeric-input.test.mjs; standalone-batch11; exact stdout; TC39 BigInt and Node test docs",
+      "hardwareVerified": false
+    },
+    "multi-source-cas-arbitration": {
+      "status": "reviewed-local",
+      "batch": 11,
+      "reviewDate": "2026-09-28",
+      "sha256": "e63c0dc3aa3fa874252528ba2011f4347229dc96931cab123b49622070c71bdc",
+      "change": "實際SQLite BEGIN IMMEDIATE與條件UPDATE；雙child同v7競爭、請求ledger同交易回滾、重播/內容衝突與epoch儲存條件。",
+      "verification": "tests/cas-setting.test.mjs; standalone-batch11; independent review; real two-process race; SQLite and Node official docs",
+      "hardwareVerified": false
+    },
+    "hmi-concurrent-edit-last-writer-version": {
+      "status": "reviewed-local",
+      "batch": 11,
+      "reviewDate": "2026-09-28",
+      "sha256": "5b29201a278f92bbe1ac31e844586e68f8baf4ba576231cde00fb90af216121c",
+      "change": "共用SQLite模型的CLI編輯流程；保留baseline/current/draft，explicit rebase，unknown查詢綁原完整內容，避免誤用同ID舊成功。",
+      "verification": "tests/cas-setting.test.mjs; standalone-batch11; documented practice edits; independent targeted re-review",
+      "hardwareVerified": false
+    },
+    "plc-exclusive-resource-scheduler": {
+      "status": "reviewed-local",
+      "batch": 11,
+      "reviewDate": "2026-09-28",
+      "sha256": "6b979437da9bcccc944e2ba4c3df05f3705cf45f750b945d51b9a3f547637031",
+      "change": "FCFS逐掃描14列，序號不重用、cancel/release分開、逾時鎖定和復歸邊界；完整events與MAX_SAFE deadline觀察。",
+      "verification": "tests/resource-scheduler.test.mjs; standalone-batch11; exact stdout; primary review of clock, cancellation and event boundaries",
+      "hardwareVerified": false
+    },
+    "plc-fifo-product-tracking": {
+      "status": "reviewed-local",
+      "batch": 12,
+      "reviewDate": "2026-09-28",
+      "sha256": "4d7f587f37ca33de612440b03d561898e992093e8e79d7bc293e6c179ff13d9d",
+      "change": "容量五head-only ring buffer、同掃描入出順序、事件內容去重與回繞練習。",
+      "verification": "tests/product-fifo.test.mjs; public/examples/product-fifo/self-test.mjs; downloaded demo/practice",
+      "hardwareVerified": false
+    },
+    "serial-ascii-stx-length-etx-framing": {
+      "status": "reviewed-local",
+      "batch": 12,
+      "reviewDate": "2026-09-28",
+      "sha256": "121c5a584e6a8a49634deb7536aa0dee53c3775d94ad452466d18d5bcfbcb4ae",
+      "change": "逐byte自訂ASCII訊框、總期限與容量邊界、完整frame才發布、可改fixture診斷。",
+      "verification": "tests/serial-ascii.test.mjs; public/examples/serial-ascii/self-test.mjs; downloaded fixture practice",
+      "hardwareVerified": false
+    },
+    "communication-stop-data-quality-watchdog": {
+      "status": "reviewed-local",
+      "batch": 12,
+      "reviewDate": "2026-09-28",
+      "sha256": "bebebeee8e9866b14393b974b1afd53a8b855511c244e60503348ec6cf944098",
+      "change": "外部虛擬監視器、deadline優先、receive/source age、epoch與lastGood；停止及突斷分流。",
+      "verification": "tests/data-quality.test.mjs; downloaded self-test/demo; 599/600/900ms practice",
+      "hardwareVerified": false
+    },
+    "multilingual-unit-decimal-format": {
+      "status": "reviewed-local",
+      "batch": 12,
+      "reviewDate": "2026-09-28",
+      "sha256": "ae1f749bf02d7311aa06505075d277226f720f9dfd3ea7152392c39ac54f1606",
+      "change": "共用numeric-input契約；Intl顯示不回寫、BigInt精確華氏換算、固定草稿語境與確認取消。",
+      "verification": "tests/locale-input.test.mjs; public/examples/numeric-input/locale-self-test.mjs; two downloaded practice variants",
+      "hardwareVerified": false
+    },
+    "alarm-acknowledge-clear-occurrence": {
+      "status": "reviewed-local",
+      "batch": 13,
+      "reviewDate": "2026-09-28",
+      "sha256": "f323d3fdc199ea7bdd99ce9844f1319e1671c8df3e6015fa2c6b05a407d14ca3",
+      "change": "共用有界lifecycle模型，四態、occurrence隔離、revision、內容綁定Ack重播及可追溯欄位。",
+      "verification": "tests/alarm-lifecycle.test.mjs; downloaded lifecycle demo/self-test/practice",
+      "hardwareVerified": false
+    },
+    "hmi-alarm-ack-clear-reset-workflow": {
+      "status": "reviewed-local",
+      "batch": 13,
+      "reviewDate": "2026-09-28",
+      "sha256": "d13b02b8f5ddbdc6dab3cab7e754a2b22adea032047450dad32ece0a839ce373",
+      "change": "沿用lifecycle，獨立示範Open/InProgress/Resolved、Clear/Ack/角色/證據/版本門檻；不含Reset。",
+      "verification": "tests/alarm-lifecycle.test.mjs; downloaded workflow-demo/workflow-practice; independent review",
+      "hardwareVerified": false
+    },
+    "repeated-alarm-clear-condition": {
+      "status": "reviewed-local",
+      "batch": 13,
+      "reviewDate": "2026-09-28",
+      "sha256": "42e35da610c57b6c4aea8dd5639335b0c9ef640195364ec9b9c585b1969fafdf",
+      "change": "整數壓力遲滯、嚴格等號、樣本連續性、Bad/gap Unknown、正常壓力下fresh reset。",
+      "verification": "tests/alarm-hysteresis.test.mjs; downloaded self-test/demo/practice; output comparison",
+      "hardwareVerified": false
+    },
+    "alarm-severity-time-stable-order": {
+      "status": "reviewed-local",
+      "batch": 13,
+      "reviewDate": "2026-09-28",
+      "sha256": "970de6ae819d651cc1fd40b4cbd1c6e39df05f2b4c30b1eb75b3438160269d2a",
+      "change": "occurrence快照的固定排序鍵、可信時間、同鍵衝突拒絕、凍結快照分頁及四態分區。",
+      "verification": "tests/alarm-order.test.mjs; all720 permutations; downloaded demo/self-test/practice; independent review",
+      "hardwareVerified": false
+    },
+    "alarm-suppression-shelving-outofservice": {
+      "status": "reviewed-local",
+      "batch": 14,
+      "reviewDate": "2026-09-28",
+      "sha256": "312d5dfb9e910be95e9d29c505184789e26fc70c89206f8811f59068b756e7f0",
+      "change": "TimedShelve來源與通知分離、到期、epoch重播、Bad與容量故障。",
+      "verification": "tests/alarm-shelving.test.mjs; standalone-batch14.json",
+      "hardwareVerified": false
+    },
+    "hmi-alarm-flood-event-summary-followup": {
+      "status": "reviewed-local",
+      "batch": 14,
+      "reviewDate": "2026-09-28",
+      "sha256": "300892bca5040462c0309dfa23bf19fdc5e86282e7253ec62d9295e7d121d5e0",
+      "change": "50 cycles/132 transitions有界重播、窗口與晚到資料重算。",
+      "verification": "tests/alarm-flood.test.mjs; standalone-batch14.json; practice-batch14.mjs",
+      "hardwareVerified": false
+    },
+    "hmi-alarm-priority-display-rules": {
+      "status": "reviewed-local",
+      "batch": 14,
+      "reviewDate": "2026-09-28",
+      "sha256": "bf7c5ff01fbfd07f97d90f84db7d4020666267281eba0993c038e4ded697f416",
+      "change": "單檔離線HTML實作期限排序、等號、篩選、黑白與鍵盤。",
+      "verification": "tests/alarm-priority-browser.mjs: 30 checks",
+      "hardwareVerified": false
+    },
+    "hmi-event-timeline-alarm-operation-note": {
+      "status": "reviewed-local",
+      "batch": 14,
+      "reviewDate": "2026-09-28",
+      "sha256": "5684a27ecb9ddc7e747da0663fd995355d7ecaf602569776253f880a3560e2d1",
+      "change": "六列時間線、收據、追加備註版本、未知時間與確定性匯出。",
+      "verification": "tests/event-timeline.test.mjs; standalone-batch14.json",
+      "hardwareVerified": false
+    },
+    "alarm-color-migration-accessibility": {
+      "status": "reviewed-local",
+      "batch": 15,
+      "reviewDate": "2026-09-28",
+      "sha256": "71316818775150adad118ccc3c3f944d81959076ab1afd35ae28d60baaa49b1f",
+      "change": "共用priority HTML的主題切換與回退；保留文字排序、列印版本、人員未測CSV。",
+      "verification": "tests/alarm-priority-browser.mjs:42 checks",
+      "hardwareVerified": false
+    },
+    "hmi-alert-dialog-focus-layering": {
+      "status": "reviewed-local",
+      "batch": 15,
+      "reviewDate": "2026-09-28",
+      "sha256": "20a7ccfb63549ff19cce3d723de7b5ebe9586c52fb9c45a2d62416ba2f779932",
+      "change": "單檔native alertdialog、可取消注入、焦點循環、inert與本機草稿。",
+      "verification": "tests/alert-dialog-browser.mjs",
+      "hardwareVerified": false
+    },
+    "hmi-bad-quality-stale-value": {
+      "status": "reviewed-local",
+      "batch": 15,
+      "reviewDate": "2026-09-28",
+      "sha256": "06c74443a74006613cf2d71f4354f4f7932305c0d9295e1b2a30cd98c4bcbd26",
+      "change": "共用hmi-quality投影，Bad/last Good/取得年齡與null趨勢分離。",
+      "verification": "tests/hmi-quality.test.mjs; standalone-batch15.json",
+      "hardwareVerified": false
+    },
+    "hmi-disconnected-data-paused-display": {
+      "status": "reviewed-local",
+      "batch": 15,
+      "reviewDate": "2026-09-28",
+      "sha256": "19e57dc70d902b2ca21a5c42b2145e4e8c36610b8d392cfda6b7b8736efb7d9f",
+      "change": "同投影的epoch重連pending、新取得、拒絕無接受metadata副作用。",
+      "verification": "tests/hmi-quality.test.mjs; standalone-batch15.json",
+      "hardwareVerified": false
+    },
+    "hmi-button-command-feedback": {
+      "status": "reviewed-local",
+      "batch": 16,
+      "reviewDate": "2026-09-28",
+      "sha256": "e920e59191254f4ac311a4b979bdc08932aa7107c2100f76a43008e3b9b10f8c",
+      "change": "單檔回饋狀態演練、原ID查Unknown、terminal與history邊界。",
+      "verification": "tests/button-feedback-browser.mjs:24 checks",
+      "hardwareVerified": false
+    },
+    "hmi-input-event-consistency": {
+      "status": "reviewed-local",
+      "batch": 16,
+      "reviewDate": "2026-09-28",
+      "sha256": "fce2274dfcb05d4afa7aed921158d3a301dcdbf16ddd2764d8ea24df9d137684",
+      "change": "原生form submit單一入口、合成組字操作、snapshot與草稿、16筆上限。",
+      "verification": "tests/input-events-browser.mjs",
+      "hardwareVerified": false
+    },
+    "hmi-setting-value-change-confirm-readback": {
+      "status": "reviewed-local",
+      "batch": 16,
+      "reviewDate": "2026-09-28",
+      "sha256": "f1a805abcb7a4c7ab9b16eca5c88c88825357e323dad7682232765b4a50a2992",
+      "change": "共用operation-log讀取器，關聯operation/target/revision的讀回與修改練習。",
+      "verification": "tests/setting-readback.test.mjs; standalone-batch16.json; practice-batch16.mjs",
+      "hardwareVerified": false
+    },
+    "hmi-operating-procedure-ack-clear": {
+      "status": "reviewed-local",
+      "batch": 16,
+      "reviewDate": "2026-09-28",
+      "sha256": "82a17414c17c4146bb3eb94b1713a7ce26093561e8ad8a800f882e69fc556543",
+      "change": "共用alarm-lifecycle八步演練與未填人工紀錄表，失敗停留判定。",
+      "verification": "procedure-demo.mjs:8 assertions; standalone-batch16.json; practice-batch16.mjs",
+      "hardwareVerified": false
+    },
+    "hmi-loading-partial-empty-error-cancel": {
+      "status": "reviewed-local",
+      "batch": 17,
+      "reviewDate": "2026-09-28",
+      "sha256": "085825244613591814a9dfcadc86fc0ac0bca05621b4abb5dba1ff9ae7756a04",
+      "change": "可重播固定身份載入、分頁去重與衝突、取消及terminal保護。",
+      "verification": "tests/loading-states-browser.mjs",
+      "hardwareVerified": false
+    },
+    "hmi-binding-animation-diagnosis": {
+      "status": "reviewed-local",
+      "batch": 17,
+      "reviewDate": "2026-09-28",
+      "sha256": "e966817535c818e1e9c143ff723797c7300303038636e8613e4c55376f3649f2",
+      "change": "固定流量、嚴格型別及品質條件，實際DOM的四種綁定/可見性故障。",
+      "verification": "tests/binding-diagnosis-browser.mjs:24 checks",
+      "hardwareVerified": false
+    },
+    "hmi-numeric-overflow": {
+      "status": "reviewed-local",
+      "batch": 17,
+      "reviewDate": "2026-09-28",
+      "sha256": "f8ad5d0d5921253de567435ba7154fabddb8901af588c454225652624f5218ee",
+      "change": "分離INT16拒絕與真DOM裁切，完整值和原始字串並列，重用既有小數捨入教學。",
+      "verification": "tests/numeric-overflow-browser.mjs; independent review",
+      "hardwareVerified": false
+    },
+    "hmi-trend-time-range-sampling-aggregation": {
+      "status": "reviewed-local",
+      "batch": 17,
+      "reviewDate": "2026-09-28",
+      "sha256": "c72bec061cf50e03655a6ef1aee4f7631c1d67b8599e2bbf1accc604b53fdc6a",
+      "change": "半開分段duration加權、BigInt累積、缺資料coverage與已知平均分開，下載可改練習。",
+      "verification": "tests/trend-window.test.mjs:5; standalone-batch17.mjs; practice-batch17.mjs",
+      "hardwareVerified": false
+    },
+    "hmi-trend-cursor-event-marker-time-alignment": {
+      "status": "reviewed-local",
+      "batch": 18,
+      "reviewDate": "2026-09-28",
+      "sha256": "85552145c9b96da5749e34391e050dce0f8f9813738c7869597b8fc6c9439c24",
+      "change": "固定樣點與游標讀值分RAW/INTERPOLATED/OUTSIDE/UNAVAILABLE；同時鐘假設明示，可改六組練習。",
+      "verification": "tests/trend-cursor.test.mjs; standalone/practice-batch18",
+      "hardwareVerified": false
+    },
+    "hmi-report-filter-time-window-alarm-state": {
+      "status": "reviewed-local",
+      "batch": 18,
+      "reviewDate": "2026-09-28",
+      "sha256": "2dee6253858e29a15440065876477676857d09e7e92d8ffa2ebb59367af35007",
+      "change": "半開時間窗Active轉移與截止未Ack分開，包含carry-in/Cleared未Ack/歷史未知與filter coverage。",
+      "verification": "tests/alarm-report.test.mjs; standalone-batch18",
+      "hardwareVerified": false
+    },
+    "hmi-batch-step-wait-failure-reason": {
+      "status": "reviewed-local",
+      "batch": 18,
+      "reviewDate": "2026-09-28",
+      "sha256": "2fdd397b400e7760dc82ce10dd8f7cf29f9955dbefe735b327867b29c5efb044",
+      "change": "純讀来源完整snapshot，品質/等待/失敗/完成證據、來源重啟與HMI重開分清，拒絕矛盾與過期。",
+      "verification": "tests/batch-step-view.test.mjs; standalone-batch18",
+      "hardwareVerified": false
+    },
+    "hmi-shift-handover-information": {
+      "status": "reviewed-local",
+      "batch": 18,
+      "reviewDate": "2026-09-28",
+      "sha256": "d2dd14dc8d6d8d4d3658b876ad752b34b135afde4230f9932065a81076cb6c0e",
+      "change": "接班責任與警報狀態分離，追加備註要求重讀，revision/freshness/容量明示並下載輸出報表。",
+      "verification": "tests/shift-handover.test.mjs; independent review; standalone/practice-batch18",
+      "hardwareVerified": false
+    }
+  }
+}

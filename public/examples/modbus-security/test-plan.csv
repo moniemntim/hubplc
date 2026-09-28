@@ -1,0 +1,8 @@
+case_id,stage,prerequisite,input,expected,actual,status,evidence,executed_at
+S01,tls,isolated endpoints configured,valid trusted client and server certificates,mutual authentication succeeds,,not_run,,
+S02,application,S01 passed,approved read request,expected register values returned,,not_run,,
+S03,tls,isolated test CA available,untrusted client certificate,new handshake rejected,,not_run,,
+S04,tls,isolated expired test certificate available,expired client certificate,new handshake rejected,,not_run,,
+S05,authorization,role authorization supported and enabled; policy and isolated target documented,valid client role lacking requested permission,request denied and target unchanged,,not_run,,
+S06,network,service policy approved,802 unavailable,client fails without forbidden plaintext fallback,,not_run,,
+S07,renewal,rollback and certificate reload procedure documented,replace certificate then establish a new full handshake,new fingerprint observed and approved read succeeds,,not_run,,

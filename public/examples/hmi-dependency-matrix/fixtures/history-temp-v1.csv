@@ -1,0 +1,4 @@
+sample_time,equipment_id,temp_avg,quality
+2026-09-17T08:00:00+08:00,P-101,20,Good
+2026-09-17T08:05:00+08:00,P-101,,Good
+2026-09-17T08:10:00+08:00,P-101,24,Good

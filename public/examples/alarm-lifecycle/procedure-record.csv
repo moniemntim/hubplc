@@ -1,0 +1,9 @@
+step,virtual_time,occurrence_id,action,expected_decision,expected_active,expected_acked,expected_work,expected_revision,actual,status,notes
+P01,1,O1,Source Active,active,true,false,Open,1,,not_run,
+P02,2,O1,Ack expectedRevision1,ack,true,true,Open,2,,not_run,
+P03,3,O1,Operator Start expectedRevision2,workflow_started,true,true,InProgress,3,,not_run,
+P04,4,O1,Supervisor Resolve while Active,workflow_rejected_transition,true,true,InProgress,3,,not_run,
+P05,5,O1,Source Clear,clear,false,true,InProgress,4,,not_run,
+P06,6,O1,Operator Resolve,workflow_rejected_request,false,true,InProgress,4,,not_run,
+P07,7,O1,Supervisor Resolve stale revision3,workflow_revision_conflict,false,true,InProgress,4,,not_run,
+P08,8,O1,Supervisor Resolve revision4 with evidence,workflow_resolved,false,true,Resolved,5,,not_run,

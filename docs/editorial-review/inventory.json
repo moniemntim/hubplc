@@ -1,0 +1,1809 @@
+{
+  "totals": {
+    "unreviewed": 366,
+    "reviewed-local": 83,
+    "draft": 1
+  },
+  "articles": [
+    {
+      "slug": "0-10v-analog-load-ground-response-open-circuit",
+      "status": "unreviewed"
+    },
+    {
+      "slug": "24v-high-low-side-bjt-mosfet-switching",
+      "status": "unreviewed"
+    },
+    {
+      "slug": "24v-input-reverse-polarity-tvs-surge-protection",
+      "status": "unreviewed"
+    },
+    {
+      "slug": "24vdc-field-box-pluggable-power-integrity-hot-swap",
+      "status": "unreviewed"
+    },
+    {
+      "slug": "24vdc-oring-redundancy-capacity-overload",
+      "status": "unreviewed"
+    },
+    {
+      "slug": "24vdc-sensor-power-voltage-drop",
+      "status": "unreviewed"
+    },
+    {
+      "slug": "24vdc-ups-branch-event-correlation",
+      "status": "unreviewed"
+    },
+    {
+      "slug": "355-industrial-event-diagnosis",
+      "status": "unreviewed"
+    },
+    {
+      "slug": "356-event-diagnosis",
+      "status": "unreviewed"
+    },
+    {
+      "slug": "4-20ma-scaling-open-overrange-diagnostics",
+      "status": "unreviewed"
+    },
+    {
+      "slug": "4-20ma-zero-offset-span-errors",
+      "status": "unreviewed"
+    },
+    {
+      "slug": "acceptance-pass-untested-not-applicable",
+      "status": "reviewed-local"
+    },
+    {
+      "slug": "accumulator-wraparound-precision-loss",
+      "status": "unreviewed"
+    },
+    {
+      "slug": "actuator-output-end-to-end",
+      "status": "unreviewed"
+    },
+    {
+      "slug": "alarm-acknowledge-clear-occurrence",
+      "status": "reviewed-local"
+    },
+    {
+      "slug": "alarm-color-migration-accessibility",
+      "status": "reviewed-local"
+    },
+    {
+      "slug": "alarm-severity-time-stable-order",
+      "status": "reviewed-local"
+    },
+    {
+      "slug": "alarm-suppression-shelving-outofservice",
+      "status": "reviewed-local"
+    },
+    {
+      "slug": "analog-input-channel-crosstalk-single-channel-excitation",
+      "status": "unreviewed"
+    },
+    {
+      "slug": "analog-output-signal-splitter-load-capacity",
+      "status": "unreviewed"
+    },
+    {
+      "slug": "analog-raw-quality-filter-overrange",
+      "status": "unreviewed"
+    },
+    {
+      "slug": "analog-temperature-drift-thermal-baseline",
+      "status": "unreviewed"
+    },
+    {
+      "slug": "archive-event-retrieval-verification",
+      "status": "unreviewed"
+    },
+    {
+      "slug": "async-out-of-order-pending-map",
+      "status": "reviewed-local"
+    },
+    {
+      "slug": "automated-test-report-reproducibility",
+      "status": "reviewed-local"
+    },
+    {
+      "slug": "average-valid-sample-count",
+      "status": "unreviewed"
+    },
+    {
+      "slug": "background-task-main-loop-snapshot",
+      "status": "unreviewed"
+    },
+    {
+      "slug": "backup-restore-isolated-controller-test",
+      "status": "unreviewed"
+    },
+    {
+      "slug": "batch-database-transaction",
+      "status": "reviewed-local"
+    },
+    {
+      "slug": "batch-statistics-empty-batch",
+      "status": "reviewed-local"
+    },
+    {
+      "slug": "bcd-binary-conversion-invalid-nibble",
+      "status": "unreviewed"
+    },
+    {
+      "slug": "binary-protocol-endianness-known-frame",
+      "status": "unreviewed"
+    },
+    {
+      "slug": "blackbox-observable",
+      "status": "reviewed-local"
+    },
+    {
+      "slug": "boundary-ticket",
+      "status": "reviewed-local"
+    },
+    {
+      "slug": "bypass-test-scope-restoration",
+      "status": "unreviewed"
+    },
+    {
+      "slug": "calibration-table-out-of-range-policy",
+      "status": "unreviewed"
+    },
+    {
+      "slug": "changeover-parameter-comparison",
+      "status": "unreviewed"
+    },
+    {
+      "slug": "communication-queue-backlog-diagnosis",
+      "status": "reviewed-local"
+    },
+    {
+      "slug": "communication-stop-data-quality-watchdog",
+      "status": "reviewed-local"
+    },
+    {
+      "slug": "conductivity-cell-constant-range-temperature-compensation-polarization",
+      "status": "unreviewed"
+    },
+    {
+      "slug": "connection-pool-capacity-device-latency",
+      "status": "unreviewed"
+    },
+    {
+      "slug": "controlled-broadcast-discovery-inventory",
+      "status": "unreviewed"
+    },
+    {
+      "slug": "conveyor-trigger-position-result-replay",
+      "status": "unreviewed"
+    },
+    {
+      "slug": "counter-reset-rollover-daily-report",
+      "status": "unreviewed"
+    },
+    {
+      "slug": "counting-duplicate-edge-occlusion",
+      "status": "unreviewed"
+    },
+    {
+      "slug": "crc-failure-raw-frame-evidence",
+      "status": "unreviewed"
+    },
+    {
+      "slug": "cross-month-query-boundaries",
+      "status": "unreviewed"
+    },
+    {
+      "slug": "cross-timezone-shift-production",
+      "status": "unreviewed"
+    },
+    {
+      "slug": "csv-multiline-notes",
+      "status": "unreviewed"
+    },
+    {
+      "slug": "daily-report-revision-late-data",
+      "status": "unreviewed"
+    },
+    {
+      "slug": "dashboard-cache-data-freshness",
+      "status": "unreviewed"
+    },
+    {
+      "slug": "data-rate-peak-to-test-load",
+      "status": "unreviewed"
+    },
+    {
+      "slug": "datetime-difference-across-midnight",
+      "status": "unreviewed"
+    },
+    {
+      "slug": "daylight-saving-repeated-hour-report",
+      "status": "unreviewed"
+    },
+    {
+      "slug": "device-replacement-trend-continuity",
+      "status": "unreviewed"
+    },
+    {
+      "slug": "device-scaling-float32",
+      "status": "unreviewed"
+    },
+    {
+      "slug": "diagnostic-bit-flash-event-count",
+      "status": "unreviewed"
+    },
+    {
+      "slug": "diagnostic-history-ring-export",
+      "status": "unreviewed"
+    },
+    {
+      "slug": "differential-pressure-impulse-piping-installation-height",
+      "status": "unreviewed"
+    },
+    {
+      "slug": "differential-signal-zero-volt-reference-vd-vcm",
+      "status": "unreviewed"
+    },
+    {
+      "slug": "dns-change-cache-validation-existing-connections",
+      "status": "unreviewed"
+    },
+    {
+      "slug": "dry-contact-relay-transistor-leakage-minimum-load",
+      "status": "unreviewed"
+    },
+    {
+      "slug": "dual-gateway-failover-event-deduplication",
+      "status": "unreviewed"
+    },
+    {
+      "slug": "electromagnetic-flowmeter-conductivity-grounding-full-pipe",
+      "status": "unreviewed"
+    },
+    {
+      "slug": "encoder-wrap-signed-displacement",
+      "status": "unreviewed"
+    },
+    {
+      "slug": "end-to-end-command-tracing",
+      "status": "unreviewed"
+    },
+    {
+      "slug": "endurance-memory-queue-indicators",
+      "status": "unreviewed"
+    },
+    {
+      "slug": "engineering-unit-conversion-chain",
+      "status": "unreviewed"
+    },
+    {
+      "slug": "ethercat-distributed-clock-diagnostics",
+      "status": "unreviewed"
+    },
+    {
+      "slug": "even-median-integer-output-policy",
+      "status": "unreviewed"
+    },
+    {
+      "slug": "event-active-clear-duration",
+      "status": "unreviewed"
+    },
+    {
+      "slug": "event-dedup-late-arrival-order",
+      "status": "unreviewed"
+    },
+    {
+      "slug": "event-order-clock-offset",
+      "status": "unreviewed"
+    },
+    {
+      "slug": "event-time-versus-receive-time",
+      "status": "unreviewed"
+    },
+    {
+      "slug": "export-failure-classification-atomic-publish",
+      "status": "unreviewed"
+    },
+    {
+      "slug": "fault-matrix",
+      "status": "unreviewed"
+    },
+    {
+      "slug": "fault-reproduction-rate-trial-count",
+      "status": "unreviewed"
+    },
+    {
+      "slug": "fault-tree-observable-evidence",
+      "status": "unreviewed"
+    },
+    {
+      "slug": "fiber-sensor-break-low-reading-diagnosis",
+      "status": "unreviewed"
+    },
+    {
+      "slug": "field-addition-compatibility",
+      "status": "unreviewed"
+    },
+    {
+      "slug": "filtered-peaks-raw-data-traceability",
+      "status": "unreviewed"
+    },
+    {
+      "slug": "firewall-return-path-tcp-handshake",
+      "status": "unreviewed"
+    },
+    {
+      "slug": "firmware-communication-format-regression",
+      "status": "unreviewed"
+    },
+    {
+      "slug": "first-article",
+      "status": "draft"
+    },
+    {
+      "slug": "five-whys-verifiable-actions",
+      "status": "unreviewed"
+    },
+    {
+      "slug": "fixed-point-precision-negative-rounding",
+      "status": "unreviewed"
+    },
+    {
+      "slug": "float-nan-inf-control-gate",
+      "status": "reviewed-local"
+    },
+    {
+      "slug": "force-list-clear",
+      "status": "reviewed-local"
+    },
+    {
+      "slug": "frequency-duty-cycle-counter-input-compatibility",
+      "status": "unreviewed"
+    },
+    {
+      "slug": "fx5u-sd-bin-read-write",
+      "status": "unreviewed"
+    },
+    {
+      "slug": "fx5u-sd-csv-read-write",
+      "status": "unreviewed"
+    },
+    {
+      "slug": "gateway-bidirectional-mapping-acceptance",
+      "status": "unreviewed"
+    },
+    {
+      "slug": "gateway-firmware-upgrade-modbus-mqtt-regression",
+      "status": "unreviewed"
+    },
+    {
+      "slug": "gateway-session-polling-capacity-budget",
+      "status": "unreviewed"
+    },
+    {
+      "slug": "gateway-store-forward-queue-dedup-timestamps",
+      "status": "unreviewed"
+    },
+    {
+      "slug": "gauge-absolute-pressure-4-20ma",
+      "status": "unreviewed"
+    },
+    {
+      "slug": "grouped-tag-updates-backpressure",
+      "status": "unreviewed"
+    },
+    {
+      "slug": "gx-works2-cross-reference-impact",
+      "status": "unreviewed"
+    },
+    {
+      "slug": "hall-magnetic-position-switch-cylinder-magnet-hysteresis",
+      "status": "unreviewed"
+    },
+    {
+      "slug": "hex-decimal-twos-complement",
+      "status": "unreviewed"
+    },
+    {
+      "slug": "historian-capacity-estimation",
+      "status": "unreviewed"
+    },
+    {
+      "slug": "historical-unit-change-versioning",
+      "status": "unreviewed"
+    },
+    {
+      "slug": "hmi-alarm-ack-clear-reset-workflow",
+      "status": "reviewed-local"
+    },
+    {
+      "slug": "hmi-alarm-flood-event-summary-followup",
+      "status": "reviewed-local"
+    },
+    {
+      "slug": "hmi-alarm-priority-display-rules",
+      "status": "reviewed-local"
+    },
+    {
+      "slug": "hmi-alert-dialog-focus-layering",
+      "status": "reviewed-local"
+    },
+    {
+      "slug": "hmi-backup-restore-isolated-validation",
+      "status": "unreviewed"
+    },
+    {
+      "slug": "hmi-bad-quality-stale-value",
+      "status": "reviewed-local"
+    },
+    {
+      "slug": "hmi-batch-step-wait-failure-reason",
+      "status": "reviewed-local"
+    },
+    {
+      "slug": "hmi-binding-animation-diagnosis",
+      "status": "reviewed-local"
+    },
+    {
+      "slug": "hmi-button-command-feedback",
+      "status": "reviewed-local"
+    },
+    {
+      "slug": "hmi-concurrent-edit-last-writer-version",
+      "status": "reviewed-local"
+    },
+    {
+      "slug": "hmi-dashboard-three-level-cooling-water",
+      "status": "unreviewed"
+    },
+    {
+      "slug": "hmi-dependency-matrix",
+      "status": "reviewed-local"
+    },
+    {
+      "slug": "hmi-disconnected-data-paused-display",
+      "status": "reviewed-local"
+    },
+    {
+      "slug": "hmi-event-timeline-alarm-operation-note",
+      "status": "reviewed-local"
+    },
+    {
+      "slug": "hmi-home-task-entry-night-shift",
+      "status": "unreviewed"
+    },
+    {
+      "slug": "hmi-input-event-consistency",
+      "status": "reviewed-local"
+    },
+    {
+      "slug": "hmi-large-screen-tablet-shared-information",
+      "status": "unreviewed"
+    },
+    {
+      "slug": "hmi-loading-partial-empty-error-cancel",
+      "status": "reviewed-local"
+    },
+    {
+      "slug": "hmi-maintenance-mode-screen-permissions",
+      "status": "unreviewed"
+    },
+    {
+      "slug": "hmi-manual-auto-mode-control-ownership",
+      "status": "unreviewed"
+    },
+    {
+      "slug": "hmi-multilanguage-translation-key-layout",
+      "status": "unreviewed"
+    },
+    {
+      "slug": "hmi-numeric-overflow",
+      "status": "reviewed-local"
+    },
+    {
+      "slug": "hmi-numeric-range-step-validation",
+      "status": "reviewed-local"
+    },
+    {
+      "slug": "hmi-operating-procedure-ack-clear",
+      "status": "reviewed-local"
+    },
+    {
+      "slug": "hmi-operation-permission-execution-authorization",
+      "status": "unreviewed"
+    },
+    {
+      "slug": "hmi-reconnect-stale-callback-unknown-write",
+      "status": "reviewed-local"
+    },
+    {
+      "slug": "hmi-release-only-800ms-pointer-policy",
+      "status": "unreviewed"
+    },
+    {
+      "slug": "hmi-report-filter-time-window-alarm-state",
+      "status": "reviewed-local"
+    },
+    {
+      "slug": "hmi-resource-packaging",
+      "status": "unreviewed"
+    },
+    {
+      "slug": "hmi-role-downgrade-open-screens",
+      "status": "unreviewed"
+    },
+    {
+      "slug": "hmi-screen-index-and-navigation",
+      "status": "unreviewed"
+    },
+    {
+      "slug": "hmi-screen-version-release-notes",
+      "status": "unreviewed"
+    },
+    {
+      "slug": "hmi-session-timeout-unsent-draft",
+      "status": "unreviewed"
+    },
+    {
+      "slug": "hmi-setting-value-change-confirm-readback",
+      "status": "reviewed-local"
+    },
+    {
+      "slug": "hmi-shift-handover-information",
+      "status": "reviewed-local"
+    },
+    {
+      "slug": "hmi-trend-cursor-event-marker-time-alignment",
+      "status": "reviewed-local"
+    },
+    {
+      "slug": "hmi-trend-time-range-sampling-aggregation",
+      "status": "reviewed-local"
+    },
+    {
+      "slug": "humidity-condensation-dew-point-quality",
+      "status": "unreviewed"
+    },
+    {
+      "slug": "idempotency-key-duplicate-write",
+      "status": "reviewed-local"
+    },
+    {
+      "slug": "iepe-bias-current-compliance-diagnosis",
+      "status": "unreviewed"
+    },
+    {
+      "slug": "incomplete-batch-event-intervals",
+      "status": "unreviewed"
+    },
+    {
+      "slug": "incremental-encoder-ttl-htl-rs422-counter",
+      "status": "unreviewed"
+    },
+    {
+      "slug": "inductive-proximity-sensor-sensing-distance-mounting",
+      "status": "unreviewed"
+    },
+    {
+      "slug": "industrial-csv-column-contract",
+      "status": "unreviewed"
+    },
+    {
+      "slug": "industrial-csv-leading-zeros-long-identifiers",
+      "status": "unreviewed"
+    },
+    {
+      "slug": "industrial-csv-package-manifest",
+      "status": "unreviewed"
+    },
+    {
+      "slug": "industrial-csv-zero-missing-invalid-quality",
+      "status": "unreviewed"
+    },
+    {
+      "slug": "industrial-data-manual-revision",
+      "status": "unreviewed"
+    },
+    {
+      "slug": "industrial-data-quality-completeness-timeliness",
+      "status": "unreviewed"
+    },
+    {
+      "slug": "industrial-data-retention-policy",
+      "status": "reviewed-local"
+    },
+    {
+      "slug": "industrial-data-unit-field-design",
+      "status": "unreviewed"
+    },
+    {
+      "slug": "industrial-ethernet-duplex-speed-error-counters",
+      "status": "unreviewed"
+    },
+    {
+      "slug": "industrial-event-dedup-generation",
+      "status": "unreviewed"
+    },
+    {
+      "slug": "industrial-event-lineage-processing-status",
+      "status": "unreviewed"
+    },
+    {
+      "slug": "industrial-evidence-index",
+      "status": "reviewed-local"
+    },
+    {
+      "slug": "industrial-export-file-integrity-check",
+      "status": "unreviewed"
+    },
+    {
+      "slug": "industrial-gateway-nat-port-forward-dual-nic-routing",
+      "status": "unreviewed"
+    },
+    {
+      "slug": "industrial-gateway-remote-management-roles-audit",
+      "status": "unreviewed"
+    },
+    {
+      "slug": "industrial-hmi-change-request-rollback",
+      "status": "unreviewed"
+    },
+    {
+      "slug": "industrial-hmi-open-items-risk-tracking",
+      "status": "unreviewed"
+    },
+    {
+      "slug": "industrial-outlier-preservation",
+      "status": "unreviewed"
+    },
+    {
+      "slug": "industrial-report-dual-y-axis-scale",
+      "status": "unreviewed"
+    },
+    {
+      "slug": "industrial-report-missing-data-estimation",
+      "status": "unreviewed"
+    },
+    {
+      "slug": "industrial-shift-date-boundary-timezone",
+      "status": "unreviewed"
+    },
+    {
+      "slug": "industrial-switch-port-mirroring-capture-direction-capacity",
+      "status": "unreviewed"
+    },
+    {
+      "slug": "industrial-timestamp-provenance",
+      "status": "unreviewed"
+    },
+    {
+      "slug": "infrared-temperature-emissivity-distance-to-spot-reflection",
+      "status": "unreviewed"
+    },
+    {
+      "slug": "ingestion-retry-unique-key",
+      "status": "unreviewed"
+    },
+    {
+      "slug": "input-debounce-event-cooldown",
+      "status": "unreviewed"
+    },
+    {
+      "slug": "input-output-acceptance",
+      "status": "unreviewed"
+    },
+    {
+      "slug": "integration-acceptance-incomplete-evidence",
+      "status": "unreviewed"
+    },
+    {
+      "slug": "integration-test-output-isolation",
+      "status": "unreviewed"
+    },
+    {
+      "slug": "interface-units-quality-acceptance",
+      "status": "unreviewed"
+    },
+    {
+      "slug": "intermittent-stop-condition-record",
+      "status": "unreviewed"
+    },
+    {
+      "slug": "io-link-iodd-parameter-event-plc-mapping",
+      "status": "unreviewed"
+    },
+    {
+      "slug": "ipv4-igmp-snooping-industrial-udp-diagnosis",
+      "status": "unreviewed"
+    },
+    {
+      "slug": "ladder-st-three-boolean-truth-table",
+      "status": "unreviewed"
+    },
+    {
+      "slug": "late-data-published-summary-update",
+      "status": "unreviewed"
+    },
+    {
+      "slug": "latency-injection-timeout-retry",
+      "status": "reviewed-local"
+    },
+    {
+      "slug": "load-cell-four-point-hysteresis-repeatability",
+      "status": "unreviewed"
+    },
+    {
+      "slug": "load-cell-mv-v-excitation-junction-box-corner-loading",
+      "status": "unreviewed"
+    },
+    {
+      "slug": "load-test-resource-bottlenecks",
+      "status": "unreviewed"
+    },
+    {
+      "slug": "logarithm-domain-input-validation",
+      "status": "unreviewed"
+    },
+    {
+      "slug": "low-voltage-io-cable-zoning-emc",
+      "status": "unreviewed"
+    },
+    {
+      "slug": "m8-m12-sensor-connector-pin-ip-rating",
+      "status": "unreviewed"
+    },
+    {
+      "slug": "machine-start-energy-chain",
+      "status": "unreviewed"
+    },
+    {
+      "slug": "maintenance-change-summary-traceability",
+      "status": "unreviewed"
+    },
+    {
+      "slug": "maintenance-window-regression-comparison",
+      "status": "unreviewed"
+    },
+    {
+      "slug": "manual-auto-extra-conditions",
+      "status": "unreviewed"
+    },
+    {
+      "slug": "measurement-quality-atomic-snapshot",
+      "status": "unreviewed"
+    },
+    {
+      "slug": "missing-flow-pulse-zero-or-fault",
+      "status": "unreviewed"
+    },
+    {
+      "slug": "modbus-0x16-mask-write-register-race",
+      "status": "unreviewed"
+    },
+    {
+      "slug": "modbus-17-read-write-overlap-verification",
+      "status": "unreviewed"
+    },
+    {
+      "slug": "modbus-2b-0e-device-identification-inventory",
+      "status": "unreviewed"
+    },
+    {
+      "slug": "modbus-exception-05-06-0a-0b-troubleshooting",
+      "status": "unreviewed"
+    },
+    {
+      "slug": "modbus-file-record-14-15-length-parsing",
+      "status": "unreviewed"
+    },
+    {
+      "slug": "modbus-function-code-01-04-read-list",
+      "status": "reviewed-local"
+    },
+    {
+      "slug": "modbus-gateway-unit-identifier-downstream-routing",
+      "status": "unreviewed"
+    },
+    {
+      "slug": "modbus-mapping-opcua-mqtt-data-contract",
+      "status": "unreviewed"
+    },
+    {
+      "slug": "modbus-response-wrong-value",
+      "status": "unreviewed"
+    },
+    {
+      "slug": "modbus-security-tls-certificates-roles",
+      "status": "reviewed-local"
+    },
+    {
+      "slug": "modbus-tcp-connection-reuse-concurrency",
+      "status": "unreviewed"
+    },
+    {
+      "slug": "modbus-tcp-data-quality-fresh-stale-bad",
+      "status": "unreviewed"
+    },
+    {
+      "slug": "modbus-tcp-idle-timeout-keepalive-data-freshness",
+      "status": "unreviewed"
+    },
+    {
+      "slug": "modbus-tcp-mbap-header-transaction-unit-length",
+      "status": "reviewed-local"
+    },
+    {
+      "slug": "modbus-tcp-register-block-read-limits",
+      "status": "reviewed-local"
+    },
+    {
+      "slug": "modbus-write-05-06-0f-10-readback",
+      "status": "unreviewed"
+    },
+    {
+      "slug": "modbus08-diagnostics-subfunctions-counter-baseline",
+      "status": "unreviewed"
+    },
+    {
+      "slug": "module-diagnostic-searchable-log",
+      "status": "unreviewed"
+    },
+    {
+      "slug": "module-replacement-startup-parameter-check",
+      "status": "unreviewed"
+    },
+    {
+      "slug": "moving-average-window-time-response",
+      "status": "unreviewed"
+    },
+    {
+      "slug": "mqtt-last-will-session-state-model",
+      "status": "unreviewed"
+    },
+    {
+      "slug": "mqtt-payload-schema-version-json-cbor-protobuf",
+      "status": "unreviewed"
+    },
+    {
+      "slug": "mqtt-qos-delivery-deduplication-event-id",
+      "status": "unreviewed"
+    },
+    {
+      "slug": "mqtt-retained-message-stale-command",
+      "status": "unreviewed"
+    },
+    {
+      "slug": "mqtt-shared-subscription-consumer-dispatch-deduplication",
+      "status": "unreviewed"
+    },
+    {
+      "slug": "mqtt-tls-mtls-sni-ca-chain-troubleshooting",
+      "status": "unreviewed"
+    },
+    {
+      "slug": "mqtt-topic-taxonomy-industrial-asset-hierarchy",
+      "status": "unreviewed"
+    },
+    {
+      "slug": "mqtt5-session-expiry-offline-queue",
+      "status": "unreviewed"
+    },
+    {
+      "slug": "mqtt5-user-properties-correlation-data-command-tracing",
+      "status": "unreviewed"
+    },
+    {
+      "slug": "mtu-mss-pmtud-wire-evidence",
+      "status": "unreviewed"
+    },
+    {
+      "slug": "multi-sensor-voting-failed-source",
+      "status": "unreviewed"
+    },
+    {
+      "slug": "multi-source-cas-arbitration",
+      "status": "reviewed-local"
+    },
+    {
+      "slug": "multi-source-tag-identity",
+      "status": "unreviewed"
+    },
+    {
+      "slug": "multi-station-shared-resource-delay",
+      "status": "unreviewed"
+    },
+    {
+      "slug": "multilingual-unit-decimal-format",
+      "status": "reviewed-local"
+    },
+    {
+      "slug": "nat-source-port-transaction-tracing",
+      "status": "unreviewed"
+    },
+    {
+      "slug": "night-shift-communication-schedules",
+      "status": "unreviewed"
+    },
+    {
+      "slug": "no-data-stopped-or-source-outage",
+      "status": "unreviewed"
+    },
+    {
+      "slug": "noise-spectrum-sampling-filter-selection",
+      "status": "unreviewed"
+    },
+    {
+      "slug": "non-ascii-byte-length-framing",
+      "status": "unreviewed"
+    },
+    {
+      "slug": "ntp-gateway-utc-timezone-offset-event-trace",
+      "status": "unreviewed"
+    },
+    {
+      "slug": "ntp-time-quality-holdover",
+      "status": "unreviewed"
+    },
+    {
+      "slug": "offline-command-queue-policy",
+      "status": "unreviewed"
+    },
+    {
+      "slug": "offline-hmi-non-operable-controls",
+      "status": "reviewed-local"
+    },
+    {
+      "slug": "opcua-application-uri-trust-list-certificate-rotation",
+      "status": "unreviewed"
+    },
+    {
+      "slug": "opcua-browse-nodeid-namespace-uri-persistent-point-list",
+      "status": "unreviewed"
+    },
+    {
+      "slug": "opcua-datachange-filter-deadband-engineering-units",
+      "status": "unreviewed"
+    },
+    {
+      "slug": "opcua-endpoint-security-policy-message-mode-user-token",
+      "status": "unreviewed"
+    },
+    {
+      "slug": "opcua-event-condition-alarmcondition-ack-refresh",
+      "status": "unreviewed"
+    },
+    {
+      "slug": "opcua-historyread-continuation-point-quality",
+      "status": "unreviewed"
+    },
+    {
+      "slug": "opcua-method-call-arguments-executable-audit",
+      "status": "unreviewed"
+    },
+    {
+      "slug": "opcua-pubsub-client-server-data-distribution-selection",
+      "status": "unreviewed"
+    },
+    {
+      "slug": "opcua-reconnect-lifecycle",
+      "status": "unreviewed"
+    },
+    {
+      "slug": "opcua-statuscode-quality",
+      "status": "unreviewed"
+    },
+    {
+      "slug": "opcua-subscription-sampling-publishing-queue-overflow",
+      "status": "unreviewed"
+    },
+    {
+      "slug": "open-collector-pulse-pullup-cable-capacitance",
+      "status": "unreviewed"
+    },
+    {
+      "slug": "operation-log-accepted-applied-equipment-revision",
+      "status": "reviewed-local"
+    },
+    {
+      "slug": "optoisolator-digital-input-resistor-ctr",
+      "status": "unreviewed"
+    },
+    {
+      "slug": "output-module-overheat-load-environment",
+      "status": "unreviewed"
+    },
+    {
+      "slug": "packet-loss-quality-stale-values",
+      "status": "unreviewed"
+    },
+    {
+      "slug": "partial-plc-download-scope-verification",
+      "status": "unreviewed"
+    },
+    {
+      "slug": "percent-change-zero-baseline",
+      "status": "unreviewed"
+    },
+    {
+      "slug": "ph-electrode-high-impedance-input-temperature-compensation-ground-noise",
+      "status": "unreviewed"
+    },
+    {
+      "slug": "ph-electrode-low-slope-temperature-aging",
+      "status": "unreviewed"
+    },
+    {
+      "slug": "photoelectric-reflectivity-recalibration",
+      "status": "unreviewed"
+    },
+    {
+      "slug": "photoelectric-sensor-through-beam-retro-diffuse-selection",
+      "status": "unreviewed"
+    },
+    {
+      "slug": "piecewise-linear-boundary-duplicate-jump",
+      "status": "unreviewed"
+    },
+    {
+      "slug": "plc-analog-scaling-pressure-temperature-level",
+      "status": "unreviewed"
+    },
+    {
+      "slug": "plc-angle-wrap-difference",
+      "status": "unreviewed"
+    },
+    {
+      "slug": "plc-array-index-boundary-check",
+      "status": "unreviewed"
+    },
+    {
+      "slug": "plc-auto-manual-mode-switch",
+      "status": "unreviewed"
+    },
+    {
+      "slug": "plc-batch-processing-large-loop",
+      "status": "unreviewed"
+    },
+    {
+      "slug": "plc-batch-total-good-reject-counter-reset",
+      "status": "unreviewed"
+    },
+    {
+      "slug": "plc-clock-drift-external-comparison",
+      "status": "unreviewed"
+    },
+    {
+      "slug": "plc-command-priority-mutual-exclusion",
+      "status": "unreviewed"
+    },
+    {
+      "slug": "plc-comments-terminal-drawing-index",
+      "status": "unreviewed"
+    },
+    {
+      "slug": "plc-consistent-snapshot-shared-data",
+      "status": "unreviewed"
+    },
+    {
+      "slug": "plc-duplicate-coil-multiple-assignment-debug",
+      "status": "reviewed-local"
+    },
+    {
+      "slug": "plc-exclusive-resource-scheduler",
+      "status": "reviewed-local"
+    },
+    {
+      "slug": "plc-fault-reset-single-acceptance",
+      "status": "reviewed-local"
+    },
+    {
+      "slug": "plc-fifo-product-tracking",
+      "status": "reviewed-local"
+    },
+    {
+      "slug": "plc-floating-point-tolerance",
+      "status": "reviewed-local"
+    },
+    {
+      "slug": "plc-forcing-vs-simulated-input",
+      "status": "reviewed-local"
+    },
+    {
+      "slug": "plc-function-block-error-output-design",
+      "status": "unreviewed"
+    },
+    {
+      "slug": "plc-function-block-input-validation",
+      "status": "unreviewed"
+    },
+    {
+      "slug": "plc-function-block-repeatable-tests",
+      "status": "unreviewed"
+    },
+    {
+      "slug": "plc-function-function-block-state",
+      "status": "unreviewed"
+    },
+    {
+      "slug": "plc-hmi-data-dictionary-traceability",
+      "status": "unreviewed"
+    },
+    {
+      "slug": "plc-hmi-gateway-compatibility-matrix",
+      "status": "unreviewed"
+    },
+    {
+      "slug": "plc-hmi-tag-mapping",
+      "status": "unreviewed"
+    },
+    {
+      "slug": "plc-hysteresis-two-threshold-control",
+      "status": "unreviewed"
+    },
+    {
+      "slug": "plc-initialization-auto-start-gate",
+      "status": "unreviewed"
+    },
+    {
+      "slug": "plc-integer-order-precision-overflow",
+      "status": "unreviewed"
+    },
+    {
+      "slug": "plc-jog-run-single-cycle",
+      "status": "unreviewed"
+    },
+    {
+      "slug": "plc-limit-clamp-range-diagnostics",
+      "status": "unreviewed"
+    },
+    {
+      "slug": "plc-main-cycle-periodic-interrupt-task-design",
+      "status": "unreviewed"
+    },
+    {
+      "slug": "plc-minimal-reproduction-module-offset",
+      "status": "reviewed-local"
+    },
+    {
+      "slug": "plc-mode-change-evidence",
+      "status": "unreviewed"
+    },
+    {
+      "slug": "plc-offline-replay-database-transactions",
+      "status": "unreviewed"
+    },
+    {
+      "slug": "plc-online-change-regression-scope",
+      "status": "unreviewed"
+    },
+    {
+      "slug": "plc-online-change-variable-initialization",
+      "status": "unreviewed"
+    },
+    {
+      "slug": "plc-parameter-snapshot",
+      "status": "reviewed-local"
+    },
+    {
+      "slug": "plc-pause-resume-cancel-reset",
+      "status": "unreviewed"
+    },
+    {
+      "slug": "plc-periodic-event-accumulated-timing-error",
+      "status": "unreviewed"
+    },
+    {
+      "slug": "plc-pulse-rpm-measurement",
+      "status": "unreviewed"
+    },
+    {
+      "slug": "plc-request-accept-result-handshake",
+      "status": "reviewed-local"
+    },
+    {
+      "slug": "plc-restart-process-recovery-review",
+      "status": "unreviewed"
+    },
+    {
+      "slug": "plc-retest-yield-accounting",
+      "status": "unreviewed"
+    },
+    {
+      "slug": "plc-reusable-station-interface",
+      "status": "unreviewed"
+    },
+    {
+      "slug": "plc-ring-buffer-overwrite-read",
+      "status": "unreviewed"
+    },
+    {
+      "slug": "plc-rising-falling-edge-button-event",
+      "status": "reviewed-local"
+    },
+    {
+      "slug": "plc-rounding-negative-display-fixed-point",
+      "status": "reviewed-local"
+    },
+    {
+      "slug": "plc-scan-cycle-io-refresh",
+      "status": "reviewed-local"
+    },
+    {
+      "slug": "plc-self-hold-set-reset-q-series",
+      "status": "reviewed-local"
+    },
+    {
+      "slug": "plc-simulation-abnormal-scenario-matrix",
+      "status": "reviewed-local"
+    },
+    {
+      "slug": "plc-state-entry-once",
+      "status": "reviewed-local"
+    },
+    {
+      "slug": "plc-state-machine-three-step-sequence",
+      "status": "reviewed-local"
+    },
+    {
+      "slug": "plc-step-timeout-recovery",
+      "status": "reviewed-local"
+    },
+    {
+      "slug": "plc-structure-interface-compatibility",
+      "status": "unreviewed"
+    },
+    {
+      "slug": "plc-subprogram-call-frequency-edge-timer",
+      "status": "reviewed-local"
+    },
+    {
+      "slug": "plc-table-piecewise-linear-interpolation",
+      "status": "unreviewed"
+    },
+    {
+      "slug": "plc-task-timeout-reentry-backlog",
+      "status": "reviewed-local"
+    },
+    {
+      "slug": "plc-tick-wrap-elapsed-time",
+      "status": "unreviewed"
+    },
+    {
+      "slug": "plc-ton-tof-tp-timer-selection",
+      "status": "reviewed-local"
+    },
+    {
+      "slug": "plc-trace-single-scan-flag-sampling",
+      "status": "reviewed-local"
+    },
+    {
+      "slug": "plc-type-conversion-truncation-range",
+      "status": "unreviewed"
+    },
+    {
+      "slug": "plc-variable-scope-lifetime-retain",
+      "status": "unreviewed"
+    },
+    {
+      "slug": "plc-watchdog-timeout-diagnosis",
+      "status": "reviewed-local"
+    },
+    {
+      "slug": "pnp-npn-plc-input-wiring",
+      "status": "unreviewed"
+    },
+    {
+      "slug": "point-level-switch-continuous-level-inventory-overflow",
+      "status": "unreviewed"
+    },
+    {
+      "slug": "power-loss-recovery-data-state",
+      "status": "unreviewed"
+    },
+    {
+      "slug": "preserve-first-clue-multiple-faults",
+      "status": "unreviewed"
+    },
+    {
+      "slug": "pressure-transmitter-gauge-absolute-sealed-gauge-reference",
+      "status": "unreviewed"
+    },
+    {
+      "slug": "pretrigger-ten-second-ring-buffer",
+      "status": "unreviewed"
+    },
+    {
+      "slug": "procedure-completion-evidence-ui",
+      "status": "unreviewed"
+    },
+    {
+      "slug": "production-count-conservation",
+      "status": "unreviewed"
+    },
+    {
+      "slug": "production-gap-estimation-flags",
+      "status": "unreviewed"
+    },
+    {
+      "slug": "profinet-name-ip-configuration",
+      "status": "unreviewed"
+    },
+    {
+      "slug": "proportional-scaling-zero-offset-inverse-error",
+      "status": "unreviewed"
+    },
+    {
+      "slug": "protocol-version-negotiation-reject",
+      "status": "unreviewed"
+    },
+    {
+      "slug": "proximity-repeatability-positioning",
+      "status": "unreviewed"
+    },
+    {
+      "slug": "pulse-flow-k-factor-frequency",
+      "status": "unreviewed"
+    },
+    {
+      "slug": "q-series-annotation-terminal-address-crosscheck",
+      "status": "unreviewed"
+    },
+    {
+      "slug": "q-series-force-value-handover",
+      "status": "unreviewed"
+    },
+    {
+      "slug": "q-series-io-event-timeline",
+      "status": "unreviewed"
+    },
+    {
+      "slug": "q-series-rs485-modbus-rtu",
+      "status": "unreviewed"
+    },
+    {
+      "slug": "q-series-scan-spike-localization",
+      "status": "unreviewed"
+    },
+    {
+      "slug": "q06udv-battery-maintenance",
+      "status": "unreviewed"
+    },
+    {
+      "slug": "q06udv-memory-usage",
+      "status": "unreviewed"
+    },
+    {
+      "slug": "q06udv-online-output-evidence",
+      "status": "unreviewed"
+    },
+    {
+      "slug": "q06udvcpu-maintenance-fault-triage",
+      "status": "unreviewed"
+    },
+    {
+      "slug": "q06udvcpu-plc-power-loss-retentive-memory-init",
+      "status": "unreviewed"
+    },
+    {
+      "slug": "quality-decision-raw-window",
+      "status": "unreviewed"
+    },
+    {
+      "slug": "quality-rule-version-impact",
+      "status": "unreviewed"
+    },
+    {
+      "slug": "radar-level-noncontact-guided-wave-installation",
+      "status": "unreviewed"
+    },
+    {
+      "slug": "realtime-history-time-basis-correction",
+      "status": "unreviewed"
+    },
+    {
+      "slug": "receive-buffer-throughput-test",
+      "status": "reviewed-local"
+    },
+    {
+      "slug": "recipe-canonical-diff-confirmation-revision",
+      "status": "reviewed-local"
+    },
+    {
+      "slug": "recipe-schema-complete-error-list",
+      "status": "reviewed-local"
+    },
+    {
+      "slug": "recipe-select-verify-apply-device",
+      "status": "reviewed-local"
+    },
+    {
+      "slug": "reconnect-first-data-freshness",
+      "status": "unreviewed"
+    },
+    {
+      "slug": "regression-normal-boundary-recovery",
+      "status": "unreviewed"
+    },
+    {
+      "slug": "reject-truncated-device-response",
+      "status": "unreviewed"
+    },
+    {
+      "slug": "relay-coil-back-emf-diode-tvs-rc",
+      "status": "unreviewed"
+    },
+    {
+      "slug": "renamed-columns-compatibility-view",
+      "status": "unreviewed"
+    },
+    {
+      "slug": "repair-recovery-root-cause-evidence",
+      "status": "unreviewed"
+    },
+    {
+      "slug": "repeatable-device-simulator-scenarios",
+      "status": "unreviewed"
+    },
+    {
+      "slug": "repeated-alarm-clear-condition",
+      "status": "reviewed-local"
+    },
+    {
+      "slug": "report-column-import-compatibility",
+      "status": "unreviewed"
+    },
+    {
+      "slug": "report-rounding-total-difference",
+      "status": "unreviewed"
+    },
+    {
+      "slug": "reproducible-fault-test-sequence",
+      "status": "unreviewed"
+    },
+    {
+      "slug": "reproducible-report-filter-manifest",
+      "status": "unreviewed"
+    },
+    {
+      "slug": "rerun-flaky-test-environment-evidence",
+      "status": "unreviewed"
+    },
+    {
+      "slug": "resampling-original-imputed-flags",
+      "status": "unreviewed"
+    },
+    {
+      "slug": "restart-first-batch-initialization",
+      "status": "unreviewed"
+    },
+    {
+      "slug": "restore-filter-navigation-state",
+      "status": "unreviewed"
+    },
+    {
+      "slug": "retry-backoff-jitter-circuit-breaker",
+      "status": "reviewed-local"
+    },
+    {
+      "slug": "round-trip-time-clock-domain-packet-timestamps",
+      "status": "unreviewed"
+    },
+    {
+      "slug": "rs485-ab-dplus-polarity-verification",
+      "status": "unreviewed"
+    },
+    {
+      "slug": "rs485-cable-impedance-twist-gauge-installation",
+      "status": "unreviewed"
+    },
+    {
+      "slug": "rs485-failsafe-bias-termination-common-mode",
+      "status": "unreviewed"
+    },
+    {
+      "slug": "rs485-interface-tvs-common-mode-protection",
+      "status": "unreviewed"
+    },
+    {
+      "slug": "rs485-isolated-transceiver-common-mode-isolation-power",
+      "status": "unreviewed"
+    },
+    {
+      "slug": "rs485-linear-trunk-stub-reflection",
+      "status": "unreviewed"
+    },
+    {
+      "slug": "rs485-no-response-troubleshooting",
+      "status": "reviewed-local"
+    },
+    {
+      "slug": "rs485-node-count-unit-load",
+      "status": "unreviewed"
+    },
+    {
+      "slug": "rs485-repeater-isolator-segment",
+      "status": "unreviewed"
+    },
+    {
+      "slug": "rs485-shield-grounding-single-multipoint-360-degree",
+      "status": "unreviewed"
+    },
+    {
+      "slug": "rs485-termination-resistor-two-ends",
+      "status": "unreviewed"
+    },
+    {
+      "slug": "rstp-topology-change-network-jitter-diagnosis",
+      "status": "unreviewed"
+    },
+    {
+      "slug": "rtd-two-three-four-wire-lead-resistance",
+      "status": "unreviewed"
+    },
+    {
+      "slug": "rtd-two-three-wire",
+      "status": "unreviewed"
+    },
+    {
+      "slug": "sampling-aliasing-frequency-validation",
+      "status": "unreviewed"
+    },
+    {
+      "slug": "sampling-and-aggregation-periods",
+      "status": "unreviewed"
+    },
+    {
+      "slug": "scada-quality-value-age-display",
+      "status": "unreviewed"
+    },
+    {
+      "slug": "scoped-operationid-payload-conflict-cancel",
+      "status": "unreviewed"
+    },
+    {
+      "slug": "sensor-polarity-reverse-range",
+      "status": "unreviewed"
+    },
+    {
+      "slug": "sensor-replacement-compatibility-calibration-check",
+      "status": "unreviewed"
+    },
+    {
+      "slug": "sensor-step-response-acceptance",
+      "status": "unreviewed"
+    },
+    {
+      "slug": "sensor-zero-drift-check-standard-trend",
+      "status": "unreviewed"
+    },
+    {
+      "slug": "sequence-reuse-late-response",
+      "status": "reviewed-local"
+    },
+    {
+      "slug": "serial-ascii-stx-length-etx-framing",
+      "status": "reviewed-local"
+    },
+    {
+      "slug": "serial-multi-station-polling-isolation",
+      "status": "unreviewed"
+    },
+    {
+      "slug": "service-startup-dependency-readiness",
+      "status": "unreviewed"
+    },
+    {
+      "slug": "setpoint-slew-rate-limiter",
+      "status": "unreviewed"
+    },
+    {
+      "slug": "shared-batch-key-across-equipment",
+      "status": "unreviewed"
+    },
+    {
+      "slug": "shield-grounding-change-50hz-interference-comparison",
+      "status": "unreviewed"
+    },
+    {
+      "slug": "signal-isolator-power-channel-loop-grounding",
+      "status": "unreviewed"
+    },
+    {
+      "slug": "signed-unsigned-comparison-boundaries",
+      "status": "unreviewed"
+    },
+    {
+      "slug": "simulation-real-input-io-sensor",
+      "status": "reviewed-local"
+    },
+    {
+      "slug": "single-station-offline-boundary",
+      "status": "unreviewed"
+    },
+    {
+      "slug": "socket-half-open-heartbeat-recovery",
+      "status": "unreviewed"
+    },
+    {
+      "slug": "sort-product-index-records",
+      "status": "unreviewed"
+    },
+    {
+      "slug": "sortable-report-filenames-timezone",
+      "status": "unreviewed"
+    },
+    {
+      "slug": "spare-part-firmware-compatibility",
+      "status": "unreviewed"
+    },
+    {
+      "slug": "sqrt-division-domain-status",
+      "status": "unreviewed"
+    },
+    {
+      "slug": "statistics-reset-segmented-snapshot",
+      "status": "unreviewed"
+    },
+    {
+      "slug": "strain-gauge-bridge-ratiometric-excitation-sense",
+      "status": "unreviewed"
+    },
+    {
+      "slug": "strain-gauge-quarter-half-full-bridge-sensitivity-temperature",
+      "status": "unreviewed"
+    },
+    {
+      "slug": "strict-string-number-conversion",
+      "status": "unreviewed"
+    },
+    {
+      "slug": "substitution-test-before-after-side-effects",
+      "status": "unreviewed"
+    },
+    {
+      "slug": "switch-port-errors-application-retries",
+      "status": "unreviewed"
+    },
+    {
+      "slug": "tcp-connect-no-application-response",
+      "status": "unreviewed"
+    },
+    {
+      "slug": "tcp-length-prefixed-multiple-frames",
+      "status": "unreviewed"
+    },
+    {
+      "slug": "tcp-recv-fixed-frame-buffer",
+      "status": "unreviewed"
+    },
+    {
+      "slug": "tcp-serial-gateway-socket-serial-port-unit-id-audit",
+      "status": "unreviewed"
+    },
+    {
+      "slug": "temperature-compensation-parameter-versioning",
+      "status": "unreviewed"
+    },
+    {
+      "slug": "temperature-sensor-ntc-pt100-thermocouple-selection",
+      "status": "unreviewed"
+    },
+    {
+      "slug": "temporary-measures-unknown-root-cause",
+      "status": "unreviewed"
+    },
+    {
+      "slug": "test-data-replay-timing-order",
+      "status": "unreviewed"
+    },
+    {
+      "slug": "test-failure-evidence-packets-screens-diagnostics",
+      "status": "unreviewed"
+    },
+    {
+      "slug": "test-production-environment-risk",
+      "status": "unreviewed"
+    },
+    {
+      "slug": "thermocouple-cold-junction-wiring-error",
+      "status": "unreviewed"
+    },
+    {
+      "slug": "time-weighted-industrial-data-aggregation",
+      "status": "unreviewed"
+    },
+    {
+      "slug": "trace-text-encoding-corruption",
+      "status": "unreviewed"
+    },
+    {
+      "slug": "trend-cursor-interpolation-raw-points",
+      "status": "unreviewed"
+    },
+    {
+      "slug": "triaxial-vibration-sensor-orientation",
+      "status": "unreviewed"
+    },
+    {
+      "slug": "turbidity-bubbles-particles-obstruction",
+      "status": "unreviewed"
+    },
+    {
+      "slug": "turbidity-optical-concentration-scattering-transmission-bypass-sampling",
+      "status": "unreviewed"
+    },
+    {
+      "slug": "turbine-oval-gear-coriolis-lubricant-batch-flow",
+      "status": "unreviewed"
+    },
+    {
+      "slug": "two-point-calibration-offset-gain",
+      "status": "unreviewed"
+    },
+    {
+      "slug": "two-register-counter-order-snapshot",
+      "status": "unreviewed"
+    },
+    {
+      "slug": "two-wire-current-loop-voltage-headroom",
+      "status": "unreviewed"
+    },
+    {
+      "slug": "ultrasonic-level-empty-tank-echo-loss",
+      "status": "unreviewed"
+    },
+    {
+      "slug": "ultrasonic-sensor-installation-geometry-level-acceptance",
+      "status": "unreviewed"
+    },
+    {
+      "slug": "uncertainty-resolution-report",
+      "status": "unreviewed"
+    },
+    {
+      "slug": "unused-variable-cleanup-dependency-risk",
+      "status": "unreviewed"
+    },
+    {
+      "slug": "upgrade-rollback-backup-drill",
+      "status": "unreviewed"
+    },
+    {
+      "slug": "valve-feedback-stuck-timeline",
+      "status": "unreviewed"
+    },
+    {
+      "slug": "variable-cycle-ramp-calculation",
+      "status": "unreviewed"
+    },
+    {
+      "slug": "version-label-cpu-content-verify",
+      "status": "unreviewed"
+    },
+    {
+      "slug": "vibration-sensor-mems-piezo-iepe-mounting",
+      "status": "unreviewed"
+    },
+    {
+      "slug": "vlan-trunk-native-vlan-diagnosis",
+      "status": "unreviewed"
+    },
+    {
+      "slug": "windows-dual-nic-route-prefix-metric",
+      "status": "unreviewed"
+    },
+    {
+      "slug": "wireshark-modbus-tcp-opc-ua-offline-packet-walkthrough",
+      "status": "reviewed-local"
+    },
+    {
+      "slug": "wrong-import-removal-evidence",
+      "status": "unreviewed"
+    },
+    {
+      "slug": "zero-volt-return-pe-fe-grounding-stepper-common-return",
+      "status": "unreviewed"
+    }
+  ]
+}

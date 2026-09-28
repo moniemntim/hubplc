@@ -1,0 +1,8 @@
+item,product_model,firmware_version,document_reference,documented_value,observed_value,status
+native_mbaps,,,,,,unknown
+mutual_tls,,,,,,unknown
+role_authorization,,,,,,unknown
+certificate_import_and_reload,,,,,,unknown
+expiry_and_revocation_handling,,,,,,unknown
+plain_502_exposure,,,,,,unknown
+renewal_and_rollback,,,,,,unknown

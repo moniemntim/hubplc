@@ -1,141 +1,69 @@
 ---
-title: HMI數值輸入範圍步距雙層驗證
-description: 以 0～100.0 的輸入範圍、0.1 步距與 0～1000 的原始值，說明雙層驗證及輸入 100.04 時的處理規則。
+title: HMI數值輸入：精確檢查範圍與步距，再轉成整數
+description: 下載 Node.js 範例，重播 0..100.0°C、0.1 步距、wire 0..1000 的文字與 raw envelope 雙入口驗證。
 date: 2026-09-21
 author: 茂伯
 draft: false
 category: HMI 畫面與操作
 ---
 
-## 一 輸入契約與雙層責任
+## 固定資料契約與兩個入口
 
-數值輸入不能只靠畫面限制。本案例工程值範圍0..100.0、步距0.1，wire整數raw為0..1000、倍率0.1。HMI先做提示與體驗驗證，PLC/server收到資料後仍要重新解析型別、套用單位倍率、檢查範圍與步距；兩層責任不同。
+這個離線案例的 canonical 資料契約固定為 `schema=numeric-input/v1`、`unit=C`、`scale=10`。此 schema 的 scale 定義是 **wire = 工程值 × 10**，反向為 **工程值 = wire ÷ 10**；它不是另一個含糊的「工程倍率 0.1」。工程值文字是 **0..100.0°C** 的閉區間，步距是 **0.1°C**，wire 是 **0..1000** 的整數；例如 wire `253` 表示 25.3°C。它沒有連到 HMI、server、PLC 或控制輸出。
 
-流程固定為先解析型別，再套用倍率，接著檢查工程值範圍，最後檢查步距。raw=253代表25.3；文字25.3則先解析再轉raw。空字串、NaN、Infinity、字母混入與超長輸入應在解析階段拒絕，不得轉成0。
+工程文字入口只接受最多 16 個 ASCII 字元的 `^(?:0|[1-9][0-9]*)(?:\.[0-9]+)?$`：不接受空字串、前後空白、`+`／`-`、leading zero、逗號小數點、科學記號、單位後綴或文字。尾零合法，`25.30` 與 `25.3` 都等價。這是本欄位的契約，並不是 locale 顯示規則；畫面若要顯示 `25,3`，不能把那個字串直接送入此入口。
 
-小數位是顯示與輸入政策，不等於資料精度。25.30是否保留原文字要依稽核需求決定，但解析值與raw必須一致。本文不假定任何HMI API、PLC暫存器或畫面元件名稱，數字皆為離線案例。
+文字解析保留十進位的整數 numerator 和 denominator，以 `BigInt` 判斷範圍及 `value × 10` 是否正好是整數，不使用浮點 epsilon。ECMAScript 對 [`BigInt`](https://tc39.es/ecma262/multipage/ecmascript-data-types-and-values.html#sec-bigint-objects) 的規格是此模型的數值運算來源。這只證明這份 Node.js 模型的行為，不能代替任何設備、HMI 元件或實際 server 的驗證。
 
-| 項目 | 規格 | 驗證 |
-| --- | --- | --- |
-| 工程值 | 0..100.0 | 倍率後 |
-| 步距 | 0.1 | 倍率後 |
-| raw | 0..1000 | 型別與範圍 |
-| 型別 | 有限數值 | 最先 |
+raw envelope 是另一個入口，不能把文字結果當作它的驗證。它只能有 `schema`、`unit`、`scale`、`raw` 四個 **own enumerable** 欄位：array、缺欄位、extra 欄位、inherited 欄位或 non-enumerable 額外欄位都回 `RAW_ENVELOPE_REJECTED`。通過 shape 後，`raw` 還必須是 JavaScript `number` 的 safe integer，並逐項比對 schema、unit、scale 和 raw 範圍。實際 server 必須獨立重做同一組檢查；本下載程式只模擬這條 server boundary，沒有啟動 server。
 
-value、unit、scale、round_policy與schema_version應在契約中明訂。UI顯示通過不代表server接受；任何人都可能繞過畫面直接送封包。
+## 下載、執行與固定輸出
 
-輸入契約還要定義空白、正負號、小數點後是否必須有數字，以及最大字串長度。trim後的25.3若允許，應記錄trim政策；若不允許，空白應拒絕。這些語法規則先於工程換算，避免同一欄位在不同客戶端得到不同raw。
+下載同一資料夾的[模型](/examples/numeric-input/numeric-input-model.mjs)、[fixture](/examples/numeric-input/fixture.json)、[demo](/examples/numeric-input/demo.mjs)、[獨立自測](/examples/numeric-input/self-test.mjs)和[README](/examples/numeric-input/README.md)。本機以 Node.js 24.19.0 核對；使用該版本或更新版本。
 
-數值解析完成後再檢查單位。若欄位要求°C卻收到°F，不能先把77.0當成77°C寫入；應回 UnitMismatch，或依明訂輸入單位轉成canonical值。
+```powershell
+node demo.mjs
+node --test self-test.mjs
+```
 
-回讀驗收要比較canonical raw與工程值，不只比較格式化文字。raw253在不同locale都應回同一數值，顯示25.3或25,3只是呈現差異。保存版本與時間後，才能追查是哪一層改變資料。
+```text
+dataset=numeric-input-synthetic-v1 synthetic=true
+contract_schema=numeric-input/v1 unit=C scale=10 engineering=0..100.0C step=0.1 wire=0..1000
+entry=engineering id=text_range text=100.04 decision=RANGE_REJECTED last_wire=250 last_engineering=25.0
+entry=engineering id=text_step text=25.35 decision=STEP_REJECTED last_wire=250 last_engineering=25.0
+entry=engineering id=text_exact text=25.30 decision=ACCEPT last_wire=253 last_engineering=25.3
+entry=raw id=raw_string raw=253 raw_type=string decision=RAW_TYPE_REJECTED last_wire=253 last_engineering=25.3
+entry=raw id=raw_exact raw=7 raw_type=number decision=ACCEPT last_wire=7 last_engineering=0.7
+```
 
-## 二 順序與100.04政策
+失敗時 model 回傳既有 `lastWire`，不會寫入 0、round 或 clamp。前兩列可看出順序：`100.04` 的精確值大於 100.0，因此先是 `RANGE_REJECTED`；`25.35` 在範圍內，才是 `STEP_REJECTED`。`25.30` 的 numerator/denominator 剛好導出 wire `253`，所以接受。
 
-輸入100.04先解析成有限數值，工程範圍0..100.0即失敗。本案例採直接Reject；若另一規格明訂先以半值遠離零round到0.1，才可再做範圍與步距驗證，兩種政策不能混用。
+## 可直接改 fixture 重跑
 
-raw=1000轉成100.0通過，raw=1001轉成100.1拒絕，raw=253轉成25.3通過。若raw是signed型別，先核對型別，不能將-1轉成無號65535後才判斷。
+複製 `fixture.json` 後，修改 `engineering` 的 `text_exact`，再執行 `node demo.mjs`：
 
-| 輸入 | 換算 | 結果 |
-| --- | --- | --- |
-| 25.3 | raw253 | 通過 |
-| 100.04 | 超界/依政策round | 本案例拒絕 |
-| raw=1000 | 100.0 | 通過 |
-| raw=1001 | 100.1 | 拒絕 |
+1. 改為 `"0"`，預期 `decision=ACCEPT` 且 `last_wire=0`。
+2. 改為 `"100.0"`，預期 `decision=ACCEPT` 且 `last_wire=1000`。
+3. 改為 `"25.35"`，預期 `decision=STEP_REJECTED`，前一筆有效 wire 保持不變。
 
-拒絕回覆應保存field、received representation、reason與版本。若政策採round，仍要記原值100.04、導出100.0與round policy。
+將文字還原成 `"25.30"` 後，改 `raw_exact.envelope.raw` 為字串 `"7"`，會得到 `RAW_TYPE_REJECTED`；它不是文字入口的重新解析。改回 JSON number `7` 才接受。最後還原 fixture，才能再次得到上方的固定 stdout。
 
-100.04的政策要在UI、server與驗收表一致。若UI顯示可輸入兩位但server只接受一位，使用者會看到送出後被拒；若server round而UI說拒絕，稽核也無法解釋。規格版本應隨回覆保存。
+## 原因判讀與限制
 
-步距0.1可用raw整數驗證，因raw每一單位就是0.1工程值。若改成scale0.01，raw範圍、顯示小數與步距必須一起更新，不能只改畫面小數位。
+| decision                                             | 已知原因                                         | last value |
+| ---------------------------------------------------- | ------------------------------------------------ | ---------- |
+| `SYNTAX_REJECTED`                                    | 字串不符合 ASCII、長度、空白、符號或 locale 規則 | 保留       |
+| `RANGE_REJECTED`                                     | 工程文字不在 0..100.0，或 raw 不在 0..1000       | 保留       |
+| `STEP_REJECTED`                                      | 工程文字在範圍內，但不能精確映射 0.1 步距        | 保留       |
+| `RAW_ENVELOPE_REJECTED`                              | raw envelope 不是精確四個 own enumerable 欄位    | 保留       |
+| `RAW_TYPE_REJECTED`                                  | raw 不是 safe integer number                     | 保留       |
+| `SCHEMA_REJECTED`、`UNIT_REJECTED`、`SCALE_REJECTED` | raw envelope 契約欄位不符                        | 保留       |
 
-工程值文字轉raw時，先以精確十進位或等價整數解析檢查0.1步距，再轉整數；不要先截斷小數。25.35在範圍內但步距不合，應拒絕；直接取int會悄悄變253而錯誤接受。wire本例只收整數raw，不收25.3這類小數。
+本例採 reject policy。若產品要 round、clamp、替代值或寫入重試，必須另定明確事件、原值、導出值與權限規則；不能把它宣稱成這個模型已接受的輸入。實作時也要另定資料世代、並發更新、認證、實際 wire 型別與 PLC／server 手冊所要求的編碼。
 
-本文數值案例涵蓋輸入邊界；工程團隊應先在非生產環境測試錯誤輸入與邊界，再依設備程序決定是否允許提交。
-
-若多個畫面編輯同一欄位，最後提交要帶version或etag，避免舊畫面覆蓋新值。本文只描述數值驗證，並不假定平台有特定並發API。
-
-錯誤回覆還可帶expected_range、expected_step、expected_scale，幫助操作員修正；這些提示不應洩漏成可繞過server的信任條件。
-
-本篇所有範例是資料驗證教學，未宣稱任何HMI元件內建multipleOf、round或locale支援；這些能力要以目標平台手冊及測試結果為準。
-
-## 三 UI server與控制器
-
-UI可在離開欄位時顯示範圍與步距，但server仍須獨立檢查schema、unit、scale、signed/unsigned與通道邊界。控制器收到raw也要檢查0..1000及資料版本。
-
-未通過的值要保存拒絕原因，不要以最後有效值冒充本次成功寫入。若UI顯示100.0但封包帶100.04，server必須拒絕；若server回raw253，UI不能顯示253.0工程值。
-
-| 層次 | 責任 | 失敗例 |
-| --- | --- | --- |
-| UI | 格式提示 | 文字錯誤 |
-| server | 解析到步距 | 繞過UI |
-| 控制器 | 型別/通道邊界 | 越界raw |
-| 稽核 | 保存原值與版本 | 無法重現 |
-
-測試需繞過UI從工程值文字入口送空字串、100.04、NaN，再從raw入口送1001、錯誤單位與舊schema，確認每項有不同reason且不改變最後有效值。
-
-控制器通道可能把兩個word組成較大型別，也可能有signed/unsigned差異；本文不指定任何廠牌位址。實作前要用目標手冊核對資料寬度、byte order與寫入邊界，再把驗收向量送到模擬或測試環境。
-
-server回覆應區分ParseRejected、UnitMismatch、RangeRejected、StepRejected與SchemaRejected。不同reason讓操作員知道是文字格式、單位、數值或版本問題，不能全部寫成invalid。
-
-欄位版本改變時，scale與range要成套升版。例如從0.1改成0.01，舊client送raw253的語意可能不同，server應以schema_version拒絕或轉換，不能猜。
-
-驗收完成標準是每個測試向量都有明確的Accepted、Rejected或需確認結果，且讀回raw、工程值、單位與版本可以相互解釋。
-
-工程團隊若要採clamp，必須另訂權限、告警與稽核，不可在本案例的reject政策下偷偷clamp。
-
-驗收記錄應可由另一位工程師重現，不只寫通過；至少列原始輸入、解析、換算、邊界與最終寫入決策。
-
-## 四 數值驗收與排查
-
-先送25.3，預期保存raw253。再送100.04，本案例不寫入，讀回仍為先前有效值，不得因失敗變0。接著在raw整數測試入口送1000、1001、0、-1，只有1000與0通過；若從工程值文字入口送1000則超出100.0，必須拒絕。
-
-驗收記錄要含輸入表示、解析型別、倍率、工程值、raw、範圍與步距結果、最終動作與時間。若UI通過但server拒絕，先比較schema、locale、scale與round_policy。
-
-| 向量 | 預期 | 結果 |
-| --- | --- | --- |
-| 25.3 | raw253 | Accepted |
-| 100.04 | 不寫入 | Rejected |
-| raw=1001 | 超界 | RangeRejected |
-| NaN | 無值 | ParseRejected |
-
-實機行為需依目標型號與工程軟體文件確認。
-
-一次驗收可使用25.3、25.30、100.0、0.0、100.04、100.1、-0.1與101.0，逐項檢查解析值、raw與最終動作。尤其-0.1與101.0應拒絕，不能在錯誤分支被clamp成0或100而不留痕。
-
-若業務要求clamp，必須另列clamp政策與告警，且不能把clamp稱為原值接受。本文採拒絕，因為資料輸入範圍與控制意圖需要操作員明確修正。
-
-邊界測試要包含0、100.0及其相鄰raw值，確認閉區間定義。若上限是100.0，raw1000可接受，raw1001不可接受；表格與錯誤訊息都要一致。
-
-server若收到已解析數值而非文字，也要確認來源欄位標示與單位，不能以數值型別成功就跳過倍率和範圍。資料契約應說明raw與工程值只允許哪一種輸入。
-
-最後的讀回測試應比較raw、工程值與顯示值三者：raw253固定代表25.3，en可能顯示25.3，其他locale可能顯示25,3；若任何locale造成raw改變，表示顯示與資料層混合。
-
-若資料將被寫入持久化設定，提交前仍需重新讀取目前版本並確認沒有其他編輯者改動；數值驗證通過不代表寫入競態已解決。本文不指定並發API，實作應依平台能力另行設計。
-
-## 五 FAQ與來源
-
-拒絕資料仍可供診斷，但不可進入控制輸出。保存原始文字和解析錯誤位置，讓工程師知道是小數點、字元或範圍哪一步失敗。
-
-UI顯示一位小數時，25.34若策略為拒絕就應明顯提示；若策略為round，應把round後值與原值一起記錄。驗收不可只看畫面最後顯示。
-
-若server收到舊schema的scale，應回SchemaRejected或依明訂相容轉換，不能把舊raw直接套新倍率。操作員需看到目前規格版本，否則同一個1000可能被解成100.0或10.00。
-
-本案例固定0..100.0、0.1步距、raw0..1000，流程是解析→倍率→範圍→步距。
-
-FAQ1：畫面設最小最大，server還要驗證嗎？答：要，封包可繞過畫面。
-
-FAQ2：100.04自動變100.0嗎？答：本案例拒絕，只有規格明訂round才可。
-
-FAQ3：raw253代表253嗎？答：不代表，倍率0.1時是25.3。
-
-FAQ4：錯誤輸入可轉0嗎？答：不可以，應拒絕並保存原因。
-
-參考：[WHATWG HTML number input限制參考，不能替代後端驗證。](https://html.spec.whatwg.org/multipage/input.html#number-state-(type=number))
-
-參考：[JSON Schema Validation的minimum、maximum與multipleOf概念。](https://json-schema.org/draft/2020-12/json-schema-validation)
+Node.js 的 [`node:test`](https://nodejs.org/docs/latest-v24.x/api/test.html) 文件是下載範例所用測試 API 的官方來源；本篇的 schema、unit、range 和 scale 則是刻意固定的教材契約，不是通用產業標準。
 
 ## 延伸閱讀
 
-- [通訊服務停止後怎麼保持資料品質與時間可信](/articles/communication-stop-data-quality-watchdog)
-- [多語系切換單位與小數格式](/articles/multilingual-unit-decimal-format)
+- [binary32 特殊值：先解碼，再用有限性、品質與範圍決定可用性](/articles/float-nan-inf-control-gate)
+- [批次配方欄位缺漏如何產生完整錯誤清單](/articles/recipe-schema-complete-error-list)

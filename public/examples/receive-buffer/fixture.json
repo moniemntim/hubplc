@@ -1,0 +1,17 @@
+{
+  "dataset": "receive-buffer-synthetic-v1",
+  "synthetic": true,
+  "config": {
+    "maxPayload": 1000,
+    "queueCapacityBytes": 8,
+    "maxInputBytes": 2048,
+    "maxFramingBytes": 1024
+  },
+  "mainChunks": [
+    [0],
+    [4, 10, 11, 12, 13, 0, 6, 20, 21, 22, 23, 24, 25],
+    [0, 4, 30, 31, 32, 33]
+  ],
+  "partialEofChunks": [[0, 6, 1, 2]],
+  "oversizeHeader": [3, 233]
+}

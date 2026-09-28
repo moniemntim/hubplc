@@ -1,0 +1,11 @@
+{
+  "dataset": "plc-trace-offline-v1",
+  "cycleMs": 2,
+  "totalScans": 12,
+  "eventScans": [3, 7, 10],
+  "tracePlans": [
+    { "id": "single-scan", "intervalMs": 2, "phaseMs": 0 },
+    { "id": "coarse-phase-0", "intervalMs": 6, "phaseMs": 0 },
+    { "id": "coarse-phase-2", "intervalMs": 6, "phaseMs": 2 }
+  ]
+}

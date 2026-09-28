@@ -1,0 +1,77 @@
+{
+  "dataset": "float-gate-binary32-synthetic-v1",
+  "synthetic": true,
+  "range": { "min": 0, "max": 2 },
+  "records": [
+    {
+      "id": "be_one",
+      "bytes": [63, 128, 0, 0],
+      "endian": "be",
+      "quality": "good",
+      "provenance": "SOURCE_BYTES"
+    },
+    {
+      "id": "le_one",
+      "bytes": [0, 0, 128, 63],
+      "endian": "le",
+      "quality": "good",
+      "provenance": "SOURCE_BYTES"
+    },
+    {
+      "id": "nan_payload_a",
+      "bytes": [127, 192, 0, 1],
+      "endian": "be",
+      "quality": "good",
+      "provenance": "SOURCE_BYTES"
+    },
+    {
+      "id": "nan_payload_b",
+      "bytes": [127, 192, 222, 173],
+      "endian": "be",
+      "quality": "good",
+      "provenance": "SOURCE_BYTES"
+    },
+    {
+      "id": "pos_inf",
+      "bytes": [127, 128, 0, 0],
+      "endian": "be",
+      "quality": "good",
+      "provenance": "SOURCE_BYTES"
+    },
+    {
+      "id": "neg_inf",
+      "bytes": [255, 128, 0, 0],
+      "endian": "be",
+      "quality": "good",
+      "provenance": "SOURCE_BYTES"
+    },
+    {
+      "id": "finite_out_of_range",
+      "bytes": [64, 64, 0, 0],
+      "endian": "be",
+      "quality": "good",
+      "provenance": "SOURCE_BYTES"
+    },
+    {
+      "id": "finite_bad_quality",
+      "bytes": [63, 128, 0, 0],
+      "endian": "be",
+      "quality": "bad",
+      "provenance": "SOURCE_BYTES"
+    },
+    {
+      "id": "format_short",
+      "bytes": [0, 0, 128],
+      "endian": "le",
+      "quality": "good",
+      "provenance": "SOURCE_BYTES"
+    }
+  ],
+  "operation": {
+    "id": "finite_operation_overflow",
+    "left": 3.4e38,
+    "right": 2,
+    "endian": "be",
+    "quality": "good"
+  }
+}

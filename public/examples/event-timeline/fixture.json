@@ -1,0 +1,107 @@
+{
+  "dataset": "event-timeline-synthetic-v1",
+  "synthetic": true,
+  "window": {
+    "start": "2026-09-17T05:57:00.000Z",
+    "end": "2026-09-17T06:00:00.000Z"
+  },
+  "coverage": [
+    {
+      "start": "2026-09-17T05:58:30.000Z",
+      "end": "2026-09-17T05:58:40.000Z",
+      "reason": "SOURCE_CAPTURE_GAP"
+    }
+  ],
+  "transitions": [
+    {
+      "transitionId": "TR2039",
+      "sourceId": "PLC_A",
+      "cycleId": "C88",
+      "sourceTime": "2026-09-17T05:57:00.000Z",
+      "clockComparable": true,
+      "precision": "millisecond",
+      "kind": "source",
+      "actor": "SYSTEM",
+      "payload": "MODE_MANUAL",
+      "receipt": {
+        "receiptId": "R01",
+        "receivedAt": "2026-09-17T05:57:00.120Z"
+      }
+    },
+    {
+      "transitionId": "TR2041",
+      "sourceId": "PLC_A",
+      "cycleId": "C88",
+      "sourceTime": "2026-09-17T05:57:12.400Z",
+      "clockComparable": true,
+      "precision": "millisecond",
+      "kind": "source",
+      "actor": "SYSTEM",
+      "payload": "LOW_SPEED_ACTIVE",
+      "receipt": {
+        "receiptId": "R02",
+        "receivedAt": "2026-09-17T05:57:12.920Z"
+      }
+    },
+    {
+      "transitionId": "TR2044",
+      "sourceId": "PLC_A",
+      "cycleId": "C88",
+      "sourceTime": "2026-09-17T05:58:05.000Z",
+      "clockComparable": true,
+      "precision": "millisecond",
+      "kind": "source",
+      "actor": "SYSTEM",
+      "payload": "STOP_FEEDBACK",
+      "receipt": {
+        "receiptId": "R04",
+        "receivedAt": "2026-09-17T05:58:05.170Z"
+      }
+    },
+    {
+      "transitionId": "TR2048",
+      "sourceId": "HMI_A",
+      "cycleId": "C88",
+      "sourceTime": "2026-09-17T05:59:10.000Z",
+      "clockComparable": false,
+      "precision": "millisecond",
+      "kind": "command",
+      "actor": "OperatorA",
+      "payload": "RESET_REQUESTED",
+      "receipt": {
+        "receiptId": "R05",
+        "receivedAt": "2026-09-17T05:59:10.050Z"
+      }
+    },
+    {
+      "transitionId": "TR2049",
+      "sourceId": "PLC_A",
+      "cycleId": "C88",
+      "sourceTime": "2026-09-17T05:59:18.000Z",
+      "clockComparable": true,
+      "precision": "millisecond",
+      "kind": "source",
+      "actor": "SYSTEM",
+      "payload": "READY",
+      "receipt": {
+        "receiptId": "R06",
+        "receivedAt": "2026-09-17T05:59:18.140Z"
+      }
+    }
+  ],
+  "note": {
+    "author": "OperatorA",
+    "createdAt": "2026-09-17T05:57:13.100Z",
+    "cycleId": "C88",
+    "noteId": "NOTE17",
+    "reason": "operator_observation",
+    "targetKey": "PLC_A/TR2041",
+    "text": "Checked belt path after low-speed indication.",
+    "version": 1,
+    "receipt": { "receiptId": "R03", "receivedAt": "2026-09-17T05:57:13.140Z" }
+  },
+  "retransmissions": [
+    { "receiptId": "R07", "receivedAt": "2026-09-17T05:57:13.000Z" },
+    { "receiptId": "R08", "receivedAt": "2026-09-17T05:57:14.000Z" }
+  ]
+}

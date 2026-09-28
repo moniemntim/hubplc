@@ -1,108 +1,79 @@
 ---
-title: 配方選取與套用怎麼分 先驗證再提交設備
-description: 區分配方選取與設備套用，建立device、version、checksum、units、scope與verified staging驗證。
+title: 配方選取與套用：重播第三欄逾時的部分結果
+description: 下載共用 recipe-v3 工作流，驗證選取與確認零寫入、四欄依序套用，以及逾時後停止、保留未知與禁止直接重跑。
 date: 2026-09-21
 author: 茂伯
 draft: false
 category: HMI 畫面與操作
 ---
 
-## 一 選取只是準備
+## 用同一份配方走完選取、確認與套用
 
-配方畫面常把「選取」與「套用」做成同一個按鈕，結果使用者只想查看一份draft，設備卻收到寫入。先把流程拆成Select、Verify、Stage、Commit與Result。Select只改畫面目前選中的recipeId與draft內容，不產生設備write；只有使用者明確啟動套用，且驗證成功，才建立一次套用交易。
+本篇承接[配方差異確認](/articles/recipe-canonical-diff-confirmation-revision)，共用同一個 `workflow.mjs` 及 `recipe-v3` 驗證器。先確認內容，再追蹤每一欄的結果。這是 **Node.js 24.19.0 離線假設備案例**，不開 socket、不連 PLC，也不代表任何原廠設備提供相同的交易識別或讀回能力。
 
-套用前至少固定deviceId、recipeId、recipeVersion、checksum、units與允許欄位範圍。畫面顯示50.0不能證明設備目前是50.0；要先讀取設備快照和能力聲明，再把draft正規化後比較。設備能力未知時，不宣稱可以原子套用或支援全部欄位。
+將 [recipe-validation.mjs](/examples/recipe-validation/recipe-validation.mjs)、[workflow.mjs](/examples/recipe-validation/workflow.mjs)、[apply-demo.mjs](/examples/recipe-validation/apply-demo.mjs)、[workflow-self-test.mjs](/examples/recipe-validation/workflow-self-test.mjs)、[workflow-README.md](/examples/recipe-validation/workflow-README.md) 存在同一資料夾，以 Node.js 24.19.0 執行：
 
-選取畫面還要顯示draft來源與最後更新時間，讓使用者知道這是本地草稿、伺服器草稿或設備讀回。相同recipeId若來自不同租戶或設備，必須把命名空間一併顯示；只顯示配方名稱容易誤選。
+```powershell
+node apply-demo.mjs
+node workflow-self-test.mjs
+```
 
-套用按鈕應在選定device與scope後才可用，但按鈕可用不等於設備已接受。服務端仍要重新讀設備能力與權限，畫面上的disable只改善操作，不是授權控制。
+D-03 起始 revision=41，四欄依序為 temp=50°C、speed=1200 rpm、low=20%、high=80%。待套用 R1 版本8是 55°C、1300 rpm、25%、85%。四欄完整寫入，包含值未變的欄位；本例不是 patch。
 
-建立交易前先鎖定查詢快照，避免畫面同時刷新造成使用者看到兩個版本。快照只供確認，不等於設備目前狀態。
+預期 stdout：
 
-| 階段 | 是否寫設備 | 必備證據 |
-| --- | --- | --- |
-| Select | 否 | recipeId與draft來源 |
-| Verify | 否 | device、version、checksum、範圍 |
-| Stage | 依設備能力 | staging結果與局部狀態 |
-| Commit | 是或由設備確認 | 明確提交結果 |
-| Result | 否 | 讀回值、版本與錯誤 |
+```text
+success before_apply_writes=0
+success result=applied steps=confirmed,confirmed,confirmed,confirmed writes=4
+timeout-third before_apply_writes=0
+timeout-third result=partial steps=confirmed,confirmed,unknown,not-sent writes=3
+timeout-third fake_active_low=25 next_prepare=UNRESOLVED
+staging-only before_apply_writes=0
+staging-only result=unknown steps=unknown,not-sent,not-sent,not-sent writes=1
+apply demo: PASS
+```
 
-這是資訊與設定管理流程，不是安全控制。套用配方前仍要依設備和程序規範確認機台狀態；HMI不能因按下套用就繞過聯鎖或安全檢查。
+## 每個階段的證據要分開
 
-## 二 verified staging
+| 操作           | 模型內做什麼                               | 是否增加 writes      |
+| -------------- | ------------------------------------------ | -------------------- |
+| select(raw)    | 回傳目前選取原文                           | 否；沒有驗證成功承諾 |
+| prepare(raw)   | 驗證欄位、權限條件、完整差異與 revision    | 否                   |
+| confirm(...)   | 再核對內容與條件，建立記憶體 ready stage   | 否                   |
+| apply(stageId) | 消耗 stage，檢查執行條件，才逐欄呼叫假設備 | 有通過才增加         |
+| 結果判讀       | 查看各欄位 confirmed／unknown／not-sent    | 不另送寫入           |
 
-Verify先對每個欄位做型別、單位、上下限、必要欄位與設備能力檢查。checksum必須由伺服器針對canonical資料計算，不能直接雜湊畫面格式化文字。若draft中的溫度是攝氏而設備期待華氏，必須明示轉換規則與單位，不能只比較字串。
+`staged` 只是本程序保存的已確認候選，沒有寫入設備 staging 區。apply 再查設備目標 context、權限、全欄 scope 與可見性、revision 及原確認期限；變更或到期時零寫入拒絕。每個 stage 只允許一次 apply 嘗試，拒絕也不復用。已存在 ready stage 時，不接受另一份 prepare。
 
-通過後建立verified staging，保存stageId、deviceId、recipeVersion、checksum、操作者、驗證時間與有效期限。staging只表示已準備好，不表示設備已接受。若設備沒有stage能力，服務端要明示只能分批寫入，並在每一步讀回驗證。
+四欄寫入順序固定 temp、speed、low、high。這個順序僅用於教材資料，沒有證明中間狀態適合機台運轉。真實非原子設備在逐欄更新時可能短暫出現不一致參數，必須依設備契約在適當的非執行狀態操作，或改用設備確實支援的完整提交機制。
 
-案例：R-12版本8要套到D-03。服務端先確認D-03支援欄位A至F，讀回目前版本7，對draft計算checksum示意標記9A2C（非實際計算結果，正式規格另定演算法）；若scope只允許A至D，就拒絕包含E的draft。若驗證完成後設備版本變成9，原stage以version mismatch失效，不能繼續寫。
+## 第三欄逾時為何不能直接重送
 
-verified staging要有明確失效原因，例如設備版本改變、checksum不符、欄位超範圍或units未知。失效後保留紀錄供排查，但不可讓失效stage再次進入commit。
+固定腳本 `['ok','ok','timeout','ok']` 的第三項，代表假設備已改 low，但回覆遺失。控制工作流不能讀取測試器私下知道的事實來宣布成功：
 
-若配方含陣列或多段參數，範圍驗證要逐項進行並記錄索引；只檢查總體checksum不能發現某個元素超限。設備讀回也要用相同canonical規則比較。
+| 欄位  | 是否送出 | 工作流證據       | 結果      |
+| ----- | -------- | ---------------- | --------- |
+| temp  | 是       | 關聯的生效區回覆 | confirmed |
+| speed | 是       | 關聯的生效區回覆 | confirmed |
+| low   | 是       | 沒收到回覆       | unknown   |
+| high  | 否       | 第三欄後停止     | not-sent  |
 
-能力聲明也要有有效時間；設備重連或韌體更新後應重新取得，不能永久快取支援欄位。
+因此整體是 partial，三次寫入，high 仍是80。`fake_active_low=25` 只揭露合成測試的內部真相，**不是工作流取得的設備證據**。它示範「逾時不等於沒寫到」，不能拿來消除 unknown。模型鎖住後續 prepare，回 UNRESOLVED，不會自動重送全部配方，也不自動回滾 temp/speed。
 
-| 檢查 | 例值 | 失敗處理 |
-| --- | --- | --- |
-| deviceId | D-03 | 拒絕跨設備套用 |
-| 版本 | recipeVersion=8；expectedDeviceVersion=7 | 目前設備版本非7即失效 |
-| checksum | 9A2C | 不同即停 |
-| units | °C | 不明確即拒絕 |
-| scope | A–D | 超出範圍不寫 |
+若第一欄就無法確認，整體是 unknown；若先有欄位 confirmed 再遇到未知，則是 partial。若最後一欄逾時，即使測試器知道四欄都改了，工作流仍是 partial。沒有任何實體動作或網路逾時實測。
 
-## 三 非原子設備的部分結果
+## 什麼才算這個模型的 applied
 
-設備未明示原子commit時，把套用視為可能部分成功。多步流程可能先寫A、B，再在C因範圍錯誤停止；這時結果是Unknown或Partial，而不是成功或自動回滾。服務端要停止後續寫入、讀回已處理欄位、保存步驟與錯誤，交由工程人員決定補償。
+假設備的每筆證據包含 device、operation、field、value、area、revisionBefore、revisionAfter。工作流要求設備 D-03、此次 stage ID、正確欄位與目標值、生效區 `active`，以及該步 revision 精確加一。四欄都吻合才回 applied；成功後 revision=45。
 
-不能因timeout就重送全部配方。先查設備是否已接受最後一筆、是否提供交易狀態或版本讀回；對不可重複的寫入，標記UnknownOutcome。若設備確實提供冪等交易ID，才依該能力重試，不能自行假造API。
+這是教材自訂協定，不是通用 PLC 保證。只看到數值相同、收到另一筆 operation 回覆，或讀到 `staging` 區的值，都不能滿足它。`staging-only` 案例第一欄的回覆雖有目標值，實際生效區沒更新，故結果仍是 unknown，後面三欄不送。
 
-案例中A、B已讀回新值，C寫入逾時，D尚未處理。畫面應顯示Partial，列出A/B成功、C未知、D未送出，並禁止再次按套用直接重跑。若設備沒有回讀能力，結果只能是Unknown，不能顯示「全部完成」。
+改 `apply-demo.mjs` 的 outcomes 即可試驗：把第一個案例改成 `['wrong-operation','ok','ok','ok']`，應只送第一欄後停在 unknown。把 timeout 移到第四欄，會看到前三欄 confirmed、最後一欄 unknown，writes=4。每次執行都是新建合成設備；這不代表正式系統可以靠重啟清除未決命令。
 
-部分成功後可提供只讀差異報告，列出每個欄位的送出、已確認、未知和未送狀態。修復前不要用「再套用」覆蓋未知狀態；先確認設備當前版本及是否有回滾能力。
+## 交付到設備前還缺哪些證據
 
-若設備支援分批提交，應在契約中說明每批邊界、順序與失敗後行為。若沒有這些資料，服務端只能把整體結果標成未知，不能推測未回覆批次已成功。
+本例沒有命令查詢／人工解除 UNRESOLVED、持久化、崩潰恢復、並行操作員、真正權限驗證、設備能力探索或安全聯鎖。`setAccess()`、externalUpdate() 是注入條件；真實系統須從權威來源取得權限與設備狀態。校驗、完整 schema 與確認規則沿用前篇，沒有以 checksum 取代欄位檢查。
 
-每一步在本地紀錄交易與步驟序號；只有設備協定支援識別回傳時才能在線上配對。回讀關聯無法證明時停在未知，不把回讀錯位當成功。
+正式介接前，要用目標設備手冊確定生效區、版本定義、關聯方法、可否原子提交及中間狀態限制；不能把本例的 revision+1、stage ID 或四欄順序照抄成原廠 API。若協定不能證明這些條件，應調整結果聲明，保留未知與人工處理流程。
 
-| 結果 | 畫面 | 後續 |
-| --- | --- | --- |
-| 全部讀回一致 | Committed | 保存版本與checksum |
-| 部分一致 | Partial | 停止、列差異 |
-| 逾時未知 | Unknown | 查設備交易狀態 |
-| 驗證失敗 | Rejected | 不再送寫入 |
-
-## 四 權限 審計與驗收
-
-權限要按設備、配方範圍與動作分開。使用者可能有查看權限，卻沒有套用D-03的權限；有套用A至D權限，也不代表能改E至F。伺服器端在Verify與Commit都重新檢查權限，不能只相信HMI傳來的role欄位。
-
-每次交易保存原始draft、canonical checksum、deviceId、版本、scope、操作者、stage與commit時間、每個步驟結果及設備回讀。若使用者在確認後修改draft，checksum改變就要重新Verify；舊確認不可沿用。這也避免把畫面截圖當成設備證據。
-
-驗收以模擬設備測五條路徑：正常全部成功、版本變更、checksum錯、單步逾時、權限不足。檢查Select永不寫設備、Verify失敗零寫入、Partial停止後可追查，以及重新登入後仍能看到交易結果。未取得目標設備手冊時，只能交付流程契約與測試表，不能宣稱支援原子套用。
-
-完成的判定是實際生效區讀回值、版本、checksum和scope都符合，並依設備契約確認啟用結果；只讀到staging區相同不代表配方已生效；單有「送出HTTP成功」或按鈕變綠不足以證明設備採用。
-
-稽核資料要避免把密碼、秘密金鑰或不必要的敏感值直接寫入日誌，但要保存足以重建diff與驗證結果的checksum和欄位摘要。日誌權限也應與套用權限分開。
-
-權限測試要包含查看、選取、驗證、stage與commit的不同角色組合；測試結果應證明前端隱藏按鈕後，直接呼叫服務端仍會被拒絕。
-
-結果頁同時提供原始錯誤碼與人類可讀說明，維護人員才能依證據決定重試、回滾或重新驗證。
-
-## 五 FAQ與官方來源
-
-FAQ1：選取配方會寫入設備嗎？答：不會；選取只改draft與目前選項。
-
-FAQ2：checksum相同就一定能套用嗎？答：不一定，仍要核對deviceId、version、units、scope與能力。
-
-FAQ3：部分寫入後能自動重跑嗎？答：未確認設備結果前不要；先停住並讀回或人工處理。
-
-FAQ4：HMI顯示成功是否代表設備成功？答：不代表，需設備回讀或明確commit結果。
-
-參考：[OWASP Transaction Authorization，要求交易資料可辨識、服務端驗證、限制狀態轉換與防TOCTOU。](https://cheatsheetseries.owasp.org/cheatsheets/Transaction_Authorization_Cheat_Sheet.html)
-
-參考：[OWASP Input Validation，作為欄位型別、範圍與服務端驗證的安全設計參考。](https://cheatsheetseries.owasp.org/cheatsheets/Input_Validation_Cheat_Sheet.html)
-
-## 延伸閱讀
-
-- [多個操作員同時改值如何顯示最後寫入者與時間](/articles/hmi-concurrent-edit-last-writer-version)
-- [配方欄位變更怎麼確認 canonical diff與有效期](/articles/recipe-canonical-diff-confirmation-revision)
+[OWASP 交易授權指引](https://cheatsheetseries.owasp.org/cheatsheets/Transaction_Authorization_Cheat_Sheet.html)提供執行前再次檢查授權與限制狀態轉換的背景；並未保證設備寫入的原子性。命令紀錄請接[accepted 與 applied](/articles/operation-log-accepted-applied-equipment-revision)，執行中參數的生效邊界請接[PLC 工作參數快照](/articles/plc-parameter-snapshot)。

@@ -1,0 +1,54 @@
+{
+  "asOf": "2026-09-28T00:00:00Z",
+  "records": [
+    {
+      "id": "R01",
+      "dataClass": "telemetry-demo",
+      "policyId": "DEMO-T30-v1",
+      "closedAt": "2026-08-28T00:00:00Z",
+      "holds": []
+    },
+    {
+      "id": "R02",
+      "dataClass": "telemetry-demo",
+      "policyId": "DEMO-T30-v1",
+      "closedAt": "2026-08-29T00:00:00Z",
+      "holds": []
+    },
+    {
+      "id": "R03",
+      "dataClass": "telemetry-demo",
+      "policyId": "DEMO-T30-v1",
+      "closedAt": "2026-08-30T00:00:00Z",
+      "holds": []
+    },
+    {
+      "id": "R04",
+      "dataClass": "telemetry-demo",
+      "policyId": "DEMO-T30-v1",
+      "closedAt": "2026-08-28T00:00:00Z",
+      "holds": ["DEMO-CASE-1", "DEMO-CASE-2"]
+    },
+    {
+      "id": "R05",
+      "dataClass": "telemetry-demo",
+      "policyId": "DEMO-T30-v1",
+      "closedAt": null,
+      "holds": []
+    },
+    {
+      "id": "R06",
+      "dataClass": "unclassified",
+      "policyId": "DEMO-T30-v1",
+      "closedAt": "2026-08-28T00:00:00Z",
+      "holds": []
+    },
+    {
+      "id": "R07",
+      "dataClass": "telemetry-demo",
+      "policyId": null,
+      "closedAt": "2026-08-28T00:00:00Z",
+      "holds": []
+    }
+  ]
+}

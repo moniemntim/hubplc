@@ -1,0 +1,39 @@
+{
+  "note": "Offline deterministic inputs. scaledValue is an integer in tenths of an engineering unit.",
+  "batches": {
+    "normal": [
+      { "quality": "GOOD", "scaledValue": 100 },
+      { "quality": "GOOD", "scaledValue": 200 },
+      { "quality": "GOOD", "scaledValue": 300 }
+    ],
+    "empty": [],
+    "allBad": [
+      { "quality": "BAD", "scaledValue": 110 },
+      { "quality": "BAD", "scaledValue": 120 },
+      { "quality": "BAD", "scaledValue": 130 }
+    ],
+    "negative": [
+      { "quality": "GOOD", "scaledValue": -80 },
+      { "quality": "GOOD", "scaledValue": -30 },
+      { "quality": "GOOD", "scaledValue": -50 }
+    ],
+    "range": [
+      { "quality": "GOOD", "scaledValue": -400 },
+      { "quality": "GOOD", "scaledValue": 1800 },
+      { "quality": "GOOD", "scaledValue": 1801 }
+    ],
+    "capacityAtLimit": [
+      { "quality": "GOOD", "scaledValue": 1800 },
+      { "quality": "GOOD", "scaledValue": 1800 },
+      { "quality": "GOOD", "scaledValue": 1800 },
+      { "quality": "GOOD", "scaledValue": 1800 }
+    ],
+    "capacityExceeded": [
+      { "quality": "GOOD", "scaledValue": 100 },
+      { "quality": "GOOD", "scaledValue": 200 },
+      { "quality": "GOOD", "scaledValue": 300 },
+      { "quality": "GOOD", "scaledValue": 400 },
+      { "quality": "GOOD", "scaledValue": 500 }
+    ]
+  }
+}

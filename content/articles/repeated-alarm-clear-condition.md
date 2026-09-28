@@ -1,75 +1,54 @@
 ---
-title: 同一警報反覆出現如何找出真正清除條件
-description: 分清物理恢復、確認、鎖存與重送，以時間線驗證警報真正清除條件。
+title: 壓力警報遲滯：整數門檻、連續樣本與鎖存復歸
+description: 下載 Node.js 固定壓力樣本，重播嚴格門檻、Bad／gap 重置、物理 clear 與 fresh reset edge。
 date: 2026-09-21
 author: 茂伯
 draft: false
 category: 維護與故障排查
 ---
 
-## 先辨認重複的是哪一件事
+## 下載固定樣本
 
-同一警報一直跳出，可能是故障條件反覆跨門檻，也可能是確認後仍有故障、重連補送舊事件，或PLC每次掃描重新建立警報。先保存事件識別、啟動時間、來源條件、確認時間與恢復時間，再判斷它是新事件還是同一事件的更新。
+本例是 Node.js 24.19.0 的離線 JavaScript 模型，不連 PLC、HMI、感測器或安全回路。將下列六檔存到同一資料夾：
 
-把四件事分開：物理條件是否異常、警報是否鎖存、操作員是否確認、歷史紀錄是否保存。按確認通常只表示人員已看到，不必然解除異常；清除歷史也不會修好現場原因。不同平台術語不同，先查實際狀態圖，不靠按鈕名稱猜語意。
+- [model.mjs](/examples/alarm-hysteresis/model.mjs)
+- [fixtures.mjs](/examples/alarm-hysteresis/fixtures.mjs)
+- [demo.mjs](/examples/alarm-hysteresis/demo.mjs)
+- [self-test.mjs](/examples/alarm-hysteresis/self-test.mjs)
+- [practice.mjs](/examples/alarm-hysteresis/practice.mjs)
+- [README.md](/examples/alarm-hysteresis/README.md)
 
-本文使用一般壓力警報作案例，門檻和時間都是教學假設。若警報涉及設備保護，門檻、延遲與復歸條件須由負責工程師依風險與製程訂定，不能為了減少畫面訊息任意加長延遲或取消鎖存。
+```powershell
+node self-test.mjs
+node demo.mjs
+```
 
-先找原始量測與品質，再看警報邏輯。若來源失聯後被補零，低壓警報反覆出現的根因可能是通訊與缺值處理；只調低壓門檻會掩蓋問題。來源失效應另有明確狀態，不能自動當作製程恢復。
+demo 逐列印出 raw、sample quality、`evaluationKnown`、兩個 timer 起點、active、latch 與 decision；最後為 `alarm-hysteresis demo: PASS`。`quality` 是收到的樣本品質；例如 gap 那筆仍是 Good 樣本，但 `evaluationKnown=false`，明確表示不能依它做連續時間判定。完整固定輸出在 README，可逐行核對。
 
-## 用遲滯和持續時間定義恢復
+## 門檻和時間線
 
-假設低壓條件為壓力小於5.0 bar持續兩秒才啟動；恢復條件為壓力大於5.3 bar持續三秒。5.0與5.3之間是遲滯帶，在這個區間保持目前警報狀態，而不是每筆資料重新猜正常或異常。等於門檻的情況也要明訂，本例使用嚴格小於和大於。
+壓力一律用整數 `rawMilliBar`（mbar），不把 5.0 bar 寫成浮點比較。本例在 `rawMilliBar < 5000` 連續 2000 ms 後才把物理 `active` 變 true；已 active 後，只有 `rawMilliBar > 5300` 連續 3000 ms 才回 false。5000 與5300等號都不合格，位於遲滯帶時保留現有物理狀態。
 
-在未啟動狀態下，4.9 bar持續一秒又回5.1 bar，不符合兩秒啟動；再次低壓時重新計時。在已啟動狀態下，回到5.1 bar仍不符合恢復；5.4 bar連續三秒才完成本例的物理恢復條件。不要把啟動和恢復共用同一個沒有狀態區分的計時器。
+每筆 Good 樣本最多相隔1000 ms，才採用 zero-order hold：教材假設該值可代表至下一筆的區間。這不證明真實現場連續；兩筆稀疏端點無法支持兩秒或三秒的製程結論。sample gap >1000 或 quality=BAD 都將 timer 歸零、decision 轉 UNKNOWN，但不會把已 active 或 latched 的歷史偷清掉。
 
-時間判定要使用實際經過時間或平台已核對的計時器語意，不能只數HMI刷新次數。若預計每秒一筆，但其中一筆延遲五秒，三筆不等於連續三秒。資料有缺口或品質無效時，是否重置或中止判定必須寫入規格，不能把空白期間當正常。
+固定 fixture 的關鍵時間線是：1500 ms 的 `low-2=4999` 開始 low hold，3500 ms 的 `low-active=4999` 恰好累積 2000 ms，輸出 `ACTIVE_LOW_HOLD_MET`。5000 ms 的 Bad 立即輸出 `UNKNOWN_BAD_QUALITY`，7001 ms 的 Good 雖然 quality 為 Good，因距前一筆 1501 ms，輸出 `UNKNOWN_SAMPLE_GAP`。7501 ms 重新開始 high hold，10501 ms 的 `high-clear=5400` 恰好累積 3000 ms，輸出 `INACTIVE_HIGH_HOLD_MET` 並保留 latch。
 
-用時間線驗算：0秒進入4.8 bar，2秒警報啟動；3秒操作員確認；4秒回到5.2 bar，警報仍有效；6秒升到5.4 bar，9秒完成恢復。這裡確認與恢復發生在不同時間，畫面與報表應能同時呈現。
+| 條件                  | active | latch | timer             |
+| --------------------- | ------ | ----- | ----------------- |
+| <5000 持續不足2000 ms | false  | 保留  | low timer 累加    |
+| <5000 剛好2000 ms     | true   | true  | low hold 成立     |
+| >5300 持續不足3000 ms | true   | true  | high timer 累加   |
+| >5300 剛好3000 ms     | false  | true  | physical clear    |
+| Bad 或 gap            | 保留   | 保留  | 全部歸零、UNKNOWN |
 
-若警報另外鎖存，物理恢復不一定直接清除鎖存。復歸請求必須檢查現在條件與必要的人工確認；故障仍在時按復歸，應回覆拒絕原因或保持警報，而不是短暫清零後下一掃描又跳出。
+## active 和 latch 分開
 
-## 分辨抖動鎖存與通訊重送
+`active` 是本例的物理條件結果；`latched` 記住曾經啟動的告警。物理 clear 不會自動清 latch。reset 只是 fixture 的布林輸入，不是 HMI 命令：必須先有本次 Good、fresh 的 reset=false，下一筆 false→true 才是有效 edge。fault 仍 active 時 edge 回 `RESET_REJECTED_ACTIVE`；physical clear 後仍要求本次 Good 且 `rawMilliBar > 5300`，遲滯帶內會回 `RESET_REJECTED_NOT_NORMAL`，符合時才會回 `LATCH_RESET_ACCEPTED`。本例不實作 Ack／確認人員、事件歷史、寫入未知結果或自動重啟機械。
 
-抖動的證據是原始值多次跨越已定義的門檻，來源品質有效且事件確實分開。先查真實製程變動、雜訊、取樣與門檻設計。加遲滯或時間濾波會改變反應速度，只有在工程允許時才能調整，並重新測最短需偵測的異常。
+## 可改輸入練習
 
-若原始值一直低於啟動門檻，確認後警報仍在是合理情況。此時應顯示已確認但仍有效，而不是持續產生全新事件。事件的開始時間保持原值，確認人與確認時間新增到同一生命週期，維修人員才看得出故障持續多久。
+執行 `node practice.mjs`。它先複製固定 fixture，讓你改 `rawMilliBar`、quality、reset 或 nowMs，再列印每一筆 JSON state；固定 demo 的 assert 不會受影響。已提供的練習把既有 `samples[2]`（1000 ms）從 `rawMilliBar=5000` 改為 `4999`；low hold 因此從 500 ms 開始，在 `low-4` 的2500 ms 恰好起報，不再等到3500 ms。後段 Bad 和 gap 仍會重置 clear timer，所以仍在 `high-clear` 的10501 ms physical clear。維持 nowMs 嚴格遞增的非負 safe integer，否則模型會拒絕。改成5000或5300可驗證等號不合格；插入1501 ms gap或 BAD 可確認 timer 不會偷算連續時間。
 
-若每次通訊恢復都跳同一時間的警報，檢查事件識別與補送規則。相同事件的重新傳送通常只更新接收紀錄，不再當成一次新的現場故障；但兩次真的故障即使文字相同，也必須有不同事件識別。不要只按警報文字去重。
+模型只會在每次 `sampleAlarm` 呼叫時計算；它沒有背景 timer。輸入回到正常那筆不會以先前樣本推斷期間是否曾短暫起報。門檻、時間、品質 enum 與 reset 規則都是教材契約，不是任何品牌 PLC timer、原生 alarm、功能安全或設備復歸規格。實際工程須以設備風險、感測器取樣、PLC task、資料品質與安全規格重新驗證。
 
-若來源重啟使事件序號歸零，將啟動識別與序號一起使用，避免新事件被當舊事件丟棄。沒有可靠識別時保留歧義並查來源能力，不能聲稱靠接收時間就能完美去重。警報音是否再次響起，也應與現場事件和介面策略分開驗收。
-
-## 驗收要包含拒絕清除的案例
-
-建立至少六項測試：短暫低壓、持續低壓、異常中確認、恢復帶內波動、滿足恢復、異常中要求復歸。每項寫出預期的物理狀態、鎖存、確認、時間與畫面文字。真正的驗收包含該拒絕時確實拒絕，不只測按鍵能把紅色變綠。
-
-再加入資料失聯、重啟、補送與恢復。假設失聯前已低壓，失聯後畫面不能變成已恢復；品質應標示未知，原警報歷史保留。恢復資料後按有效樣本重新判定，而不是用最後正常值結束事件。
-
-失敗時先核對原始條件和品質，再查計時器重置時機、等號邊界、鎖存與復歸優先順序，最後查HMI訂閱及事件去重。若PLC已正確清除但畫面未更新，處理的是資料鏈；若來源條件仍在，就不應只修畫面。
-
-交付時保存狀態圖、門檻、持續時間、版本、測試向量與各事件轉移。配置變更後用同一向量重跑，另加變更邊界的案例。這些狀態名稱是設計示意，不能直接當成任何品牌PLC或HMI的原生位元。
-
-完成後應看到一次故障具有可追溯的啟動、確認、物理恢復與復歸紀錄，重送不增加現場故障次數。本文的秒數與壓力值不適用於任何未經設備規格核對的特定設備。
-
-驗收人應從原始壓力與時間自行重算每次啟動和恢復，不只依畫面顏色判定；同時確認警報紀錄沒有因清除操作而遺失。
-
-## 練習與常見問題
-
-練習：警報已啟動且已確認，壓力依序為5.4、5.2、5.4 bar，各維持一秒。依本例尚未恢復，因為沒有大於5.3 bar連續三秒。接著若品質失效，不能繼續把時間累加成合格恢復。
-
-FAQ1：確認等於清除嗎？不等於。確認表示已閱，清除還需符合物理條件與平台的鎖存或復歸規則。
-
-FAQ2：一直按復歸能解決反覆警報嗎？不能，先查條件是否仍存在，以及復歸是否被正確拒絕。
-
-FAQ3：相同文字的警報都應去重嗎？不應。以事件識別和來源啟動資訊區分重送與真正的新故障。
-
-FAQ4：加長延遲就能消除警報抖動嗎？可能減少訊息，但也可能漏掉需偵測的異常，須按工程需求重新驗收。
-
-參考：[Schneider Electric：已清除但尚未確認的警報狀態案例。](https://www.se.com/us/en/faqs/FA361305/)
-
-參考：[Schneider Electric：有效警報與歷史警報的查看及確認。](https://product-help.schneider-electric.com/PowerLogic-ION9000/en-us/content/08-alarms/viewing-and-acknowledging-alarms-using-the-display.htm)
-
-## 延伸閱讀
-
-- [間歇性停機如何用發生條件而非猜測建立紀錄](/articles/intermittent-stop-condition-record)
-- [馬達啟動瞬間電壓下降如何與PLC重啟對照](/articles/355-industrial-event-diagnosis)
+確認與人工結案另見[警報生命週期](/articles/alarm-acknowledge-clear-occurrence)。本文與該模型尚未接線整合；若 evaluationKnown=false，不能把保留的 active=false 當成新的 Clear 事件轉送。

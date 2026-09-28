@@ -1,111 +1,71 @@
 ---
-title: 通訊佇列堆積如何分辨設備慢與程式塞
-description: 以arrival10/s、service8/s、60秒初始backlog0案例，分離enqueue/dequeue/send/first_byte/complete並辨識排隊、設備、worker與解析瓶頸。
+title: 通訊佇列積壓：用七個時間戳分開排隊、接收與解析
+description: 下載合成同時鐘資料，逐筆計算排隊、worker 前置、首位元組等待、接收、解析與完成尾段，拒絕缺欄、跨時鐘或倒退的紀錄。
 date: 2026-09-21
 author: 茂伯
 draft: false
 category: 工業通訊與網路
 ---
 
-## 一 把排隊等待與設備服務分開
+## 先把總時間拆開，才知道哪一段值得查
 
-通訊佇列變慢時，先保存每筆工作的 enqueue、dequeue、send、first_byte、complete 時間，且用同一個 monotonic clock 計算差值。enqueue 到 dequeue 是排隊等待；dequeue 到 complete 是服務時間。不能只看 complete−enqueue 就說設備回應慢，因為它可能大部分時間都在程式佇列裡等待。
+`complete - enqueue` 變長只代表整筆工作花久，不能直接寫成設備慢。本篇要求每筆紀錄都在同一單調時鐘下保留：`enqueue`、`dequeue`、`send`、`first_byte`、`last_byte`、`parse_done`、`complete`。它們各自代表進佇列、worker 取出、請求交給本地傳輸層、收到首位元組、收齊最後位元組、解析完成和最後完成點。
 
-本案例假設 60 秒內每秒到達 10 件，設備每秒穩定完成 8 件，初始 backlog=0，採 fluid 平均模型估算 backlog=(10−8)×60=120 件。這是容量規劃的近似，不代表每一秒都精確增加兩件；實際要以事件時間戳與服務分布驗證。若容量只有 100，必須提前定義背壓或丟棄規則。
+相鄰時間戳給出六段延遲：
 
-queue_capacity、drop_policy 與 backpressure 必須是明確設定。對停止、寫入或配方變更等動作，不能預設佇列滿就丟棄；可選擇拒絕新請求並回 QueueFull、讓上游降速、或保留到持久佇列。每種工作要標 is_idempotent 與 priority，不能把控制動作和可重建的查詢一樣處理。
+| 計算                     | 名稱              | 能提出的候選方向               |
+| ------------------------ | ----------------- | ------------------------------ |
+| `dequeue - enqueue`      | queue             | 佇列中等待                     |
+| `send - dequeue`         | worker_pre        | worker 前置、鎖或本地準備      |
+| `first_byte - send`      | first_byte_wait   | 網路加上設備收到首回應前的時間 |
+| `last_byte - first_byte` | remaining_receive | 首位元組後尚未收齊的時間       |
+| `parse_done - last_byte` | parse             | 完整資料已到本地後的解析時間   |
+| `complete - parse_done`  | persist_tail      | 解析後的保存、回呼或完成尾段   |
 
-| 時間戳 | 含義 | 可計算值 | 排查用途 |
-| --- | --- | --- | --- |
-| enqueue | 進入程式佇列 | — | 來源到達 |
-| dequeue | worker取出 | dequeue-enqueue | 排隊等待 |
-| send | 送出請求 | send-dequeue | worker前置延遲 |
-| first_byte | 收到首回應 | first_byte-send | 設備/網路首回應 |
-| complete | 完整結束 | complete-first_byte | 剩餘服務時間 |
+六段相加必須等於 `complete - enqueue`。若最大值相同，程式依表格順序取第一個，並不代表它比其他並列段落更嚴重。最大的段落只是**候選瓶頸**，不證明設備、網路、worker 或 parser 已故障。尤其 `first_byte_wait` 同時涵蓋網路與設備端等待；只知道 `complete - first_byte`，卻沒有 `last_byte`，不能推算 parse 時間。
 
-時間戳欄位必須使用同一 clock domain；若 worker 與設備代理各自取時間，先保存原始 clock_id，不能直接相減。可以由接收端以 monotonic 記錄所有本地事件，wall-clock 只用於跨系統對照，並在報表註明同步不確定度。
+佇列容量、到達率和服務率的規格與可重現 FIFO 算法，請接著看[PLC 任務超時：工作編號、FIFO 積壓與重入證據](/articles/plc-task-timeout-reentry-backlog)。本篇不重複設計容量或拒絕政策，只檢查一筆已接受工作在各段花了多久。
 
-每筆紀錄還要帶 device_id、worker_id、request_id、queue_depth 與結果。多設備混在一條佇列時，總 backlog 可能掩蓋單一慢設備；分設備統計等待與服務，才能判斷是設備本身、worker 被阻塞，還是解析程序塞住。
+## 下載後重播四筆合成紀錄
 
-## 二 用數據辨識堆積來源
+下載同一資料夾的 [模型](/examples/queue-diagnosis/queue-diagnosis-model.mjs)、[固定輸入](/examples/queue-diagnosis/fixture.json)、[輸出程式](/examples/queue-diagnosis/run.mjs)、[獨立測試](/examples/queue-diagnosis/self-test.mjs) 和 [說明](/examples/queue-diagnosis/README.md)。本機以 Node.js 24.19.0 核對，請使用此版或更新版，不需 npm 套件，也不連 PLC、socket 或資料庫。
 
-若 dequeue−enqueue 持續上升而 service time 穩定，主要問題是到達率高於處理率或 worker 數不足。若 dequeue 很快但 send 到 first_byte 變長，設備回應慢或網路等待較可能；若 first_byte 已到但 complete−first_byte 變長，應進一步區分剩餘網路接收、解析、資料庫寫入或callback阻塞；單靠首byte時間無法定位是哪一項。
+```powershell
+node run.mjs
+node --test self-test.mjs
+```
 
-workerblocked 要有證據，例如 worker 取出工作後長時間沒有 send，且 CPU/鎖等待或外部呼叫時間與 send 延遲同時升高。parse慢則比較 first_byte 到 complete 的解析計時與 payload 大小；設備回應慢則比較 send 到 first_byte 與設備端 request_id 紀錄。不要只看到 queue_depth 就改大佇列。
+資料集明確標為 `synthetic`。JSON 使用 `requestId`、`deviceId`、`workerId`，端點欄位是 `firstByte`、`lastByte`、`parseDone`；表格與輸出中的底線名稱對應同一量測點。每個端點都有整數毫秒 `ms` 與 `clockId`，模型只接受七個端點全數存在、clockId 全相同且時間不倒退的列；因此它不會把不同主機的牆上時鐘或缺欄資料硬算成延遲。輸出同時列出已接受的逐段時間、總和檢查、最大段落候選，以及拒絕原因。
 
-以 10/s 到達、8/s 服務為例，前 10 秒平均 backlog 約 20，30 秒約 60，60 秒約 120。若把 worker 加倍後服務率仍為 8/s，瓶頸可能在單一設備或序列化鎖；若到達率仍10/s而服務能力提高至12/s，已有backlog才會逐步下降；理想每秒減2件，120件約需60秒清空。每個結論都要用時間窗與實測完成數支持。
+| request_id | queue | worker_pre | first_byte_wait | remaining_receive | parse | persist_tail | total | 最大段落候選         |
+| ---------- | ----: | ---------: | --------------: | ----------------: | ----: | -----------: | ----: | -------------------- |
+| 781        |   800 |         10 |             200 |                10 |     5 |            5 |  1030 | queue 800            |
+| 782        |    10 |         10 |            5000 |                10 |    10 |           10 |  5050 | first_byte_wait 5000 |
+| 783        |     5 |          5 |              10 |                10 |  2000 |           10 |  2040 | parse 2000           |
+| 784        |     5 |       2000 |              10 |                10 |     5 |            5 |  2035 | worker_pre 2000      |
 
-| 觀察 | 等待 | 服務 | 較可能原因 |
-| --- | --- | --- | --- |
-| 等待升、服務穩 | 上升 | 穩定 | 到達率/容量 |
-| 等待穩、send→首byte升 | 穩定 | 變長 | 設備或網路 |
-| 首byte→complete升 | 穩定 | 解析段變長 | parse/寫入 |
-| dequeue後久未send | 增加 | 尚未開始 | workerblocked/鎖 |
-| 只一台設備惡化 | 該設備升 | 該設備升 | 設備局部慢 |
+781 的固定端點是 `100000 → 100800 → 100810 → 101010 → 101020 → 101025 → 101030 ms`，所以可直接手算出 800、10、200、10、5、5，總計 1030。782 的 5000 ms 是首位元組等待，不是已證明的設備故障；783 因為 `last_byte=300030` 已知，才可把其後 2000 ms 明確列為 parse；784 則把候選留在 worker 前置段。
 
-若 queue_depth 不高但 service time 逐步增加，可能是設備內部佇列或網路延遲；若 service time 穩定而 oldest_age 增加，則是應用到達率問題。兩者都要看分位數與設備 ID，不能用一個全域平均值做結論。
+## 拒絕紀錄本身是診斷結果
 
-排查報表要同時顯示平均、P95/P99 與最大值。平均 20 ms 可能掩蓋少數 5 秒阻塞；尾端延遲會占用 queue capacity 並觸發上游重試。時間戳應用 monotonic 計差值，對外報表另存 wall-clock，避免系統校時造成負延遲。
+範例另附三筆不計算的合成列：`invalid-missing` 少了 `complete`、`invalid-clock` 的 `send` 使用另一個 clockId、`invalid-backward` 的 send 早於 dequeue。這些結果不是零延遲，也不是設備回覆慢，而是無法建立合法分段的證據。
 
-## 三 滿佇列 背壓與動作安全
+現場應讓每一端點由同一個本地單調時鐘記錄，或清楚保留 clock domain 與同步誤差。若 send、首位元組和最後位元組來自不同程式或不同主機，先修正量測邊界；不能按相近牆上時間排序後宣稱是某一段變慢。記錄也應包含 `request_id`、`device_id` 和 `worker_id`，以便在相同量測條件下比對某台設備或某個 worker 的候選段落。
 
-假設容量 100、初始 0、平均淨增加 2/s，約在 50 秒達滿；實際突發可能更早。滿佇列時查詢可回 QueueFull 後由上游重試，但寫入或動作請求要依業務契約決定拒絕、持久化或人工處理。不能默認丟最舊或丟最新，因為兩者都可能改變設備狀態。
+## 用候選段落安排下一筆證據
 
-背壓要有可觀察訊號，例如 accepted_rate、rejected_rate、queue_depth、oldest_age 與 drop_reason。上游收到背壓後可以降低採樣頻率或停止新增非必要查詢；若上游不支援，就必須在邊界層拒絕並保存 request_id。背壓不是把 timeout 延長到無限。
+| 最大段落          | 下一步要補的證據                             | 目前不能下的結論           |
+| ----------------- | -------------------------------------------- | -------------------------- |
+| queue             | 到達、取出、worker 可用數與已接受／拒絕記錄  | 已知設備慢                 |
+| worker_pre        | 鎖等待、執行緒排程或 send 前本地工作         | 已知網路慢                 |
+| first_byte_wait   | 同一 request_id 的傳輸與設備端接收／處理紀錄 | 已知是設備或網路其中一方   |
+| remaining_receive | 收到首位元組後的傳輸進度與資料大小           | 已知 parser 慢             |
+| parse             | last_byte、解析輸入大小、解析步驟與完成紀錄  | 已知 CPU 使用率或 PLC 負載 |
+| persist_tail      | 保存／回呼的開始與完成、下游狀態             | 已知資料庫故障             |
 
-對不可丟的動作，可建立持久佇列與去重鍵，但必須確認設備是否支援重送。若工作已送出但回覆遺失，重新排入可能造成重複動作；此時標 UnknownOutcome，等待查詢或人工確認，不可只因佇列有空間就自動重播。
-
-| 佇列狀態 | 查詢工作 | 控制動作 | 記錄 |
-| --- | --- | --- | --- |
-| 低於80% | 接受 | 接受 | 正常 |
-| 80–100% | 可降速/限流 | 依優先級 | oldest_age告警 |
-| 滿 | QueueFull或背壓 | 不可默認丟棄 | request_id/reason |
-| 未知結果 | 查狀態後決定 | 不盲重播 | UnknownOutcome |
-| 持續滿 | 擴容/降載 | 工程處置 | 完整時間線 |
-
-若協定支援，背壓回覆可帶retry_after 或降載建議，避免上游在收到 QueueFull 後立即同步重試。若工作不可丟且沒有持久佇列，應讓呼叫者知道提交失敗，而不是把資料留在記憶體中等待重啟後消失。
-
-驗收時刻意把服務率降到 8/s，送入 10/s，確認 backlog、oldest_age 與 QueueFull 在預期區間出現；再恢復服務率到 12/s，確認新工作不再堆積且既有佇列逐步下降。不可只看程式沒有例外就判定排隊設計正確。
-
-## 四 完整排查與限制
-
-一次具體排查可選 request 781：enqueue=100.000、dequeue=100.800、send=100.810、first_byte=101.010、complete=101.030，單位秒。等待 800 ms，send 前置 10 ms，首回應 200 ms，後段 20 ms。這筆主要是排隊等待加設備首回應；若同時看到 queue_depth 上升，先查到達與服務率。
-
-request 782 若 enqueue=101.000、dequeue=101.010、send=101.020、first_byte=106.020、complete=106.040，等待只有 10 ms，但首回應 5 秒，應優先查設備或網路。request 783 若 first_byte 很快而 complete 延遲 2 秒，則查 parser、資料庫或 worker 鎖，不要把設備 timeout 改長掩蓋。
-
-服務率估算要說明時間窗與初始條件。短時間突發、設備批次回應、worker 重啟都會讓 10/s 與 8/s 的流體估算失真；因此把 120 當容量規劃警訊，不是實機保證。最終驗收要使用實際分布、最大工作大小與停機恢復行為。
-
-| 驗收 | 輸入 | 預期結果 |
-| --- | --- | --- |
-| 正常 | 理想均勻arrival8/s、service8/s | fluid模型淨增0 |
-| 堆積 | arrival10/s、service8/s、60s | 平均估算120 |
-| 設備慢 | send後5s首byte | service段升 |
-| 程式塞 | dequeue後久未send | worker/鎖證據 |
-| 恢復 | service12/s | backlog下降 |
-
-恢復測試要包含 worker 重啟：重啟前的持久工作要有唯一 request_id，重啟後只能依去重規則恢復。若沒有持久化證據，不能宣稱工作仍在佇列中。
-
-首byte之後還可能很久才收齊封包。需要時加last_byte與parse_done時間，分開完整接收和純解析；send也明訂為請求全數交給本地socket之時。到達率等於服務能力只有在理想均勻模型才不累積，真實變動負載須留餘裕，不能以平均相等保證不排隊。
-
-本文只討論資料佇列與觀測，不指定 PLC 指令、資料庫產品或安全停機方式。涉及機台動作時，優先級、丟棄與恢復策略需由工程規格核准；queue depth 不能直接作為安全控制條件。
-
-## 五 驗收 FAQ 與來源
-
-本題基準是 60 秒內 arrival=10/s、service=8/s、初始 backlog=0，在穩定 fluid 假設下平均 backlog 增加 120。實際判斷要以 enqueue/dequeue/send/first_byte/complete 的 monotonic 差值分開排隊與服務，並對滿佇列、背壓與不可丟動作定義明確結果。
-
-FAQ1：complete−enqueue 變長就代表設備變慢嗎？答：不一定，可能是排隊等待變長。先分別看 dequeue−enqueue 與 first_byte−send。
-
-FAQ2：佇列滿時可以丟最舊工作嗎？答：不能默認。查詢、控制動作與不可重複工作要有不同契約，丟棄策略必須明訂並記錄。
-
-FAQ3：為何用 monotonic 計延遲？答：wall-clock 可能因校時跳動；monotonic 適合計經過時間，對外顯示再另存牆上時間。
-
-FAQ4：加 worker 就能解決堆積嗎？答：不一定。若單一設備、鎖或解析是瓶頸，加 worker 可能只增加競爭，須用時間戳證據定位。
-
-參考：[Python time.monotonic 官方文件：單調時鐘與經過時間計算參考，非 PLC API。](https://docs.python.org/3/library/time.html#time.monotonic)
-
-參考：[AWS Builders Library：Timeouts、retries and backoff with jitter 的延遲與重試背景，非特定PLC佇列規格。](https://aws.amazon.com/builders-library/timeouts-retries-and-backoff-with-jitter/)
+不要從這四筆合成數字挑一個全域百分位數當成正式門檻或實機量測。先把同版本、同輸入、同 clock domain 的真實紀錄分開保存，再決定要量哪一段的分布與邊界。這份工具只做離線整數相減，不量測真實 CPU、網路、PLC 或設備。
 
 ## 延伸閱讀
 
+- [PLC 任務超時：用工作編號分開輪詢、FIFO 積壓與重入證據](/articles/plc-task-timeout-reentry-backlog)
 - [非同步亂序回覆如何用待回覆表配對](/articles/async-out-of-order-pending-map)
-- [重試如何避免通訊恢復風暴](/articles/retry-backoff-jitter-circuit-breaker)

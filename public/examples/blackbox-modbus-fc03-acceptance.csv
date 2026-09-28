@@ -1,0 +1,2 @@
+case_id,source,reference_address,pdu_offset,function_code,register_count,word_order,response_words,expected_float32,offline_known_result,hardware_tested,verdict,notes
+MB-FC03-001,local-known-case,40010,9,03,2,ABCD,"4148 0000",12.5,pass,no,offline-pass,"Known bytes only; no remote device connection attempted."

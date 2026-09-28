@@ -1,0 +1,7 @@
+relation_id,from_id,from_type,to_id,to_type,access,contract_field,path_kind,condition,evidence,owner,verification_state
+DEP-001,screen:temperature,screen,dataset:history-temp,dataset,Read,temp_avg,direct,quality is displayed,fixtures/history-temp-v1.csv,hmi-owner,ExampleOnly
+DEP-002,screen:overview,screen,dataset:history-temp,dataset,Read,temp_avg,direct,quality is displayed,fixtures/history-temp-v1.csv,hmi-owner,ExampleOnly
+DEP-003,screen:flow,screen,dataset:history-flow,dataset,Read,flow_avg,direct,quality is displayed,fixtures/history-flow-v1.csv,hmi-owner,ExampleOnly
+DEP-004,report:daily-temperature,report,dataset:history-temp,dataset,Read,temp_avg,direct,quality = Good,fixtures/history-temp-v1.csv,report-owner,ExampleOnly
+DEP-005,screen:daily-report,screen,report:daily-temperature,report,Read,daily_temperature_mean,direct,report version is published,expected/daily-temperature-report.csv,hmi-owner,ExampleOnly
+DEP-006,role:operator,role,dataset:history-flow,dataset,Authorize,Read,direct,run-time authorization required,fixtures/roles.csv,security-owner,ExampleOnly

@@ -1,0 +1,260 @@
+<!doctype html>
+<html lang="zh-Hant">
+  <meta charset="utf-8" /><meta
+    name="viewport"
+    content="width=device-width,initial-scale=1"
+  /><title>載入狀態教材</title
+  ><style>
+    * {
+      box-sizing: border-box;
+    }
+    body {
+      margin: 0;
+      background: #f1f5f9;
+      color: #102a43;
+      font-family: system-ui, sans-serif;
+    }
+    main {
+      width: min(100% - 2rem, 52rem);
+      margin: auto;
+      padding: 1rem 0;
+    }
+    section {
+      margin: 1rem 0;
+      padding: 1rem;
+      border: 1px solid #9fb3c8;
+      border-radius: 0.5rem;
+      background: #fff;
+    }
+    button {
+      margin: 0.2rem;
+      padding: 0.5rem;
+      font: inherit;
+    }
+    #view,
+    #diag {
+      overflow-wrap: anywhere;
+    }
+    #rows {
+      padding-left: 1.2rem;
+    }
+  </style>
+  <main>
+    <h1>固定回覆的 loading / partial 教材</h1>
+    <section>
+      <button id="start-a">查 A</button><button id="start-b">查 B</button
+      ><button id="a-page1">A 第1頁 partial</button
+      ><button id="a-late">晚到 A 第2頁</button
+      ><button id="b-page1">B 第1頁 partial</button
+      ><button id="b-page2">B 第2頁 complete</button
+      ><button id="dup">B 第1頁 exact duplicate</button
+      ><button id="conflict">B 第1頁 conflict</button
+      ><button id="empty">成功 empty</button
+      ><button id="error">固定 error</button
+      ><button id="cancel">取消目前查詢</button
+      ><button id="late-cancel">取消後晚回覆</button
+      ><button id="unknown">未知總數</button><button id="reset">重設</button>
+    </section>
+    <section>
+      <p id="view"></p>
+      <ol id="rows"></ol>
+      <p id="counts"></p>
+      <p id="guide">
+        固定流程：先按「查 A」，收到 A 第1頁後按「查 B」；A/B
+        回覆鈕使用最近一次各自凍結的身份。
+      </p>
+    </section>
+    <section>
+      <h2>最近 16 筆診斷（非稽核）</h2>
+      <ol id="diag"></ol>
+    </section>
+  </main>
+  <script>
+    (() => {
+      const s = {
+        epoch: 0,
+        current: null,
+        rows: [],
+        pages: new Map(),
+        diag: [],
+        frozen: { A: null, B: null },
+      };
+      const $ = (id) => document.getElementById(id);
+      function log(x) {
+        s.diag.push(x);
+        if (s.diag.length > 16) s.diag.shift();
+      }
+      function render() {
+        const c = s.current;
+        const progress = c?.unknown
+          ? `已收到 ${s.rows.length} 筆（總數未知）`
+          : c
+            ? `pages=${s.pages.size}/${c.pageCount}`
+            : '';
+        $('view').textContent = c
+          ? `epoch=${c.epoch} query=${c.query} snapshot=${c.snapshotVersion} status=${c.status} ${progress}`
+          : '尚未查詢';
+        $('rows').replaceChildren(
+          ...s.rows.map((x) => {
+            const l = document.createElement('li');
+            l.textContent = x;
+            return l;
+          }),
+        );
+        $('counts').textContent =
+          `rows=${s.rows.length}/4；diagnostic=${s.diag.length}/16`;
+        $('diag').replaceChildren(
+          ...s.diag.map((x) => {
+            const l = document.createElement('li');
+            l.textContent = x;
+            return l;
+          }),
+        );
+      }
+      function start(query, version = 'S1', pages = 2) {
+        s.epoch++;
+        s.current = {
+          epoch: s.epoch,
+          query,
+          snapshotVersion: version,
+          pageCount: pages,
+          status: 'loading',
+          cancelled: false,
+          unknown: false,
+        };
+        if (query === 'A' || query === 'B') {
+          s.frozen[query] = {
+            epoch: s.epoch,
+            query,
+            snapshotVersion: version,
+          };
+        }
+        s.rows = [];
+        s.pages = new Map();
+        log(`START ${query} epoch=${s.epoch}`);
+        render();
+      }
+      function receive(r) {
+        const c = s.current;
+        if (
+          !c ||
+          c.cancelled ||
+          r.epoch !== c.epoch ||
+          r.query !== c.query ||
+          r.snapshotVersion !== c.snapshotVersion
+        ) {
+          log('STALE_REJECTED');
+          render();
+          return;
+        }
+        if (['empty', 'error'].includes(c.status)) {
+          log('TERMINAL_REJECTED');
+          render();
+          return;
+        }
+        if (r.page < 1 || r.page > c.pageCount) {
+          log('PAGE_CONTRACT_REJECTED');
+          render();
+          return;
+        }
+        const prior = s.pages.get(r.page);
+        const key = JSON.stringify(r.rows);
+        if (prior) {
+          if (prior === key) log('EXACT_DUPLICATE');
+          else log('PAGE_CONFLICT_REJECTED');
+          render();
+          return;
+        }
+        if (s.rows.length + r.rows.length > 4) {
+          log('ROW_LIMIT_REJECTED');
+          render();
+          return;
+        }
+        s.pages.set(r.page, key);
+        s.rows.push(...r.rows);
+        c.status = s.pages.size === c.pageCount ? 'complete' : 'partial';
+        log(`ACCEPT page=${r.page}`);
+        render();
+      }
+      const current = () => s.current;
+      const a = () =>
+        s.frozen.A ?? { epoch: -1, query: 'A', snapshotVersion: 'A1' };
+      const b = () =>
+        s.frozen.B ?? { epoch: -1, query: 'B', snapshotVersion: 'B1' };
+      $('start-a').onclick = () => start('A', 'A1');
+      $('start-b').onclick = () => start('B', 'B1');
+      $('a-page1').onclick = () => receive({ ...a(), page: 1, rows: ['A-1'] });
+      $('a-late').onclick = () => receive({ ...a(), page: 2, rows: ['A-2'] });
+      $('b-page1').onclick = () =>
+        receive({ ...b(), page: 1, rows: ['B-1', 'B-2'] });
+      $('b-page2').onclick = () => receive({ ...b(), page: 2, rows: ['B-3'] });
+      $('dup').onclick = () =>
+        receive({ ...b(), page: 1, rows: ['B-1', 'B-2'] });
+      $('conflict').onclick = () => receive({ ...b(), page: 1, rows: ['B-X'] });
+      $('empty').onclick = () => {
+        start('EMPTY', 'E1', 1);
+        receive({
+          epoch: current().epoch,
+          query: 'EMPTY',
+          snapshotVersion: 'E1',
+          page: 1,
+          rows: [],
+        });
+        current().status = 'empty';
+        render();
+      };
+      $('error').onclick = () => {
+        start('ERROR', 'X1');
+        current().status = 'error';
+        log('FIXED_ERROR');
+        render();
+      };
+      $('cancel').onclick = () => {
+        if (s.current) {
+          s.current.cancelled = true;
+          s.current.status = 'cancelled';
+          log('CANCEL_LOCAL_ACCEPTANCE_STOPPED');
+          render();
+        }
+      };
+      $('late-cancel').onclick = () =>
+        receive({
+          epoch: current()?.epoch ?? 0,
+          query: current()?.query ?? '',
+          snapshotVersion: current()?.snapshotVersion ?? '',
+          page: 1,
+          rows: ['LATE'],
+        });
+      $('unknown').onclick = () => {
+        start('UNKNOWN', 'U1', 2);
+        current().unknown = true;
+        receive({
+          epoch: current().epoch,
+          query: 'UNKNOWN',
+          snapshotVersion: 'U1',
+          page: 1,
+          rows: ['U-1'],
+        });
+      };
+      $('reset').onclick = () => {
+        s.epoch = 0;
+        s.current = null;
+        s.rows = [];
+        s.pages = new Map();
+        s.diag = [];
+        s.frozen = { A: null, B: null };
+        render();
+      };
+      render();
+      window.loadingDemo = {
+        state: () =>
+          structuredClone({
+            epoch: s.epoch,
+            current: s.current,
+            rows: s.rows,
+            diag: s.diag,
+          }),
+      };
+    })();
+  </script>
+</html>

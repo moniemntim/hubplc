@@ -1,0 +1,36 @@
+{
+  "evidence": "synthetic",
+  "configuration": { "intervalMs": 10, "watchdogMs": 5, "sensitivity": 1 },
+  "cases": [
+    {
+      "id": "A",
+      "taskEnabled": true,
+      "traceComplete": true,
+      "running": true,
+      "lastStartMs": 100,
+      "observedAtMs": 106,
+      "runtimeExecutionMs": 6,
+      "expected": "EXECUTION_CANDIDATE"
+    },
+    {
+      "id": "B",
+      "taskEnabled": true,
+      "traceComplete": true,
+      "running": false,
+      "lastStartMs": 100,
+      "observedAtMs": 121,
+      "runtimeExecutionMs": null,
+      "expected": "OMITTED_CANDIDATE"
+    },
+    {
+      "id": "C",
+      "taskEnabled": true,
+      "traceComplete": false,
+      "running": false,
+      "lastStartMs": 100,
+      "observedAtMs": 121,
+      "runtimeExecutionMs": null,
+      "expected": "INSUFFICIENT_EVIDENCE"
+    }
+  ]
+}

@@ -1,73 +1,80 @@
 ---
 title: 批次配方欄位缺漏如何產生完整錯誤清單
-description: 以明示schema版本及required、type、range、cross-field順序建立完整配方錯誤清單，區分缺值、零、原字串與候選版本狀態。
+description: 以可下載的 recipe-v3 Node 驗證案例，固定 required、type、range、cross-field 與未知欄位錯誤順序，保留原始 JSON 並只產生候選資料。
 date: 2026-09-21
 author: 茂伯
 draft: false
 category: PLC 程式與控制
 ---
 
-## 先固定Schema版本與驗證契約
+## 先定義本例的 recipe-v3 邊界
 
-批次配方不是一串可以直接寫入控制器的數字，而是有版本、欄位、型別、單位與相互關係的資料。先在輸入邊界宣告schema_version，例如recipe-v3，再依這個版本解讀欄位；不可讓缺版本的資料靠猜測套用最新規則。版本、來源識別、原始文字與接收時間都應留下，方便日後重現同一次驗證。
+本例驗證的是平面 JSON 資料，不是 PLC 配方下載或設備驗收。唯一接受的 `schema_version` 是 `recipe-v3`；required 欄位為 `schema_version`、`recipe_id`、`temp`、`speed`、`low`、`high`。數字必須是 JSON number 且為有限值，字串數字例如 `"1200"` 不轉成 1200。
 
-本篇示範欄位recipe_id、temp、speed、low、high：recipe_id是非空字串，temp與speed是可解析的數值，low與high是數值且low不得大於high。實際設備的單位、精度、上下限仍要由專案規格定義；這些名稱只是資料模型示例，不是任何PLC裝置或寄存器配置。
+教材界限為：`temp` -40 到 180 °C、`speed` 0 到 3000 rpm、`low` 與 `high` 0 到 100%。只有 low 和 high 都通過 number type 與 range 時，才檢查 `low <= high`。這些數值不是任何 PLC 寄存器、機台或現場配方的預設規格。
 
-錯誤清單採固定順序：先檢查schema版本，再檢查required欄位，接著檢查type，然後檢查range，最後檢查cross-field關係。每筆錯誤至少包含路徑、規則、代碼、原始值或缺值標記與可讀說明。路徑如/steps/2/speed要保留原樣，不能只報一個模糊的配方錯誤。
+輸入以 UTF-8 最多 2048 bytes 為界。界限內保留完全相同的 `raw.text`，再用 `JSON.parse`；超過時不解析、不保留不受限原文，回傳 `raw.text=null`、`raw.truncated=true` 與 `incomplete=true`。錯誤最多輸出三筆；若實際錯誤更多，最後一筆是 `error_limit_reached` 並且 `incomplete=true`。這表示清單不完整，不可補零、截斷數值或宣稱只存在列出的錯誤。
 
-缺值不等於零。temp缺漏代表資料沒有提供，必須回報required；只有輸入明確為0，且0在該欄位範圍內，才可視為合法零。字串"0"也不能未經型別規格就當成數字0。解析失敗時保留原字串，避免錯誤訊息把abc改寫成0而失去現場證據。
+## 下載並重跑固定案例
 
-## 按層次收集而不是遇錯即停
+將下列六個檔案下載到同一個新資料夾，在 Node.js 24.19.0 或更新版執行。沒有 npm 安裝、網路呼叫或 PLC 連線。
 
-第一輪只確認版本與結構，第二輪掃描所有required欄位，因此一個配方可同時列出多個缺漏。第三輪對已存在欄位做型別檢查：speed='abc'是type錯誤，不能先轉成預設速度。若文字內含空白、單位後綴或超長數字，須依明確解析契約處理，不能用語言或PLC的隱式轉換猜答案。
+- [驗證器](/examples/recipe-validation/recipe-validation.mjs)
+- [固定 fixture](/examples/recipe-validation/fixtures.mjs)
+- [完整 self-test](/examples/recipe-validation/self-test.mjs)
+- [簡短 demo](/examples/recipe-validation/demo.mjs)
+- [修改輸入與查看完整結果](/examples/recipe-validation/inspect.mjs)
+- [README](/examples/recipe-validation/README.md)
 
-range檢查只對型別已成立的值進行。temp有值但超出工程上限時報range；speed若根本不是數字，就不要再拿它和上下限比較，否則會衍生一個沒有意義的超界錯誤。cross-field也一樣：low缺失時不要宣稱low大於high，因為比較前提不存在。
+```powershell
+node self-test.mjs
+node demo.mjs
+```
 
-以下策略可兼顧完整性與可讀性：同一欄位可保留一個主要型別錯誤，避免無限重複；不同欄位和不同層級的獨立錯誤照實列出。錯誤清單必須穩定排序，先按驗證階段，再按資料路徑；這讓測試、畫面與事件紀錄不會因走訪順序改變而漂移。
+`self-test.mjs` 涵蓋正常值、合法零、多缺欄、空字串、`NaN` JSON 解析錯誤、`1e999` 非有限數、未知欄、low/high 相等、上下限、錯誤上限、舊版本與非物件。`demo.mjs` 的 R7 固定輸出如下，順序也是契約：
 
-未知欄位要有版本政策。嚴格模式將未列於schema的欄位報unknown；相容模式可保留並標記ignored，但不得讓未知值影響候選版本，也不得悄悄丟掉原文。若欄位疑似拼錯，例如speeed，嚴格模式能及早阻止它被當成有效speed。
+```text
+R7: valid=false incomplete=false errors=/temp:required,/speed:finite_number_required,/low:low_must_not_exceed_high
+valid: valid=true candidate=recipe-v3:5756a04ce6dfc55aa2ad34cb203f3b97e5aa05c2cba14beeb7ada008c94233dc
+error-limit: valid=false incomplete=true errors=/high:required,/low:required,/:error_limit_reached
+demo: PASS
+```
 
-本例以缺少鍵才報required，已存在但空字串的數值欄報type；不把空字串當成不存在。若schema版本不支援或頂層結構無法解析，停止依欄位規格的後續檢查，回報版本或結構錯誤，不猜測欄位規則。
+## 錯誤順序與 R7 的三個獨立問題
 
-## 完整案例與避免錯誤爆量
+驗證順序固定為 required、type、range、cross-field、unknown，同階段依欄位路徑排序。版本缺漏、版本不支援或頂層不是 object 時，停止欄位驗證，不猜測應採用哪一套欄位規則。未知欄位採嚴格拒絕，置於 unknown 階段，並依顯示路徑排序。
 
-輸入示例：schema_version=recipe-v3、recipe_id=R7、temp缺失、speed='abc'、low=20、high=10。第一項是/temp的required錯誤；第二項是/speed的type錯誤，原字串abc原封不動保留；第三項是/high與/low的cross-field錯誤，因為20大於10。這三項互相獨立，應形成三筆清單，而不是只回傳第一個缺漏。
+R7 的資料內容如下；此處展開排版，fixture 原文是單行 JSON：
 
-本例沒有把temp缺失當成temp=0，也沒有對speed做range比較，更沒有再產生speed不能和low或high比較的衍生錯誤。low與high本身都是有效數值，所以low>high的關係檢查仍可執行。這種依賴前提的判斷，能讓操作員修正真正資料，而不是清理驗證器製造的噪音。
+```json
+{
+  "schema_version": "recipe-v3",
+  "recipe_id": "R7",
+  "speed": "abc",
+  "low": 20,
+  "high": 10
+}
+```
 
-若同一欄位同時違反多個規則，要先定義錯誤優先級。例如speed是空字串時可報type或required，但不能一會兒當缺值、一會兒當零；版本文件應固定選擇。對陣列索引、巢狀物件和重複recipe_id，也要使用穩定路徑與明確規則，讓前端能精準定位修正位置。
+它穩定得到三筆錯誤：`/temp` 是 `required`，`/speed` 是 `finite_number_required`，`/low` 是 `low_must_not_exceed_high`。`/speed` 的錯誤保留 `{ "kind": "string", "value": "abc" }`，而缺失 temp 則是 `{ "kind": "missing" }`；兩者不混淆。因為 low 與 high 都是有效範圍內的數字，20 大於 10 仍可做 cross-field 判斷。
 
-防止惡意或意外爆量時設定上限：檔案大小、陣列筆數、每筆字串長度與最多錯誤數都要有明確限制。達到錯誤上限後可追加一筆ErrorLimitReached，標示清單不完整並保留截斷位置；不可宣稱配方只有前幾筆錯誤。限制值屬系統規格，不能由本文任意替設備決定。
+空字串是存在的欄位，因此 recipe ID 空字串或全空白得到 nonempty-string type 錯誤，不會被當成缺鍵。`1e999` 雖可被 JSON 讀成 JavaScript 的非有限 number，仍在 type 階段被拒絕；文字 `NaN` 則不是 JSON，直接得到 `invalid_json`。range 不會對 type 失敗的欄位再產生第二個噪音錯誤。
 
-驗證器輸出應分成原始輸入、正規化檢視、錯誤清單和驗證摘要。正規化只可在規格允許時產生，不能覆蓋原資料。來源檔案簽章、版本或接收序號若失敗，應另列來源錯誤，與欄位內容錯誤分開，方便判斷是傳輸問題還是配方作者輸入問題。
+先執行 `node inspect.mjs`，可以看見完整 raw、errors、candidate。用文字編輯器打開 inspect.mjs，只修改 raw 的 JSON：補上 `"temp":25`、把 speed 改為數字 1200、把 low 改為 10 並保持 high=10，儲存後再跑；應得到 valid=true、errors=[] 和候選 ID。再把 speed 改回字串 `"1200"`，應只得到 /speed 型別錯誤，candidate=null。self-test 與 demo 的固定 fixture 不必修改。
 
-## 只讓整組有效資料進入候選流程
+本例也會在欄位檢查前拒絕頂層重複鍵，例如同一份 JSON 出現兩個 temp；Unicode 跳脫寫法若解析成同一鍵也算重複。JSON.parse 本身會留下最後一值，本例另行掃描已通過 JSON 語法檢查的原文，避免把含兩個互相衝突數值的配方當成正常候選。巢狀物件不屬於這份平面契約，未知欄位仍拒絕。
 
-任何required、type、range或cross-field錯誤存在時，整組配方維持invalid，不形成可供選擇的候選版本。所有欄位都通過後，才可依schema版本與內容雜湊產生候選識別，供人員審核、比對或另行部署。候選版本是資料流程狀態，不代表已寫入PLC，也不代表設備已接受。
+錯誤路徑 /low 表示 low 與 high 的關係檢查；根層或錯誤截斷用 / 作為本教材的顯示標記。未知鍵中的 ~ 和 / 分別寫成 ~0 和 ~1，避免欄名被誤看成另一層路徑。空白 recipe_id 不可形成候選；其他有效字串保留原樣，不會替讀者偷偷修正名稱。
 
-正常結果可包含valid=true、candidate_id、schema_version與每個欄位的單位；失敗結果則包含valid=false、三筆或更多錯誤、原始路徑與摘要。不要在失敗時以0、上一次成功配方或自動夾限值取代欄位，因為這會把「資料錯誤」變成「看似可執行的新配方」。
+## 有效資料只形成候選
 
-驗收向量至少涵蓋全欄位有效、單一缺欄位、多欄位同時缺漏、字串型別錯誤、上下限相等、low大於high、未知欄位、超長輸入與錯誤數上限。逐筆核對路徑、原字串、錯誤順序和valid狀態。本文描述資料設計。
+所有錯誤清單為空時，模組按照固定欄位順序建立 canonical JSON，再以 Node 的 `createHash('sha256')` 產生候選 ID。固定序列避免 JavaScript 物件插入順序影響候選資料；SHA-256 僅用來識別這份候選內容，不是簽章、授權或部署動作。[Node.js `crypto.createHash`](https://nodejs.org/download/release/v24.19.0/docs/api/crypto.html) 可建立雜湊並輸出 digest；本例以 UTF-8 輸入和 hex 輸出。
 
-若現場要求部分欄位沿用舊值，應把那個行為寫成另一份明確的合併規格，包含來源版本與每欄位決策紀錄；它不是缺值自動補零。任何將候選送入控制的步驟，都還需要依目標平台做權限、通訊、互鎖與人工核准設計。
+`Buffer.byteLength(text, 'utf8')` 用來計算上面的原文 bytes，而非 JavaScript 字元數。[Node.js Buffer](https://nodejs.org/download/release/v24.19.0/docs/api/buffer.html) 說明它回傳指定編碼後的位元組數。這讓「2048 bytes 上限」有可重現的意義，但不是任何設備的緩衝區容量宣告。
 
-錯誤清單也應能安全重播：相同schema、相同原始輸入與相同規則版本，應得到相同排序和代碼。規則更新時增加版本，不要悄悄改寫舊事件的解釋。
-
-## 常見問題
-
-問：缺少temp可以先當零讓流程繼續嗎？答：不可以直接這樣推定；缺值與明確零是兩個不同狀態，除非專案另有寫明的補值流程。
-
-問：speed='abc'要同時報速度超出範圍嗎？答：先報type，因為沒有可供range比較的數值；避免衍生誤報。
-
-問：未知欄位一定要拒絕嗎？答：由schema版本的嚴格或相容政策決定；相容時也要保留並標記，不可靜默遺失。
-
-問：錯誤清單完整後可以直接寫PLC嗎？答：本文的valid只代表資料驗證通過，候選仍須經專案規定的審核、通訊與安全流程。
-
-參考：[JSON Schema官方規範：required、type與數值限制。low與high的跨欄位大小比較由本文應用層實作，不能宣稱標準Schema原生支援任意兩欄相互比較。](https://json-schema.org/specification)
-
-參考：[Python json官方文件，說明JSON資料解碼與資料型態邊界；本文保留原字串與路徑的策略仍需由專案介面規格落實。](https://docs.python.org/3/library/json.html)
+candidate 只包含 canonical JSON、SHA-256 和 candidate ID。它沒有送進 PLC、沒有寫資料庫、沒有套用舊值、更沒有越界自動 clip。若實際流程需要簽章、巢狀結構、版本遷移、權限或設備互鎖，必須另訂契約及驗證。
 
 ## 延伸閱讀
 
 - [資料庫交易如何讓一批紀錄一起提交或回滾](/articles/batch-database-transaction)
-- [浮點NaN與Inf在控制前如何攔截](/articles/float-nan-inf-control-gate)
+- [浮點 NaN 與 Inf 在控制前如何攔截](/articles/float-nan-inf-control-gate)

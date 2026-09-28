@@ -1,0 +1,319 @@
+<!doctype html>
+<html lang="zh-Hant">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width,initial-scale=1" />
+    <title>HMI 綁定診斷離線演練</title>
+    <style>
+      :root {
+        font-family: system-ui, 'Microsoft JhengHei', sans-serif;
+        color: #172b3a;
+        background: #f4f7f8;
+        line-height: 1.55;
+      }
+      * {
+        box-sizing: border-box;
+      }
+      body {
+        margin: 0;
+      }
+      main {
+        max-width: 980px;
+        margin: auto;
+        padding: 24px 16px;
+      }
+      h1 {
+        font-size: clamp(1.4rem, 4vw, 2rem);
+        line-height: 1.25;
+      }
+      .card {
+        background: white;
+        border: 1px solid #b6c6d0;
+        border-radius: 10px;
+        padding: 18px;
+        margin: 16px 0;
+      }
+      .controls {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 12px;
+        align-items: end;
+      }
+      label {
+        display: grid;
+        gap: 4px;
+        font-weight: 700;
+      }
+      select,
+      button {
+        min-height: 44px;
+        padding: 7px 12px;
+        font: inherit;
+        border: 1px solid #627d8d;
+        border-radius: 6px;
+        background: white;
+        color: inherit;
+      }
+      button {
+        cursor: pointer;
+      }
+      button:focus-visible,
+      select:focus-visible,
+      input:focus-visible {
+        outline: 3px solid #006e8a;
+        outline-offset: 3px;
+      }
+      .scene {
+        min-height: 150px;
+        position: relative;
+        display: grid;
+        place-items: center;
+        border: 1px dashed #627d8d;
+      }
+      .parent-hidden {
+        display: none;
+      }
+      .led {
+        width: 84px;
+        height: 84px;
+        border-radius: 50%;
+        border: 4px solid #576f7d;
+        background: #d7e0e4;
+        display: grid;
+        place-items: center;
+        font-weight: 800;
+      }
+      .led.high {
+        background: #d76d00;
+        border-color: #8a4200;
+        color: #111;
+      }
+      .overlay {
+        display: none;
+        position: absolute;
+        inset: 0;
+        background: #20313bdd;
+        color: white;
+        place-items: center;
+        text-align: center;
+        padding: 16px;
+        font-weight: 750;
+      }
+      .overlay.show {
+        display: grid;
+      }
+      dl {
+        display: grid;
+        grid-template-columns: max-content 1fr;
+        gap: 6px 14px;
+        margin: 0;
+      }
+      dt {
+        font-weight: 750;
+      }
+      dd {
+        margin: 0;
+        overflow-wrap: anywhere;
+      }
+      .hint {
+        color: #415967;
+      }
+      @media (max-width: 420px) {
+        main {
+          padding: 18px 12px;
+        }
+        .card {
+          padding: 14px;
+        }
+        .controls > * {
+          max-width: 100%;
+          min-width: 0;
+        }
+        .controls label,
+        .controls select {
+          width: 100%;
+        }
+        dl {
+          grid-template-columns: 1fr;
+          gap: 2px;
+        }
+        dd {
+          margin-bottom: 8px;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <main>
+      <p>固定合成資料 · 靜態狀態指示</p>
+      <h1>流量綁定診斷：25／26／27</h1>
+      <p>
+        LED 不閃爍。它只在嚴格數字、品質 Good、Auto、enable 且 flow 大於25時顯示
+        HIGH。
+      </p>
+      <section class="card" aria-label="控制">
+        <div class="controls">
+          <button type="button" id="next">下一筆固定 sourceFlow</button>
+          <button type="button" id="reset">Reset 固定演練</button>
+          <label
+            >資料型別
+            <select id="type-mode">
+              <option value="number">嚴格 number</option>
+              <option value="string27">把 27 送為 string '27'</option>
+            </select>
+          </label>
+          <label
+            >品質
+            <select id="quality">
+              <option>Good</option>
+              <option>Bad</option>
+              <option>Unknown</option>
+            </select>
+          </label>
+          <label
+            >模式
+            <select id="mode">
+              <option>Auto</option>
+              <option>Manual</option>
+            </select>
+          </label>
+          <label><input id="enable" type="checkbox" checked /> enable</label>
+          <label
+            >單一綁定故障
+            <select id="fault">
+              <option value="none">無</option>
+              <option value="wrongTarget">bindingTarget 錯誤</option>
+              <option value="styleMissing">style class 缺失</option>
+              <option value="parentHidden">parent hidden</option>
+              <option value="opaqueOverlay">opaque overlay</option>
+            </select>
+          </label>
+        </div>
+      </section>
+      <section class="card" aria-label="實際渲染">
+        <div id="parent" class="scene">
+          <div id="led" class="led" aria-label="流量高位指示">LOW</div>
+          <div id="overlay" class="overlay">不透明遮罩蓋住 indicator</div>
+        </div>
+      </section>
+      <section class="card" aria-label="逐欄診斷">
+        <h2>診斷</h2>
+        <dl>
+          <dt>sourceFlow</dt>
+          <dd id="source"></dd>
+          <dt>type</dt>
+          <dd id="type"></dd>
+          <dt>quality</dt>
+          <dd id="quality-out"></dd>
+          <dt>isHigh condition</dt>
+          <dd id="condition"></dd>
+          <dt>bindingTarget</dt>
+          <dd id="target"></dd>
+          <dt>style class</dt>
+          <dd id="class"></dd>
+          <dt>visible</dt>
+          <dd id="visible"></dd>
+          <dt>結論</dt>
+          <dd id="result"></dd>
+        </dl>
+        <p class="hint">
+          這是自訂瀏覽器教材，沒有 Ignition API、原生 HMI
+          binding、設備值或動畫能力宣稱。
+        </p>
+      </section>
+    </main>
+    <script>
+      'use strict';
+      const FLOWS = [25, 26, 27];
+      let index = 0;
+      const $ = (id) => document.getElementById(id);
+      const output = (id, text) => {
+        $(id).textContent = text;
+      };
+      function render() {
+        const sourceFlow = FLOWS[index];
+        const raw =
+          $('type-mode').value === 'string27' && sourceFlow === 27
+            ? '27'
+            : sourceFlow;
+        const strictNumber = typeof raw === 'number' && Number.isFinite(raw);
+        const good = $('quality').value === 'Good';
+        const auto = $('mode').value === 'Auto';
+        const enabled = $('enable').checked;
+        const isHigh = strictNumber && raw > 25 && good && auto && enabled;
+        const fault = $('fault').value;
+        const led = $('led'),
+          parent = $('parent'),
+          overlay = $('overlay');
+        parent.classList.toggle('parent-hidden', fault === 'parentHidden');
+        overlay.classList.toggle('show', fault === 'opaqueOverlay');
+        led.className =
+          fault === 'styleMissing'
+            ? 'led binding-high'
+            : 'led' + (isHigh && fault !== 'wrongTarget' ? ' high' : '');
+        led.textContent =
+          isHigh && fault === 'wrongTarget' ? 'LOW' : isHigh ? 'HIGH' : 'LOW';
+        const target =
+          fault === 'wrongTarget'
+            ? 'numberText（錯；indicatorActive 未更新）'
+            : 'indicatorActive';
+        const style =
+          fault === 'styleMissing'
+            ? 'binding-high（CSS .led.high 缺失）'
+            : led.className;
+        const visible =
+          fault === 'parentHidden'
+            ? 'false（parent hidden）'
+            : fault === 'opaqueOverlay'
+              ? 'covered（opaque overlay）'
+              : 'true';
+        output('source', String(raw));
+        output(
+          'type',
+          strictNumber ? 'number accepted' : 'string rejected; no auto-cast',
+        );
+        output('quality-out', $('quality').value);
+        output(
+          'condition',
+          'flow>25=' +
+            (strictNumber && raw > 25) +
+            ' AND good=' +
+            good +
+            ' AND auto=' +
+            auto +
+            ' AND enable=' +
+            enabled +
+            ' → ' +
+            isHigh,
+        );
+        output('target', target);
+        output('class', style);
+        output('visible', visible);
+        output(
+          'result',
+          isHigh && fault === 'none'
+            ? 'LED HIGH 可見'
+            : isHigh
+              ? '條件 true，但 binding/render 故障；不要刪 gate 來求亮'
+              : '條件 false；LED LOW',
+        );
+      }
+      $('next').addEventListener('click', () => {
+        index = (index + 1) % FLOWS.length;
+        render();
+      });
+      $('reset').addEventListener('click', () => {
+        index = 0;
+        $('type-mode').value = 'number';
+        $('quality').value = 'Good';
+        $('mode').value = 'Auto';
+        $('enable').checked = true;
+        $('fault').value = 'none';
+        render();
+      });
+      for (const id of ['type-mode', 'quality', 'mode', 'enable', 'fault'])
+        $(id).addEventListener('change', render);
+      render();
+    </script>
+  </body>
+</html>

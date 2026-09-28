@@ -1,87 +1,82 @@
 ---
 title: 請求 接受 完成與失敗 如何設計 PLC 模組間握手
-description: 以請求識別碼與保持到確認的旗標，建立接受、處理、成功及失敗的完整交接。
+description: 以離線可執行的接收端模型，逐次觀察 Req、Accept、Busy、Done、Fail 與 ResultAck 的實際掃描順序。
 date: 2026-09-17
 author: 茂伯
 draft: false
 ---
 
-## 先把問題拆開 定義狀態 請求與完成條件
+## 先固定這個自訂握手契約
 
-先把這篇當成兩個虛擬模組：Sender送出工作資料，Receiver處理後回報結果。你會以ReqId追蹤同一筆工作，並在每個掃描週期觀察訊號。本文固定規則是Done代表成功、Fail代表失敗，兩者互斥；逾時也必須走Fail，不能用Done掩蓋問題。
+本文把 Sender 和 Receiver 視為兩個在不同掃描中交換資料的模組。Sender 發布 `Req`、遞增的 `RequestId` 與工作資料；Receiver 才能寫 `Accept`、`Busy`、`Done`、`Fail` 和結果 ID。這是本站的教學協議，不是任何 PLC、通訊模組或廠牌內建旗標。
 
-| 項目 | 應定義 | 不要混淆 |
-| --- | --- | --- |
-| Req | 提出工作 | 已被接收 |
-| Accept | 等待收件確認 | 完成結果 |
-| Busy | 等待處理 | 可覆蓋新資料 |
-| Done/Fail | 等待結果 | 同時成立 |
+Receiver 一次只保有一筆工作。它看到已重新武裝的 `Req=1` 時，複製資料快照並接受；`Accept` 保持到**後一次** Sender 快照把 `Req` 釋放。之後 Receiver 只讀自己的快照，畫面或 Sender 再改資料也不能覆寫目前工作。完成時 `Done=1, Fail=0`；失敗時 `Done=0, Fail=1`。兩種結果都帶同一筆 `ResultId`，並一直保持到後一次送達的相同 `ResultAckId`。
 
-驗證狀態：本文為虛擬邏輯推演與練習規格，未附模擬器執行或實體設備測試紀錄；請用內部狀態觀察，不接實體輸出。
-
-這是跨模組交接契約，不是模式切換或設備順序的通用狀態機教學。驗收時把 Sender 與 Receiver 的欄位並列，逐項以 ReqId 對照資料所有權與結果，而不是只看任一邊的完成燈號。
-
-## 建立流程 先做狀態表 再寫轉移
-
-先建立Req、ReqId、Accept、Busy、Done、Fail、ResultAck及各自的識別碼。Sender寫好資料後保持Req，Receiver在IDLE看見尚未處理的ReqId時鎖存請求，接受時複製快照。Accept保持到Sender清除Req，不用一掃描脈衝跨任務傳遞。Done或Fail保持到ResultAck核對同一ReqId；確認完才回IDLE。
-
-先以 ReqId=17 跑一次完整交接：保持 Req 到 Accept、Busy 期間送 ReqId=18 並確認不覆蓋17、最後核對 DoneId=17；若逾時則 FailId仍須為17。這三個觀察分別驗證請求保持、資料快照與結果對應。
-
-資料接收失敗而尚未接受時，應帶原ReqId回覆拒絕原因；已接受後的執行失敗才使用Fail。識別碼回捲與重啟要有會話編號或等效規則，不能讓舊結果碰巧等於新請求。此握手是本文自訂協議，不是任何模組內建的固定旗標。
-
-## 具體合成案例 逐掃描核對正常與邊界
-
-案例ReqId=17：S2保持請求，S3接受並鎖定資料，S4送出方看到Accept後清除Req，接收方繼續工作。S5仍處理，S6成功後保持Done與DoneId=17；S7送出方保存結果並回ResultAck=17，S8接收方清除結果回IDLE。Fail採相同確認流程。
-
-| 掃描/條件 | 判斷 | 狀態 | 應看到的結果 |
+| 信號 | 寫入者 | 保持規則 | 收件者要核對 |
 | --- | --- | --- | --- |
-| S1 | Req=0 | IDLE | 無待辦 |
-| S2 | Req=1 Id=17 | REQUEST | 鎖存待接受請求 |
-| S3 | 資料檢查通過 | BUSY | Accept=1 鎖定快照 |
-| S4 | Sender清Req | BUSY | 清Accept 繼續處理 |
-| S5 | 尚未完成 | BUSY | 保持原工作 |
-| S6 | 成功且未逾時 | RESULT | Done=1 Fail=0 Id=17 |
-| S7 | ResultAck=17 | RESULT | 確認結果已取走 |
-| S8 | 確認完成 | IDLE | 清結果 可接受下一件 |
+| `Req`、`RequestId`、資料 | Sender | 到觀察到 `Accept` 後才釋放 | Receiver 在已武裝時接受 |
+| `Accept`、`AcceptId` | Receiver | 到後一次 `Req=0` | Sender 核對 ID 後才清 Req |
+| `Busy` | Receiver | 只在工作尚未結束的 BUSY 狀態 | RESULT 時為 0，但新 ID 仍被拒絕 |
+| `Done` 或 `Fail`、`ResultId` | Receiver | 到相同 `ResultAckId` | Sender 先保存結果再 Ack |
+| `ResultAckId` | Sender | 在 Receiver 已觀察 `Req=0` 後送達一個掃描快照 | Receiver 只接受相同 ResultId 且 Accept 已釋放 |
+| `RejectId`、`RejectReason` | Receiver | 到衝突的 `Req=0` | Sender 確認拒絕的是自己的 ID |
 
-## 把晚到回覆與重複請求分開測試
+驗證狀態：以下檔案是純 JavaScript 離線教學模型，沒有連接 PLC、I/O、通訊、實體輸出或安全回路，也沒有宣稱 PLC runtime 或硬體已執行。
 
-先從最容易觀察的成功路徑開始。把兩個模組的旗標排在同一監看表，逐次記錄誰改了哪個欄位。送出方提出請求後，資料保持不變；接收方接受時複製自己的工作資料。兩份資料的用途不同，接收方後續計算應只讀工作快照，不能再次讀取可能已被畫面編輯的來源欄位。
+## 用前一掃描的輸出決定下一次呼叫
 
-再故意延後送出方讀取結果。接收方已完成，但送出方暫時沒有執行，成功旗標和結果識別碼都應保持，不能在一個掃描後消失。送出方恢復後先保存結果，再回覆結果確認。接收方看到相同識別碼的確認，才清除結果；確認其他工作不能清掉這一筆。
+不要用任意命名的「S2、S3」表假設同一掃描內雙方互相看見新輸出。範例的每次 `receiverScan()` 都只讀取**這次傳入的 Sender 快照**，結束後才回傳 Receiver 訊號。因此呼叫次序是：
 
-第三個練習是逾時之後收到晚到結果。送出方已經回報等待逾時，不代表接收方一定停止了工作。這時把晚到結果放進待核對紀錄，依原識別碼判斷是否已完成，不要直接寫到下一件工作的畫面。若工作有實際副作用，未確認結果之前盲目重試可能做兩次。
+1. Sender 在自己的掃描末端發布 `Req=1, RequestId=17` 和資料。
+2. Receiver 下一次呼叫讀到這個快照，複製資料並輸出 `Accept=1, Busy=1`。
+3. Sender 的下一次掃描才看得到 `Accept=17`，然後發布新的快照 `Req=0`。
+4. Receiver 讀到 `Req=0` 才撤下 `Accept`；工作尚未結束時保持 `Busy`，已結束時則保持 Done/Fail 和已複製的資料。
+5. Receiver 成功或失敗後仍可能保持 `Accept`，但 `Busy` 已是 0；Sender 在後一次掃描先保存結果、釋放 Req，再於後續快照發布相同的 `ResultAckId`；Receiver 才清到 IDLE。
 
-同一請求長時間保持，也不應被反覆接受。接收方記錄已接受的識別碼及目前狀態，當工作進行中或結果待確認時拒絕新接受。回到待機後，送出方需完成舊請求解除，再以新識別碼開始下一件。這個回到空閒的過程，是握手的一部分，不是多餘延遲。
+這個順序也說明為什麼 `Accept` 與結果要保持到交接完成。慢一個週期的消費端仍能讀到訊號，也能以 ID 排除前一件工作的晚到回覆；Ack 的遞送條件另見下方。
 
-最後測試重啟。若只有送出方重新啟動，它可能忘了正在等哪一件；若只有接收方重新啟動，它可能忘了哪些工作已完成。因此要先對帳會話、請求識別碼與結果狀態，再開放新的工作。單靠成功位元仍為一，無法證明那就是這次請求的結果。
+## 下載同目錄範例並執行七條時間線
 
-## 失敗先查 適用限制與常見問題
+範例只需要 [Node.js 22.13.0 或更新版本](https://nodejs.org/en/download)。將 [模型](/examples/plc-handshake/handshake-model.mjs)、[fixture](/examples/plc-handshake/fixtures.mjs)、[輸出程式](/examples/plc-handshake/demo.mjs) 與 [說明](/examples/plc-handshake/README.md) 下載到同一個資料夾後，在該資料夾執行：
 
-在Q系列中可用步進狀態或等效旗標實作握手；實際裝置位址與保持設定請依專案配置。先用暫存器監看每一掃描：Req、Accept、Busy、Done、Fail、ReqId、DoneId、ErrorCode。看到Done時應確認Fail=0且DoneId等於ReqId；看到Fail時應先記錄錯誤碼再復歸。
+```powershell
+node demo.mjs
+```
 
-### 三個常見問題
+每條 fixture 都從新的 `initialReceiver()` 開始，沒有共享狀態。輸出的每一列就是一次 Receiver 呼叫，`snapshot` 是已接受後 Receiver 實際使用的資料，`events` 是該次掃描的診斷。
 
-Req一定要脈衝嗎？本例保持到Accept才清除。Done代表成功嗎？本例是，而且要核對DoneId；Fail表示失敗，兩者互斥。忙碌能覆蓋資料嗎？本例拒絕新工作，不排隊、不覆蓋原快照。
+每次呼叫的 `nowMs` 必須是不可倒退的非負安全整數。省略的 Sender 欄位為 `req=false`、`requestId=null`、`resultAckId=null`、`payload=null`；省略的 worker 欄位為 `complete=false`、`failCode=null`。所以 fixture 某一列未明寫 `Req=1` 就是 Req 已釋放，不是沿用上一列的高位；要模擬保持必須在每一列重複明寫相同 Req、ID 與資料。
 
-送出方的操作順序也要寫進測試：先準備資料、增加 ReqId、保持 Req，再等待 Accept；收到 Accept 後不可任意改寫快照。若等待超過上限，送出方要把此次工作標為未完成，保存逾時原因，不能把 Busy 清掉後立刻送出另一件而讓晚到的 Done 對錯。接收方每次回報都帶 DoneId 或 FailId，並在結果確認後回到IDLE。若事件脈衝可能被另一任務漏讀，可改用事件序號或保持到確認，但要避免確認本身被重複計算。測試時故意讓 Req 在接收方忙碌、完成同掃描送新 Req、以及 Reset 發生在 Busy 中，逐項確認規格結果。
+| fixture | 可觀察的呼叫順序 | 應驗證的結果 |
+| --- | --- | --- |
+| `normalDelayedConsumer` | 17 接受、下一次才釋放 Req、工作成功、消費端多等一次、再 Ack | `Accept` 先保持再撤下；`Done` 在延後消費期間不消失 |
+| `wrongAck` | 17 完成後先送 `ResultAckId=18`，再送 17 | 錯 Ack 留下 `Done` 與結果；只有 17 清除 |
+| `busyNewId` | 17 工作中發布 18 並保持，釋放後完成 17，最後發布 19 | 這是刻意故障注入；18 的拒絕會保持到 18 釋放，17 的資料快照不變，19 才接受 |
+| `sameIdHold` | 17 一直保持、完成並 Ack，釋放後重送 17 | 保持高位不重複接受；範例中更改 held payload 是故障注入，舊 ID 是 `STALE_REQUEST_ID` |
+| `timeoutWinsSuccess` | 17 的 200 ms 到期與 worker 成功在同一 Receiver 呼叫到達 | 固定為 `Fail/TIMEOUT`，不是 `Done`；錯 Ack 也不能清掉它 |
+| `earlyCompleteSlowSender` | Worker 在 Sender 釋放 Req 前完成，接著錯誤地送 Ack | `Accept` 和 `Done` 都保持；釋放 Req 後才可 Ack |
+| `timeoutReqHeld` | Req 仍高時到達 200 ms deadline | `Accept` 與 `Fail/TIMEOUT` 同時保持，且 `Busy=0` |
 
-實作時可把協議畫成兩條泳道：Sender 只寫 Req 與資料，Receiver 只寫 Accept、Busy、Done、Fail；回覆欄位由 Receiver 寫、Sender 讀。若同一欄位兩邊都寫，除錯時無法知道誰覆蓋誰。請再加入版本或資料長度欄位，接收方先檢查長度再接受。完成後 Sender 應以 DoneId 比對等待中的 ReqId，對不上就記錄晚到回覆，不要直接更新目前畫面。
+正常 Sender 不會在已保持的 Req 中途把 ID 改成 18；`busyNewId` 是為了驗證 Receiver 面對違規輸入時仍保護原工作。`RejectId` 與 `RejectReason=BUSY` 不是可信的一掃描跨任務脈衝：範例讓它們保持到衝突的 `Req` 被觀察為 0，讓 Sender 有機會核對並停止該筆錯誤請求。
 
-故障演練時，在Receiver忙碌中刻意送新Id，應得到獨立RejectId與RejectReason，原工作不受影響；不要用原工作的Fail欄位回報另一件請求。再測完成與逾時同時成立，本例逾時優先，保持Fail與原ReqId。接收方失聯時，送出方記錄未知結果，不能自行清除對方Busy後假裝可重試。
+## Busy、結果等待與重新武裝的邊界
 
-## 操作驗收與適用限制
+當 Receiver 已是 `Busy`，新 ID 不會排隊，也不能改寫 `current.payload`。範例只在衝突 Req 首次斷言時建立一次拒絕記錄；同一 ID 持續為高不會重複建立事件，但 `RejectId`／`RejectReason` 仍保持可讀。Sender 必須先讓 `Req=0`，Receiver 才重新武裝，然後以比已接受 ID 大的 ID 再送一次。這同時處理「Req 一直高」與「結果剛清掉就誤把舊電平當新工作」兩種錯誤。
 
-驗收時固定記三個結果：成功為Done=1、Fail=0且DoneId=ReqId；失敗為Fail=1、Done=0且FailId=ReqId；忙碌時新Req不得改寫原資料。限制是本文只示範握手概念，實際旗標位址、保持範圍、通訊更新週期仍須依Q系列專案與模組手冊確認。
+結果狀態也拒絕新 Req。即使 Sender 在同一 Receiver 呼叫送入新 Req 和正確 `ResultAckId`，該 Req 仍屬於結果尚待確認時看見的要求，會被拒絕；應先釋放 Req，再於後續掃描發布新的遞增 ID。若相同 ResultAck 在 `Req=1` 時先到，Receiver 也保持目前工作和 `Accept`，直到先觀察到 `Req=0`。這是避免舊結果和新資料在同一次狀態轉換互相覆蓋的明確成本。
 
-請用三次測試收尾：正常完成、處理中重送Req、逾時。每次保存ReqId與ErrorCode，重新RUN後確認是否需要保留結果；若專案要求斷電保持，請另行設定保持裝置並檢查初始化是否會覆寫。
+本文的離線呼叫中，Receiver 在一個後續快照讀到 `Req=0` 後，再讀到帶 ResultAck 的快照即可。這不是宣稱跨任務、遠端 I/O 或通訊封包可以可靠地脈衝一次；實際工程必須為 ResultAck 定義保持、重送或可證明的遞送方式，確保 Receiver 的任務真的取樣到它。
 
-適用型號與限制：概念可套用具備位元與狀態資料的 PLC；實際指令、資料型別、計時單位、模式切換與復歸行為必須依目標 CPU、工程軟體和設備規格確認。
+本文的結果期限固定為 **200 ms**，且 Busy 時優先順序為 `timeout > worker failure > worker success`。所以在接受後剛好 200 ms 的同一 Receiver 呼叫，縱使 worker 同時報成功，也固定形成 `Fail/TIMEOUT`。這與[異常情境矩陣](/articles/plc-simulation-abnormal-scenario-matrix)的 300 ms、Request 上升緣、Cancel/Reset 協議不同，兩者不能直接共用訊號或測試結論。
 
-參考：[三菱 QnUCPU 使用手冊 程式執行與裝置資料](https://dl.mitsubishielectric.com/dl/fa/document/manual/plc/sh080807eng/sh080807engaf.pdf)
+## 現場轉用前要另外定義的項目
+
+這個模型沒有處理多任務排程、I/O 刷新時間、通訊重送、斷電保持、ID 回捲、重啟世代、佇列或安全功能。實際工程至少要補上：哪個任務產生與取樣訊號、每個旗標的裝置位址與保持設定、deadline 的真實時間來源、重啟後如何區分舊結果，以及 Busy 拒絕後 Sender 要記錄、告警或人工重送的處置。
+
+驗收時逐掃描記錄 `Req`、`RequestId`、`AcceptId`、`Busy`、`Done`、`Fail`、`ResultId`、`ResultAckId`、`RejectId`、`RejectReason` 與接受後的資料快照。只有看到成功時 `Done=1, Fail=0`，或失敗時 `Done=0, Fail=1`，並且 ResultId 和 Ack 都相同，才算本次交接閉合。離線測試通過不等於 PLC 程式、設備功能或安全驗收通過。
 
 ## 延伸閱讀
 
-- [PLC 主程式 週期任務與中斷任務如何分工](/articles/plc-main-cycle-periodic-interrupt-task-design)
+- [PLC 異常情境矩陣 以 RequestId 重現逾時 取消與晚到回饋](/articles/plc-simulation-abnormal-scenario-matrix)
 - [用狀態機寫 PLC 順序控制 從三個步驟開始](/articles/plc-state-machine-three-step-sequence)
-- [自動與手動模式切換時 PLC 應如何處理既有動作](/articles/plc-auto-manual-mode-switch)
+- [流程卡在某一步 怎麼設計等待上限與故障復歸](/articles/plc-step-timeout-recovery)

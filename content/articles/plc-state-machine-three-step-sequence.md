@@ -1,105 +1,112 @@
 ---
-title: 用狀態機寫 PLC 順序控制 從三個步驟開始
-description: 用 WAIT、RUN、DONE、FAULT 建立三步驟狀態機，透過狀態表、逐掃描案例與逾時／非法狀態處理，讓順序控制可觀察、可復歸。
-date: 2026-09-17
+title: PLC 順序控制實作：WAIT、RUN、DONE 與故障復歸
+description: 從明確的初始值、上升緣啟動與兩秒逾時，逐掃描操作正常完成、逾時、停止及復歸路徑。
+date: 2026-09-28
 author: 茂伯
 draft: false
 ---
 
-## 先把流程拆成狀態
+## 先把這個案例的規則定死
 
-順序控制的第一步不是急著堆接點，而是把流程說成有限個狀態。本篇用虛擬流程示範 WAIT、RUN、DONE 三個狀態：WAIT 等待 Start，RUN 等待模擬完成，DONE 顯示結果後回到 WAIT。每個狀態都要回答三件事：現在允許哪些輸出、何時算完成、遇到異常要去哪裡。案例是合成測試，不連接真實機構。
+本例只有三個正常步驟：WAIT 等待新啟動、RUN 等待完成、DONE 保留結果直到確認；另外以 FAULT 保存失敗。它是虛擬工作，沒有汽缸、馬達或感測器接線。上方模型可直接執行，**不是任何廠牌 PLC 模擬器，也未做實機測試**。
 
-| 狀態 | 允許輸出 | 進入動作 | 離開條件 |
-| --- | --- | --- | --- |
-| WAIT | Ready=1 | 清除本次完成旗標 | Start=1→RUN |
-| RUN | Busy=1 | 清除本次逾時計時 | DoneInput=1→DONE；Timeout=1→FAULT |
-| DONE | Complete=1 | 鎖存結果一次 | Ack=1→WAIT |
-| FAULT | Alarm=1 | 保存錯誤代碼 | Reset=1→WAIT |
+規則如下，模型、下列表格與偽碼採同一套規則：
 
-狀態變數只能在一個決策層被寫入，輸出則由目前狀態集中產生。不要讓 RUN 段、手動段、警報段各自直接改同一個輸出又沒有優先規則。狀態機不是把故障消除，而是把合法轉移和目前責任寫清楚。
+- 初始 State=WAIT、Busy=0，所有輸入為 0。第一次掃描是 0 ms，之後每掃描增加 100 ms。
+- 只在 WAIT 接受 Start 的新上升緣。Start 已按住時，回到 WAIT 不會自動重做。
+- 接受前 Stop 和 DoneInput 都必須是 0。DoneInput 尚未清除時拒絕新工作，避免把舊完成訊號當成新結果。
+- RUN 內的優先順序為 **Stop → 2000 ms 逾時 → DoneInput**。同一掃描到期限又收到完成，本例判逾時。
+- Ack 只在 DONE 有效。Reset 只在 FAULT 且 Stop=0、DoneInput=0 時有效。復歸只回 WAIT，不直接啟動。
 
-## 先做狀態表 再寫程式
+這些是本案例的控制契約，不是所有設備都必須採用的政策。先前版本沒有把復歸與同時命令政策完整固定，容易讓讀者自行補出不同結果；本版以這組可操作規則取代。
 
-1. 列出初始狀態，明確 PLC 啟動後第一個允許的狀態。
+## 變數表：每一個欄位由誰寫
 
-2. 每個狀態只列合法輸出與入口條件；未列出的組合視為不允許。
+| 欄位 | 模型初值 | 寫入者／用途 |
+| --- | --- | --- |
+| Start、Stop、DoneInput、Ack、Reset | 全部 0 | 讀者勾選，下一次掃描才被取樣 |
+| PreviousStart | 0 | 模型保存上一掃描 Start，用來找上升緣 |
+| State | WAIT | 只由一次狀態決策更新 |
+| EnterTime | 未設定 | 接受啟動時保存虛擬時間 |
+| ET | 0 ms | RUN 內的目前時間減 EnterTime，顯示上限 2000 ms |
+| Busy | 0 | 由更新後的 State 推導，只有 RUN 為 1 |
+| 原因 | 尚未執行 | 記錄轉移或拒絕原因；FAULT 期間保留 STOP／TIMEOUT |
 
-3. 為每個轉移寫出觸發條件、下一狀態與要保存的診斷資料。
+模型中的時間不是瀏覽器等待了多久。即使停留一分鐘，沒有按掃描，ET 也不會改變。「執行 10 掃描」則使用同一組輸入連續取樣十次。
 
-4. 加入逾時和非法狀態處理，不能讓流程無限等待而沒有可觀察訊號。
+## 先跑成功路徑
 
-5. 用單步輸入一次只推進一個轉移，逐筆核對狀態表。
+按「全部重設」，依序操作。每列按一次「執行 1 掃描」。未列的輸入維持 0。
+
+| 掃描／時間 | 輸入 | 更新後 State | Busy | 應看到的事 |
+| --- | --- | --- | --- | --- |
+| 1／0 ms | Start=0 | WAIT | 0 | 初始待機 |
+| 2／100 ms | Start=1 | RUN | 1 | 接受新上升緣，EnterTime=100 |
+| 3／200 ms | Start=0 | RUN | 1 | ET=100 ms |
+| 4／300 ms | DoneInput=1 | DONE | 0 | 完成，等候 Ack |
+| 5／400 ms | DoneInput=0 | DONE | 0 | 結果仍保留 |
+| 6／500 ms | Ack=1 | WAIT | 0 | 清除此筆等待，ET 回到 0 |
+
+第 4 列不能再同時跳到 WAIT，即使 Ack 已是 1，也要等下一掃描才處理 DONE 的規則。這是「每次只根據前狀態做一個轉移」的結果。
+
+## 再跑失敗路徑，確認不是只會亮 Busy
+
+### 逾時與完成同時成立
+
+全部重設後，先勾 Start 並執行一次：時間 0 ms、State=RUN、ET=0。取消 Start，按一次「執行 10 掃描」後到 1000 ms；再按九次「執行 1 掃描」，到 1900 ms、仍為 RUN。
+
+此時勾選 DoneInput，再掃描一次：時間 2000 ms，State 必須是 FAULT，原因 TIMEOUT，Busy=0。完成訊號沒有推翻已達期限的判定。
+
+### 復歸不能保留舊完成訊號
+
+承接上例，DoneInput 仍是 1 時勾 Reset，再掃描：仍為 FAULT。取消 DoneInput，保留 Reset，再掃描才回 WAIT。取消 Reset；重新讓 Start 從 0 變成 1，才開始下一筆工作。
+
+### 長按啟動不能讓上一筆工作重跑
+
+全部重設，Start=1 啟動後持續保持。用 DoneInput 完成，再清 DoneInput、用 Ack 回 WAIT；繼續掃描也應停在 WAIT。必須先取消 Start 並掃描一次，之後再勾 Start 並掃描，才有新的上升緣。模型重設後 PreviousStart=0，所以第一次取樣已為 1 的 Start 會被視為上升緣；實際設備若禁止開機已按住就啟動，還要另外設計啟動解鎖條件。
+
+## 對照程式：一個決策點更新 State
+
+以下是完整決策順序的偽碼，名稱對應上面的變數表。時間來源及型別必須在目標工程中另行宣告；這段不是已編譯的 PLC 專案。
 
 ```text
-通用偽碼（需依目標 PLC 語法調整）：
-NextState := State;
-CASE State OF
-  WAIT: IF Start THEN NextState := RUN; END_IF;
-  RUN: IF DoneInput THEN NextState := DONE; ELSIF Timeout THEN NextState := FAULT; END_IF;
-  DONE: IF Ack THEN NextState := WAIT; END_IF;
-  FAULT: IF Reset THEN NextState := WAIT; END_IF;
-  ELSE NextState := FAULT; ErrorCode := 900;
-END_CASE;
-State := NextState;
-Ready := (State = WAIT); Busy := (State = RUN);
-Complete := (State = DONE); Alarm := (State = FAULT);
-若 DoneInput 與 Timeout 同時成立，本案例採 DoneInput 優先；完成後由新的 State 集中產生輸出。實作時要確認目標語言 CASE 語法、列舉型別、狀態寫入和同一掃描多次轉移的規則。
+StartRise = Start AND NOT PreviousStart
+NextState = State
+
+CASE State
+  WAIT:
+    IF StartRise AND NOT Stop AND NOT DoneInput:
+      EnterTime = NowMs
+      NextState = RUN
+  RUN:
+    ET = NowMs - EnterTime
+    IF Stop:                  NextState = FAULT; Reason = STOP
+    ELSE IF ET >= 2000:        NextState = FAULT; Reason = TIMEOUT
+    ELSE IF DoneInput:         NextState = DONE
+  DONE:
+    IF Ack:                   NextState = WAIT
+  FAULT:
+    IF Reset AND NOT Stop AND NOT DoneInput:
+                              NextState = WAIT
+END CASE
+
+State = NextState
+Busy = (State == RUN)
+PreviousStart = Start
 ```
 
-參考：[Schneider Electric EcoStruxure Machine Expert V2.1 官方〈SFC - Sequential Function Chart Language〉，說明 SFC 以 step 表示動作、以 transition 控制順序；本文以此支持狀態與轉移分離的概念，不宣稱其語法可直接移植到 Q 系列。](https://product-help.schneider-electric.com/Machine%20Expert/V2.1/en/SoMProg/SoMProg/D-SE-0083499.html)
+WAIT 的拒絕原因、FAULT 的原因保存、回到 WAIT 的計時清理，也必須一併實作，不能只抄 CASE 的轉移。本模型使用受限的四個狀態；實際 PLC 若狀態是整數，還要為未定義值加入故障分支，不能默默啟動。
 
-## 三步流程的逐步模擬
+## 發現結果不一樣時，先查哪裡
 
-以下用每列代表一個掃描的合成案例。初始 State=WAIT；第 2 掃描 Start=1，第 5 掃描 DoneInput=1，第 7 掃描 Ack=1。若一個掃描只允許一次狀態轉移，預期是 WAIT→RUN→DONE→WAIT。
-
-| 掃描 | Start | DoneInput | Ack | 前狀態 | 後狀態 | 應觀察 |
-| --- | --- | --- | --- | --- | --- | --- |
-| 1 | 0 | 0 | 0 | WAIT | WAIT | Ready=1 |
-| 2 | 1 | 0 | 0 | WAIT | RUN | 只進入 RUN |
-| 3 | 0 | 0 | 0 | RUN | RUN | Busy=1 |
-| 4 | 0 | 0 | 0 | RUN | RUN | 持續等待 |
-| 5 | 0 | 1 | 0 | RUN | DONE | 記錄完成 |
-| 6 | 0 | 0 | 0 | DONE | DONE | Complete=1 |
-| 7 | 0 | 0 | 1 | DONE | WAIT | 回到等待 |
-| 8 | 0 | 0 | 0 | WAIT | WAIT | Ready=1 |
-
-先看後狀態，再看由後狀態集中產生的輸出。第 2 掃描若從 WAIT 直接跳 DONE，表示轉移條件被混用或 DoneInput 讀錯；第 5 掃描若 DoneInput 與 Timeout 同時成立，本案例應進 DONE。第 7 掃描回 WAIT 後，如果 Start 仍保持 ON，下一掃描會再進 RUN；要避免重複啟動就必須使用上升緣或要求 Start 放開，不能把長按當成一次命令。
-
-## 等待 逾時與非法狀態
-
-每個等待狀態都要有完成和異常出口。RUN 等待 DoneInput 時，啟動逾時計時；逾時後進 FAULT，保存目前狀態、開始時間或掃描計數。復歸不能只清 Alarm，還要定義回 WAIT、重做 RUN 或等待人工確認。若狀態值不是表中合法值，進入 FAULT 並保存錯誤代碼，比默默回到 WAIT 更容易追查。
-
-| 異常案例 | 完成後應看到 | 失敗先查 |
-| --- | --- | --- |
-| DoneInput 永遠 0 | RUN 逾時並顯示錯誤 | 輸入位址、條件極性、逾時是否被週期執行 |
-| Start 長時間 ON | 流程只在允許的轉移時啟動 | 是否需上升緣或等待 Start 放開 |
-| 非法 State | Alarm=1、ErrorCode 被保存 | 是否有其他段寫 State、型別或初始化 |
-| Reset 在 RUN 發生 | 依規格中止並回 WAIT 或拒絕 | Reset 優先順序與輸出清除 |
-| 同一掃描多次跳步 | 狀態直接跨越中間步驟 | 限制每掃描一次轉移或改用明確事件 |
-
-參考：[Schneider Electric EcoStruxure Machine Expert V2.0 官方〈SFC Elements / ToolBox〉說明 step、transition、initial step 與 transition condition；V1.1〈Sequence of Processing in SFC〉說明初始步驟、轉移檢查和處理順序。這些是 SFC 平台文件，狀態機偽碼仍需依實際語言改寫。](https://product-help.schneider-electric.com/Machine%20Expert/V2.0/en/SoMProg/SoMProg/D-SE-0083503.html)
-
-## 適用型號 限制與常見問題
-
-除錯時可在每個狀態保存一個原因碼，例如由 Start 進入、由 DoneInput 完成、由 Timeout 進故障。這些資料讓你分辨沒有轉移和轉移後輸出不對。若狀態在同一掃描被連續改兩次，先限制一次只允許一個轉移，或建立 nextState 暫存值，最後集中更新 State；這是設計選擇，必須依目標 PLC 掃描和語言規則驗證。
-
-適用型號與限制：本文適用有布林、整數或列舉狀態資料的 PLC 順序控制設計；範例可套用到 Q06UDVCPU、FX、S7 或其他 PLC 的設計思路，但 CASE、SFC、步驟動作、初始化和同掃描轉移規則要按平台手冊改寫。
-
-| 常見問題 | 回答 |
+| 現象 | 先查 |
 | --- | --- |
-| 為什麼不用很多 M 位元表示流程？ | 多個旗標容易形成未定義組合；狀態表可限制一次只有合法狀態。 |
-| 每個狀態都要獨立程式段嗎？ | 不一定，但輸出、入口和轉移責任要清楚，避免同一變數多處寫入。 |
-| 流程卡住是不是一定要加延時？ | 先確認完成條件和輸入證據，再決定逾時；延時不能掩蓋位址或接線錯誤。 |
-| 非法狀態直接回初始可以嗎？ | 可依需求，但應先保存原因；無條件清除可能掩蓋程式覆寫。 |
+| 按 Start 無反應 | 上一掃描是否已為 1？Stop 或 DoneInput 是否還是 1？ |
+| ET 一直 0 | 是否每次 RUN 都重寫 EnterTime？時間來源是否真的增加？ |
+| 完成後立刻再 RUN | 是否用 Start 電平而非新的上升緣？ |
+| Reset 直接開始工作 | 是否把復歸與啟動混為同一轉移？ |
+| 到 2000 ms 又完成卻出現 DONE | 是否把完成判斷放在逾時之前？ |
 
-狀態機完成後還要走一次復歸路徑。測試 FAULT 產生後是否保存錯誤、輸出是否進入要求的安全狀態、Reset 是否需要人工確認，以及回到 WAIT 後舊的 DoneInput、Start 和計時器是否被清乾淨。若沒有清理，下一批流程可能一進 WAIT 就跳過 RUN。這些行為需寫進狀態表，不能只靠維護人員記憶。
+上升緣的概念可對照 [CODESYS Standard R_TRIG 文件](https://content.helpme-codesys.com/en/libs/Standard/Current/Trigger/R_TRIG.html)。文件支持 BOOL 上升緣偵測；本篇的四個狀態、逾時優先順序和復歸條件是自行定義的案例，不是該功能塊提供的功能。
 
-寫狀態機時，狀態名稱要描述流程位置，不要只叫 M0、M1、M2。維護人員看到 WAIT_SENSOR、EXECUTE、COMPLETE、FAULT，就能直接聯想到等待哪個條件。每個狀態也應有可觀察的進入時間、活動旗標或原因碼。若流程需要重試，將 RETRY 視為清楚的轉移和計數規則，避免在 RUN 裡偷偷重設計時器而讓等待上限失去意義。
-
-如果狀態機要控制真實設備，先把輸出分成請求、允許和實體輸出三層，並把停止與安全條件放在明確的位置。一般狀態轉移只能表達流程，不會自動提供急停、門禁或安全扭力關閉功能。完成文章中的離線表格後，還要依設備規格做獨立的安全設計與驗證。
-
-## 延伸閱讀
-
-- [請求 接受 完成與失敗 如何設計 PLC 模組間握手](/articles/plc-request-accept-result-handshake)
-- [自動與手動模式切換時 PLC 應如何處理既有動作](/articles/plc-auto-manual-mode-switch)
+下一步可讀[自保持與長按再啟動](/articles/plc-self-hold-set-reset-q-series)，比較電平啟動和事件啟動的差別；需要了解連續成立多久才輸出，接著做[TON 計時練習](/articles/plc-ton-tof-tp-timer-selection)。

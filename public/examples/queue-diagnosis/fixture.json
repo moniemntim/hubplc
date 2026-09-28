@@ -1,0 +1,103 @@
+{
+  "dataset": "queue-diagnosis-synthetic-v1",
+  "synthetic": true,
+  "records": [
+    {
+      "requestId": "781",
+      "deviceId": "device-A",
+      "workerId": "worker-1",
+      "timestamps": {
+        "enqueue": { "ms": 100000, "clockId": "mono-A" },
+        "dequeue": { "ms": 100800, "clockId": "mono-A" },
+        "send": { "ms": 100810, "clockId": "mono-A" },
+        "firstByte": { "ms": 101010, "clockId": "mono-A" },
+        "lastByte": { "ms": 101020, "clockId": "mono-A" },
+        "parseDone": { "ms": 101025, "clockId": "mono-A" },
+        "complete": { "ms": 101030, "clockId": "mono-A" }
+      }
+    },
+    {
+      "requestId": "782",
+      "deviceId": "device-A",
+      "workerId": "worker-2",
+      "timestamps": {
+        "enqueue": { "ms": 200000, "clockId": "mono-A" },
+        "dequeue": { "ms": 200010, "clockId": "mono-A" },
+        "send": { "ms": 200020, "clockId": "mono-A" },
+        "firstByte": { "ms": 205020, "clockId": "mono-A" },
+        "lastByte": { "ms": 205030, "clockId": "mono-A" },
+        "parseDone": { "ms": 205040, "clockId": "mono-A" },
+        "complete": { "ms": 205050, "clockId": "mono-A" }
+      }
+    },
+    {
+      "requestId": "783",
+      "deviceId": "device-B",
+      "workerId": "worker-1",
+      "timestamps": {
+        "enqueue": { "ms": 300000, "clockId": "mono-A" },
+        "dequeue": { "ms": 300005, "clockId": "mono-A" },
+        "send": { "ms": 300010, "clockId": "mono-A" },
+        "firstByte": { "ms": 300020, "clockId": "mono-A" },
+        "lastByte": { "ms": 300030, "clockId": "mono-A" },
+        "parseDone": { "ms": 302030, "clockId": "mono-A" },
+        "complete": { "ms": 302040, "clockId": "mono-A" }
+      }
+    },
+    {
+      "requestId": "784",
+      "deviceId": "device-B",
+      "workerId": "worker-3",
+      "timestamps": {
+        "enqueue": { "ms": 400000, "clockId": "mono-A" },
+        "dequeue": { "ms": 400005, "clockId": "mono-A" },
+        "send": { "ms": 402005, "clockId": "mono-A" },
+        "firstByte": { "ms": 402015, "clockId": "mono-A" },
+        "lastByte": { "ms": 402025, "clockId": "mono-A" },
+        "parseDone": { "ms": 402030, "clockId": "mono-A" },
+        "complete": { "ms": 402035, "clockId": "mono-A" }
+      }
+    },
+    {
+      "requestId": "invalid-missing",
+      "deviceId": "device-A",
+      "workerId": "worker-1",
+      "timestamps": {
+        "enqueue": { "ms": 500000, "clockId": "mono-A" },
+        "dequeue": { "ms": 500001, "clockId": "mono-A" },
+        "send": { "ms": 500002, "clockId": "mono-A" },
+        "firstByte": { "ms": 500003, "clockId": "mono-A" },
+        "lastByte": { "ms": 500004, "clockId": "mono-A" },
+        "parseDone": { "ms": 500005, "clockId": "mono-A" }
+      }
+    },
+    {
+      "requestId": "invalid-clock",
+      "deviceId": "device-A",
+      "workerId": "worker-1",
+      "timestamps": {
+        "enqueue": { "ms": 600000, "clockId": "mono-A" },
+        "dequeue": { "ms": 600001, "clockId": "mono-A" },
+        "send": { "ms": 600002, "clockId": "mono-B" },
+        "firstByte": { "ms": 600003, "clockId": "mono-A" },
+        "lastByte": { "ms": 600004, "clockId": "mono-A" },
+        "parseDone": { "ms": 600005, "clockId": "mono-A" },
+        "complete": { "ms": 600006, "clockId": "mono-A" }
+      }
+    },
+    {
+      "requestId": "invalid-backward",
+      "deviceId": "device-A",
+      "workerId": "worker-1",
+      "timestamps": {
+        "enqueue": { "ms": 700000, "clockId": "mono-A" },
+        "dequeue": { "ms": 700010, "clockId": "mono-A" },
+        "send": { "ms": 700009, "clockId": "mono-A" },
+        "firstByte": { "ms": 700020, "clockId": "mono-A" },
+        "lastByte": { "ms": 700021, "clockId": "mono-A" },
+        "parseDone": { "ms": 700022, "clockId": "mono-A" },
+        "complete": { "ms": 700023, "clockId": "mono-A" }
+      }
+    }
+  ]
+}

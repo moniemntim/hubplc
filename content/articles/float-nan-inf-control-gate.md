@@ -1,77 +1,87 @@
 ---
-title: 浮點NaN與Inf在控制前如何攔截
-description: 以明示端序和IEEE binary32位元例，建立finite、quality、range三道控制前閘門，分離來源無效與運算溢位。
+title: binary32 特殊值：先解碼，再用有限性、品質與範圍決定可用性
+description: 下載 Node.js binary32 位元閘門，固定重播大端、小端、多種 NaN payload、正負 Inf、品質、範圍與格式拒絕。
 date: 2026-09-21
 author: 茂伯
 draft: false
 category: PLC 程式與控制
 ---
 
-## 先確認位元格式與端序
+## 這是離線資料閘門，不是設備控制實測
 
-浮點資料看起來是數字，不代表它可以拿去比較或控制。NaN表示不是數值，正負Inf表示無限大；它們可能來自來源欄位無效，也可能由運算溢位產生。控制前要先建立有限性和品質檢查，不能等到輸出動作後才從畫面猜原因。
+本例把一筆資料契約明定為四個 bytes、`be` 或 `le` 端序、`good` 或 `bad` 品質、以及閉區間工程範圍。它使用 Node.js 的 `Buffer.readFloatBE()`／`readFloatLE()` 解讀 binary32，並自行保存符號、8-bit exponent、23-bit fraction 和原始 32-bit word。因此 `0x7fc00001` 與 `0x7fc0dead` 都會分類為 NaN，但仍能保留不同 payload bits。
 
-以下用IEEE 754 binary32作資料格式示例，並明示以十六進位表示32位元編碼：0x7FC00000是常見的quiet NaN、0x7F800000是+Inf、0xFF800000是−Inf、0x3F800000是1.0。這些是格式示例，不是某一款PLC的裝置位址、暫存器或API。
+IEEE 754 是 binary floating-point 與特殊值的規格背景；Node.js 文件則定義此下載程式所用的 Buffer float read/write API。[IEEE 754-2019 標準頁](https://standards.ieee.org/ieee/754/6210/)與[Node.js 24 Buffer API](https://nodejs.org/docs/latest-v24.x/api/buffer.html#bufreadfloatbeoffset)是此處的原始來源。這不是 PLC、HMI、通訊卡或設備手冊，也沒有量測任何 PLC 的暫存器、例外旗標、掃描週期或控制輸出。
 
-解析前先定義端序與封包排列。若四個位元組在網路訊息中是大端順序，應先依規格重組成32位元，再解讀符號、指數與分數欄；若直接把小端資料當大端，正常1.0也會被讀成另一個值。端序不明時，狀態應是來源格式未知，不應硬猜成有限數。
+端序是資料契約的一部分。大端的 1.0 是 `3f800000`；小端資料要以 `0000803f` 搭配 `le` 解讀才是 1.0。相同四 bytes 改用錯誤端序不應被猜回正常值；這個模型仍會回傳被宣告端序下的結果，實際整合必須把端序由介面規格固定下來。尤其 `0000803f` **錯誤地宣告為 `be` 仍是合法的四 bytes**，會解成約 `4.600602988224807e-41` 的有限正 subnormal；在本例 0 到 2 的範圍內，所以會 `ACCEPT`。gate 無法從位元自行偵測這種合法但錯誤的端序，不能只說「值不同」就當成已攔截。
 
-除浮點位元外，還要保留來源文字、封包、品質旗標與轉換錯誤。來源是"NaN"、空字串或截斷封包時，與在支援非陷阱IEEE浮點運算環境中除以零而得到的Inf不是同一個原因；其他平台可能直接報錯，不能假設一定產生Inf。原因分離後，維修人員才能分別追查輸入清洗、感測器、資料傳輸或算式溢位。
+## 下載並重播固定位元資料
 
-位元驗證也要涵蓋符號位、指數全一與分數欄位，而不是只比對一個文字標籤。不同NaN payload仍屬NaN類別；若診斷需要區分payload，應額外保存原始32位元。解析器不能因某個NaN樣式未列在範例中，就誤判為一般有限數。
+下載同一資料夾的[模型](/examples/float-gate/float-gate-model.mjs)、[fixture](/examples/float-gate/fixture.json)、[demo](/examples/float-gate/demo.mjs)、[獨立自測](/examples/float-gate/self-test.mjs)和[README](/examples/float-gate/README.md)。本機以 Node.js 24.19.0 核對；使用該版本或更新版本。
 
-同一閘門在啟動、穩態與恢復都要一致。恢復good資料前先重新驗證，不以重啟後第一筆值自動清除失敗告警；告警解除也要留下時間、來源與原因於完整紀錄表中。
+```powershell
+node demo.mjs
+node --test self-test.mjs
+```
 
-## finite先行 再查品質與工程範圍
+固定 stdout：
 
-建議控制閘門順序是：先確認格式已成功解碼，再判斷數值finite，接著判斷來源quality，最後檢查工程range。只有三者都通過才建立usable=true的候選值。NaN不等於0，也不應在檢查失敗時用零取代；失敗結果應保留原值或位元證據並標記不可用。
+```text
+dataset=float-gate-binary32-synthetic-v1 synthetic=true
+id=be_one bytes=3f800000 endian=be bits=0x3f800000 class=FINITE finite=true quality=good range=PASS usable=true decision=ACCEPT provenance=SOURCE_BYTES value=1
+id=le_one bytes=0000803f endian=le bits=0x3f800000 class=FINITE finite=true quality=good range=PASS usable=true decision=ACCEPT provenance=SOURCE_BYTES value=1
+id=nan_payload_a bytes=7fc00001 endian=be bits=0x7fc00001 class=NAN finite=false quality=good range=SKIPPED usable=false decision=NONFINITE_REJECTED provenance=SOURCE_BYTES nan_payload=0x400001
+id=nan_payload_b bytes=7fc0dead endian=be bits=0x7fc0dead class=NAN finite=false quality=good range=SKIPPED usable=false decision=NONFINITE_REJECTED provenance=SOURCE_BYTES nan_payload=0x40dead
+id=pos_inf bytes=7f800000 endian=be bits=0x7f800000 class=POS_INF finite=false quality=good range=SKIPPED usable=false decision=NONFINITE_REJECTED provenance=SOURCE_BYTES
+id=neg_inf bytes=ff800000 endian=be bits=0xff800000 class=NEG_INF finite=false quality=good range=SKIPPED usable=false decision=NONFINITE_REJECTED provenance=SOURCE_BYTES
+id=finite_out_of_range bytes=40400000 endian=be bits=0x40400000 class=FINITE finite=true quality=good range=FAIL usable=false decision=RANGE_REJECTED provenance=SOURCE_BYTES value=3
+id=finite_bad_quality bytes=3f800000 endian=be bits=0x3f800000 class=FINITE finite=true quality=bad range=SKIPPED usable=false decision=QUALITY_REJECTED provenance=SOURCE_BYTES value=1
+id=format_short bytes=000080 endian=le bits=none class=NONE finite=SKIPPED quality=good range=SKIPPED usable=false decision=FORMAT_REJECTED provenance=SOURCE_BYTES detail=bytes_must_contain_exactly_4_bytes
+id=finite_operation_overflow bytes=7f800000 endian=be bits=0x7f800000 class=POS_INF finite=false quality=good range=SKIPPED usable=false decision=NONFINITE_REJECTED provenance=FINITE_OPERATION_F32_OVERFLOW
+```
 
-NaN與自身比較不相等，和有限數的有序大小比較也不成立。常見錯誤是只在「x小於下限或x大於上限」時拒絕；NaN讓兩個條件都為假，程式反而放行。正向要求「x大於等於下限且x小於等於上限」會拒絕NaN，但仍建議先明確分類有限性，才能區分原因；比較鏈不是通用PLC語法。
+輸出中的 `nan_payload` 沿用名稱，但實際上是完整 23-bit fraction 欄位（`fractionHex`），包含 quiet／signaling 相關位元；它不是移除標誌後的「純 payload」整數。這讓 raw word 的診斷資訊不因分類而遺失。
 
-以工程範圍0到100為例，x=50且quality=good才可通過；x=−1或x=101是finite但range失敗；x=NaN或±Inf是finite失敗。quality=bad即使數字落在0到100也不能放行，因為數值外觀不能證明來源可信。這三個狀態要在紀錄中分開。
+### 直接改 fixture 重跑
 
-檢查結果最好採不可變的快照：記下讀取時間、來源序號、解碼後分類與規格版本。控制迴路若讀到另一個週期的值，可能把上一筆good品質誤配到本筆NaN。每次更新都要連同品質與有限性一起交換，不能只更新一個浮點欄位。
+先複製 `fixture.json`，每次只修改 `id: "be_one"` 的 `bytes`，並執行 `node demo.mjs`：
 
-range門檻的閉區間或開區間要寫清楚。若允許端點，檢查是0≤x且x≤100；若不允許端點，則是0<x且x<100。此處只是數學表示，實際程式應使用目標平台已驗證的型別和比較方法，不把Python函式名稱或本文的狀態名稱冒充PLC指令。
+1. 設為 `[0, 0, 0, 0]`，輸出 `value=0`、`decision=ACCEPT`。
+2. 設為 `[64, 0, 0, 0]`，輸出 `value=2`、`decision=ACCEPT`。
+3. 設為 `[64, 64, 0, 0]`，輸出 `value=3`、`decision=RANGE_REJECTED`。
 
-## 分開來源無效與運算溢位
+接著將 `be_one` 還原為 `[63, 128, 0, 0]`，把 `quality` 改為 `bad` 後重跑；它會輸出 `decision=QUALITY_REJECTED`，即使數值仍是 1。最後還原 fixture，固定 stdout 才會再次逐行相符。
 
-假設輸入封包直接帶來0x7FC00000，先記錄decoded=NaN、source_status=invalid_value，控制閘門拒絕。另一案例是兩個有限值相乘後超過binary32可表示範圍；在相應的非陷阱模式及捨入設定下可能產生+Inf，其他平台可能報錯；這筆應記為operation_overflow。兩者都不能控制，但處置方向不同，前者查來源，後者查算式、單位或上限。
+## 固定順序：格式、有限性、品質、工程範圍
 
-若結果是−Inf，除了finite失敗，也要保留運算方向與相關輸入的品質。不要把正負Inf夾到最大工程值後繼續，因為夾限可能掩蓋倍率錯誤。若規格允許飽和，必須另有明確狀態、事件和人工審查，不可把它當作一般有效值。
+只有四項都成立才有 `usable=true`：
 
-正常案例可列1.0的編碼0x3F800000、quality=good、範圍0到2，最後usable=true；失敗案例列NaN、+Inf、−Inf、有限但超界、有限且範圍內但quality=bad。每筆都回報原始編碼或來源文字、finite結果、quality結果、range結果與最終原因。
+| 順序 | 檢查                                                             | 不通過時的 decision  |
+| ---- | ---------------------------------------------------------------- | -------------------- |
+| 1    | `Buffer` 恰為 4 bytes、端序、quality、range、provenance 格式有效 | `FORMAT_REJECTED`    |
+| 2    | exponent 不是全 1 的 NaN／Inf 編碼                               | `NONFINITE_REJECTED` |
+| 3    | `quality === good`                                               | `QUALITY_REJECTED`   |
+| 4    | 有限值在 `min ≤ value ≤ max`                                     | `RANGE_REJECTED`     |
 
-控制前最後一步應只消費usable=true且仍屬同一時間戳與資料世代的值。資料在檢查後才更新，期間若來源跳代、超時或品質改變，要讓候選失效。本文描述資料閘門與應用案例，沒有假稱任何PLC平台已提供相同的浮點例外、暫存器或診斷位。
+range 是閉區間：本 fixture 的 0、2 可通過，3 被拒絕。NaN 或 Inf 在第二步就停止，不會因大小比較的語意而意外落入可用範圍。品質失敗也不以「數字剛好正常」放行；它會保留 raw bytes、bits、品質與拒絕 decision，讓外層記錄系統可關聯來源世代和時間戳。
 
-來源也可能直接傳來Inf，運算也可能產生NaN；不能只憑特殊值種類就指定根因。只有保留運算前輸入、來源封包及平台例外證據，才能把原因確定為來源無效或運算溢位。證據不足時標原因待查，避免讓維修人員沿錯誤方向排查。
+`FORMAT_REJECTED` 是資料契約不完整，不是數值 0。短於或長於 4 bytes、不是 Node.js `Buffer`、未知端序、未知 quality、無效 range 或空 provenance 都不會產生可用候選值。模型不讀文字 `NaN`／`Inf`，也不試圖從截斷訊息修復 bytes。
 
-## 測試邊界並明確記錄限制
+## 特殊值不能自己證明根因
 
-驗收表至少包含四個指定位元模式、正常有限值、兩側工程邊界、超界值、來源品質失敗、格式錯誤、運算溢位與逾時。預期結果要同時寫finite、quality、range和usable，避免只看最後輸出是否為零。每個失敗案例還要核對原因沒有被後續步驟覆蓋。
+`SOURCE_BYTES` 只表示這四 bytes 由外層標為來源資料；它不能根據 NaN、+Inf 或 −Inf 自動斷言感測器、網路、除以零或任何設備故障。demo 中兩個不同 NaN payload 與正負 Inf 都是 `NONFINITE_REJECTED`，但 provenance 仍是 `SOURCE_BYTES`。
 
-若系統只收到十六進位字串，先定義大小寫、前綴、長度與端序；不接受含糊輸入。若系統收到文字NaN或Inf，需由資料契約決定是否允許這些標記，允許也只能進入無效狀態，不能因文字解析成功就當成可控制數字。
+另一條 fixture 使用模型明確執行的有限運算：先以 `Math.fround()` 把 `3.4e38` 和 `2` 化為可表示的 binary32 finite operands，再乘法並再化為 binary32。這一個窄範圍模型可觀察到 `7f800000`，所以才標為 `FINITE_OPERATION_F32_OVERFLOW`。ECMAScript 對 [`Math.fround`](https://tc39.es/ecma262/multipage/numbers-and-dates.html#sec-math.fround) 的定義是這個離線示例的運算來源。
 
-控制器的實際浮點格式、例外模式、比較指令、通訊字組交換和診斷行為都必須查目標手冊。離線用Python或NumPy核對位元與數學概念，只能支持資料設計；不能據此宣稱Q系列PLC已完成編譯、模擬或現場測試。
+即使 provenance 是明確的 overflow，gate 仍只產出 `NONFINITE_REJECTED`；provenance 是診斷證據，不會把特殊值轉為範圍上限、零或可控制數字。其他 NaN／Inf 根因必須由外層保留的來源封包、運算前 operands、平台例外或通訊記錄決定；證據不足時應保留未知，而不是由位元模式猜測。
 
-限制也要寫入交付文件：有限性檢查不會修復錯誤來源，quality旗標的意義取決於來源協定，工程range取決於製程，端序取決於介面。只要其中一項未定義，最安全的資料狀態是不可用並要求補齊規格，而不是用預設值讓控制繼續。
+## 整合時仍要補齊的規格
 
-觀測與控制也要分層：診斷畫面可以顯示原始位元和原因，控制輸出只接受通過閘門的快照。保留失敗證據有助於查找偶發問題，但不應把診斷值誤接到動作命令。
+這個模型沒有保存狀態、更新資料世代、控制命令或輸出 fallback。實際系統仍須為每筆資料定義端序、完整封包界線、quality 的協定語意、工程範圍、時間戳和資料世代的原子交換方式；控制端只應消費同一筆已通過閘門的快照。
 
-## 常見問題
-
-問：NaN可以當零避免控制中斷嗎？答：不可以；NaN代表值無效，轉成零會把來源問題隱藏並可能觸發錯誤動作。
-
-問：上下限比較會不會攔下NaN？答：正向要求兩個範圍條件同時成立會拒絕NaN；只檢查超界後取反則可能誤放行。先做有限性分類，再檢查品質和範圍，原因最清楚。
-
-問：+Inf和來源NaN可以共用一個錯誤嗎？答：控制上都要拒絕，但來源無效與運算溢位應分開記錄，排查方向不同。
-
-問：0x7FC00000在每個平台都一定是唯一NaN嗎？答：它是本文的binary32 quiet NaN特定例；位元格式、端序與平台解讀仍須依介面和目標手冊確認。
-
-參考：[IEEE官方標準頁面，作為binary32、特殊值與浮點格式的規格來源；本文四個位元模式是教學案例，非PLC暫存器定義。](https://standards.ieee.org/ieee/754/6210/)
-
-參考：[Python math官方文件的isfinite說明，用於離線數學概念核對；本文不將Python函式當成PLC API。](https://docs.python.org/3/library/math.html#math.isfinite)
+有限性檢查不修復來源，quality 不是通用標準，range 也不是製程設定。若有飽和、替代值或人工復歸需求，必須在目標平台以獨立狀態、事件與審查規則實作，不能從這個 Node.js 離線範例推論任何 PLC 已編譯、模擬或現場驗證。
 
 ## 延伸閱讀
 
-- [批次配方欄位缺漏如何產生完整錯誤清單](/articles/recipe-schema-complete-error-list)
-- [兩來源同時更新同一資料如何仲裁](/articles/multi-source-cas-arbitration)
+- [HMI 數字範圍與步進：在寫入前驗證輸入](/articles/hmi-numeric-range-step-validation)
+- [接收串流：分開 framing buffer 與完整訊框應用佇列](/articles/receive-buffer-throughput-test)

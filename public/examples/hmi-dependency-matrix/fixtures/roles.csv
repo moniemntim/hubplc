@@ -1,0 +1,4 @@
+role_id,resource_id,access,expected_policy
+operator,dataset:history-flow,Read,Allow
+operator,dataset:history-temp,Read,Allow
+viewer,report:daily-temperature,Read,Allow

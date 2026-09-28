@@ -1,0 +1,24 @@
+{
+  "record_kind": "offline_known_bytes_manifest",
+  "run_id": "20260928T000639532Z",
+  "generated_at": "2026-09-28T00:06:39.533Z",
+  "command": "node run-fc03-report.mjs",
+  "node_version": "v24.19.0",
+  "hardware_tested": false,
+  "scope": "Offline parsing of a fixed Modbus FC03 response PDU only. No TCP, serial, PLC, HMI, I/O, or network access occurs.",
+  "status": "pass",
+  "artifacts": {
+    "input": {
+      "file": "fc03-known-frame-input.json",
+      "sha256": "84d1e1ff69c2bfe25b6308787f6f51c18dc3fc48846a558f3e1dacbd73644ca9"
+    },
+    "runner": {
+      "file": "run-fc03-report.mjs",
+      "sha256": "024b3e2cee1ca59587a7edaf209aae007eb5d779c519c8bb522239bf0725e3f8"
+    },
+    "results": {
+      "file": "runs/20260928T000639532Z/results.json",
+      "sha256": "71c59c2ab008080e8d915a6cc9270860c3cbbc5d5ed927457fd6db2b2ad65665"
+    }
+  }
+}

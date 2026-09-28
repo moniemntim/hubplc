@@ -1,131 +1,68 @@
 ---
-title: 用 FIFO 追蹤輸送線產品 避免結果和產品對錯筆
-description: 以容量五的簡化FIFO練習識別碼、空滿判斷、索引回繞與跳站事件。
+title: PLC 產品 FIFO：容量五的 head-only 追蹤與事件重送
+description: 下載 Node 離線 ring buffer，核對容量、回繞、S1 跳站、S2 出列與事件 ID 的 duplicate/conflict 規則。
 date: 2026-09-17
 author: 茂伯
 draft: false
+category: PLC 程式與控制
 ---
 
-## 為每個產品建立身分
+## 先定義容量與事件規則
 
-輸送線上的結果對錯產品，通常不是檢測公式錯，而是產品進站與結果回來的順序沒有被記錄。你先替每件產品建立 product_id，再用固定容量 FIFO 保存順序；每個站點回饋都要帶有事件或站點狀態，不能只用一個 done 位元猜測。本文以容量 5、兩個站點、產品 P01～P05 示範。FIFO 內容是識別碼與 status 的資料列。
+本例是 Node.js 24.19.0 的單寫入者、記憶體內離線模型，不連 PLC、輸送帶或站點控制器。容量固定 5，以 `head`、`tail`、`count` 判斷空滿；head 等於 tail 不能單獨判斷。產品 ID 在本模型生命週期不能重用。
 
-| 欄位 | 用途 | 規則 |
-| --- | --- | --- |
-| product_id | 追溯產品 | 入線時遞增且不重複 |
-| status | 目前站點狀態 | WAIT/AT_S1/AT_S2/DONE/FAULT |
-| head/tail | 出入位置 | 只在成功出列或入列後更新 |
-| count | 目前筆數 | 0 到 5，禁止超界 |
+每掃描先處理入列，再處理站點事件。因此滿佇列同掃描收到 P06 入列和 P01 出列時，P06 先被拒絕為 `enqueue_rejected_full`，P01 才出列；下一掃描重送 P06，才會寫進回繞 tail。這不是現場感測事件的真實時間模型。
 
-1. 入線脈衝先檢查 count<5，再寫入 tail。
+只有 head 產品能更新。S1 COMPLETE 令 `AT_S1 → AT_S2`，S1 SKIP 令 `AT_S1 → SKIP_S1`，S2 COMPLETE 才從 `AT_S2` 或 `SKIP_S1` 出列。錯 product、station 或順序不更新 ring。這個 head-only 規則不支援並行站點。
 
-2. 站點結果先更新 head 所指產品，完成且允許出列才移除。
+事件 ID 格式為 `E<epoch>-<sequence>`，epoch 是 1..255，sequence 是 1..1000000。模型保存 ID 與 product/station/action：同 ID 同內容是 duplicate；同 ID 不同內容是 conflict，不能只看 ID 就掩蓋內容改變。事件和產品 ID 各最多保存 20 筆；滿時明確拒絕新 ID，不靜默淘汰。
 
-3. 每次事件記錄 product_id、station、sequence，供事後對照。
+## 下載與執行
 
-## 定義滿 空與站點跳過
+把六個檔案放同一資料夾，用 Node.js 24.19.0 或更新版執行。
 
-本例規則：count=0 時不可讀 head；count=5 時新產品進入被拒絕並產生 QUEUE_FULL，不覆蓋最早資料。產品可跳過 S1，但要把 status 明確寫成 SKIP_S1，再等待 S2；不可把「沒有 S1 結果」解讀成 P03 已完成。重複訊號以 event_id 去重，同一產品同一站點相同 event_id 第二次只記錄 DUPLICATE，不再次推進 FIFO。
+- [模型](/examples/product-fifo/product-fifo-model.mjs)
+- [fixtures](/examples/product-fifo/fixtures.mjs)
+- [self-test](/examples/product-fifo/self-test.mjs)
+- [demo](/examples/product-fifo/demo.mjs)
+- [可改輸入的 practice](/examples/product-fifo/practice.mjs)
+- [README](/examples/product-fifo/README.md)
 
-| 掃描事件 | FIFO 順序 | count | 處置 |
-| --- | --- | --- | --- |
-| E1 P01 入線 | P01 | 1 | 寫入 tail=0 |
-| E2 P02 入線 | P01,P02 | 2 | 正常 |
-| E3 P03 入線 | P01,P02,P03 | 3 | 正常 |
-| E4 P01 S1完成 | P01,P02,P03 | 3 | 更新 P01，不出列 |
-| E5 P01等待S2 | P01,P02,P03 | 3 | 仍由P01佔head，不出列 |
-| E6 P01 S2完成 | P02,P03 | 2 | P01 完成後出列 |
-
-注意：FIFO 保證的是進入順序，不保證所有站點都同步回報。若 S2 回報的是 P02，但 head 是 P01，先停下並記錄 OUT_OF_ORDER；本教學即使有ID也不允許跳過head；多站並行需另設站點映射及結果暫存。
-
-## 偽碼與錯配防護
-
-```text
-教學偽碼，非指定PLC語法，所有資料由一個流程更新：
-若入線事件：
-  若count<CAPACITY：寫queue[tail]；tail回繞；count加一
-  否則報QUEUE_FULL，不覆寫
-若結果事件：
-  若事件已處理：只回確認，不改資料
-  否則若count=0：報孤立回饋
-  否則：p:=queue[head]
-    若ID與站點順序合法：更新p；queue[head]:=p；保存已處理事件ID
-    否則報OUT_OF_ORDER，不出列
-若count>0：
-  若queue[head].status=DONE且允許出列：head回繞；count減一
-使用巢狀條件避免依賴AND短路；滿佇列同次入出時，本例先拒絕入列，再處理出列。
+```powershell
+node self-test.mjs
+node demo.mjs
+node practice.mjs
 ```
 
-| 防護 | 可觀察證據 | 錯誤結果 |
-| --- | --- | --- |
-| ID 對照 | event.product_id=queue[head].id | 拒絕，不出列 |
-| 重複去重 | event_id 已存在 | 只記錄，不重算 |
-| 滿佇列 | count=5 | 停入線並報警 |
-| 空佇列 | count=0 | 拒絕結果，報孤立回饋 |
-| 跳站 | status=SKIP_S1 | S2 結果仍對同一 ID |
-
-若站點回饋沒有產品 ID，你要在站點入口建立 handshake_token，送出產品時鎖定 token，若設備支援回傳token，必須相符才更新；若連token都不支援，只能使用單筆在途且遇失聯即停下核對的受限協議。token 不同時，先停止佇列推進並保留現場資料。入列感測器的機械抖動要以一次脈衝或去彈跳時間處理，不能用連續高電位反覆入列。當產品被跳過站點，仍要產生可追溯的 SKIP 事件；當產品回流重測，應建立新的流程序號但沿用 product_id，否則報表會把同一件產品當成兩件。容量與逾時要在啟動前檢查，避免執行中才發現佇列無法容納。
-
-## 五件產品的驗收演練
-
-本篇 FIFO 只示範 head 產品的簡化處理，並非可同時容納多站結果的完整流水線實作；實作需為每筆資料寫回陣列。P03 必須先收到明確 SKIP_S1，才允許接受 S2 結果。感測器兩件同時出現需由硬體雙通道或位置編碼分辨，去彈跳只能消除抖動，不能產生兩個事件。
-
-完整追蹤還要考慮輸送線速度與事件延遲。產品入列時記錄進站掃描編號或時間戳，站點回饋時先用 ID 對照，再檢查該站是否已完成；站點完成的先後不能改變 FIFO 的產品順序。若 P03 卡在 S1，P04 的結果回來，系統應保持 P03 為 head 並把 P04 事件放進待確認區，不能丟掉也不能套用。待確認區也要有容量，滿時停線並報警。產品從線體被取走時，操作員選擇實際 ID，PLC 記錄 TAKEAWAY 原因後才出列；禁止只按一個「取走」按鈕讓 head 無條件消失。每日開機先檢查 count、每筆 ID、站點狀態與頭尾索引是否一致，不一致就進復原畫面。透過這些規則，即使有抖動、漏訊號、重測或人工介入，報表仍能指出哪件產品在哪一站等待，而不是產生看似合理卻無法追溯的錯配數字。
-
-測試資料最好保留入列與出列事件，並以 count 變化核對每一次加一或減一；只要事件數與 count 對不起來，就先停線查明。
-
-當產品在兩站之間暫停，不能因輸送帶停止就自動完成。單一感測器若無法分辨緊鄰兩件，去彈跳也無法補出第二件；應檢查最小間距與可辨識的感測或位置資訊，再決定事件來源是否足夠。
-
-如果必須允許超過容量的產品暫停在線外，請另設待入列區並標記位置；待 FIFO 有空位時才依實際重新確認的順序入列，不能把在線外產品假設已經占用 head。
-
-復歸完成後重新計算 count 與索引，再開放新的入線事件；復歸前收到的結果一律暫存並標為待核對。
-
-完成驗收後，把每次錯配警報的 product_id、station 與 event_id 匯出，確認能由事件重建整條路徑。
-
-這項紀錄也能協助你分辨感測器漏脈衝與程式對位錯誤。
-
-所以排查時先看事件紀錄，再看佇列資料，最後才調整感測器。
-
-1. 依序送入 P01～P05，逐次核對 count 由 1 增至 5。
-
-2. 先依序完成P01與P02，使P03成為head；故意不送P03的S1回饋。
-
-3. 明確核准P03的SKIP_S1，再送P03合法S2结果並出列；依序完成P04、P05。
-
-4. 重送一次 P03 的相同 event_id，確認完成數不增加。
-
-## 五件產品的驗收演練 續
+固定案例先讓 P01～P05 完成，P03 以明確 SKIP_S1 後從 S2 出列，再重送 P01 的舊 S2 event，不增加完成數：
 
 ```text
-把 FIFO 當成資料結構而非幾個暫存器的排列。容量 5 時，head、tail 都要以 0、1、2、3、4 循環；本實作使用count判斷空與滿。P01～P05 入列後 head=0、tail=0、count=5；P01 完成出列後 head=1、tail=0、count=4，此時 P06 可寫入索引 0，順序變成 P02、P03、P04、P05、P06。若只比較 head=tail 判斷空滿，就會把「全滿」誤判成空，這是回繞時最危險的錯誤。
-第三件產品 P03 缺少 S1 回饋時，不能直接把 P04 的 S1 結果套給 head。你可以設定每站等待逾時，例如 2000 ms；逾時後 P03 狀態改為 STATION_FAULT，保留在佇列並停線，或依規格改 SKIP_S1。只有明確的 SKIP 事件才可進下一站。產品被人工取走也必須有 TAKEAWAY 事件，完成或報廢後才出列。每個事件至少包含 product_id、station、event_id、result，四者任一不符就記錄錯配，不更新統計。
+five-products count=0 completed=5 replay=station_duplicate
+wrap head=1 tail=1 count=5 order=P02,P03,P04,P05,P06
+demo: PASS
 ```
 
-### 完成後應看到什麼結果
+回繞案例先滿五格，完成 P01 後才重送 P06，所以 P06 寫到索引 0；邏輯順序仍是 P02 到 P06。
 
-五件產品各有唯一 ID；每站結果都能回到正確 ID；P03 缺回饋時佇列順序不變；所有產品完成後 count=0，完成數=5，重複回饋不增加統計。
+下表是 `wrap` fixture 的逐掃描關鍵列；最後一列對應 `demo.mjs` 的 wrap 摘要。每個 fixture 元素代表一次呼叫 `fifoScan()`，索引從 0 起算。
 
-### 失敗時先查哪裡
+| 掃描 | 輸入                       | head/tail/count | head 狀態 | 結果                   |
+| ---- | -------------------------- | --------------- | --------- | ---------------------- |
+| 1    | P01 入列                   | 0/1/1           | P01/AT_S1 | 寫入 slot 0            |
+| 5    | P05 入列                   | 0/0/5           | P01/AT_S1 | 滿，head=tail 但不是空 |
+| 6    | P01 S1 COMPLETE            | 0/0/5           | P01/AT_S2 | 尚未出列               |
+| 7    | P06 入列 + P01 S2 COMPLETE | 1/0/4           | P02/AT_S1 | 先拒 P06，再出列 P01   |
+| 8    | 重送 P06 入列              | 1/1/5           | P02/AT_S1 | P06 寫入回繞 slot 0    |
 
-先查入線邊沿是否重複，再查 head/tail/count 是否同時被多段邏輯寫入，接著查結果是否真的含 product_id，最後查跳站、取走與故障復歸是否有明確事件。
+`practice.mjs` 另外提供三掃描練習。原始輸出應依序顯示 P01/AT_S1、P01/SKIP_S1、空 head，最後是 `practice: PASS`。把第二步唯一的 `action: 'SKIP'` 改成 `action: 'COMPLETE'` 再執行；第二行改成 P01/AT_S2、事件為 s1_complete_P01，第三行仍 count=0，並通過完成一件的斷言。若改成錯 product 或順序，最後斷言可能失敗，應先從每行 event 找拒絕原因，不要直接刪除斷言。
 
-### 適用型號與限制
+格式合法的事件會在 product、station、order 檢查前消耗 event ID。因此空 FIFO 或錯順序事件的同 ID 重送只會得到 duplicate，修正後必須使用新的 ID。epoch 只是 ID 格式的一部分，並非 active-epoch fencing，也不保證事件有序。
 
-適用於 Q06UDVCPU 等以資料暫存器或結構陣列實作追蹤的控制器；FIFO 容量、索引回繞、保持資料與通訊事件格式須按工程規格實作。偽碼須依目標 PLC 的語法與資料配置實作。
+## 未實作的現場邊界
 
-## 常見問題與來源
-
-### FAQ
-
-```text
-問：為何不用產品到站順序直接配結果？答：站點可能跳站、逾時或重送，必須用 ID 核對。
-問：FIFO 滿了能覆蓋最舊產品嗎？答：除非規格允許丟棄且已記錄，否則應停入線並報警。
-問：結果沒有 ID 怎麼辦？答：只能依站點與順序建立受限協議，遇到漏件就停線，不能默默猜配。
-```
-
-參考：[三菱 QnUCPU 使用手冊 程式執行與裝置資料](https://dl.mitsubishielectric.com/dl/fa/document/manual/plc/sh080807eng/sh080807engaf.pdf)
+本例未實作產品被取走、站點逾時、重啟復原、持久化、並行站點結果暫存或 PLC task 同步。單一 JavaScript 寫入者不證明多 task 或多控制器的同步正確性。實機需要對應的感測、位置、station mapping、所有權、安全與復原驗收。
 
 ## 延伸閱讀
 
-- [兩個流程共用一個資源 PLC 排他控制與公平排程](/articles/plc-exclusive-resource-scheduler)
-- [不良品重測怎麼記錄 PLC 流程避免重算產量](/articles/plc-retest-yield-accounting)
+- [PLC 共用資源排程：用 FCFS 保證一次只授權一站](/articles/plc-exclusive-resource-scheduler)
+- [PLC 工作參數快照：確認後，下一批才換新版本](/articles/plc-parameter-snapshot)

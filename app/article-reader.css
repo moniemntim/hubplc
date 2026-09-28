@@ -337,3 +337,92 @@
     margin-top: 40px;
   }
 }
+
+.plc-practice {
+  margin: 0 0 32px;
+  padding: 24px;
+  background: #eef7f3;
+  border: 1px solid #bad9ce;
+  border-radius: 12px;
+}
+.plc-practice h2 {
+  font-size: 22px;
+  margin: 0 0 12px;
+}
+.plc-practice p {
+  max-width: 900px;
+}
+.plc-practice fieldset {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px 24px;
+  border: 0;
+  padding: 0;
+  margin: 18px 0;
+}
+.plc-practice legend {
+  font-weight: 700;
+  margin-bottom: 8px;
+}
+.plc-practice label {
+  display: inline-flex;
+  gap: 8px;
+  align-items: center;
+  padding: 8px 0;
+  cursor: pointer;
+}
+.plc-practice input {
+  width: 20px;
+  height: 20px;
+  accent-color: #08796b;
+}
+.plc-practice-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+}
+.plc-practice-actions button {
+  border: 1px solid #08796b;
+  background: white;
+  border-radius: 6px;
+  padding: 9px 16px;
+  color: #075e53;
+}
+.plc-practice-actions button:first-child {
+  background: #08796b;
+  color: white;
+}
+.plc-practice-status {
+  font-weight: 700;
+  overflow-wrap: anywhere;
+}
+.plc-practice-scroll {
+  max-height: 360px;
+  overflow: auto;
+  background: white;
+}
+.plc-practice table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 14px;
+}
+.plc-practice caption {
+  padding: 8px;
+  text-align: left;
+}
+.plc-practice th,
+.plc-practice td {
+  text-align: left;
+  border: 1px solid #d9e1e5;
+  padding: 8px 12px;
+  min-width: 100px;
+}
+@media (max-width: 700px) {
+  .plc-practice {
+    padding: 16px;
+  }
+}
+.plc-practice-status {
+  display: block;
+  margin: 16px 0;
+}

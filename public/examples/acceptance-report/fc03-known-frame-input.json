@@ -1,0 +1,13 @@
+{
+  "case_id": "OFFLINE-FC03-KNOWN-FRAME-001",
+  "record_kind": "offline_known_bytes",
+  "hardware_tested": false,
+  "scope": "Offline parsing of a fixed Modbus FC03 response PDU only. No TCP, serial, PLC, HMI, I/O, or network access occurs.",
+  "response_pdu_hex": "03 04 00 FD 00 64",
+  "expected": {
+    "function_code": 3,
+    "byte_count": 4,
+    "register_count": 2,
+    "values": [253, 100]
+  }
+}

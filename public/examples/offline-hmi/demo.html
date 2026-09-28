@@ -1,0 +1,367 @@
+<!doctype html>
+<html lang="zh-Hant">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>離線畫面狀態示範 · HubPLC</title>
+    <style>
+      :root {
+        font-family: system-ui, 'Microsoft JhengHei', sans-serif;
+        color: #183044;
+        background: #eef3f5;
+        line-height: 1.65;
+      }
+      * {
+        box-sizing: border-box;
+      }
+      body {
+        margin: 0;
+        padding: 24px;
+      }
+      main {
+        max-width: 880px;
+        margin: auto;
+      }
+      h1 {
+        font-size: clamp(1.6rem, 4vw, 2.3rem);
+        line-height: 1.25;
+        margin: 0.4em 0;
+      }
+      h2 {
+        font-size: 1.15rem;
+        margin: 0 0 12px;
+      }
+      .note {
+        color: #435a69;
+      }
+      .badge {
+        font-size: 0.85rem;
+        font-weight: 700;
+        letter-spacing: 0.07em;
+        color: #345868;
+      }
+      .card {
+        background: white;
+        border: 1px solid #cedae0;
+        border-radius: 16px;
+        padding: 24px;
+        margin-top: 20px;
+      }
+      .grid {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 20px;
+      }
+      .reading {
+        font-size: 2.8rem;
+        font-weight: 700;
+        font-variant-numeric: tabular-nums;
+        margin: 8px 0;
+      }
+      .status {
+        font-weight: 700;
+        color: #8d4211;
+      }
+      .status[data-ready='true'] {
+        color: #125d4c;
+      }
+      label {
+        display: block;
+        font-weight: 700;
+        margin-bottom: 8px;
+      }
+      select,
+      button {
+        font: inherit;
+        border: 1px solid #718795;
+        border-radius: 8px;
+        padding: 10px 12px;
+        max-width: 100%;
+      }
+      select {
+        width: 100%;
+        background: white;
+      }
+      button {
+        background: #174d62;
+        color: white;
+        cursor: pointer;
+        min-height: 44px;
+      }
+      button:disabled {
+        background: #e4e9ed;
+        color: #415763;
+        cursor: not-allowed;
+        border-style: dashed;
+      }
+      button:focus-visible,
+      select:focus-visible {
+        outline: 3px solid #c86213;
+        outline-offset: 3px;
+      }
+      .actions {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 10px;
+      }
+      dl {
+        margin: 0;
+      }
+      dt {
+        font-size: 0.85rem;
+        color: #435a69;
+      }
+      dd {
+        margin: 0 0 10px;
+        overflow-wrap: anywhere;
+      }
+      ul {
+        padding-left: 24px;
+        margin: 8px 0;
+      }
+      #feedback {
+        min-height: 1.6em;
+      }
+      #history {
+        border-left: 3px solid #69818e;
+        padding: 10px 14px;
+        margin-top: 14px;
+      }
+      footer {
+        font-size: 0.9rem;
+        margin: 22px 0;
+        color: #435a69;
+      }
+      @media (max-width: 600px) {
+        body {
+          padding: 14px;
+        }
+        .grid {
+          grid-template-columns: 1fr;
+        }
+        .card {
+          padding: 18px;
+        }
+        .reading {
+          font-size: 2.35rem;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <main>
+      <p class="badge">HUBPLC / 合成資料 · 不連設備</p>
+      <h1>離線畫面狀態示範</h1>
+      <p class="note">
+        切換固定情境，檢查保留的數值、禁用原因與三種操作。本頁沒有網路請求、登入或設備寫入；重新整理就清除示範計數。
+      </p>
+      <section class="card">
+        <label for="scenario">選擇情境</label>
+        <select id="scenario">
+          <option value="ready">線上：教材條件全部通過</option>
+          <option value="offline">離線：只能查看快取</option>
+          <option value="syncing">重連：舊世代仍在同步</option>
+          <option value="expired">已連線：收件經過剛好 5000 ms</option>
+          <option value="uncertain">已連線：來源品質 Uncertain</option>
+          <option value="denied">已連線：沒有寫入權限</option>
+          <option value="unknown">已連線：前一筆命令結果未知</option>
+          <option value="clock">時鐘不一致：收件經過未知</option>
+          <option value="source">剛收到資料：尚未確認來源新鮮度</option>
+          <option value="missing">未取得有效快照</option>
+        </select>
+      </section>
+      <div class="grid">
+        <section class="card" aria-labelledby="value-title">
+          <h2 id="value-title">DEMO-A ／ 溫度快取</h2>
+          <p id="value" class="reading"></p>
+          <p id="state" class="status" aria-live="polite"></p>
+          <p class="note">
+            數字只供觀察。本機收件經過短，不代表來源剛完成採樣。
+          </p>
+        </section>
+        <section class="card" aria-labelledby="evidence-title">
+          <h2 id="evidence-title">目前判斷依據</h2>
+          <dl>
+            <dt>連線階段</dt>
+            <dd id="connection"></dd>
+            <dt>目前來源品質</dt>
+            <dd id="quality"></dd>
+            <dt>距本機收件（固定時間差）</dt>
+            <dd id="age"></dd>
+            <dt>快照世代 ／ 現行世代</dt>
+            <dd id="epoch"></dd>
+            <dt>來源新鮮度已由外層確認（教材輸入）</dt>
+            <dd id="source-check"></dd>
+          </dl>
+        </section>
+      </div>
+      <section class="card" aria-labelledby="action-title">
+        <h2 id="action-title">可查看，不一定可操作</h2>
+        <p id="query-reason"></p>
+        <div class="actions">
+          <button
+            type="button"
+            id="local"
+            aria-expanded="false"
+            aria-controls="history"
+          >
+            查看本地快取
+          </button>
+          <button type="button" id="query" aria-describedby="query-reason">
+            模擬線上查詢
+          </button>
+          <button type="button" id="write" aria-describedby="write-reasons">
+            模擬寫入（僅本頁）
+          </button>
+        </div>
+        <div id="write-reasons">
+          <p>寫入條件：</p>
+          <ul id="reasons"></ul>
+        </div>
+        <p id="feedback" role="status"></p>
+        <div id="history" hidden>
+          固定歷史資料：50.0 → 51.0 → 52.0
+          °C。這是先前已存的合成快取，沒有重新讀設備。
+        </div>
+      </section>
+      <footer>
+        茂伯 · HubPLC
+        教學範例。這是前端狀態示範，不提供安全停機、權限驗證或控制保護。實際授權與設備互鎖須由後端及控制系統另行執行。
+      </footer>
+    </main>
+    <script>
+      'use strict';
+      // Teaching policy only. Timestamps share a local monotonic clock if clock IDs match.
+      const baseline = Object.freeze({
+        connection: 'Ready',
+        quality: 'Good',
+        nowMs: 2000,
+        receivedMs: 1000,
+        clockId: 'mono-A',
+        receivedClockId: 'mono-A',
+        epoch: 13,
+        snapshotEpoch: 13,
+        value: 52,
+        sourceFreshConfirmed: true,
+        authenticated: true,
+        canWrite: true,
+        unresolvedCommand: false,
+      });
+      const cases = {
+        ready: {},
+        offline: { connection: 'Offline', nowMs: 12000 },
+        syncing: { connection: 'Syncing', snapshotEpoch: 12 },
+        expired: { nowMs: 6000 },
+        uncertain: { quality: 'Uncertain' },
+        denied: { canWrite: false },
+        unknown: { unresolvedCommand: true },
+        clock: { clockId: 'mono-B' },
+        source: { sourceFreshConfirmed: false },
+        missing: {
+          value: null,
+          receivedMs: null,
+          snapshotEpoch: null,
+          sourceFreshConfirmed: false,
+        },
+      };
+      function decide(input) {
+        const ageKnown =
+          input.clockId === input.receivedClockId &&
+          Number.isSafeInteger(input.nowMs) &&
+          Number.isSafeInteger(input.receivedMs) &&
+          input.nowMs >= input.receivedMs &&
+          input.receivedMs >= 0;
+        const ageMs = ageKnown ? input.nowMs - input.receivedMs : null;
+        const reasons = [];
+        if (input.connection !== 'Ready')
+          reasons.push(
+            input.connection === 'Offline'
+              ? '離線，無法提交'
+              : '尚在同步，等待新快照',
+          );
+        if (!Number.isFinite(input.value))
+          reasons.push('沒有有效快照，不能以零補值');
+        if (input.quality !== 'Good') reasons.push('來源品質不是 Good');
+        if (ageMs === null) reasons.push('本機收件經過未知');
+        else if (ageMs >= 5000) reasons.push('本機收件經過已達 5000 ms');
+        if (input.snapshotEpoch !== input.epoch)
+          reasons.push('快照不屬於現行世代');
+        if (!input.sourceFreshConfirmed) reasons.push('來源新鮮度尚未確認');
+        if (!input.authenticated || !input.canWrite)
+          reasons.push('沒有有效寫入權限');
+        if (input.unresolvedCommand)
+          reasons.push('前一筆命令結果未知，先釐清結果');
+        return {
+          ageMs,
+          reasons,
+          writeEnabled: reasons.length === 0,
+          queryEnabled: input.connection === 'Ready' && input.authenticated,
+        };
+      }
+      const byId = (id) => document.getElementById(id);
+      let selected = { ...baseline };
+      let simulatedWrites = 0;
+      function render() {
+        selected = { ...baseline, ...cases[byId('scenario').value] };
+        const state = decide(selected);
+        byId('value').textContent = Number.isFinite(selected.value)
+          ? `${selected.value.toFixed(1)} °C`
+          : '—';
+        byId('state').textContent = state.writeEnabled
+          ? '教材條件通過，可做本頁模擬'
+          : '保留快取供查看；不可用於寫入';
+        byId('state').dataset.ready = String(state.writeEnabled);
+        byId('connection').textContent = selected.connection;
+        byId('quality').textContent = selected.quality;
+        byId('age').textContent =
+          state.ageMs === null ? '未知' : `${state.ageMs} ms`;
+        byId('epoch').textContent =
+          `${selected.snapshotEpoch ?? '無'} ／ ${selected.epoch}`;
+        byId('source-check').textContent = selected.sourceFreshConfirmed
+          ? '是（合成條件）'
+          : '否';
+        byId('write').disabled = !state.writeEnabled;
+        byId('query').disabled = !state.queryEnabled;
+        byId('query-reason').textContent = state.queryEnabled
+          ? '線上查詢條件允許；示範按鈕只顯示本機訊息。'
+          : '目前不能線上查詢；仍可打開下方已存快取。';
+        byId('reasons').replaceChildren(
+          ...(state.reasons.length
+            ? state.reasons
+            : ['所有教材條件通過；不代表設備已接受命令']
+          ).map((reason) => {
+            const item = document.createElement('li');
+            item.textContent = reason;
+            return item;
+          }),
+        );
+        byId('feedback').textContent = '';
+        simulatedWrites = 0;
+      }
+      byId('scenario').addEventListener('change', render);
+      byId('local').addEventListener('click', () => {
+        byId('history').hidden = !byId('history').hidden;
+        byId('local').setAttribute(
+          'aria-expanded',
+          String(!byId('history').hidden),
+        );
+      });
+      byId('query').addEventListener('click', () => {
+        byId('feedback').textContent = decide(selected).queryEnabled
+          ? '本機查詢示範：沒有讀取新資料或解除舊值標記。'
+          : '查詢被本頁條件拒絕。';
+      });
+      byId('write').addEventListener('click', () => {
+        // Recheck the same local policy even if the disabled property was changed.
+        if (!decide(selected).writeEnabled) {
+          byId('feedback').textContent = '寫入被本頁條件拒絕。';
+          return;
+        }
+        simulatedWrites++;
+        byId('feedback').textContent =
+          `本機示範接受 ${simulatedWrites} 次；沒有送出設備命令。`;
+      });
+      render();
+    </script>
+  </body>
+</html>

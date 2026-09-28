@@ -1,111 +1,75 @@
 ---
 title: 批次統計的最小值 最大值與平均 如何處理空批次
-description: 透過批次範例示範有效筆數、空批次、全 Bad、負值極值與結算快照，明確區分 totalcount 與 validcount。
-date: 2026-09-21
+description: 用固定的整數縮放離線範例，重現空批次、全 Bad、負值、範圍拒收與筆數上限的批次統計結果。
+date: 2026-09-28
 author: 茂伯
 draft: false
 category: PLC 程式與控制
 ---
 
-## 一 先定義批次邊界與有效資料
+## 先固定資料契約，再算平均
 
-批次統計不是把畫面上看到的數字直接相加。先為每批建立 BatchId、開始與結束時間、totalcount、validcount、sum、min、max，以及每筆的品質狀態。以下以一批包含三筆數值 10、20、30 的資料為例；三筆都通過本案例的範圍與品質檢查，所以 totalcount=3、validcount=3、sum=60、mean=20、min=10、max=30。批次封存後才把這組快照送到報表，避免下一批資料進來時改寫上一批結果。
+下面的範例把工程值放大 10 倍後以整數保存：`-80` 代表 `-8.0`，`1800` 代表 `180.0`。累加、最小值和最大值全程使用整數；平均先保留為「縮放整數總和／筆數」的分數，最後才除以縮放倍率並顯示小數。因此 `-80,-30,-50` 的縮放平均是 `-160 / 3`，工程值是 `-160 / (3 × 10) = -16/3`，約 `-5.333333`；不依賴每筆浮點四捨五入。
 
-要先決定一筆資料何時屬於本批。可以使用設備提供的 BatchId，也可以在接收時間落入已定義的開始與結束邊界時歸批；不能用程式掃描先後猜測跨邊界資料。若結算時間是 10:00:00，規格可寫成開始含、結束不含，9:59:59.900 歸前批，10:00:00.000 歸下一批。這個邊界必須和取樣時間或接收時間的選擇一起記錄。
+本頁附的程式是**離線 JavaScript 驗算範例**，用來確認資料契約與預期結果；它不是 PLC 硬體實作、不是通訊程式，也不宣稱任何廠牌的指令、資料型別或掃描原子性。實際系統的保持區、鎖定、品質旗標和型別容量要由目標控制器與整合設備手冊確認。
 
-有效性檢查要先完成，再更新統計狀態。Bad 品質、超出工程範圍、轉換失敗的實際資料仍可增加totalcount；完全未收到資料的逾時另增timeout_count，不虛構一筆收到資料。這些無效項目不得更新validcount、sum、min、max。若規格要求完全排除這類資料，報表仍要保留 totalcount 與 rejectedcount，否則使用者會把只有一筆有效值的批次誤看成只收到一筆。
+| 固定規則 | 值 | 判讀 |
+| --- | --- | --- |
+| 縮放倍率 | 10 | 工程值 = `scaled / 10` |
+| 每批輸入上限 | 4 筆 | 第 5 筆使整批回報 `INPUT_LIMIT_EXCEEDED`；不產生部分統計 |
+| 可接受範圍 | `-400` 到 `1800`，含端點 | 即 `-40.0` 到 `180.0` |
+| 總和可達範圍 | `-1600` 到 `7200` | 由範圍與 4 筆上限推得，不需猜測容量 |
+| 有效樣本 | `quality === "GOOD"`、值是安全整數、且在上述範圍內 | 三個條件缺一不可 |
 
-| 欄位 | 三筆範例 | 用途 | 封存規則 |
-| --- | --- | --- | --- |
-| BatchId | B-20260917-01 | 識別批次 | 結算後不可改 |
-| totalcount | 3 | 收到的全部筆數 | 含Bad與超範圍 |
-| validcount | 3 | 參與統計筆數 | 只含通過檢查 |
-| sum | 60 | 有效值總和 | 由有效值累加 |
-| mean | 20 | sum/validcount | validcount=0時未定義 |
-| min/max | 10 / 30 | 有效極值 | 第一筆有效值初始化 |
+`inputCount` 是送進離線函式的輸入筆數；只有整批未超過上限時，`totalCount` 才等於已接受檢查的輸入筆數，並包含 Bad 與超範圍值。`validCount` 才是參與統計的筆數。品質、整數或範圍拒收會累加 `rejectedCount`，並留下 `QUALITY_REJECTED`、`VALUE_NOT_SAFE_INTEGER` 或 `RANGE_REJECTED` 原因。若 `inputCount=5`，結果為 `INPUT_LIMIT_EXCEEDED`、`totalCount=0`、`batchError=CAPACITY_LIMIT`，不把第五筆偷算成單筆拒收，也不保留前四筆的部分平均。
 
-若來源一次傳來整包樣本，接收程序仍要逐筆產生索引與品質結果，不能只保留一個包級 Good。包內第 2 筆轉換失敗時，第 1 與第 3 筆仍可參與統計，但 rejectedcount 要記錄 1，並以 sample_index 指向原始位置。這讓操作員能從結算快照回到原始批次，而不是只看到一個平均數。
+## 可直接執行的離線案例
 
-## 二 空批次與全 Bad 批次不能當零
+下載 [可直接執行的離線 ZIP](/examples/batch-statistics/batch-statistics-offline-example.zip)，解壓後在資料夾根目錄執行：
 
-空批次的定義是 totalcount=0，沒有任何資料進入結算窗口，因此 mean、min、max 都是未定義。程式若把它們寫成 0，下一層可能誤判製程平均為零或極值正常。顯示層可以顯示「無資料」，資料欄位則應帶有 Empty 或 NoData 狀態，並保留結算時間與 BatchId。
+```text
+node public/examples/batch-statistics/run-example.mjs
+node --test tests/batch-statistics.test.mjs
+```
 
-只有 Bad 資料的批次是另一種情況。假設 B02 收到三筆 11、12、13，但三筆品質均為 Bad，則 totalcount=3、validcount=0、rejectedcount=3；統計數值仍未定義。這和空批次的 validcount 同為零，但 totalcount 不同，排查時可分辨「沒有送資料」與「資料到達但品質不合格」。
+ZIP 保留 `public/examples/batch-statistics/` 的 [計算模組](/examples/batch-statistics/batch-statistics.mjs)、[固定輸入](/examples/batch-statistics/fixture.json)、[執行器](/examples/batch-statistics/run-example.mjs) 和 `tests/batch-statistics.test.mjs`。第一個指令只讀本機 `fixture.json`，列出每個批次的結果；不連 PLC、不發送網路請求、不寫入資料庫。第二個指令驗證下列邊界，任何一項改變時都能得到可重現的失敗訊息。
 
-不要以 AND 短路或未初始化欄位來湊出結果。每筆先產生 valid、reason、sample_time，再在 valid=true 的分支更新 sum、min、max。結算時另外判斷 validcount=0，建立明確的 NoValidSample 狀態。若資料品質是 Good 但數值超出工程範圍，範圍規則仍可將它標成 RangeRejected；品質與工程有效性要在紀錄中分開。
+| fixture | 輸入 | 預期關鍵結果 |
+| --- | --- | --- |
+| `normal` | 100、200、300，均 Good | `sumScaled=600`、平均 `20.0`、min `10.0`、max `30.0` |
+| `empty` | 無輸入 | `NO_DATA`；sum、mean、min、max 都是 `null` |
+| `allBad` | 三筆值但品質非 Good | `NO_VALID_SAMPLE`；`totalCount=3`、`validCount=0` |
+| `negative` | -80、-30、-50，均 Good | min `-8.0`、max `-3.0`、縮放平均 `-160/3`，工程平均 `-16/3` |
+| `range` | -400、1800、1801，均 Good | 端點有效，`1801` 是 `RANGE_REJECTED` |
+| `capacityAtLimit` | 四筆 1800 | `sumScaled=7200`，剛好是已定義的上界 |
+| `capacityExceeded` | 五筆輸入 | `INPUT_LIMIT_EXCEEDED`，不產生部分統計結果 |
 
-| 批次 | totalcount | validcount | 統計結果 | 可接受顯示 |
-| --- | --- | --- | --- | --- |
-| B01：10,20,30 Good | 3 | 3 | sum60 mean20 min10 max30 | 正常 |
-| B02：無資料 | 0 | 0 | 均未定義 | NoData |
-| B03：11,12,13 全Bad | 3 | 0 | 均未定義 | NoValidSample |
-| B04：-8,-3,-5 Good | 3 | 3 | sum-16 mean-5.333… min-8 max-3 | 正常負值 |
+`sumScaled=0` 只在至少有一筆有效資料時才是統計值；它可能來自正負值相抵，也可能全部有效值都是零。當 `validCount=0`，範例一律輸出 `sumScaled`、`mean`、`minScaled`、`maxScaled` 為 `null`，避免把工作暫存的零誤報為量測結果。
 
-結算視窗也可能只收到部分資料。若規格要求每批應有 10 筆，收到 3 筆 Good 時，統計數學上可以得到 mean=20，但批次狀態應為 Incomplete，不能直接標成 Complete。報表可同時提供暫存統計與完成狀態，待超時或補件後再封存，避免把部分批次誤當完整批次。
+## 移植到 PLC 前怎麼採用這個規則
 
-B04 的平均是 -16/3，約 -5.333333；min 是數值較小的 -8，max 是 -3。若排序比較使用無號型別，-8 可能被當成極大正數，這是型別錯誤而不是統計規則。驗收時要用負值案例、全零案例與單一有效值案例分別測試，不能只用正整數。
+先讓資料來源提供批次識別、樣本順序或時間邊界，並在每一筆到達時先套用品質、整數與工程範圍規則。只有有效樣本可更新累加與極值；第一筆有效樣本同時初始化 min 和 max，不能預設為零。結算時把同一時點的 `totalCount`、`validCount`、拒收原因和統計結果封存，才不會由下一批輸入改寫上一批報表。
 
-空集合的加總可在數學與工作暫存中以零作初值，但平均和極值沒有定義。本文報表在validcount為零時不把sum零當作已測總量，附NoValidSample；工作區仍可用sum=0等待第一筆有效值，兩個角色不要混淆。
+若一批預期必須有 4 筆，收到 3 筆 Good 的數學平均仍可計算，但是否可標示完成要由製程需求另訂。本文僅判斷統計輸入是否符合固定規則，不把它當成產線完成、設備容量或通訊可靠性的證明。
 
-## 三 數值範圍 溢位與計算順序
+排查請依序看：
 
-統計範圍應在資料契約中寫明，例如溫度允許 -40.0 至 180.0 °C，或壓力允許 0 至 16.0 bar。收到 181.2 時，先保留 raw 與接收紀錄，再依規格標成 RangeRejected；不要先把它夾到 180.0 再假裝是有效測量。夾限可作為另一路顯示值，但不能覆蓋原始值與拒收原因。
+1. `totalCount=0`：檢查批次觸發、時間邊界或來源是否送出資料。
+2. `totalCount>0` 且 `validCount=0`：依拒收原因檢查品質旗標、整數轉換與工程範圍。
+3. `INPUT_LIMIT_EXCEEDED`：不要採用部分平均；此範例會顯示 `inputCount` 和批次層級的 `CAPACITY_LIMIT`，先處理批次切分、緩衝或規格中的預期筆數。
+4. `validCount>0` 但結果異常：回查縮放倍率、原始整數與 batch ID，而非先修改公式。
 
-sum 的容量要用最大可能有效值乘以批次最大筆數估算。若批次最多 2000 筆、每筆最大 100000，sum 上限是 200000000；若再允許負值，需檢查有號範圍。mean 應在結算時以 sum/validcount 計算，並保留未四捨五入的中間結果，最後一次才依報表小數位格式化。
+實際部署若需要小數解析、較大筆數、溢位偵測、重送去重或斷電復原，先把新的上限、拒收規則與驗收 fixture 一起加進測試；不要只把本頁常數放大後假定仍然安全。
 
-極值更新應與累加分開。第一筆有效值同時設 min=max=value；後續逐筆比較。若某筆造成 sum 溢位但 min/max 尚可更新，整批仍應標為 ArithmeticOverflow，不能只顯示兩個看似正常的極值。更寬型別或分段累加可以降低風險，但實際型別、轉換與對齊仍要查目標 PLC 手冊。
+## 常見問題
 
-| 檢查項 | 測試輸入 | 預期狀態 | 不可採用的結果 |
-| --- | --- | --- | --- |
-| 範圍下界 | -40.0 | 有效並可更新 | 先夾成0 |
-| 範圍外 | 181.2 | RangeRejected | 當成180.0有效 |
-| 筆數上限 | 2000筆×100000 | sum上限200000000 | 用16位sum |
-| 負值極值 | -8,-3,-5 | min-8 max-3 | 以0作初始max |
-| 除數 | validcount=0 | 未定義 | mean=0 |
+問：空批次的平均可否顯示 0？答：不可以。0 是可能的測量結果，空批次必須是 `NO_DATA`，並讓統計欄位維持未定義。
 
-對整數累加要特別檢查符號轉換。若原始 -8 先被存入無號欄位再轉回顯示，可能變成很大的正數；若 sum 使用窄型別，負值相加也會下溢。測試資料應覆蓋最小允許值、最大允許值、正負交替與接近容量上限的批次，並把算術錯誤寫入 reason。
+問：全 Bad 和空批次有何不同？答：全 Bad 有輸入，所以 `totalCount` 大於 0 且可從拒收原因追查；空批次的 `totalCount` 是 0。
 
-若採用整數縮放，例如原始值 253 代表 25.3 °C，sum可以先累加原始整數；結算平均時除以validcount，再除倍率10，或在足夠寬型別中一次除以validcount×10；不要每筆先轉浮點再反覆四捨五入。這樣既能保留原始精度，也方便在報表中說明平均值的單位與四捨五入規則。
-
-## 四 結算快照 重複結算與故障排查
-
-結算要取得一致快照：先停止接受屬於本批的輸入，或以雙緩衝將寫入區與結算區分開，再複製 BatchId、計數、sum、min、max 與狀態。若結算同時有新資料寫入，可能出現 validcount 已增加但 sum 尚未增加的混合結果。具體採哪種鎖定或快照方式必須依目標平台能力設計，不能假定單次掃描就自動原子。
-
-結算完成後保存一份不可變結果，包含 started_at、ended_at、closed_at、來源與規則版本。收到相同 BatchId 的重送資料時，依規格標成 DuplicateBatch 並保留原始封存，不可再次加到下一批。下一批開始時要清除的是工作區，不是刪掉上一批的稽核結果。
-
-排查時先看 totalcount 與 validcount 的關係，再看 rejected reason。totalcount=0 指向批次界線、觸發或來源未送資料；totalcount>0 且 validcount=0 指向品質、範圍或轉換規則；validcount 正常但平均突變，才進一步比對單筆 raw、單位、型別與批次時間。這種順序可避免一看到平均值就修改運算式。
-
-| 現象 | 先查欄位 | 可能原因 | 驗收修正 |
-| --- | --- | --- | --- |
-| mean顯示0 | validcount/status | 空批次被當0 | 顯示NoData |
-| min總是0 | hasvalid與型別 | 初始化固定0 | 第一筆有效值初始化 |
-| total=3 valid=0 | 品質與reason | 全Bad或越界 | 保留NoValidSample |
-| sum忽大忽小 | 快照與溢位旗標 | 結算競態/容量不足 | 雙緩衝與寬型別 |
-| 同批重複加總 | BatchId/closed_at | 重送未去重 | DuplicateBatch拒收 |
-
-若資料在結算期間以通訊重送方式到達，可用 BatchId 加 sample_index 去重；若沒有穩定識別，不能只用數值相同判斷重複，因為兩筆相同的 20 可能是真實樣本。驗收記錄要包含原始接收順序、去重判定與最後快照版本，才能重現一次「平均突然改變」的事件。
-
-離線驗收可建立四批：B01 三筆 Good、B02 空批、B03 三筆全 Bad、B04 三筆負值，再加入一筆超範圍與一次重複結算。逐項比對 raw、totalcount、validcount、sum、mean、min、max、status；只有所有欄位一致，才可把統計顯示接到操作畫面。
-
-## 五 驗收 FAQ 與來源
-
-本題驗收以 B01 的 10、20、30 為正常基準，應得到 count=3、sum=60、mean=20、min=10、max=30；B02 空批次與 B03 全 Bad 都應保持統計未定義，B04 負值應得到 min=-8、max=-3、mean=-16/3。來源僅用於數學定義與統計行為參考，實際 PLC 型別與資料區仍須依目標手冊核對。
-
-統計暫存區要和顯示區分離。sum 可用較寬的整數或浮點型別，validcount 應使用足以容納整批資料的非負計數。若資料全為正值，min初始化為0會錯誤地保留0；若資料全為負值，max初始化為0會錯誤地保留0；正確做法是以 hasvalid=false 開始，第一筆有效值同時寫入 min 與 max，然後才比較後續資料。
-
-FAQ1：空批次的平均可以寫 0 嗎？答：不能把 0 當統計結果。validcount=0 時 mean、min、max 未定義；顯示層可顯示 NoData，但資料層要保留 status。
-
-FAQ2：三筆全 Bad 與空批次有何差別？答：兩者 validcount 都是 0，但全 Bad 批次的 totalcount 是 3，並有每筆品質與拒收原因；空批次 totalcount 是 0。
-
-FAQ3：min 為何不能一開始設 0？答：正值批次10、20、30會讓min錯誤保留0；負值批次若max初始化0，也會錯誤保留0。應以 hasvalid=false 開始，第一筆有效值同時初始化 min 與 max。
-
-FAQ4：能否直接把超範圍值夾到上下限後統計？答：只有資料契約明確把夾限值定義為有效替代值才可以；否則要保留 raw 並標 RangeRejected，不能悄悄改變統計。
-
-參考：[Python statistics 官方文件：mean、fmean 與空資料例外的定義，僅作數學參考，非 PLC API。](https://docs.python.org/3/library/statistics.html)
-
-參考：[Python math 官方文件：有限值、NaN 與數值運算行為參考，非 PLC 型別規格。](https://docs.python.org/3/library/math.html)
+問：範例為何不直接提供 PLC 程式？答：品質旗標、整數寬度、持久化與同步方式會隨控制器和架構改變。此範例只固定可驗算的資料行為，實作前需依實際平台設計。
 
 ## 延伸閱讀
 
-- [溫度補償參數更新如何避免混合資料](/articles/temperature-compensation-parameter-versioning)
-- [百分比變更率遇到前值為零 如何定義結果](/articles/percent-change-zero-baseline)
+- [PLC 型別轉換的小數 截斷與超範圍處理](/articles/plc-type-conversion-truncation-range)
+- [不良品重測怎麼記錄 PLC 流程避免重算產量](/articles/plc-retest-yield-accounting)

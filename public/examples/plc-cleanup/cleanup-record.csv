@@ -1,0 +1,8 @@
+item_id,application,variable_path,mechanism,before_cleanup,action,expected_after,observed_after,evidence_path,checked_at,result_status
+F1,,PLC_PRG.WriteForceProbe,Debug Force Values,,Unforce All Values,FALSE after program cycle,,,,not_run
+F2,,current application force list,Watch All Forces,,refresh list,no ordinary forced entries in this application,,,,not_run
+S1,,PLC_PRG.SimMode,application source selector,,Write FALSE,FALSE,,,,not_run
+S2,,PLC_PRG.InputSource,application source selector,,read after cycle,2,,,,not_run
+D1,,PLC_PRG.ProbeEntrySeen,diagnostic latch,,Write ClearProbeEvidence TRUE then read,FALSE,,,,not_run
+P1,,Prepared Value fields,prepared writes,,toggle BOOL prepared fields to empty and reopen Declaration/Watch,no remaining unintended prepared write,,,,not_run
+M1,,development session,Simulation mode,,Logout then disable Simulation,logged out and Simulation disabled,,,,not_run

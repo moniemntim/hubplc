@@ -1,0 +1,8 @@
+case_id,injection_point,reference_value,expected_raw_from_manual,measured_current_mA,observed_raw,observed_engineering,quality,source_age_ms,channel_path,manual_reference,instrument_id,measured_at,result_status,evidence_path
+L2_LOW,module_terminal,4 mA,,,,,,,,,,,not_run,
+L2_MID,module_terminal,12 mA,,,,,,,,,,,not_run,
+L2_HIGH,module_terminal,20 mA,,,,,,,,,,,not_run,
+L3_LOW,physical_reference,application lower endpoint,,,,,,,,,,,not_run,
+L3_MID,physical_reference,application midpoint,,,,,,,,,,,not_run,
+L3_HIGH,physical_reference,application upper endpoint,,,,,,,,,,,not_run,
+RESTORE,normal_sensor_chain,remove test source and confirm actual input,,,,,,,,,,,not_run,

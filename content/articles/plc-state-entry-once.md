@@ -1,113 +1,120 @@
 ---
-title: 狀態進入時只執行一次 如何分開初始化與每掃描動作
-description: 把狀態進入、持續與離開分開，以逐掃描案例確認初始化只執行一次。
-date: 2026-09-17
+title: PLC 狀態進入只執行一次：把初始化、持續取樣與離開保存分開
+description: 下載逐掃描離線模型，固定由呼叫端提供已核准狀態，驗證 RUN 初始化只做一次與舊批快照不被新批清除。
+date: 2026-09-28
 author: 茂伯
 draft: false
 ---
 
-## 先把三種動作分清楚
+## 本文只處理狀態邊界的資料責任
 
-你在 PLC 裡做狀態機時，最常見的錯誤是把「進入狀態」和「留在狀態」寫在同一個條件。只要目前狀態等於 RUN，清除緩衝區的線圈就會每一掃描重複動作，累加值也可能被清成零。本篇先定義三類動作：進入只做一次、持續動作每掃描做、離開時清理一次。以下以 WAIT、RUN、DONE 三個虛擬狀態說明，程式碼是設計用偽碼，不能直接宣稱可在 Q 系列編譯。
+一項工作進入 RUN 時，通常要清除本批累計值 `BatchSum` 和樣本數 `SampleCount`；RUN
+期間每取得一筆有效樣本就累加；離開 RUN 時保存結果。若把清除條件寫成
+`StateNow = RUN`，每一掃描都會清零，最後只剩最後一筆樣本。
 
-| 動作類型 | 判斷條件 | 範例 |
-| --- | --- | --- |
-| 進入初始化 | 目前狀態≠前次狀態，且目前=RUN | 清除測試緩衝、載入本次起始值 |
-| 持續動作 | 目前=RUN | 每掃描累加取樣、檢查完成條件 |
-| 離開清理 | 前次=RUN，目前≠RUN | 關閉允許訊號、保存結果 |
+本範例**不決定任何狀態轉移**。每次呼叫由呼叫端傳入本次已核准的 `StateNow`；模型只保存
+上一個已取樣狀態 `StatePrev`，並處理初始化、取樣和保存。它是本站的 JavaScript
+**離線模型**，不是 PLC 程式、原廠模擬器或實機結果，不控制輸出、Start、Stop、故障、逾時
+或轉移優先序。
 
-1. 先列出所有狀態與合法轉移，再為每個狀態寫進入、持續、離開三欄。
+下載以下兩個檔案到同一資料夾，以 Node.js 22 以上執行：
 
-2. 建立 state_prev 與 state_now；每一掃描結束才把 now 複製到 prev。
+- [entry-model.mjs：狀態邊界資料模型](/examples/plc-edges/entry-model.mjs)
+- [entry-demo.mjs：S1–S9 的可重現案例](/examples/plc-edges/entry-demo.mjs)
 
-3. 決定重新進入 RUN 是否重新清除緩衝；本例答案是「要」，但同一狀態停留不清除。
-
-## 建立一次進入事件
-
-在一掃描開始，先讀取目前狀態，再計算 entry_run。規則是 state_now=RUN 且 state_prev≠RUN。初始化放在 entry_run 分支；累加和逾時檢查放在 state_now=RUN 分支。掃描末端才更新 state_prev，這樣 RUN 連續十個掃描只會有一個進入脈衝。若上電後兩個變數都被初始化成 WAIT，第一次切到 RUN 也能產生進入事件。
-
-```text
-教學偽碼，非指定PLC語法：
-掃描開始：state_now := 上一掃描核准的pending_state
-entry_run := state_now=RUN 且 state_prev≠RUN
-exit_run := state_prev=RUN 且 state_now≠RUN
-若entry_run：test_buffer:=0；sample_count:=0
-若state_now=RUN且sample_valid：累加sample；sample_count加一
-若exit_run：保存本次資料與離開原因
-pending_state := 根據state_now及本次輸入選擇一個合法下一狀態
-run_enable := state_now=RUN 且沒有停止或故障
-掃描末端：state_prev := state_now
-停止與故障直接遮罩輸出，不等下一掃描。
+```powershell
+node entry-demo.mjs
 ```
 
-| 掃描 | state_prev | state_now | entry_run | 結果 |
-| --- | --- | --- | --- | --- |
-| S1 | WAIT | WAIT | 0 | 不清除 |
-| S2 | WAIT | RUN | 1 | 清除一次、開始累加 |
-| S3 | RUN | RUN | 0 | 只累加 |
-| S4 | RUN | DONE | 0 | 執行離開清理 |
-| S5 | DONE | RUN | 1 | 重新進入，再清除一次 |
+輸出是 CSV。S2 完整列應為 `2,RUN,WAIT,1,0,12,1,12,1,1,,,0`，代表進入 RUN 後先清零、
+再收樣本 12；S6 應為 `6,DONE,RUN,0,1,99,0,25,3,1,25,3,1`，代表 NOW 已非 RUN，99
+不會被收樣本，但保存 25/3 一次。欄位名稱在第一列，方便直接匯入試算表比對。
 
-## 掃描模型的陷阱與測試
+## 固定初值、輸入和寫入責任
 
-若同一掃描內先把 WAIT 改成 RUN，又立刻改成 DONE，掃描末端只看得到 DONE，RUN 的進入事件會漏掉。你必須選一個規則：限制每掃描最多一次狀態轉移，或改用事件佇列保存中間轉移。本篇採前者，所有轉移要求在下一掃描才生效；若設備真的需要同掃描多階段，請另設 transition_event 陣列並逐項消費。
-
-| 測試情境 | 預期 | 不符時先查 |
+| 欄位 | 初值或輸入 | 模型中的責任 |
 | --- | --- | --- |
-| RUN 停留 5 掃描 | 清除 1 次、累加 5 次 | entry 條件是否誤用 state_now=RUN |
-| RUN→DONE | 執行一次離開清理 | prev 是否在掃描末端更新 |
-| DONE→RUN | 重新初始化一次 | 是否把 DONE 當成 RUN 的前態 |
-| 異常跳 WAIT→DONE | 不可執行 RUN 初始化 | 轉移表是否允許未定義路徑 |
-| 重新啟動後 RUN | 依規格選擇恢復或重新初始化 | 保持區與上電初始化規則 |
+| `StateNow` | 每次呼叫由外部提供 | 已核准狀態，只接受 WAIT、RUN、DONE |
+| `StatePrev` | WAIT | 模型保存前一次 StateNow；不由其他程式段改寫 |
+| `Sample` | 每次呼叫可為數值或空值 | 只有 StateNow=RUN 且為數值時才收進工作區 |
+| `BatchSum` / `SampleCount` | 0 / 0 | 目前 RUN 批次的工作區 |
+| `EntryCount` | 0 | 每次由非 RUN 進入 RUN 才加一 |
+| `SavedSum` / `SavedCount` | 空值 / 空值 | 只在離開 RUN 時複製工作區，之後新批不改寫 |
 
-表格的同一案例設定S2進入RUN時sample_valid=1、sample=12，因此先清零再累加成12；S3加入8，累計20；S4進DONE時保存20，不累加；S5再次進RUN，sample_valid=0，所以清零後保持0。若每掃描都清除，S3只剩8，就能看出錯誤。
-
-實際寫圖時，把每個狀態的進入動作集中在同一網路或同一個功能區，並在旁邊註明觸發來源。不要在不同子程式各自修改 state_prev，否則先後順序會讓 entry_run 不可信。若有中斷或通訊任務會改 state_now，應先把請求寫入 next_state_request，由主循環統一核准；這樣一掃描一次轉移的規則才成立。狀態完成後若仍收到舊的完成脈衝，必須以 job_id 或目前狀態拒絕，避免上一批次的訊號觸發下一批次初始化。測試時也要故意在 entry_run 那一掃描觸發警報，確認初始化資料已清除但虛擬輸出仍被故障條件遮罩。
-
-## 操作流程與驗收
-
-本例在掃描開始採用上一掃描已核准的狀態，再比較state_prev與state_now；掃描內只決定一個pending_state，下一掃描生效。離開事件以prev=RUN且now≠RUN判斷。上升緣也可用「state=RUN」布林條件實作，但仍需正確保存前次值。
-
-當你把這套規則搬到實際專案，請先用一個不連接設備的虛擬請求做逐掃描驗證。每次只允許主循環在掃描末端提交 next_state，下一掃描才成為 state_now；因此 WAIT 到 RUN、RUN 到 DONE 不會在同一掃描跳過邊界。若確實需要立即跳轉，請把每次轉移包成事件並設定最大事件數，佇列滿時產生溢位警報。對每個進入事件配置 enter_sequence，初始化完成才設為有效；初始化失敗時保留在 INIT_FAULT，不得假裝已進入 RUN。對離開事件也要設定 cleanup_done，防止通訊重送或重複邊沿再次保存結果。這些欄位要放入監看表，並在測試紀錄寫出掃描編號、前狀態、後狀態、事件計數與資料值。如此即使日後修改狀態圖，也能快速找出是哪一條轉移破壞了一次性規則。
-
-1. 畫出狀態轉移圖，標記每一條邊的觸發條件。
-
-2. 在監看表同時放 state_prev、state_now、entry_run、exit_run、test_buffer。
-
-3. 先以強制的虛擬請求做 WAIT→RUN→DONE→RUN，逐掃描記錄表格。
-
-4. 再測試重複請求、非法轉移、逾時及重新啟動；把每個結果寫入測試紀錄。
-
-## 操作流程與驗收 續
+模型的唯一順序是：先以 StateNow 與 StatePrev 計算進入／離開；進入時清工作區；**僅在
+StateNow=RUN 時**收數值樣本；離開時把工作區複製到保存快照；最後把 StateNow 保存為下次
+的 StatePrev。`StateNow` 不是模型內部推導出來的，因此本文不提供 NextState、PendingState
+或狀態機轉移圖。
 
 ```text
-實作時請把狀態轉移寫成一張可逐格驗證的表。假設按下啟動後，WAIT 在 S10 變成 RUN，S11 到 S14 都維持 RUN，S15 因完成條件變成 DONE。S10只能清除一次，若當次樣本有效則在清除後累加；S11～S14 每掃描累加一次；S15 要先保存結果再關閉輸出。若啟動按鈕在 S12 仍保持 ON，不應重新初始化，因為啟動是請求而不是進入事件。你可以在監看表加一個 entry_counter，每次 entry_run=1 才加一，測試五次重入後應為五。
-邊界案例一是兩個條件同時要求轉移，例如完成與停止同時成立。規格必須給出優先序，本例採故障最高、停止其次、完成最後；因此同一掃描若 stop 與 done 同時為真，下一狀態是 WAIT，下一掃描辨認離開RUN並清理，本次先撤銷輸出，不執行 DONE 的完成處理。邊界案例二是狀態碼被通訊寫成 99，程式不可把它當成 RUN；應進入 SAFE 或 FAULT，關閉需要互鎖的輸出並留下原始碼。邊界案例三是重新啟動時 state_prev 與 state_now 不一致，先以初始化規則把兩者同步，再決定是否要求操作者重新啟動工作，避免上電瞬間誤發 entry。
+EnterRun := (StateNow = RUN) AND (StatePrev <> RUN)
+ExitRun  := (StatePrev = RUN) AND (StateNow <> RUN)
+
+IF EnterRun THEN
+    BatchSum := 0
+    SampleCount := 0
+    EntryCount := EntryCount + 1
+END_IF
+
+IF (StateNow = RUN) AND (Sample 有數值) THEN
+    BatchSum := BatchSum + Sample
+    SampleCount := SampleCount + 1
+END_IF
+
+IF ExitRun THEN
+    SavedSum := BatchSum
+    SavedCount := SampleCount
+    SaveCount := SaveCount + 1
+END_IF
+
+StatePrev := StateNow
 ```
 
-### 完成後應看到什麼結果
+## 實跑 S1–S9：12、8、5 不能被重複清除
 
-RUN 的清除或載入動作只在 entry_run=1 的一個掃描發生；RUN 期間累加值連續增加；離開時只保存一次；再次進入 RUN 才重新建立初值。
+`entry-demo.mjs` 執行的輸入與輸出如下。Prev 是該掃描開始時保存的前態；S6 故意傳入
+`Sample=99`，用來證明 StateNow=DONE 時樣本不會被收進 RUN 工作區。
 
-### 失敗時先查哪裡
+| 掃描 | Prev | StateNow | Sample | EnterRun / ExitRun | BatchSum / SampleCount | SavedSum / SavedCount | EntryCount / SaveCount | 判讀 |
+| --- | --- | --- | --- | --- | --- | --- | --- | --- |
+| S1 | WAIT | WAIT | — | 0 / 0 | 0 / 0 | — | 0 / 0 | 待機 |
+| S2 | WAIT | RUN | 12 | 1 / 0 | 12 / 1 | — | 1 / 0 | 先清零，再收第一筆 |
+| S3 | RUN | RUN | 8 | 0 / 0 | 20 / 2 | — | 1 / 0 | 停留 RUN，只累加 |
+| S4 | RUN | RUN | — | 0 / 0 | 20 / 2 | — | 1 / 0 | 沒有樣本，資料保留 |
+| S5 | RUN | RUN | 5 | 0 / 0 | 25 / 3 | — | 1 / 0 | 第三筆加入本批 |
+| S6 | RUN | DONE | 99（忽略） | 0 / 1 | 25 / 3 | 25 / 3 | 1 / 1 | 離開 RUN，只保存一次 |
+| S7 | DONE | DONE | — | 0 / 0 | 25 / 3 | 25 / 3 | 1 / 1 | 停留 DONE，不重複保存 |
+| S8 | DONE | RUN | — | 1 / 0 | 0 / 0 | 25 / 3 | 2 / 1 | 新批清工作區，舊快照不變 |
+| S9 | RUN | RUN | 7 | 0 / 0 | 7 / 1 | 25 / 3 | 2 / 1 | 新批獨立累加 |
 
-先看 prev 是否真的保存上一掃描，再看狀態是否被同一掃描內多次改寫，最後查上電初始化、保持裝置與非法轉移的處理。不要先用延時掩蓋狀態邊界錯誤。
+S2 若反過來先收樣本才清零，12 會消失。S3 若誤用 `StateNow=RUN` 當作進入條件，結果會變成
+8/1，而不是 20/2。S6 的 StateNow 已是 DONE，故模型不收 99；它只保存 S5 留下的 25/3。
+這是本文固定的資料規則，不是等待呼叫端下一掃描才切狀態的替代設計。
 
-### 適用型號與限制
+## 用模型作離線驗收
 
-概念適用於 Q06UDVCPU 等以循環掃描執行順序控制的系統；實際語言、保持範圍、任務或中斷行為須依 CPU 型號、參數與 GX Works 版本核對。
+測試檔會重跑 S1–S9 並驗證：
 
-## 常見問題與來源
+1. EntryCount 只在 S2 和 S8 變化，最後為 2。
+2. SaveCount 只在 S6 變化，S7 仍為 1。
+3. S8 清除新的工作區後，SavedSum/SavedCount 仍是 25/3；S9 也不會改寫。
+4. S6 傳入的 99 不會被收樣本，因為 StateNow 不是 RUN。
 
-### FAQ
+模型拒絕未知狀態、非有限數值樣本、累加後會變成非有限數值的資料，以及會超過
+`Number.MAX_SAFE_INTEGER` 的計數器，避免成功回傳下一次必定無法接受的狀態。這仍只驗證
+JavaScript 的輸入合約，沒有驗證 PLC 的資料型別轉換、保持區、I/O 更新、中斷、輸入取樣或
+現場設備行為。
 
-問：可以用上升緣嗎？可以，對「state=RUN」條件取上升緣等同辨認進入，但前次狀態與初始化仍需正確管理。
+狀態進入可視為「`State=RUN` 的上升緣」。Siemens 的官方文件說明邊沿判斷會保存前一狀態，
+且程式必須處理第一次執行的初始值；它支持本文以 Prev/Now 辨認邊界的概念，並不提供這裡的
+批次清除、保存或設備狀態機實作。
 
-問：RUN內能再次清除嗎？只有明訂的子週期重置才可，否則累加資料會遺失。問：同掃描跳過中間狀態怎麼辦？本例限制一次轉移，若應用需要多次轉移，應另設有容量與溢位規則的事件記錄。
+參考：[Siemens STEP 7：正、負邊沿指令](https://docs.tia.siemens.cloud/r/en-us/v21/fbd-s7-1200-s7-1500-s7-1200-g2/bit-logic-operations-s7-1200-s7-1500-s7-1200-g2/positive-and-negative-edge-instructions)。
 
-參考：[三菱 QnUCPU 使用手冊 程式執行與裝置資料](https://dl.mitsubishielectric.com/dl/fa/document/manual/plc/sh080807eng/sh080807engaf.pdf)
+本文沒有在 Q06UDVCPU、GX Works、Siemens、Schneider 或任何硬體上編譯或執行。真正的
+狀態轉移、停止與安全遮罩、資料溢位、保持和異常復原，必須由目標工程另行設計及驗證。
 
 ## 延伸閱讀
 
-- [暫停 繼續 取消與重置 如何避免 PLC 流程重新做錯一步](/articles/plc-pause-resume-cancel-reset)
-- [執行中修改參數會發生什麼 PLC 工作參數快照設計](/articles/plc-parameter-snapshot)
+- [三步驟順序控制：WAIT、RUN、DONE 與故障復歸](/articles/plc-state-machine-three-step-sequence)
+- [上升緣與下降緣：用逐掃描模型確認長按只送一次命令](/articles/plc-rising-falling-edge-button-event)

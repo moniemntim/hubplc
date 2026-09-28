@@ -1,0 +1,159 @@
+<!doctype html>
+<html lang="zh-Hant">
+  <meta charset="utf-8" /><meta
+    name="viewport"
+    content="width=device-width,initial-scale=1"
+  />
+  <title>INT16 與欄位裁切離線演練</title>
+  <style>
+    * {
+      box-sizing: border-box;
+    }
+    body {
+      margin: 0;
+      background: #f3f6fa;
+      color: #15263b;
+      font: 16px/1.6 system-ui;
+    }
+    main {
+      max-width: 760px;
+      margin: auto;
+      padding: 20px;
+    }
+    section {
+      background: white;
+      border: 1px solid #bcc9d7;
+      border-radius: 12px;
+      padding: 16px;
+      margin: 16px 0;
+    }
+    input,
+    select,
+    button {
+      font: inherit;
+      max-width: 100%;
+      padding: 8px;
+    }
+    label {
+      display: block;
+      margin: 10px 0;
+    }
+    dd {
+      margin: 0 0 12px;
+      overflow-wrap: anywhere;
+    }
+    dt {
+      font-weight: bold;
+    }
+    .preview {
+      font: 32px/1.5 monospace;
+      white-space: nowrap;
+      overflow: hidden;
+      border: 2px solid #62748a;
+    }
+    .preview span {
+      display: inline-block;
+    }
+    #full {
+      font: 24px monospace;
+      overflow-wrap: anywhere;
+    }
+    h1 {
+      font-size: 26px;
+    }
+    code {
+      overflow-wrap: anywhere;
+    }
+  </style>
+  <main>
+    <h1>INT16 與欄位裁切</h1>
+    <p>
+      純瀏覽器離線教材；沒有 PLC
+      連線或寫入。窄欄位刻意保留裁切，完整值永遠另列。
+    </p>
+    <section>
+      <label
+        >原始整數文字
+        <input id="raw" value="10000" maxlength="8" autocomplete="off" /></label
+      ><label
+        >預覽寬度
+        <select id="width">
+          <option value="64">窄：64 px</option>
+          <option value="200">寬：200 px</option>
+        </select></label
+      ><button id="reset">Reset</button>
+      <p>只接受 ASCII 整數，最多 8 字元；不自動去空白、加單位或轉小數。</p>
+    </section>
+    <section>
+      <h2>刻意裁切的預覽</h2>
+      <div class="preview" id="preview"><span id="value"></span></div>
+      <p id="layout" role="status"></p>
+      <h2>完整值（不裁切）</h2>
+      <div id="full"></div>
+    </section>
+    <section>
+      <h2>診斷紀錄</h2>
+      <dl>
+        <dt>rawText</dt>
+        <dd id="raw-out"></dd>
+        <dt>資料狀態</dt>
+        <dd id="data"></dd>
+        <dt>parsed INT16</dt>
+        <dd id="parsed"></dd>
+        <dt>原因</dt>
+        <dd id="reason"></dd>
+      </dl>
+      <p>
+        資料錯誤時 parsed 為 null，預覽顯示
+        —；不回捲、不夾到上限，也不沿用上一個有效值。欄位寬度只改呈現。
+      </p>
+    </section>
+  </main>
+  <script>
+    'use strict';
+    const $ = (id) => document.getElementById(id);
+    function render() {
+      const raw = $('raw').value;
+      let status = 'INVALID_FORMAT',
+        reason = '必須為 ASCII 整數；不接受空白、小數、指數、加號或單位。',
+        parsed = null;
+      if (raw.length > 8) {
+        status = 'INPUT_TOO_LONG';
+        reason = '超過 8 字元；拒絕解析。';
+      } else if (raw.length > 0 && /^-?(0|[1-9][0-9]*)$/.test(raw)) {
+        const wide = BigInt(raw);
+        if (wide < -32768n || wide > 32767n) {
+          status = 'OUT_OF_INT16_RANGE';
+          reason = '超出 -32768…32767；保留原文，拒絕轉型。';
+        } else {
+          status = 'OK';
+          parsed = Number(wide);
+          reason = '先以 BigInt 檢查範圍，再轉為安全整數。';
+        }
+      }
+      $('raw-out').textContent = JSON.stringify(raw);
+      $('data').textContent = status;
+      $('parsed').textContent = parsed === null ? 'null' : String(parsed);
+      $('reason').textContent = reason;
+      const display = parsed === null ? '—' : String(parsed);
+      $('value').textContent = display;
+      $('full').textContent = display;
+      $('preview').style.width = $('width').value + 'px';
+      $('layout').textContent =
+        parsed === null
+          ? 'NOT_APPLICABLE：資料未通過'
+          : $('preview').scrollWidth > $('preview').clientWidth
+            ? 'LAYOUT_OVERFLOW：請看下方完整值'
+            : 'LAYOUT_OK：完整可見';
+    }
+    $('raw').addEventListener('input', render);
+    $('width').addEventListener('change', render);
+    $('reset').onclick = () => {
+      $('raw').value = '10000';
+      $('width').value = '64';
+      render();
+    };
+    window.addEventListener('resize', render);
+    render();
+  </script>
+</html>

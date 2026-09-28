@@ -1,121 +1,74 @@
 ---
-title: 兩個流程共用一個資源 PLC 排他控制與公平排程
-description: 用單一仲裁器分配共用模組，處理等待、釋放、取消及逾時鎖定。
+title: PLC 共用資源排程：用 FCFS 保證一次只授權一站
+description: 下載 Node 離線逐掃描模型，重現 A/B 同時請求、序號排隊、釋放空掃描、逾時故障鎖與安全復歸邊界。
 date: 2026-09-17
 author: 茂伯
 draft: false
+category: PLC 程式與控制
 ---
 
-## 先定義資源的唯一主人
+## 先定義本例的時間、序號與優先順序
 
-兩個虛擬工站 A、B 共用一個檢測模組時，不能只把兩個允許線圈 OR 在一起；同一掃描可能同時得到允許，下一掃描也不知道誰該釋放。先建立 owner：NONE、A、B；request_a/request_b；busy；grant；release；timeout。資源規則是 owner 不是 NONE 時，另一站永遠不能進入使用段，且只有 owner 能釋放。
+這是 Node.js 24.19.0 的離線逐掃描教材。每次函式呼叫輸入一個單調、不倒退的安全整數 `nowMs`，沒有連接 PLC、安全控制器、HMI、共用模組或原廠模擬器。它只重現一個序列化的 JavaScript 狀態轉換，不能證明實際 task 同步、設備安全狀態或任何機種相容性。
 
-| 欄位 | 意義 | 改變者 |
-| --- | --- | --- |
-| owner | 目前唯一使用者 | 仲裁器 |
-| request | 等待使用的請求 | 工站 |
-| grant | 本掃描核准脈衝 | 仲裁器 |
-| release | 工作完成通知 | owner 工站 |
-| timeout | 逾時事件 | 監視器 |
+A、B 各最多有一筆 pending。`requestA` 或 `requestB` 的上升沿才會建立 pending；保持為 1 不會再建第二筆。序號從 1 起遞增，上限 1000000，取消後也不重用。若 A、B 同一掃描一起上升，模型先替 A 配序號、再替 B 配序號，因此 A 是明示的同掃描決勝規則，不是程式排列的隱藏偏好。
 
-1. 先畫 NONE→A/B、A/B→NONE 的合法轉移。
+FCFS 只比較有效 pending 的最小序號。request 從 1 變 0 不等於取消，pending 會保留；只有 `cancelA` 或 `cancelB` 才在仲裁前刪除它，所以取消的 pending 不會被授權。owner 的 cancel 不是 release：模型只記錄 `owner_A_cancel_requires_controlled_stop` 或 B 的同類事件，受控停止要另外設計；在有效 release 或 timeout 前，owner 的 enable 仍維持，不能用 cancel 直接交給另一站。
 
-2. 規定同時請求時採先到先服務；同一掃描同時到達則固定 A 優先。
+## 工作、釋放與逾時
 
-3. 規定 owner 逾時後進入 FAULT_LOCK，人工確認或明確復歸才回 NONE。
+授權後，state 有唯一的 `owner` 和 `ownerJobSeq`；只有它對應的 `{ owner, jobSeq }` release 才有效。成功 release 會清 owner，但**該掃描不再授權**，下一掃描才對剩餘 pending 仲裁。這讓監看表能清楚分開「釋放」與「下一站取得」。
 
-## 選排程規則並消除掃描偏差
+每次 grant 設定 `deadlineMs = nowMs + maxHoldMs`。下一次或之後的掃描只要 `nowMs >= deadlineMs`，逾時優先於 release：進入 `FAULT_LOCK`、保留原 owner 與 jobSeq、撤銷 A/B enable，不能當成閒置資源授給 B。`maxHoldMs` 本例限定 1 到 60000。`nowMs` 可以到 `Number.MAX_SAFE_INTEGER`，讓已建立且等於此值的 deadline 仍可被觀察到 timeout；只有新 grant 會檢查加法空間，若 `nowMs + maxHoldMs` 超出安全整數，pending 保留並記錄 `clock_exhausted`，不建立回捲 deadline。
 
-固定優先容易讓 B 飢餓；單純每掃描先檢查 A，也會讓掃描順序變成隱藏優先。這篇採簡化先到先服務：記錄 request_seq，請求成立時取得遞增序號；同掃描到達依A先B後分配序號，這是明訂的決勝規則。資源釋放後才選下一位，不能在 owner 尚未清除的同一邏輯段又授予另一站。
+FAULT_LOCK 復歸必須是新的 `resetFault` 上升沿，並同時輸入 `moduleReady=true` 和 `safetyConfirmed=true`。有效復歸只清 retained owner 和 lock，該掃描不 grant；下一掃描才重新依 pending 的舊序號仲裁。reset 按住時，即使稍後才補齊條件，也不會補做，必須先放開再重新上升。
 
-| 事件 | A 序號 | B 序號 | owner | 說明 |
-| --- | --- | --- | --- | --- |
-| S1 同時請求 | 1 | 2 | A | 先到先服務 |
-| S2 A 工作中 | 1 | 2 | A | B 等待 |
-| S3 A 釋放 | 1 | 2 | NONE | 只完成釋放 |
-| S4 仲裁 | — | 2 | B | 下一掃描授予 B |
-| S5 B 完成 | — | 2 | NONE | 兩站皆有機會，且等待中的請求不會因掃描順序被永久跳過 |
+有限等待的說法有前提：沒有 FAULT_LOCK，且每個 owner 都在其聲明的有限上限內正常釋放時，FCFS 才能在目前 owner 與所有更早 pending 結束後服務一筆等待請求。故障、受控停止和實際安全確認期間沒有有限等待保證。
 
-若兩個 request 在同一掃描被置位，A 得 seq=1、B 得 seq=2 是規格中的固定結果；若需要真正同時性，應由上游事件時間戳提供排序，不要宣稱 PLC 掃描能觀察到物理上的同一瞬間。 另外，取消請求必須在仲裁前生效；已取得 owner 後的取消則走釋放或故障流程，不能直接刪除 owner。這個差異要在測試表中各做一次。
+## 下載並執行完整固定案例
 
-## 逾時 故障與資源回收
+將以下五個檔案放在同一個資料夾，以 Node.js 24.19.0 或更新版執行。不需要 npm 套件、網路或設備連線。
 
-owner A 取得模組後，啟動本工作專屬的逾時計時。完成回饋來自 A 才能 release；若逾時，先撤銷 A 的使用允許，記錄 fault_owner=A 與 fault_code=TIMEOUT，再鎖住資源。不能直接把 owner 改 NONE 讓 B 立刻進入，因為模組可能仍處於未知狀態。維修或復歸條件完成後，才清除鎖定並依等待序號重新仲裁。
+- [排程模型](/examples/resource-scheduler/resource-scheduler-model.mjs)
+- [固定輸入](/examples/resource-scheduler/fixtures.mjs)
+- [self-test](/examples/resource-scheduler/self-test.mjs)
+- [逐掃描 demo](/examples/resource-scheduler/demo.mjs)
+- [README](/examples/resource-scheduler/README.md)
 
-```text
-教學偽碼，非指定PLC語法：
-NextOwner:=owner；Grant:=NONE
-若fault_lock：保留owner，等待明確復歸流程
-否則若owner≠NONE：
-  若目前owner逾時：fault_lock:=TRUE；保存fault_owner
-  否則若目前owner的release與工作序號有效：NextOwner:=NONE
-否則（原owner為NONE）：
-  NextOwner:=選擇最早有效等待請求；Grant:=NextOwner
-owner:=NextOwner
-enable_a:=(owner=A) AND NOT fault_lock AND PermitA
-enable_b:=(owner=B) AND NOT fault_lock AND PermitB
-同次釋放不再仲裁；復歸需另確認模組可用才清鎖。
+```powershell
+node self-test.mjs
+node demo.mjs
 ```
 
-| 異常 | 狀態 | 操作員先做什麼 |
-| --- | --- | --- |
-| A 無完成回饋 | FAULT_LOCK、owner=A | 確認模組安全狀態與 A 的故障原因 |
-| B 取消請求 | 保留 A 或 NONE | 刪除 B 的等待序號 |
-| PLC 重新啟動 | 依保持規格恢復或鎖定 | 確認模組實際狀態再復歸 |
-| 兩站都要求釋放 | 只接受 owner 的 release | 追查訊號交叉接用 |
-
-公平不是讓兩站同時動，而是讓等待規則可預測。你可先算出最壞等待：若 A 每次最多使用 3 掃描、B 每次最多 2 掃描，採先到先服務時，等待上界需包含目前owner剩餘時間、前面請求使用時間、每次釋放後一掃描仲裁間隔與排程延遲；故障鎖定期間不能保證有限等待；超過上限就進入警告，不可默默覆蓋。仲裁器要在一個明確位置產生 owner，工站只提出 request 並回報 done，避免 A 子程式和 B 子程式互相寫 owner。若共用模組還需要初始化，初始化也算資源使用期間，必須由 owner 執行完後才 release。
-
-## 測試流程與驗收
-
-仲裁採NextOwner單次決策：目前owner逾時優先於完成，fault_lock當次成立，最後產生輸出時立即遮罩；不會先放行另一站才鎖定。取消未獲授權請求可刪等待序號，取消已獲授權工作須完成受控停止與釋放。
-
-為了驗證不會雙重使用，你可以把共用模組想成一扇只有一把鑰匙的門。每一掃描先處理釋放，再處理仲裁，最後依新的 owner 產生允許；同一掃描不直接重用剛釋放的鑰匙，下一掃描才授予下一站，時序最容易讀懂。request 要附上有效序號，取消後序號失效；重送同一請求不可取得第二把鑰匙。模組回報完成時，先核對 owner 和工作序號，兩者任一不符就記錄孤立回饋。逾時鎖定時保存當下輸入、輸出、經過時間與故障碼，復歸後先核對等待請求是否仍有效，失效才清除並要求重新請求。若有安全門、急停或外部控制器介入，這些訊號只能使 owner 進入受控停止，不能繞過資源狀態直接放行另一站。最後以連續壓力測試確認每一站都有服務紀錄，並檢查最長等待不超過規格。
-
-仲裁結果要能在監看表重現：同一組輸入與序號，經過同一規則必須得到同一 owner。
-
-1. 只送 A 請求，確認 A 得到 grant 且 B 永不 enable。
-
-2. 在 A 使用中送 B 請求，確認 B 排隊；A 釋放後下一掃描才輪到 B。
-
-3. 同時送兩請求，依 seq 表核對結果；連續做十輪檢查沒有永久餓死。
-
-4. 切斷 A 的完成回饋，確認逾時鎖定，不讓 B 偷接資源。
-
-## 測試流程與驗收 續
+`demo.mjs` 的完整 14 列如下。`owner=A/1` 是 owner 和工作序號；`pendingB=2` 表示 B 仍排隊。最後一行是 `demo: PASS`。
 
 ```text
-請用兩站交錯的事件驗證公平性：第一輪 A 先請求，第二輪 B 先請求，第三輪兩站同時請求。每輪都要記錄 request_seq、grant_scan、release_scan，並計算等待掃描數。以 A 工作 3 掃描、B 工作 2 掃描為例，A 在 S1 取得、S4 釋放，B 最早 S5 取得；若B也在S1提出請求，至S5授權的掃描索引差為4。下一輪 B 先請求時，A 不得因程式排列在前就插隊。若固定優先造成 B 等待超過上限，應產生 STARVATION_WARN，讓工程師選擇輪轉或調整優先規則。
-還要定義取消與復歸的邊界。仲裁前取消 request_b，B 的序號作廢，不應留下空洞而阻塞後面請求；仲裁後 B 已是 owner，取消只能轉成受控停止，等模組回到安全狀態才 release。若 owner A 的完成訊號和逾時訊號同一掃描出現，故障優先，結果標成 TIMEOUT_RACE 並鎖定，不能自行判定成功。重新啟動後若 owner 被保持為 A，程式應先要求模組狀態確認；若不能確認，直接進故障鎖比猜測可用更安全。
+1 now=0 owner=A/1 pendingA=- pendingB=2 lock=false enable=A grant=A/1 event=granted_A_1
+2 now=1 owner=A/1 pendingA=- pendingB=2 lock=false enable=A grant=- event=none
+3 now=2 owner=- pendingA=- pendingB=2 lock=false enable=- grant=- event=released_A_1
+4 now=3 owner=B/2 pendingA=- pendingB=- lock=false enable=B grant=B/2 event=granted_B_2
+5 now=4 owner=B/2 pendingA=- pendingB=- lock=false enable=B grant=- event=owner_B_cancel_requires_controlled_stop
+6 now=5 owner=- pendingA=- pendingB=- lock=false enable=- grant=- event=released_B_2
+7 now=6 owner=- pendingA=- pendingB=- lock=false enable=- grant=- event=none
+8 now=7 owner=A/3 pendingA=- pendingB=- lock=false enable=A grant=A/3 event=granted_A_3
+9 now=17 owner=A/3 pendingA=- pendingB=4 lock=true enable=- grant=- event=timeout_A_3
+10 now=18 owner=A/3 pendingA=- pendingB=4 lock=true enable=- grant=- event=fault_reset_conditions_not_met
+11 now=19 owner=A/3 pendingA=- pendingB=4 lock=true enable=- grant=- event=none
+12 now=20 owner=A/3 pendingA=- pendingB=4 lock=true enable=- grant=- event=none
+13 now=21 owner=- pendingA=- pendingB=4 lock=false enable=- grant=- event=fault_reset_owner_cleared
+14 now=22 owner=B/4 pendingA=- pendingB=- lock=false enable=B grant=B/4 event=granted_B_4
+demo: PASS
 ```
 
-驗收時把每一掃描的 owner、兩個 request、兩個 enable、grant、release 與 fault_lock 一起記錄。只看工站畫面上的忙碌圖示不夠，因為畫面更新可能晚於 PLC 掃描；以監看表的順序才可判斷是否短暫雙重放行。
+第 3 掃描 A 成功釋放但 B 沒有同掃描取得；第 4 掃描才 grant B。第 9 掃描在 deadline 相等時仍是 timeout，即使有其他等待者也保留 A/3 並撤銷 enable。第 10 次 reset 缺 `moduleReady`；第 11 次雖補齊但 reset 持續為 1，不重試；第 13 次的新邊緣才復歸，B 到第 14 次才取得。
 
-### 完成後應看到什麼結果
+每掃描的 `event` 是供 demo 顯示的最後事件；模型同時提供按發生順序排列的 `events` 陣列，避免一掃描內的較早拒絕被後面的 grant 遺失。例如 A 用最後可用序號而得到 grant、B 同掃描被序號上限拒絕時，`events` 同時保留兩筆。
 
-任一時刻 owner 只有一個；使用中只有 owner 的允許有效；釋放後下一位依規則取得；逾時會留下可追蹤的故障鎖，不會靜默放行。
+## 移植到實機前仍未驗證的事
 
-### 失敗時先查哪裡
-
-先查 owner 是否由多處寫入，再查 grant 與 enable 是否脫離 owner，接著查 release 是否被非 owner 觸發，最後核對逾時計時與復歸條件。
-
-### 適用型號與限制
-
-可作為 Q06UDVCPU 控制共用設備的應用框架；Q 系列並不因此自動提供跨程式的資源鎖，需由工程師實作並依任務、中斷及通訊延遲驗證。
-
-## 常見問題與來源
-
-### FAQ
-
-```text
-問：固定 A 優先可以嗎？答：可以，但要接受 B 可能長期等待，或加最大等待時間。
-問：逾時後能否自動交給 B？答：只有模組安全復歸被確認後才可，否則會重疊使用。
-問：輪流排程一定更公平嗎？答：它改善順序偏差，但仍要定義取消、故障與連續請求。
-```
-
-參考：[三菱 QnUCPU 使用手冊 程式執行與裝置資料](https://dl.mitsubishielectric.com/dl/fa/document/manual/plc/sh080807eng/sh080807engaf.pdf)
+這個模型沒有實作安全迴路、急停、模組關機、受控停止、實際完成訊號、斷電保持、重啟恢復、跨 task 資料競爭或時鐘來源。`moduleReady` 和 `safetyConfirmed` 都是明確模型輸入，不是程式自行量測出的安全證據。實機移植前，應把 request／ack、owner、jobSeq、release、timeout、FAULT_LOCK 和復歸條件放進目標 CPU、通訊和安全設計的驗收紀錄；不可用本例 PASS 當成 PLC 或安全系統的驗證。
 
 ## 延伸閱讀
 
-- [執行中修改參數會發生什麼 PLC 工作參數快照設計](/articles/plc-parameter-snapshot)
-- [用 FIFO 追蹤輸送線產品 避免結果和產品對錯筆](/articles/plc-fifo-product-tracking)
+- [PLC 工作參數快照：確認後，下一批才換新版本](/articles/plc-parameter-snapshot)
+- [PLC 故障復歸：長按只接受一次的離線練習](/articles/plc-fault-reset-single-acceptance)

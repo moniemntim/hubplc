@@ -1,0 +1,99 @@
+{
+  "dataset": "plc-backlog-offline-v1",
+  "fifo": {
+    "arrivalsMs": [0, 100, 200, 300, 400, 500, 600, 700],
+    "serviceMs": 120,
+    "waitingCapacity": 2
+  },
+  "traces": [
+    {
+      "id": "repeated-poll-j17",
+      "synthetic": true,
+      "traceComplete": true,
+      "events": [
+        {
+          "timeMs": 0,
+          "kind": "BEGIN",
+          "jobId": "J17",
+          "instance": "requestState"
+        },
+        {
+          "timeMs": 1,
+          "kind": "END",
+          "jobId": "J17",
+          "instance": "requestState"
+        },
+        {
+          "timeMs": 10,
+          "kind": "POLL",
+          "jobId": "J17",
+          "instance": "requestState"
+        },
+        {
+          "timeMs": 20,
+          "kind": "POLL",
+          "jobId": "J17",
+          "instance": "requestState"
+        },
+        {
+          "timeMs": 120,
+          "kind": "WORK_COMPLETE",
+          "jobId": "J17",
+          "instance": "requestState"
+        }
+      ]
+    },
+    {
+      "id": "hypothetical-overlap",
+      "synthetic": true,
+      "traceComplete": true,
+      "events": [
+        {
+          "timeMs": 0,
+          "kind": "BEGIN",
+          "jobId": "J17",
+          "instance": "requestState",
+          "entry": "main"
+        },
+        {
+          "timeMs": 5,
+          "kind": "BEGIN",
+          "jobId": "J18",
+          "instance": "requestState",
+          "entry": "interrupt"
+        },
+        {
+          "timeMs": 10,
+          "kind": "END",
+          "jobId": "J18",
+          "instance": "requestState"
+        },
+        {
+          "timeMs": 15,
+          "kind": "END",
+          "jobId": "J17",
+          "instance": "requestState"
+        }
+      ]
+    },
+    {
+      "id": "missing-record",
+      "synthetic": true,
+      "traceComplete": false,
+      "events": [
+        {
+          "timeMs": 0,
+          "kind": "BEGIN",
+          "jobId": "J17",
+          "instance": "requestState"
+        },
+        {
+          "timeMs": 5,
+          "kind": "BEGIN",
+          "jobId": "J18",
+          "instance": "requestState"
+        }
+      ]
+    }
+  ]
+}

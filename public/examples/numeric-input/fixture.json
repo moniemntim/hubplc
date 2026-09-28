@@ -1,0 +1,30 @@
+{
+  "dataset": "numeric-input-synthetic-v1",
+  "synthetic": true,
+  "initialWire": 250,
+  "engineering": [
+    { "id": "text_range", "text": "100.04" },
+    { "id": "text_step", "text": "25.35" },
+    { "id": "text_exact", "text": "25.30" }
+  ],
+  "raw": [
+    {
+      "id": "raw_string",
+      "envelope": {
+        "schema": "numeric-input/v1",
+        "unit": "C",
+        "scale": 10,
+        "raw": "253"
+      }
+    },
+    {
+      "id": "raw_exact",
+      "envelope": {
+        "schema": "numeric-input/v1",
+        "unit": "C",
+        "scale": 10,
+        "raw": 7
+      }
+    }
+  ]
+}

@@ -1,83 +1,70 @@
 ---
-title: 序列 ASCII 框架解析：STX、長度、ETX 與逾時重組
-description: 用自訂STX加三字元長度加ETX框架，練習串列分段重組、長度上限、逾時及不完整資料拒絕。
+title: 自訂 STX＋ASCII 長度＋ETX：逐 byte 重組與故障停流
+description: 下載 Node.js parser，重播 STX 02、3-digit ASCII 長度、可列印 payload、ETX 03、500ms 總期限與完整 frame 才發布。
 date: 2026-09-21
 author: 茂伯
 draft: false
 category: 工業通訊與網路
 ---
 
-## 先寫清楚一筆訊息的邊界
+## 這是自訂 frame，不是 Modbus
 
-串列接收不能把一次讀取當成一筆訊息。設備可能先送標頭，下一次才收到內容，也可能一次收到兩筆。本篇定義一個自訂ASCII教學框架，帶你依STX、長度及ETX重組；它不是Modbus ASCII，也不是三菱模組內建的專用格式。
+本例的 frame 依序是：`STX=02`、三個 ASCII 十進位 length bytes、長度指定的 payload、`ETX=03`。length 只算 payload，欄位固定三 byte，允許 `001` 到 `128`；`005` 表示五 bytes，不是二進位 5。payload 的每個 byte 必須在 `20..7e`，因此本例不允許 control byte、UTF-8 multibyte payload、escape 或 checksum。最大合法 frame 是 `1 + 3 + 128 + 1 = 133` bytes。
 
-本例格式為STX一byte、三個ASCII十進位長度字元、payload，最後ETX一byte。STX為02 hex，ETX為03 hex，長度只計payload bytes，允許1至128。payload僅允許20至7E hex的可列印ASCII，因此不能含02或03，也不接受換行。
+這是教材協定，不是 Modbus ASCII、任何 PLC 專用通訊、serial port 或真實通道隔離測試。parser 直接以整數 byte 比較 `0x30..0x39`、`0x20..0x7e` 和 control bytes；它不呼叫 Node 的 ASCII decoder，所以不會把 high-bit byte 默默轉成可見文字。
 
-內容HELLO共五bytes，完整訊息為02 30 30 35 48 45 4C 4C 4F 03，總長十bytes。三個長度字元是文字005，不是二進位數字0005；30 hex代表ASCII字元0，這是初學者最常混淆的地方。
+## 逐 byte 狀態與 500ms deadline
 
-設備採用其他長度欄位、UTF-8、逸出機制或校驗碼時，要另定框架版本，不能直接套本例。這個教學框架沒有校驗碼，僅能檢查格式，不能保證資料未損壞；正式通訊應採雙方已支援並文件化的協定。
+`WAIT_STX` 以前的 byte 只計入輸入上限並忽略；收到 STX 才建立候選 frame 與 `deadline = stx_now + 500ms`。接著依序進入 `LENGTH`、`PAYLOAD`、`ETX`。只有 ETX 正確且 payload 完整時才發布 frame；分段、一次傳來多筆、或每 byte 都分開送，得到的已發布 frame 序列相同。
 
-## 以狀態機逐段收齊
+時間戳是非遞減 safe integer 毫秒。期限採總期限，不會因每個新 byte 延長。`now >= deadline` 就逾時，且 `feedByte()` 一律先呼叫 `advanceParser()`：同在 500ms 抵達的 byte 先得到 `TIMEOUT_REJECTED`，該 byte 不會進 parser。沒有新 byte 時也能呼叫 `advanceParser(state, now)` 觀察逾時。
 
-解析器可分WaitStart、ReadLength、ReadPayload、ReadEnd四個自訂狀態。WaitStart找到02後進ReadLength；收滿三個字元才檢查每個是否0到9，轉成整數並核對1至128。不要收到第一個0就把長度當零而提早拒絕。
+任何 length syntax、length range、payload、ETX、deadline、input 或 output limit 失敗都進 `STOPPED`。它停止處理後續 bytes，**不自動 resync**；新建 parser 只能重建此離線 state，不能證明實體 serial 通道、晚到資料或對端交易已隔離。
 
-長度為5時，ReadPayload必須等待五個bytes，期間只把資料留在候選緩衝，不發布數值。收滿後進ReadEnd，下一個byte必須03。只有全部格式通過，才交付HELLO並回WaitStart處理後續資料。
+## 下載並重播固定資料
 
-用接收函式的測試替身依序提供02 30、30 35 48 45、4C 4C 4F 03。第一段只有部分長度，第二段有完整長度和HE，第三段才完成HELLO與ETX。預期前兩段交付零筆，第三段交付一筆；實體串列寫入次數不保證等於讀取次數。
+下載同一資料夾的[模型](/examples/serial-ascii/serial-ascii-model.mjs)、[固定 fixture](/examples/serial-ascii/fixture.json)、[demo](/examples/serial-ascii/demo.mjs)、[獨立自測](/examples/serial-ascii/self-test.mjs)和[README](/examples/serial-ascii/README.md)。fixture 是唯讀的固定 JSON；demo 與 self-test 不改寫它。本機以 Node.js 24.19.0 核對；使用該版本或更新版本。
 
-一次讀到兩筆完整訊息時，解析迴圈在交付第一筆後繼續消費剩餘bytes。游標只前進到已處理邊界，不把整個接收buffer全部清空。若第二筆只收到STX及一個長度字元，保留它，等下一次追加。
+```powershell
+node demo.mjs
+node --test self-test.mjs
+```
 
-每次診斷記錄狀態、期望長度、已收長度及交易世代。正式日誌避免無限保存payload，可保留受控長度的原始hex摘要；文字畫面可能不顯示02和03，因此排查邊界時一定要能查看bytes。
+```text
+dataset=serial-ascii-stx-length-etx-synthetic-v1 synthetic=true
+chunk_now=0 published=0 stage=LENGTH stopped=false
+chunk_now=1 published=0 stage=PAYLOAD stopped=false
+chunk_now=2 published=2 stage=WAIT_STX stopped=false
+published_index=0 length=5 payload_hex=48454c4c4f frame_hex=0230303548454c4c4f03
+published_index=1 length=1 payload_hex=5a frame_hex=023030315a03
+fault=lengthSyntax stopped=true reason=LENGTH_SYNTAX_REJECTED expected=ASCII_DECIMAL_0x30_TO_0x39 received=023041
+fault=lengthRange stopped=true reason=LENGTH_RANGE_REJECTED expected=LENGTH_1_TO_128 received=02313239
+fault=payload stopped=true reason=PAYLOAD_REJECTED expected=PRINTABLE_ASCII_0x20_TO_0x7e received=0230303180
+fault=etx stopped=true reason=ETX_REJECTED expected=ETX_0x03 received=023030314104
+fault=timeout stopped=true reason=TIMEOUT_REJECTED expected=NEXT_BYTE_BEFORE_DEADLINE received=02
+```
 
-本例最大合法frame為1+3+128+1=133bytes，但接收buffer不能只按133推定足夠，因為一次讀取可能包含多筆。可逐段消費並限制未處理總量；滿載時明確回報容量事件，不能截去尾端後把前綴當完整frame。
+第一個 frame 是 `02 30 30 35 HELLO 03`，被拆成三個 chunks；第三個 chunk 接著黏上一個 `02 30 30 31 Z 03`。前兩個 chunks 都發布零筆，第三個才發布兩筆。輸出保留 `payload_hex`、完整 `frame_hex`，以及 fault 的 `expected` 和 `received`，不以顯示文字取代診斷 bytes。
 
-## 長度不合法與逾時如何收尾
+## 拒絕順序與容量邊界
 
-收到02 30 30 30表示長度000，本例拒絕；02 31 32 39表示129，也超過上限。若長度出現41 hex即字元A，應回LengthSyntaxError，不能把它當十六進位長度或偷偷換成零。先驗上限再配置空間，避免錯誤資料耗盡記憶體。
+| 條件                        | decision                 | 診斷 preserved                          |
+| --------------------------- | ------------------------ | --------------------------------------- |
+| length byte 不是 `30..39`   | `LENGTH_SYNTAX_REJECTED` | 已收 frame hex、期望 ASCII digit        |
+| 三 digits 是 000 或超過 128 | `LENGTH_RANGE_REJECTED`  | 已收 frame hex、宣告長度                |
+| payload byte 不在 `20..7e`  | `PAYLOAD_REJECTED`       | 已收 frame hex、已收 payload 數         |
+| payload 收齊後不是 `03`     | `ETX_REJECTED`           | 已收 frame hex、期望 ETX                |
+| deadline 到或超過 500ms     | `TIMEOUT_REJECTED`       | STX 起的已收 hex、deadline 前 byte 要求 |
 
-設定從STX開始計算的整體frame期限，例如500毫秒，並用同一本機單調時鐘量測。每收到一個byte不能無限延長總期限，否則錯誤來源每隔一段時間送一字就能永久占住解析器。必要時另加字元間期限，但兩者意義要分開。
+候選 frame storage 固定上限 133 bytes，lifetime input 預設上限 4096 bytes，published output 預設最多四個 frame；三者都有明確拒絕而非截斷。output frame 滿時，先前完整已發布 frame 保留，新完整 frame 不會部分發布。這些是此模型的記憶體界線，不是 OS serial buffer、硬體 FIFO 或吞吐量量測。
 
-例如0毫秒收到STX，100毫秒完成長度，300毫秒只收到HEL，500毫秒期限到。記錄FrameTimeout及expected=5、received=3，不補LO、不補零，也不交付HEL。所有候選內容先封存診斷摘要，再離開本次交易。
+## 改 fixture 重跑
 
-這個練習採保守錯誤政策：格式失敗或逾時後進入Fault，停止新交易，依雙方協定完成清理及重新同步才恢復。不能直接回WaitStart就聲稱所有晚到bytes都已隔離；晚回覆可能在新請求後到達，仍需明確回覆期限與關聯策略。
+先複製 `fixture.json`。將 `validChunks[2].bytes` 的第一個 ETX `3` 改成 `4`，重跑後會得到 `ETX_REJECTED` 且 `received` 保留實際 hex。將 `faults.payload` 的 `128` 改成 `65`，它會變成 payload byte `A`；此時 demo 會顯示 `stopped=false stage=ETX published=0`，因為 frame 仍缺 ETX。再補上 ETX `3` 後才會顯示 `stage=WAIT_STX published=1`。不能只靠 payload 合法就發布。將 STX 後不送新 byte 並呼叫 `advanceParser(state, 500)`，可重現 timeout 的等號邊界。
 
-若產品另支援以STX重新同步，必須證明STX不會出現在合法payload並限制掃描與緩衝容量。本例已限制payload可列印ASCII，但重新找到STX仍只表示可能有新框架，後續長度與ETX仍須重新驗證，不能直接發布。
-
-## 驗證內容與交易關聯
-
-長度正確不代表內容可用。HELLO是文字，不是溫度；若業務格式要求TEMP=25.3，收到其他字串要在業務解析階段拒絕。先完成frame，再做ASCII解碼、欄位型別、單位與範圍檢查，不要在收到前幾個字時就更新HMI。
-
-測試將最後03改成04，預期EndMarkerMismatch且零筆交付；將payload某byte改成80，預期PayloadNotAscii。若把HELLO中的E改成F，格式仍可能完全合法，這說明沒有校驗的框架無法單靠長度及ETX發現所有內容錯誤。
-
-本例沒有交易識別欄位，因此不支援任意多筆同時未完成的請求。即使每次只送一筆，前次逾時後也不能立即重送並把下一個合法frame當成本次；相同格式的晚回覆可能無法分辨，需由實際協定提供時序或識別保證。
-
-適用範圍是自訂協定解析教學。實作到Q系列、串列模組或HMI時，要先確認非程序通訊、接收buffer、終止碼、資料長度及錯誤旗標的實際支援方式。本篇不指定暫存器。
-
-失敗排查依序查看原始hex、接收狀態、宣告長度、實收長度、期限與業務內容。畫面只顯示亂碼時，先確認串列參數和ASCII契約；只有偶爾少字時，再查分段處理、buffer容量及逾時，不要直接增加所有等待時間。
-
-另測長度005但內容只送AB後立刻ETX。因payload禁止控制字元，這不是三byte內容的成功訊息，而是長度與內容衝突。相反地，長度003、ABC、ETX後接下一個STX，應交付ABC並開始下一筆，不能把下一個STX算入前一筆。
-
-## 完成結果與練習
-
-完成後，解析器面對標頭分段、payload分段與一次多frame，應產生相同的有效訊息序列。每個拒絕案例都有原因及長度紀錄，且任何不完整frame都不更新業務快照。這是本練習的驗收標準，不是已有實機通過的宣告。
-
-練習將內容改成ABC。長度字元是003，完整hex為02 30 30 33 41 42 43 03，共八bytes。故意只送到42再逾時，應得到已收2、期望3，不能交付AB或ABC。
-
-測試報告需保存輸入分段清單與每段後的狀態，確認改變分段方式仍得到相同交付結果。
-
-問：三字元005是不是五個字元？答：它是三byte的長度欄，表示payload有五bytes；標頭及結尾不算在本例長度內。
-
-問：一次read拿到完整HELLO就算成功嗎？答：還要核對STX、長度和ETX，以及業務內容；只看可見文字不足以確認框架。
-
-問：逾時可以把buffer補滿零嗎？答：不可以，應拒絕並記錄不完整狀態；零是資料，不是恢復缺失bytes的方法。
-
-問：這就是Modbus ASCII嗎？答：不是。本文為自訂STX加長度加ETX格式，實際Modbus ASCII有自己的邊界、編碼與LRC規範，不可混用。
-
-參考：[Python codecs官方文件：ASCII與嚴格解碼背景，本文框架是自訂設計。](https://docs.python.org/3/library/codecs.html)
-
-參考：[Modbus Serial Line V1.02：可對照Modbus ASCII既定格式，不能將本文STX框架當成Modbus。](https://www.modbus.org/file/secure/modbusoverserial.pdf)
+Node.js 的 [`node:test`](https://nodejs.org/docs/latest-v24.x/api/test.html) 文件是本下載案例測試 API 的官方來源。frame byte 定義、期限與故障政策都是本文刻意固定的自訂規格；實際 serial API、baud、parity、OS buffer、timeout clock 和 PLC 模組行為必須查目標平台的官方手冊與測試結果。
 
 ## 延伸閱讀
 
-- [同一元件的長按與短按如何判定](/articles/hmi-release-only-800ms-pointer-policy)
-- [多個操作員同時改值如何顯示最後寫入者與時間](/articles/hmi-concurrent-edit-last-writer-version)
+- [接收串流：分開 framing buffer 與完整訊框應用佇列](/articles/receive-buffer-throughput-test)
+- [binary32 特殊值：先解碼，再用有限性、品質與範圍決定可用性](/articles/float-nan-inf-control-gate)

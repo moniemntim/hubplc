@@ -1,5 +1,7 @@
 import Link from '@/components/site-link';
 import AdSense from '@/components/adsense';
+import PlcPractice from '@/components/plc-practice';
+import { practiceModes } from '@/lib/plc-practice';
 import ArticleReadingNav, {
   ArticleDirectoryLink,
 } from '@/components/article-reading-nav';
@@ -62,6 +64,10 @@ export default function Article({
           </div>
           <p className="article-reader__description">{article.description}</p>
         </header>
+
+        {article.slug && practiceModes[article.slug] ? (
+          <PlcPractice mode={practiceModes[article.slug]} />
+        ) : null}
 
         <div className="article-reader__layout">
           <ArticleReadingNav toc={article.toc} />

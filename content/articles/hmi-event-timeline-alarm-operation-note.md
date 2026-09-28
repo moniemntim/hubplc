@@ -1,98 +1,82 @@
 ---
-title: HMI 事件時間線如何把警報 操作和備註放在同一脈絡
-description: 以輸送帶停機案例建立可重建事件時間線，分離來源時間、收取時間、操作者、事件ID與週期ID。
+title: HMI事件時間線：把警報、操作與備註放進可重建的證據窗口
+description: 用固定六列離線資料重建事件時間線，保留來源時間、收取時間、重送收據與可追加的操作備註。
 date: 2026-09-17
 author: 茂伯
 draft: false
 ---
 
-## 先定義事件資料與時鐘
+## 可下載、固定的六列時間線
 
-事件時間線要把來源、時間戳、操作者、設備與證據放在同一脈絡。本文用虛構輸送帶在14:00前後停機案例；每列保存eventId、cycleId、sourceTimestamp、serverReceivedAt、operator、設備狀態與備註關聯。sourceTimestamp是來源產生時間，收取時間是系統收到時間，不能互換。來源時鐘未校準時，也不能用同一秒的排序宣稱因果。
+本頁的模型是離線 Node.js 教材，不是 HMI、PLC、歷史資料庫、時鐘同步或網路量測。將下列六個檔案下載到同一資料夾，使用 Node.js 24.19.0 或更新版本執行：
 
-| 欄位 | 例值 | 用途 | 限制 |
-| --- | --- | --- | --- |
-| eventId | EV-2041 | 辨識一筆事件 | 不可用時間代替 |
-| cycleId | C-88 | 關聯一次停機週期 | 可含多事件 |
-| sourceTimestamp | 13:57:12.400 | 來源順序 | 需核對時鐘 |
-| serverReceivedAt | 13:57:12.920 | 觀察來源與接收差 | 非現場發生時間 |
-| operator | 王O | 稽核操作 | 不等於設備執行者 |
+- [model.mjs](/examples/event-timeline/model.mjs)
+- [fixture.json](/examples/event-timeline/fixture.json)
+- [demo.mjs](/examples/event-timeline/demo.mjs)
+- [self-test.mjs](/examples/event-timeline/self-test.mjs)
+- [practice.mjs](/examples/event-timeline/practice.mjs)
+- [README.md](/examples/event-timeline/README.md)
 
-時間精度也要寫清楚。毫秒只是欄位精度，不代表時鐘真的準到毫秒；若PLC只有秒級時間，事件應標示精度而非補出假毫秒。先用NTP或同一時間源核對偏差，再決定能否比較相鄰事件。
+```powershell
+node demo.mjs
+node --test self-test.mjs
+node practice.mjs
+```
 
-事件資料表要把原始欄位和計算欄位分開。相對時間、延遲估計與排序鍵都是分析產物，不能覆寫來源時間。報告若修正時鐘偏差，保存修正前值、偏差來源與套用版本。
+資料集固定窗口為 `2026-09-17T05:57:00.000Z` 到
+`2026-09-17T06:00:00.000Z`，採 `[start,end)`：含起點、不含終點。它在
+UTC+08 顯示為 13:57:00 到 14:00:00。固定輸出會有六列、八筆收據與一個
+註記版本：
 
-若來源時間只有秒級而收取時間有毫秒，報告應顯示精度差異。不可用毫秒欄位填補來源未知的部分，否則讀者會誤以為設備時鐘更準。
+```text
+rows=6 receipts=8 notes=1
+windowed=PLC_A/TR2039,PLC_A/TR2041,PLC_A/TR2044,HMI_A/TR2048,PLC_A/TR2049
+unlocated=HMI_NOTE/NOTE17-V1
+observed_source_receive_difference_ms=520
+```
 
-## 重建三分鐘事件窗口
+每列有 `transitionId`、`sourceId`、`cycleId`、`sourceTime`、
+`receiveTime`、`clockComparable`、`precision`、`kind`（`source`、
+`command` 或 `note`）與 `actor`。`sourceTime` 是來源原值；模型不修正它。
+`receiveTime` 來自收據，代表此模型收到資料的時間，不能換成現場發生時間。
 
-自訂時間線如下：13:57:00模式由Auto切Manual，13:57:12.400低速警報來源發生，13:57:13操作員收到並留下備註，13:58:05輸送帶停止回饋，13:59:10復歸命令送出，13:59:18回饋Ready。每一列仍保留原eventId與cycleId；備註引用EV-2041，另保存NOTE-17作為人工備註，type欄明示note，不冒充設備產生事件。
+`NOTE17-V1` 沒有 `sourceTime`，因此放到未定位區，不用收取時間硬塞進來源
+時間窗口。這條規則也避免把事後寫下的操作備註，誤報為設備在該寫入時間發生。
 
-| 來源時間 | 事件 | eventId/cycleId | 解讀 |
-| --- | --- | --- | --- |
-| 13:57:00.000 | Mode Manual | EV-2039/C-88 | 模式切換 |
-| 13:57:12.400 | Low speed | EV-2041/C-88 | 來源警報 |
-| 13:57:13.100 | 操作備註 | NOTE-17/C-88 | 人員觀察 |
-| 13:58:05.000 | Stop feedback | EV-2044/C-88 | 設備回饋 |
-| 13:59:10.000 | Reset command | EV-2048/C-88 | 命令送出 |
-| 13:59:18.000 | Ready | EV-2049/C-88 | 恢復證據 |
+## 重送、時間差與排序
 
-這條線只能支持「低速警報先於停止回饋，期間有人留下備註」，不能直接證明低速造成停止。要說因果，還需控制邏輯、輸入品質與其他事件證據。若兩事件時間相同，採來源序號或精度標記並列呈現，不靠畫面排序硬造先後。
+`TR2041` 的固定轉換資料被重送兩次。它們使用相同的 `sourceId`、
+`transitionId` 與不可變資料，只新增收據 `R07`、`R08`；主時間線仍是六列、
+收據變成八筆。若同一鍵的固定資料改成不同 payload，模型回傳
+`PAYLOAD_CONFLICT_REJECTED`，不會覆蓋已保存的事件或收據。
 
-本文eventId是自訂轉移識別，每次Active、Ack、Clear各有不同ID；同一次轉移的傳輸重送沿用ID。同一cycleId可包含多個警報週期和備註。Ignition原生eventid則關聯一次警報週期，匯入時要另外映射transitionId，不可直接套用本文eventId語意。若事件重新發生，建立新事件並以parent或cycle欄位關聯，不把兩次發生併成一條文字。
+這份資料由外部時鐘檢核明示 `TR2041` 的來源與收取時間可比較，且精度為毫秒，所以可以計算
+`05:57:12.920 - 05:57:12.400 = 520 ms`。欄名是「觀測來源至收取時間差」，不是
+網路延遲；它沒有拆出時鐘偏差、排隊、傳輸或處理。`clockComparable=false` 的列
+會保留原始時間並不產生這個差值，不能據此宣稱先後或因果。
 
-## 游標 備註與排錯
+有來源時間的列，依來源時間、kind、source ID、transition ID 形成固定總排序；
+未定位列另排。`clockComparable=false` 的原始來源時間在這個展示排序中仍可見，但不代表
+真實時間順序。匯出不加入執行當下的時間，所以同一 state 的 JSON 可完全重建。
+窗口空白也不表示設備沒有動作：fixture 以固定 `coverage` metadata 明示
+05:58:30–05:58:40 的 `SOURCE_CAPTURE_GAP`，而不是從「沒有列」推論缺測。
 
-回看時先用cycleId篩出同一停機週期，再依sourceTimestamp顯示，最後疊serverReceivedAt與operatorAt。游標落在13:57:12.500可能只是圖表插值，不是原始樣點；報告要列nearest raw sample與cursor display value。備註要有作者、角色、時間、引用eventId及是否事後補寫。
+## 備註是追加版本，不改來源文字
 
-| 症狀 | 先查 | 不要推論 |
-| --- | --- | --- |
-| 事件倒序 | 時鐘偏差、來源序號 | 不代表設備逆序 |
-| 備註找不到 | eventId/cycleId關聯 | 不代表未操作 |
-| 同秒多事件 | 時間精度與序號 | 不以畫面上下判因果 |
-| 收到晚很多 | source/receive差值與同步 | 不直接定義網路延遲 |
+`appendNote` 要求目標 `targetKey` 已存在、不是 note，並且與 note 同一
+`cycleId`。note 有 `author`、`reason`、`createdAt`、`version`、`reference`
+（模型欄位名為 `targetKey`）與文字。執行 `node practice.mjs` 會追加 NOTE17
+版本 2，版本 1 保留；新版明示是交班補充，不冒稱為來源事件的發生時間。它也示範只把
+TR2041 的 `clockComparable` 改為 `false`：原 `sourceTime` 保留、觀測差變成 null，
+不修時鐘、更不宣稱事件先後或因果。
 
-若警報在伺服器先到而操作備註後寫入，這是正常的兩種時間。若資料缺sourceTimestamp，保存缺值並標示不可排序，不用serverReceivedAt冒充現場時間。事件重發要保留原eventId與重發記錄；新的停機週期才建立新的cycleId。
-
-時間線的空白也有意義。沒有資料不等於設備沒有動作，應標示缺測區間、來源斷線或權限不足。缺測期間的因果結論只能列為未確認。
-
-## 交付報告與平台限制
-
-報告頁首列資料來源、查詢起訖、時區、時鐘同步證據與資料品質。時間線下方分開寫觀察事實、待確認假設與處置；例如「EV-2041先於EV-2044」是觀察，「低速造成停止」是待驗證假設。Ignition Alarm Journal官方文件指出可保存警報來源、時間戳及事件屬性；其欄位能力不等於所有HMI都有相同事件API。
-
-驗收可用同一組六列資料重建兩次，檢查eventId、cycleId、來源時間、接收時間與備註完全一致；再故意讓時鐘偏差一秒，確認畫面顯示警告而非改寫順序。涉及安全或停機決策時，事件時間線是證據整理工具，不代替安全控制。
-
-完成結果是值班者能從三分鐘前看到模式切換、警報、備註、停止回饋與恢復命令，並知道哪些是原始證據、哪些仍待調查。
-
-交班報告可把每列連到原始警報、趨勢樣點或操作紀錄，但連結失效時仍保留文字快照、查詢條件和資料版本，避免只剩一個無法開啟的網址。
-
-事件時間線的資料品質要逐列標註。保留來源quality原碼，另以clockQuality、parseStatus與completeness記錄時鐘、格式和缺測；來源Good不證明時間已同步。排序畫面可以顯示相對位置，但報告必須保留品質與缺測原因。若操作員在13:57:13留下備註，不能倒推他在13:57:12.400已看到警報；只有操作記錄或確認事件能支持這個結論。
-
-把窗口固定為2026-09-17的13:57:00至14:00:00，時區+08:00，含起點不含終點。這三分鐘包含停止前後，並不是停止回饋之前的三分鐘。若要改查13:58:05停止前的三分鐘，起點應為13:55:05，Ready與Reset將落在窗口之外；圖名和查詢範圍必須一起改。
-
-以EV-2041的來源13:57:12.400及接收13:57:12.920計算，觀測差是520毫秒。它包含來源時鐘偏差與資料處理、排隊、傳輸，不等於網路單向延遲。只有時鐘和處理點定義足夠明確時，才能進一步拆解；否則報表欄名寫觀測時間差即可。
-
-做去重練習時，重送EV-2041兩次，事件主表仍是一筆，但接收記錄增加兩筆並保留各自時間。接著新增同一警報的Ack轉移，應新增transitionId並保留同一alarmCycleId，不能因週期相同就刪掉。最後加入NOTE-17修改版，原備註仍可查而新版本標示作者與原因。
-
-手動模式可能先於低速警報，卻不代表模式切換就是故障原因。把它列為待查假設，下一步讀控制邏輯中停止要求的來源、互鎖狀態與資料品質，再對照停止回饋。若缺少這些證據，結論維持「同一時間窗內先後發生」，不要由排得漂亮的時間線推導機械原因。
-
-## FAQ與來源
-
-FAQ1：同一秒的事件可按資料庫插入順序判因果嗎？不可，先查來源序號、時鐘與精度。
-
-FAQ2：serverReceivedAt可以當設備發生時間嗎？不可，它只代表系統收到資料的時間。
-
-FAQ3：備註應修改原警報文字嗎？不應，備註應引用eventId並保留作者與時間。
-
-FAQ4：游標顯示值就是實際樣點嗎？不一定，可能是插值或聚合，需回查原始列。
-
-參考：[Ignition Alarm Journal：警報來源、時間戳與事件資料。](https://www.docs.inductiveautomation.com/docs/8.3/platform/alarming/alarm-journal)
-
-參考：[Ignition Alarm Associated Data：事件屬性、acknowledge與clear時間。](https://www.docs.inductiveautomation.com/docs/8.3/platform/alarming/configuring-alarms/alarm-associated-data)
-
-重建完成後由另一位人員用原始查詢條件重做，核對六筆事件的欄位、時間精度、關聯ID與備註文字。若兩次結果不同，先比較時區、資料範圍、快取與查詢排序，再判斷是否是資料變動。不要把畫面目前的排序當成永久且完整的證據；應把匯出檔、查詢版本與產出時間、資料版本與責任人一併保存。
+模型限制為 32 列事件、64 筆收據與八個 note versions。輸入必須是精確的 plain
+object、有限長 ID 與完整 ISO UTC 時間；唯一例外是未知的 `sourceTime`，它只能是
+`null`，並同時標記 `clockComparable=false` 與 `precision=unknown`。缺欄、額外欄、
+無效時間與非法引用都會被拒絕。事件容量滿時設為 fault，其餘容量限制拒絕新增資料，既有資料不變。這些是
+教材的資料邊界，不是平台的保留、驗證、認證、併發寫入、時鐘同步或因果分析實作。
 
 ## 延伸閱讀
 
-- [HMI 畫面版本更新後如何讓操作員快速看懂改了什麼](/articles/hmi-screen-version-release-notes)
-- [HMI大螢幕與平板共用資訊 響應式版面 權限與防誤觸要分開](/articles/hmi-large-screen-tablet-shared-information)
+- [HMI警報確認、清除與發生紀錄要分開](/articles/alarm-acknowledge-clear-occurrence)
+- [警報嚴重度、時間與穩定排序](/articles/alarm-severity-time-stable-order)

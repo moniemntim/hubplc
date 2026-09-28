@@ -1,0 +1,10 @@
+{
+  "description": "Synthetic offline Modbus TCP byte-stream fixture. It was not captured from a PLC, gateway, or packet analyzer.",
+  "chunks": [
+    "00 2A 00 00 00",
+    "06 01 03 00 10 00 02 00 2B 00 00 00 06 01 03 00 12 00 02"
+  ],
+  "expectedTransactionIds": [42, 43],
+  "expectedRemainderBytes": 0,
+  "invalidLengthPrefix": "00 2A 00 00 00 00"
+}

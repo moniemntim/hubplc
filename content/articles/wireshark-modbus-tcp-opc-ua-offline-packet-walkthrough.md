@@ -1,98 +1,122 @@
 ---
-title: Wireshark 判讀 Modbus TCP 與 OPC UA 從連線到應用回覆
-description: 以隨附十二包離線PCAP逐步判讀TCP、Modbus交易與兩個原始值，以及OPC UA HEL/ACK的適用界線。
-date: 2026-09-17
+title: Modbus TCP 十六進位訊框怎麼手動拆解 MBAP FC03 與例外回覆
+description: 不用連線或下載封包檔，從合成十六進位訊框逐欄核對 Modbus TCP 的 MBAP、FC03、資料長度、原始暫存器與例外回覆。
+date: 2026-09-28
 author: 茂伯
 draft: false
+category: 工業通訊與網路
+tags:
+  - Modbus
 ---
 
-## 先用離線檔練習 不接設備
+## 這是手動十六進位解析，不是封包擷取或設備驗收
 
-開啟隨附的「146_離線自造ModbusTCP_UATCP.pcap」。它包含十二個以程式構造的封包、兩條TCP對話，沒有從PLC或網路擷取，也沒有發送測試命令。先清除顯示篩選，再確認封包數為十二，時間顯示選擇相對第一包的秒數；檔案用虛構起點，絕對日期顯示1970年並不表示實際事件年代。
+本篇只有可手算的**合成 Modbus TCP 應用資料**；沒有附加 PCAP、沒有連線到 PLC 或從站，也沒有執行封包分析軟體。目標是先看懂一段已保存的十六進位資料是否符合 MBAP 與 Modbus PDU 的結構，再回到設備手冊、原始通訊紀錄與現場程序判讀。
 
-| 對話 | 用戶端 | 伺服端 | 本檔範圍 |
+先準備完整的請求與回覆位元組、讀取時間、同一 TCP 連線方向、設備的資料表版本，以及資料型別、word 順序、倍率、單位與無效碼定義。只有 HMI 最後顯示的數字，無法分辨位址、型別、倍率或資料新鮮度出了哪一種問題。
+
+本文不提供 IP、封包時間或 TCP 對話來讓人誤以為它是擷取結果。若你手上有實際資料，先把每個方向的 TCP 位元組流完整保存；同一個 Modbus ADU 可能被 TCP 分段，也可能與後續資料連在同一段中。
+
+## 先看 MBAP：前 7 bytes 說明這一筆是什麼
+
+Modbus TCP ADU 先有 7 bytes 的 MBAP Header，後面才是 Modbus PDU。以下是本篇第一筆**合成請求**：
+
+```text
+00 01 00 00 00 06 01 03 00 00 00 02
+```
+
+| 位元組位置 | HEX | 欄位 | 本例判讀 |
 | --- | --- | --- | --- |
-| tcp.stream 0 | 192.0.2.10:50000 | 192.0.2.20:502 | 握手、FC03請求與回覆 |
-| tcp.stream 1 | 192.0.2.10:50001 | 192.0.2.30:4840 | 握手、UA TCP HEL與ACK |
+| 0–1 | `00 01` | Transaction Identifier | `1`；用戶端建立，伺服端正常回覆時原樣帶回。 |
+| 2–3 | `00 00` | Protocol Identifier | `0`，表示 Modbus protocol。 |
+| 4–5 | `00 06` | Length | `6`，代表**後面**有 6 bytes，不是整個 ADU 長度。 |
+| 6 | `01` | Unit Identifier | `1`；在直接 TCP 設備與閘道的意義要依設備文件。 |
+| 7 之後 | `03 00 00 00 02` | Modbus Request PDU | FC03、起始位址與數量。 |
 
-這些位址是文件用範例。實際分析先記錄兩端IP、TCP埠、擷取位置與時間，不只用「PLC那一包」稱呼。tcp.stream是Wireshark依此檔分配的對話索引，不是封包內的設備站號；另開檔案後索引可能改變。
+此請求的 Length 會成立，因為後面確實有 Unit Identifier 1 byte 加 PDU 5 bytes：`01 03 00 00 00 02`。因此總長為 MBAP 前 6 bytes 加 Length 所指定的 6 bytes，也就是 12 bytes。
 
-在顯示篩選列輸入tcp.stream == 0，應留下第1至6包。這只改畫面，不刪原始資料；清除後十二包仍在。若一開始就用capture filter排除封包，事後清除display filter無法找回。練習不用啟動即時擷取，避免把本機其他流量混進來。
+對 TCP 接收緩衝區，先累積至少 6 bytes 才能讀到 Length；再等到完整的 `6 + Length` bytes 才解析本筆 ADU。Length 不足、資料在中途結束，或下一筆 ADU 被誤拼入本筆，都應標成資料不完整，不能直接把剩下的 bytes 當暫存器。
 
-本篇可用於理解支援Modbus TCP或OPC UA TCP的系統，不宣稱Q06UDVCPU或QJ71C24N直接提供這兩項服務。QJ71C24N的串列通訊問題要用對應介面與協定證據；本檔不是RS485 RTU擷取，也沒有RTU CRC欄位。
+## 逐欄手算 FC03 讀取兩個 Holding Registers
 
-## 先確認TCP 再看Modbus配對
+請求 PDU 是：
 
-第1包SYN、第2包SYN/ACK、第3包ACK構成TCP三向握手。這表示樣本中的連線建立流程，不等於讀值成功；真正的應用請求在第4包，回覆在第5包。第6包只是TCP確認，沒有第二筆Modbus資料，不能把每個ACK當設備已完成控制動作。
+```text
+03 00 00 00 02
+```
 
-| 包號 | 相對秒數 | 方向 | 要核對的內容 |
-| --- | --- | --- | --- |
-| 4 | 0.100 | 用戶端→502 | TID=1、Unit=1、FC03、起點0、數量2 |
-| 5 | 0.140 | 502→用戶端 | TID=1、Unit=1、FC03、資料4 bytes |
-| 6 | 0.141 | 用戶端→502 | TCP ACK，沒有Modbus PDU |
-
-展開Modbus/TCP的MBAP標頭，Transaction Identifier是1，Protocol Identifier是0，Unit Identifier是1。配對時同時限定TCP對話與方向，再查交易ID；交易ID可重用，不是跨所有連線永久唯一。Unit ID在閘道與直接TCP設備的處理可能不同，現場要依設備文件。
-
-請求原始bytes為00 01 00 00 00 06 01 03 00 00 00 02。MBAP長度6計算的是後續Unit ID一byte加PDU五bytes，不是整包長度；整段Modbus TCP應用資料是12 bytes。PDU起點0000是零起算位址，不能把手冊的40001字樣直接當封包中的40001。
-
-顯示篩選tcp.stream == 0 && mbtcp.trans_id == 1應呈現第4與5包。若只看到TCP而沒有Modbus解碼，先核對埠、完整資料與解碼設定；非預設埠可能需Decode As。設定解碼器只是告訴工具如何解析，不能以強制解碼成功反推實際協定一定正確。
-
-## 把回覆數值與時間算出來
-
-回覆bytes為00 01 00 00 00 07 01 03 04 00 FD 00 64。長度7等於Unit一byte、功能碼一byte、byte count一byte和資料四bytes。資料分成00 FD與00 64兩個16-bit暫存器；按本練習的UInt16契約，分別是253和100，並不是一個Float32。
-
-| 欄位或運算 | 本例結果 | 可以下的結論 |
+| PDU bytes | 意義 | 本例結果 |
 | --- | --- | --- |
-| 00FD十六進位 | 253十進位 | 第一個原始暫存器值 |
-| 0064十六進位 | 100十進位 | 第二個原始暫存器值 |
-| 0.140−0.100 | 0.040秒＝40毫秒 | 同一觀察點請求至回覆間隔 |
-| 假設第一值倍率0.1°C | 25.3°C | 僅在設備映射確認後成立 |
+| `03` | Function Code | Read Holding Registers。 |
+| `00 00` | Starting Address | 零起算位址 `0`。它不是文件常見寫法中的 `40001`。 |
+| `00 02` | Quantity of Registers | 讀取 `2` 個 16-bit registers。 |
 
-工程單位與倍率不會由普通FC03回覆自動告訴你。本文25.3°C只是另加的資料契約示例；若手冊定義有號整數、兩word浮點或其他倍率，解讀就不同。先保存raw值，再套型別、word排列、倍率及單位，才能分清通訊錯誤與資料解碼錯誤。
+假設伺服端正常回覆下面這段**合成回覆**：
 
-四十毫秒是此自造樣本的時間差，不是PLC掃描時間或效能量測。實際封包間隔包含網路、設備處理及觀察位置的影響，也可能受鏡像排隊影響。選第5包查看工具建立的request/response關聯，再與第4包時間手算核對，不只憑欄位名稱判斷。
+```text
+00 01 00 00 00 07 01 03 04 00 FD 00 64
+```
 
-若有正常TCP回覆但Modbus功能碼帶例外，例如FC03對應83，需讀例外碼與設備狀態；不能把它當正常資料四bytes。本練習沒有例外封包。若有請求卻沒回覆，也先查鏡像方向、擷取缺口、逾時與設備日誌，不直接認定設備完全沒送。
+先核對 MBAP。Transaction Identifier 仍為 `0001`、Protocol Identifier 仍為 `0000`、Unit Identifier 仍為 `01`。Length 是 `0007`，其後 7 bytes 為 `01 03 04 00 FD 00 64`：Unit 1 byte、Function Code 1 byte、Byte Count 1 byte、資料 4 bytes。回覆總長因而是 `6 + 7 = 13` bytes。
 
-再做一次故意選錯的練習：只篩選伺服端埠作為目的埠，畫面只留下請求方向，回覆自然消失。改為同一對話篩選後，回覆重新出現。這能提醒你先檢查觀察條件，再提出設備故障假設；顯示筆數少，不代表原始檔真的少封包。
+| 回覆 PDU bytes | 意義 | 本例結果 |
+| --- | --- | --- |
+| `03` | Function Code | 與請求 FC03 相符。 |
+| `04` | Byte Count | `4` bytes，剛好是兩個 16-bit register。 |
+| `00 FD` | 第 1 個 register | 以 UInt16 解讀為十進位 `253`。 |
+| `00 64` | 第 2 個 register | 以 UInt16 解讀為十進位 `100`。 |
 
-## OPC UA的HEL與ACK能證明什麼
+完成這組練習時，應可寫出：請求的 PDU 起始位址是 `0`、數量是 `2`；回覆的原始 register 是 `00FD` 與 `0064`；回覆資料長度是 4 bytes。這些都只代表通訊資料的結構與原始數字，**不代表** `253` 一定是 `25.3 °C`、也不代表設備目前值正確。
 
-清除篩選後輸入tcp.stream == 1。第7至9包是另一條TCP握手；第10包是UA Connection Protocol的Hello，第11包是Acknowledge，第12包是TCP ACK。UA訊息名稱ACK與TCP旗標ACK位於不同層，不能混為同一件事。
+若設備資料表明定第 1 個 register 是 UInt16、倍率 `0.1 °C/count`，才可在解析後另算 `253 × 0.1 = 25.3 °C`。若資料表寫 Int16、兩個 register 的 Float32、不同 word order 或不同倍率，必須依資料表重新解碼；普通 FC03 回覆不會自帶這些工程語意。
 
-| 包號 | 應用內容 | 可見欄位 | 未證明的事 |
-| --- | --- | --- | --- |
-| 10 | HEL，57 bytes | EndpointUrl、buffer大小 | 使用者身分已通過 |
-| 11 | ACK，28 bytes | 版本、buffer及message限制 | Session建立或Read成功 |
-| 12 | 無應用內容 | TCP確認序號 | 設備工程值正確 |
+## 例外回覆不是正常資料
 
-第10包EndpointUrl為opc.tcp://192.0.2.30:4840，ReceiveBufferSize與SendBufferSize均為65536；第11包也回傳65536。這些是此樣本構造的協商欄位，不是現場產品預設。此檔沒有OpenSecureChannel、CreateSession、ActivateSession或Read，因此不能用它宣稱憑證、登入、NodeId及讀值驗證完成。
+以下是一組獨立的合成範例，僅用來練習結構，不宣稱任何設備會對這個位址作出相同回覆。
 
-實際OPC UA診斷要循序定位TCP、UA傳輸協商、安全通道、Session及服務結果。使用加密SecurityPolicy時，擷取端未必能讀出服務內容；請結合客戶端與伺服端診斷，不以關閉安全設定作為通用解法。沒有看到明文數值也不等於服務沒有送出。
+```text
+請求：00 02 00 00 00 06 01 03 00 7D 00 01
+回覆：00 02 00 00 00 03 01 83 02
+```
 
-本例HEL至ACK為1.120−1.100=20毫秒，與Modbus的40毫秒屬於不同操作，不能直接比較哪個協定更快。兩條連線均未包含FIN關閉流程，是截取式練習資料；工具指出對話不完整時，先查缺少的是關閉、建立還是應用階段。
+回覆的 Transaction Identifier 是 `0002`，可以和這組請求配對。Length `0003` 代表後面只有 `01 83 02` 三個 bytes：Unit Identifier、例外 Function Code、Exception Code。
 
-若握手正常卻停在協商階段，先保存最後一個完整訊息、方向、錯誤內容及客戶端日誌。端點網址不一致、訊息大小限制及伺服端拒絕可能出現在不同階段，應以實際回覆逐項定位。不要在沒有服務請求的檔案中搜尋工程值，再把搜尋不到寫成資料遺失。
+| 回覆 bytes | 判讀 |
+| --- | --- |
+| `01` | Unit Identifier；依 Modbus TCP implementation guide，伺服端在回覆時複製請求值。本例因此與請求相同；若實際資料不同，保留原始 bytes 並核對閘道／設備文件。 |
+| `83` | `03 + 80h`，表示 FC03 的 exception response，不是正常 FC03 資料。 |
+| `02` | Illegal Data Address。它表示此請求的位址不被伺服端接受；仍須配合資料表確認真正原因。 |
 
-## 練習驗收 排錯與來源
+看到 `83 02` 時，不能將 `02` 當成「回覆一個值為 2 的 register」，也不能把 Transaction Identifier 正確當成讀值成功。應保存原始請求、原始回覆、資料表位址寫法、Unit Identifier、設備狀態和時間，先核對位址基準、資料區與存取權限。
 
-保留原檔及分析副本。每次加註都記錄軟體版本、篩選式、時間顯示模式與包號；若把部分封包另存新檔，包號與對話索引可能重排，要說明對照方式。交接人應能用同一檔案重現你的數值，而不是只看到一張沒有上下文的截圖。
+## 實際資料的核對順序
 
-完成後應能留下六個答案：共有十二包、兩條stream；Modbus請求起點0且數量2；回覆raw值253與100；請求回覆40毫秒；UA只有HEL/ACK；不能證明任何設備實測成功。將篩選條件與包號一起寫入記錄，別只保存裁掉欄位名稱的數字。
+1. 對同一 TCP 連線與方向保存完整 bytes，從 MBAP 的 Length 切出完整 ADU；不要以一次 `recv()` 或畫面一行就假定是一個完整 Modbus 訊息。
+2. 檢查 Protocol Identifier 是否為 `0000`，並確認 Length 與實際後續 byte 數相符。
+3. 以 Transaction Identifier、同一連線、方向和請求／回覆 Function Code 配對。Transaction Identifier 之後可能重用，不能跨連線永久當唯一鍵。
+4. 正常回覆時，用 Byte Count、請求數量和資料型別核對資料長度。FC03 讀取兩個 16-bit registers 時，正常資料應有 4 bytes。
+5. 例外回覆時，先保留 exception function code 和 exception code；不要送入 register 或 Float32 轉換。
+6. 最後才以**目標設備手冊**套用位址基準、資料型別、word/byte 順序、倍率、單位與品質規則，再和第二筆不同的已知狀態交叉比對。
 
-本機已使用tshark讀取此檔，核對十二包、兩條對話、Modbus解碼、四十毫秒間隔及IP/TCP校驗，並確認UA HEL/ACK欄位可解析。這是離線檔案驗證。檔案沒有實際Ethernet FCS或設備資料，不能把校驗通過延伸成線路品質、硬體通訊或PLC程式驗證。
+沒有回覆時，本篇的十六進位範例不能判定原因。實際排查仍要檢查用戶端逾時、TCP 連線／防火牆、擷取範圍、設備日誌和讀取資料表；不要靠變更倍率或將零值填入來掩蓋通訊問題。
 
-FAQ1：埠502有流量就一定讀值成功嗎？不是，要配對請求與正常應用回覆，再核對映射。FAQ2：253一定是25.3°C嗎？不是，必須另有倍率與單位契約。
+## 完成條件、限制與來源
 
-FAQ3：UA ACK表示登入成功嗎？不是，它是傳輸協商回覆，後續安全通道與Session未在本檔出現。FAQ4：看不到回覆先查什麼？先清除顯示篩選、確認stream與方向，再查擷取範圍與設備日誌。
+本篇完成條件是能手動重算兩組合成資料：
 
-參考：[Wireshark Display Filter Reference：Modbus/TCP交易、長度與Unit ID欄位。](https://www.wireshark.org/docs/dfref/m/mbtcp.html)
+1. `00 01 00 00 00 06 01 03 00 00 00 02` 的 Length 為 6，讀取零起算位址 0、數量 2。
+2. `00 01 00 00 00 07 01 03 04 00 FD 00 64` 的 Length 為 7，兩個原始 UInt16 值為 253、100。
+3. `00 02 00 00 00 03 01 83 02` 是 FC03 的例外回覆，Exception Code 為 02，不是正常資料。
 
-參考：[Wireshark Display Filter Reference：Modbus功能碼、暫存器與回覆關聯欄位。](https://www.wireshark.org/docs/dfref/m/modbus.html)
+本文沒有驗證 PLC、從站、線路、TCP 效能、封包時間、Wireshark 解碼或任何實體設備。將本篇的合成 bytes 與設備通訊做比較前，須先在不寫入設備的前提下保存原始資料，並依現場程序與設備文件進行確認。
 
-參考：[OPC Foundation OPC 10000-6 §7.1：UA Connection Protocol及Hello/Acknowledge。](https://reference.opcfoundation.org/specs/OPC-10000-6/7.1)
+參考：[Modbus Messaging on TCP/IP Implementation Guide V1.0b §3.1.3：MBAP Header 的 Transaction Identifier、Protocol Identifier、Length 與 Unit Identifier。](https://www.modbus.org/file/secure/messagingimplementationguide.pdf)
 
-## 延伸閱讀
+參考：[Modbus Application Protocol Specification V1.1b3 §4.2、§6.3、§7：多 byte 資料的大端傳送、FC03 與 exception response。](https://www.modbus.org/file/secure/modbusprotocolspecification.pdf)
 
-- [交換器鏡像埠的封包擷取準備](/articles/industrial-switch-port-mirroring-capture-direction-capacity)
-- [乙太網路錯誤計數器怎麼看](/articles/industrial-ethernet-duplex-speed-error-counters)
+## 搭配工具與延伸閱讀
+
+- [Modbus 位址換算](/tool/modbus-address/)
+- [暫存器與 Float32 轉換](/tool/register-converter/)
+- [Modbus 有回應但數值不對的排查方法](/articles/modbus-response-wrong-value/)
+- [TCP 連線成功但沒有應用回覆怎麼排查](/articles/tcp-connect-no-application-response/)

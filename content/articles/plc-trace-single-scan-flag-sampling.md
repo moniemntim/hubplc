@@ -1,125 +1,84 @@
 ---
-title: PLC Trace 用單掃描旗標與取樣條件重現瞬間事件
-description: 用單掃描旗標、事件序號與取樣條件說明 Trace 看得見與看不見的差異。
+title: PLC Trace 如何用單掃描旗標、計數器與相位找出漏取事件
+description: 下載離線資料集，比較每掃描與較粗取樣，從保留計數器與相位判讀單掃描事件的 Trace 證據。
 date: 2026-09-17
 author: 茂伯
 draft: false
 ---
 
-## Trace 要回答哪一個時間問題
+## 先分開事件證據和波形證據
 
-Trace 適合回答變數隨時間如何變化，但它不是自動錄下所有 PLC 內部事件的黑盒子。先把問題寫成可驗收的句子：某個旗標是否只在一個掃描為 TRUE、它與命令及回饋的先後為何、以及取樣是否足以看見它。CODESYS 說明 Trace 需要安裝 Trace 套件，能像數位取樣示波器追蹤控制器變數曲線；目標平台是否支援仍須個別核對。
+短暫事件已由程式接受，Trace 卻沒有畫出 `OneShot=1`，要分開回答兩件事：**同一控制邏輯有沒有接受事件**，以及**這組 Trace 取樣有沒有碰到那一掃描**。前者用不會在下一掃描歸零的 `EventCount`；後者才用 `OneShot` 時間列。上升緣的程式寫法不在本文重複，請見[上升緣與下降緣](/articles/plc-rising-falling-edge-button-event)。
 
-案例使用合成的 OneShot 旗標。按鈕上升緣發生時，程式讓 OneShot 保持 TRUE 一個掃描，下一掃描清回 FALSE。若 Trace 週期比 PLC 任務慢，曲線可能完全看不到這個短脈衝；看不到不等於程式沒有執行。這篇的重點是把觸發條件、取樣間隔、緩衝長度與任務週期一起記錄。
+資料集固定 2 ms 任務週期，事件在 scan 3、7、10。每個事件只讓 `OneShot` 在該 task row 的半開區間 `[startMs, endMs)` 為 1，並把 `EventCount` 加一且保留。它比較三個取樣計畫：
 
-| 項目 | 本例設定 | 驗收問題 |
-| --- | --- | --- |
-| 觀察變數 | Button、OneShot、Count | 三者是否同一來源 |
-| 事件 | Button 只高一掃描 | Trace 能否捕捉 |
-| 取樣 | 依平台可用週期 | 是否小於事件寬度 |
-| 結果 | 旗標、計數、時間 | 是否能排序 |
-
-不要用畫面上的狀態燈代替 Trace。畫面更新可能是另一個任務，還可能把短脈衝保持成較長的顯示狀態。最小測試應同時記錄事件序號與累計計數：即使波形少一點，也能由 Count 增量證明事件曾被程式處理。
-
-## 先建立可重播的單掃描事件
-
-1. 建立合成輸入序列，讓 Button 在掃描 10 只為 TRUE，掃描 11 回 FALSE。
-
-2. 在相同任務中產生 OneShot 與 Count，避免先加入通訊或 HMI 延遲。
-
-3. 以事件序號記錄每次接受的上升緣，並保留前次 Button 值。
-
-4. 先離線列出掃描表，再用 Trace 驗證波形，兩者不一致時保留兩份證據。
-
-5. 重播第二次事件，確認 Trace 的觸發不是第一次啟動時的殘留狀態。
-
-掃描表應寫出每一列的Button、呼叫前Previous、OneShot、Count；下表先列輸入與結果，前值依上一列輸入推算。而不是只畫一條曲線。若按鈕在連續兩掃描為 TRUE，上升緣只應在第一列出現；若在掃描 20 再次由 FALSE 轉 TRUE，Count 應再增加一次。這個表同時檢查邊緣記憶與 Trace 顯示，避免把工具問題誤判成程式問題。
-
-| 掃描 | Button | OneShot | Count | 預期事件 |
+| 觀察 | 取樣時間 ms | 看見 OneShot 的 scan | 最後取到的 EventCount | 判讀 |
 | --- | --- | --- | --- | --- |
-| 9 | 0 | 0 | 0 | 無 |
-| 10 | 1 | 1 | 1 | 一次 |
-| 11 | 0 | 0 | 1 | 無 |
-| 12 | 0 | 0 | 1 | 無 |
-| 20 | 1 | 1 | 2 | 再次一次 |
+| `single-scan` | 0, 2, 4, …, 22 | 3、7、10 | 3 | 每個模型 task row 一筆 |
+| `coarse-phase-0` | 0, 6, 12, 18 | 7、10 | 3 | scan 3 漏取，6 ms 已讀到 Count=1 |
+| `coarse-phase-2` | 2, 8, 14, 20 | 無 | 3 | 三個短旗標都在樣本之間 |
 
-如果 OneShot 是在不同任務產生，必須把兩個任務的週期、優先級與資料交換方式加入案例。CODESYS 任務文件指出週期任務有設定的 Interval，事件任務在布林事件由 0 變 1 時啟動；不同任務的順序不能靠名稱猜。教學中先採單一任務，以免將尚未確認的排程行為當成結論。
+兩個 coarse 計畫都是 6 ms，只有 phase 差 2 ms。因此「每 6 ms 取樣」本身不能證明一定看得到或一定看不到。這些時間戳是**自訂離線模型**，不是 CODESYS、任何 PLC Runtime 或實體 I/O 的量測。
 
-## Trace 設定要和取樣能力對齊
+## 下載、執行與核對完整輸出
 
-開啟 Trace 設定時，至少確認變數清單、觸發來源、記錄前後時間、取樣間隔與記憶體容量。名稱相同但位於不同程式實例的變數可能不是同一個值；要從變數路徑或工程交叉參照確認。取樣間隔若是 5 ms，而 OneShot 只維持 2 ms，就算事件存在也可能落在兩次取樣之間。
+以下檔案不需 npm 套件，使用 Node.js 22.13.0 以上。將它們留在同一資料夾後執行 runner：
 
-觸發可以使用 Button 的上升緣，或使用事件序號變化。若以 OneShot 本身觸發，短脈衝可能仍只留下單點；若以較長的測試窗觸發，則能觀察事件前後狀態。每次改動設定都要增加版本註記，因為不同 Trace 設定產生的圖不能直接比較。
+- [README.md：資料欄位與模型界線](/examples/plc-trace/README.md)
+- [run.mjs：離線 runner](/examples/plc-trace/run.mjs)
+- [trace-model.mjs：可檢查的取樣模型](/examples/plc-trace/trace-model.mjs)
+- [fixture.json：12 scan 與三個取樣計畫](/examples/plc-trace/fixture.json)
+- [expected-output.txt：此 fixture 的完整、逐字 stdout](/examples/plc-trace/expected-output.txt)
 
-1. 先用較長測試窗確認變數有在變化，再縮短到事件前後的時間範圍。
+```powershell
+node --version
+node run.mjs
+```
 
-2. 選取 Button、OneShot、Count 和事件序號，不要只選最後輸出。
+fixture 不變時 stdout 必須和 `expected-output.txt` 完全相同。`eventCount` 是樣本當刻讀到的保留邏輯值，不是 Trace 工具替你算出的事件數。若要重播另一種漏取，先只改 `fixture.json` 的 `eventScans` 或 `phaseMs`，重新執行，再一併保存 fixture 和新輸出。
 
-3. 確認取樣間隔、觸發條件與前置資料是否被目標平台接受。
+`task_rows` 中 scan 3 的定義如下：
 
-4. 讓事件在視窗中央發生，避免只留下起始或結尾的一半資料。
+```text
+scan,startMs,endMs,oneShot,eventCount
+2,2,4,0,0
+3,4,6,1,1
+4,6,8,0,1
+```
 
-5. 匯出原始資料，保留設定檔與控制器版本，不只保存圖片。
+`coarse-phase-0` 在 6 ms 的樣本是 `6,4,0,1`：旗標是 0，計數器已是 1。它支持的結論很窄：**這個模型的粗取樣未碰到 scan 3，但模型已接受一次事件**。它不能替現場輸入端的最小脈寬背書。
 
-| 現象 | 可能原因 | 下一個檢查 |
+## 端點與相位怎麼寫入診斷紀錄
+
+模型把 scan 3 的 ON 窗定義成 `[4, 6)` ms：4 ms 屬 scan 3，讀到 `oneShot=1`；6 ms 已屬 scan 4，讀到 `oneShot=0`、`eventCount=1`。半開區間只是讓離線案例的邊界不含糊；實際 Trace 還有寫入位置、任務 jitter、時間戳解析度和 Runtime 支援等條件。
+
+每一次受控重播都記下事件號、寫入 task 和 Trace task、各自的 Interval／priority／jitter、完整變數路徑、樣本時間戳、OneShot、EventCount、每 n cycle、trigger、post-trigger 與 buffer。Count 增加而旗標沒出現時，報告應寫「此設定未取到旗標」，不要寫「PLC 未執行」。Count 也不增加才回查輸入、初始化和 POU 呼叫頻率；見[子程式跳過呼叫時的前值與輸出保留](/articles/plc-subprogram-call-frequency-edge-timer)。CODESYS Task 文件也明示循環 task 的 Interval、監看 jitter，以及 priority／CPU 架構對排程的影響。[Object: Task](https://content.helpme-codesys.com/en/CODESYS%20Development%20System/_cds_f_reference_task.html)
+
+## 用 CODESYS Trace 重做同一個問題
+
+以下是已依官方文件核對的 CODESYS 工具操作，不是宣稱 JavaScript 驗證了 CODESYS。前提是安裝 Trace package，且目標 Runtime 支援要用的功能；官方也警告 Trace 可能明顯增加 IEC task cycle time。[Data Sampling with Trace](https://content.helpme-codesys.com/en/CODESYS%20Trace/_cds_f_data_acquiring_with_trace.html)
+
+1. 開啟既有 Trace object，選 **Trace → Configuration**，在 Record Settings 選取資料記錄 task。官方建議通常選寫入該變數的同一 task。[Creating Trace Configuration](https://content.helpme-codesys.com/en/CODESYS%20Trace/_cds_trace_configuring.html)
+2. 用 **Add Variable** 加入完整實例路徑的 `OneShot`、`EventCount` 和輸入或事件號；不要只選輸出或 HMI 顯示值。
+3. 需要圍繞事件保留資料時，啟用 Trigger，記錄 trigger variable、edge、post-trigger samples 和 record condition。這些欄位及 timestamp resolution 都在 Record Settings。[Trace Configuration](https://content.helpme-codesys.com/en/CODESYS%20Trace/_cds_dlg_trace_configuration.html)
+4. 在 **Advanced** 記錄 `Measurement in every n-th cycle` 和 runtime buffer size。`n=1` 是每個已選 task cycle 取一筆；buffer 決定可保留時間範圍。[Advanced Trend Settings](https://content.helpme-codesys.com/en/CODESYS%20Trace/_cds_dlg_trace_advanced_settings.html)
+5. 應用程式 online 時執行 **Trace → Download Trace**，以固定腳本重播事件，再保存原始 Trace、設定與 task 設定。官方描述此命令會傳送設定、開始取樣並將樣本傳回開發環境。[Download Trace](https://content.helpme-codesys.com/en/CODESYS%20Trace/_cds_cmd_trace_download.html)
+
+在 CODESYS 重做之前，還須自行建立產生相同事件序列的 PLC 程式，確認寫入與取樣的相對位置；本文沒有提供或執行該 PLC 工程。匯出資料應記錄 task、變數路徑與取樣設定，但設定相同仍不能保證與理想時間表逐點相同。runner 不會連線、下載設定、模擬 CODESYS scheduler，也不會讀寫實體 I/O。
+
+## 最小驗收表
+
+| 要保存 | 實際資料 | 判讀目的 |
 | --- | --- | --- |
-| 看不到 OneShot | 取樣太慢或觸發錯 | 取樣間隔與 Count |
-| 波形有但 Count 不變 | 觀察到別的實例 | 變數路徑 |
-| 時間軸跳動 | 任務週期有抖動 | 任務監看值 |
-| 每次圖不同 | 輸入序列未固定 | 事件腳本與版本 |
+| 應用、控制器、Runtime、Trace package 版本 | 版本號 | 不混用不同環境 |
+| 寫入 task／Trace task | 名稱、Interval、priority、jitter | 解釋樣本和邏輯快照關係 |
+| 變數 | 完整實例路徑 | 避免同名不同實例 |
+| 取樣設定 | 每 n cycle、trigger、post-trigger、buffer | 說明保存的時間範圍 |
+| 每次事件 | 事件號、OneShot、EventCount、時間戳 | 分辨漏取與未接受 |
 
-## 用單掃描旗標檢查取樣盲點
-
-在隔離診斷版本中，假設每掃描固定2毫秒、實際最大取樣間隔5毫秒且連續記錄無缺口，再把觀察用旗標從一掃描延長到三掃描。2毫秒旗標可能漏取；6毫秒旗標在上述理想條件下應被取到。若仍看不到，檢查記錄條件、觸發窗及變數路徑。再把事件改在不同相位發生，觀察是否有固定的盲點。這種測試比只看一次成功圖更能說明 Trace 的限制。
-
-以 Count 作為離散證據，以 Trace 作為時間證據。若 Count 增加三次而 Trace 只看到兩次，保存事件序號與取樣設定，檢查是否有一個事件落在取樣間隙。若 Count 也不增加，才回到輸入邊緣、程式呼叫順序或初始化狀態。不要為了讓圖好看而把 OneShot 強行拉長到不符合實際需求。
-
-一次掃描的定義依目標控制器任務而定。CODESYS 文件說明 Trace 類似取樣示波器，但沒有替所有目標系統保證同一取樣精度。本文不把 Trace 設定名稱轉譯成任何 Q 系列特殊功能；若使用 GX Works 或其他工具，須以該工具的記錄週期、緩衝和觸發說明重新設計測試。
-
-| 測試 | 事件寬度 | Count 預期 | 波形驗收 |
-| --- | --- | --- | --- |
-| A | 1 掃描 | +1 | 可見或標註可能漏取 |
-| B | 3 掃描 | +1 | 應至少出現一段高值 |
-| C | 移動相位 | +1 | 比較每相位結果 |
-| D | 無輸入 | +0 | 不應有虛假觸發 |
-
-## 把波形轉成可交接的診斷證據
-
-一份可交接的 Trace 證據要包含控制器、應用版本、任務設定、Trace 設定、變數路徑、觸發時間、輸入腳本與原始匯出檔。截圖只適合快速溝通，不能取代原始資料。若資料在重啟後消失，先依平台功能匯出，再關閉測試，不要直接覆蓋下一次結果。
-
-1. 替 Trace 設定與輸入腳本各給一個版本號。
-
-2. 用固定事件序列執行至少三次，記錄每次事件序號。
-
-3. 把波形時間軸與離線掃描表對照，標出取樣間隙。
-
-4. 把未測項目、平台限制和推論分開寫在報告中。
-
-5. 在另一個工程環境重新載入設定或以同一腳本驗證。
-
-排查報告不要寫『Trace 顯示正常』這種無法驗收的句子。改寫成『在5毫秒取樣間隔與2毫秒測試事件寬度的示例中，五次事件的Count均增加，四次波形可見，一次未被取到；漏取原因仍需由原始時間戳及事件相位確認』。這是報告寫法範例，並非本文已執行的測試。下一位工程師因此知道哪些結論來自波形，哪些來自程式計數。
-
-若 Trace 造成任務負載增加，也要比較開啟前後的執行時間與抖動。不要在高負載正式運轉中無限制增加通道與記錄長度；先在離線或維護窗口測試，並依目標平台的診斷建議設定。
-
-## 驗收表與常見問題
-
-| 項目 | 通過條件 | 證據 |
-| --- | --- | --- |
-| 邊緣 | 長按只計一次 | 掃描表與 Count |
-| 取樣 | 事件寬度與間隔有明確關係 | Trace 設定 |
-| 觸發 | 能重播同一事件 | 原始匯出資料 |
-| 負載 | 監看不造成未說明的超時 | 任務監看 |
-| 限制 | 漏取時仍不誤判為無事件 | 報告註記 |
-
-問：Trace 沒看到短旗標是不是程式沒跑？不是，先用事件序號或 Count 驗證。問：能不能把旗標延長來方便觀察？只能在明確標為診斷版本且不改變正式語意時使用，不能把教學改動當正式修正。問：不同任務可直接比較時間嗎？要先核對任務週期、時間基準和抖動。問：可以只交截圖嗎？不建議，應保留設定與原始資料。
-
-適用型號與限制：本文以 CODESYS Trace 概念示範，未聲稱 GX Works、Q 系列 CPU 或其他平台有相同 Trace 介面、取樣解析度或觸發語意。正式診斷須核對目標工具、CPU 負載、任務配置與資料匯出能力；案例程式僅為教學邏輯。
-
-參考：[CODESYS Trace 官方文件](https://content.helpme-codesys.com/en/CODESYS%20Development%20System/_cds_f_data_acquiring_with_trace.html)
-
-參考：[CODESYS Trace 官方文件](https://content.helpme-codesys.com/en/CODESYS%20Development%20System/_cds_dlg_trace_configuration.html)
+如果開啟 Trace 後 timeout 或 jitter 變大，停在受控測試環境，比較開啟前後 task 監看值，再縮減通道、頻率或 buffer。不要為了讓波形好看而改正式 OneShot 的控制語意；診斷用延長旗標只能在隔離版本重做驗收。
 
 ## 延伸閱讀
 
-- [PLC 最小可重現專案 保留兩模組資料偏移案例](/articles/plc-minimal-reproduction-module-offset)
-- [PLC Watchdog 觸發時 辨別執行超時與遺漏週期](/articles/plc-watchdog-timeout-diagnosis)
+- [PLC 掃描週期與輸入輸出更新：用五次掃描看懂執行順序](/articles/plc-scan-cycle-io-refresh)
+- [PLC Watchdog 觸發時：辨別執行超時與遺漏週期](/articles/plc-watchdog-timeout-diagnosis)

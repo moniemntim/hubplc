@@ -1,114 +1,59 @@
 ---
-title: HMI 設定值變更畫面怎麼降低輸入錯誤
-description: 用 Current、Pending、Confirmed 三個概念設計 HMI 設定值畫面，將取消不寫入、確認後讀回、空值／小數／超界與設備忙碌納入同一條可驗收流程，並以 80→82.5 的虛構案例示範。
+title: HMI 設定值變更怎麼以讀回證據確認已套用
+description: 以既有 operation-log-v1 固定案例區分 accepted、unknown、applied 與 revision conflict，避免把畫面數字當設備確認。
 date: 2026-09-17
 author: 茂伯
 draft: false
+category: HMI 畫面與操作
 ---
 
-## 先把畫面拆成目前值 新值與最後確認
+## 先核對本例真正要證明的事
 
-設定值畫面最常見的錯誤，是讓操作員直接點一個數字、輸入完就立刻寫入 PLC。較穩的做法是把畫面分成三個狀態：目前值（Current），使用者正在編輯的待寫入值（Pending），以及寫入後重新讀回的已確認值（Confirmed）。操作員先看單位、允許範圍和目前值，再輸入新值；按取消只丟掉 Pending，按確認才送出寫入請求；寫入完成後重新讀回同一個資料來源，畫面顯示 Confirmed。這篇以虛構的批次溫度上限從 80.0 °C 改為 82.5 °C 示範，不指定任何未查證的 HMI 巨集、寄存器或 PLC 位址。
+輸入欄的值、服務 accepted、送出寫入與設備已套用不是同一件事。本頁整合既有 `operation-log-v1` 離線證據讀取器：固定 operationId=`OP-884`、equipment=`EQ-A`、tag=`TEMP_SP`、畫面顯示舊值=50、fixture 假設的設備權威舊值=52、要求新值=55、expected revision=42。這些是合成教學資料，不是實讀設備。
 
-| 畫面欄位 | 用途 | 使用者要看到什麼 |
-| --- | --- | --- |
-| 目前值 | 顯示 PLC／設備目前已生效值 | 例如 80.0 °C，附讀取時間或狀態 |
-| 新值 | 只保存正在編輯的值 | 例如 82.5 °C，尚未代表設備已採用 |
-| 單位與範圍 | 避免輸入語意不清 | °C、80.0～95.0 °C |
-| 取消 | 放棄本次編輯 | 畫面回到目前值，沒有寫入 |
-| 確認 | 進行驗證、寫入與讀回 | 顯示成功、失敗或等待狀態 |
+本篇輸入合成事件鏈並解讀其結果；它不發出設定值變更，也不宣稱任何輸入步距。數字文字、範圍與步距請使用既有的 [HMI 數值範圍與步距驗證](/articles/hmi-numeric-range-step-validation/)；多人編輯的版本比較請使用 [HMI 並行編輯與版本衝突](/articles/hmi-concurrent-edit-last-writer-version/)。
 
-任何 HMI 都要先確認它的數值輸入元件是否支援資料型別、位數、輸入範圍、最小值／最大值顯示與確定時機。以 Mitsubishi GOT2000 的 GT Designer3 手冊為例，數值輸入的顯示範圍會受資料型別與位數設定影響，輸入條件也會影響可顯示的範圍；這些是 GOT2000 的設定行為，不應直接套用到其他品牌 HMI。
+## 下載與固定證據輸出
 
-參考：[Mitsubishi Electric GT Designer3 Version1 Screen Design Manual：Numerical Input 的範圍與 Previous／Minimum／Maximum 顯示項目](https://dl.mitsubishielectric.com/dl/fa/document/manual/got/sh080866eng/sh080866engaq.pdf)
+將以下檔案放在同一個資料夾，以 Node.js 24.19+ 執行：
 
-## 輸入驗證 空值 小數與超界要分開處理
+- [model.mjs](/examples/operation-log/model.mjs)、[fixtures.mjs](/examples/operation-log/fixtures.mjs)、[demo.mjs](/examples/operation-log/demo.mjs)、[self-test.mjs](/examples/operation-log/self-test.mjs)
+- [readback-demo.mjs](/examples/operation-log/readback-demo.mjs)、[readback-practice.mjs](/examples/operation-log/readback-practice.mjs)、[README.md](/examples/operation-log/README.md)
 
-輸入檢查至少分四層。第一層是空值：使用者清除數字後按確認，應停在畫面上並要求輸入，不要把空字串默默當成 0。第二層是格式：例如本例設備只接受 0.5 °C 的步距，82.55 °C 應被拒絕或依規格明確取整，不能由畫面自行猜。第三層是範圍：假設批次溫度上限允許 80.0～95.0 °C，79.9 與 95.1 都要阻止寫入。第四層是設備狀態：即使數值在範圍內，設備在運轉、加熱或批次鎖定時也可能不允許變更，這要由 PLC／設備狀態提供明確允許條件。
+```powershell
+node readback-demo.mjs
+node readback-practice.mjs
+node self-test.mjs
+```
 
-| 輸入狀況 | 預期畫面反應 | 不要做的事 |
-| --- | --- | --- |
-| 空值 | 顯示必填訊息，停留在編輯狀態 | 把空值轉成 0 寫入 |
-| 82.5 °C | 格式與範圍通過，等待確認 | 按離開畫面就直接寫入 |
-| 79.9 °C | 顯示下限 80.0 °C，拒絕確認 | 讓 PLC 收到後再猜錯誤原因 |
-| 95.1 °C | 顯示上限 95.0 °C，拒絕確認 | 只限制顯示位數不限制數值 |
-| 設備忙碌 | 顯示目前不可變更，保留原值 | 用畫面按鈕強行覆蓋 |
+`readback-demo.mjs` 的固定結果：
 
-範圍要在 HMI 與控制程式各保留一道防線。HMI 範圍是操作提示與第一道攔截；PLC 或設備控制邏輯仍要重新檢查，因為寫入可能來自其他 HMI、通訊或維護工具。若 HMI 只設定畫面格式，並不等於設備端有安全限幅。
+```text
+acceptedOnly: result=accepted reason=accepted_not_applied
+disconnectUnknown: result=unknown reason=disconnect_after_send
+success: result=applied reason=correlated_readback_proof
+sameValueWrongOperation: result=unknown reason=readback_proof_incomplete_or_mismatched
+revisionConflict: result=rejected reason=VERSION_CONFLICT observed=43 expected=42
+readback demo: PASS
+```
 
-接受條件 = 非空值 AND 格式與0.5 °C步距正確 AND 80.0 ≤ 新值 ≤ 95.0 AND 設備允許變更
+## 讀回要關聯同一操作，而不只比數字
 
-## 確認與取消 取消不能寫入 確認後一定要讀回
+`accepted` 只表示讀取器看到接受事件，`sent` 只表示已送出。斷線發生在 sent 後時是 `unknown`；它不等於失敗，也不可盲目重送。只有 readback 同時符合下列教學契約才是 `applied`：
 
-確認流程要讓使用者知道自己即將改什麼。按確認後先顯示對話框：「目前值 80.0 °C，將改為 82.5 °C，是否寫入？」使用者按取消對話框時，Pending 仍可保留或回到目前值，但不得送出寫入請求；使用者在編輯畫面按取消時，則清除 Pending 並回顯 Current。只有確認對話框的肯定動作才進入寫入階段。這裡的按鈕名稱與事件實作必須依實際 HMI 元件手冊設定，不自行發明巨集函式。
+| 讀回欄位                       | 固定值         |
+| ------------------------------ | -------------- |
+| operationId                    | OP-884         |
+| equipment / tag                | EQ-A / TEMP_SP |
+| value                          | 55             |
+| revisionBefore / revisionAfter | 42 / 43        |
 
-1. 進入畫面後讀取 Current，顯示 80.0 °C、單位與範圍 80.0～95.0 °C。
+因此讀到相同數字 55 卻帶 `OP-OTHER`，結果仍是 unknown。讀回 revisionAfter=44 也仍是 unknown。revision 43 是本例的 `42 + 1` 契約，不是所有設備都使用的版本規則。
 
-2. 點選輸入欄，輸入 82.5；此時只更新 Pending，畫面可同時保留 Current=80.0。
+顯式 `VERSION_CONFLICT observed=43 expected=42` 才是 rejected 的證據；事後讀到不同值不能自行推論為 rejected。若 commit 與回覆之間斷線，先保留 unknown，再查同一 operationId 的讀回或事件，不把 retry 當成安全預設。
 
-3. 按取消：清除 Pending，確認資料來源仍為 80.0，並檢查沒有產生寫入請求。
+## 可改練習與限制
 
-4. 重新輸入 82.5，按確認；先做一次範圍與設備允許檢查，再送出寫入請求。
+`readback-practice.mjs` 預設讀取 wrong-operation fixture，輸出 `OP-OTHER` 與 unknown。把最後一筆 readback 的 `operationId` 改為 `OP-884`，再執行，會得到 applied；或保留 operationId 正確而把 `revisionAfter` 改為 44，會保持 unknown。每次修改後都要保留 operationId、target、value 與 revision 一起判讀。
 
-5. 收到寫入完成訊號後，再讀回同一個設定來源；讀回 82.5 才顯示已套用，讀不到或不同則顯示核對失敗。
-
-| 階段 | Current | Pending | 畫面狀態 |
-| --- | --- | --- | --- |
-| 開啟 | 80.0 | 空 | 目前值 |
-| 編輯中 | 80.0 | 82.5 | 尚未寫入 |
-| 按取消 | 80.0 | 空 | 回到目前值 |
-| 確認待寫入 | 80.0 | 82.5 | 請求中 |
-| 寫入並讀回成功 | 82.5 | 空或82.5 | 已確認 |
-| 寫入後讀回不同 | 80.0或未知 | 82.5 | 核對失敗 |
-
-完成後應看到什麼結果：取消後設備值仍是 80.0；確認 82.5 後，寫入完成且重新讀回的值也是 82.5。若只看到畫面上的輸入框變成 82.5，還不能說設定已生效。
-
-## 80→82.5 虛構案例 把驗收條件寫成可觀察結果
-
-假設設備是批次加熱器，設定值名稱為「批次溫度上限」，允許 80.0～95.0 °C、步距 0.5 °C。初始 Current=80.0。這些數字是案例條件，不代表任何特定設備的安全上限。先測取消，再測確認，並把 HMI 顯示、PLC／設備回讀和寫入狀態分開記錄。
-
-| 測試動作 | 預期看到 | 若不同先查 |
-| --- | --- | --- |
-| 輸入82.5但按取消 | 輸入框回到80.0；設備值未變 | 取消按鈕是否觸發寫入事件 |
-| 輸入82.5按確認 | 出現確認內容與寫入中狀態 | 數值格式、範圍、允許條件 |
-| 寫入完成後讀回 | Current=82.5，顯示已確認 | 讀回資料來源、完成訊號與更新週期 |
-| 輸入79.5 | 被拒絕並顯示下限80.0 | HMI輸入範圍與資料型別 |
-| 輸入82.55 | 依步距規格拒絕或明確取整 | 小數位、步距與設備解析度 |
-| 設備忙碌時確認82.5 | 不寫入，顯示不可變更 | 設備允許位元／狀態定義 |
-
-案例的關鍵不是「畫面看起來有改」，而是每次寫入都有一個可追蹤的閉環：使用者輸入、HMI 驗證、確認、寫入、完成、讀回、比對。若通訊中斷而無法確認是否已寫入，畫面應明確顯示「結果待確認」，不能顯示成功或假裝取消已生效；恢復連線後讀回核對，再決定下一步，避免盲目重送。
-
-## 常見失敗 先查事件方向 再查資料來源
-
-失敗時先查哪裡？第一個症狀是「按取消仍改變設備值」：先查取消按鈕是否綁到寫入動作，或輸入元件是否設定成離開時自動寫入。第二個症狀是「畫面顯示 82.5，但設備仍是 80.0」：先查是否只有 Pending 改變、確認事件是否真的送出、寫入完成條件是否有回報，再查讀回來源。第三個症狀是「輸入 79.5 還能送出」：先查 HMI 的輸入範圍、位數與資料型別，再查設備端是否有第二道限制。
-
-1. 建立測試紀錄：Current、Pending、按鈕、請求、完成、讀回與錯誤狀態。
-
-2. 只測取消，觀察是否產生任何寫入請求；若有，先修正畫面事件。
-
-3. 只測超界與空值，確認拒絕發生在確認前。
-
-4. 測試確認後故意讓讀回不同，確認畫面能顯示核對失敗，而不是顯示成功。
-
-5. 最後才測通訊中斷、設備忙碌與畫面離開重返，確認 Pending 不會被誤當成 Current。
-
-GT Designer3 的功能手冊說明，數值輸入範圍檢查在輸入被確定時執行；輸入期間移動游標不一定立即完成範圍檢查。這提醒設計者：提示可以在輸入時出現，但真正的寫入閘門必須放在確認事件，且設備端仍要再次驗證。
-
-參考：[GT Designer3 Version1 Screen Design Manual (Functions)：Numerical Input range check 在 input determined 時執行的注意事項](https://dl.mitsubishielectric.com/dl/fa/document/manual/got/sh080867eng/sh080867engal.pdf)
-
-## 適用型號 限制與三個常見問題
-
-適用型號與限制：本文可作為一般 HMI 設定值流程的設計檢查表；HMI 元件名稱、資料型別、輸入範圍、按鈕事件與讀回完成條件要依實際品牌和型號確認。已查證的具體文件是 Mitsubishi GOT2000／GT Designer3，不能宣稱 WinCC、Pro-face、三菱 GOT3000 或其他 HMI 使用相同欄位與事件。本文沒有指定寄存器、巨集語法或 PLC 位址。
-
-問題一：HMI 已經顯示新值，為什麼還要讀回？因為輸入框可能只有 Pending，通訊可能逾時，設備也可能拒絕或限幅；讀回才能確認實際資料來源。問題二：取消是不是把 PLC 值寫回舊值？不是；正確的取消應該不送寫入，最多清除 Pending 並重新讀取 Current。問題三：HMI 限制 80～95 就夠了嗎？不夠；PLC 或設備端仍要檢查範圍、模式、權限與允許變更狀態。
-
-完成後應看到什麼結果：80→82.5 的流程有取消不寫入、確認後寫入、完成後讀回與不一致警報；空值、小數格式、超界和忙碌狀態都有明確結果。失敗時先查哪裡：先查按鈕事件和 Pending／Current 分離，再查 HMI 輸入設定，最後查設備端拒絕與通訊。
-
-## 補充參考資料
-
-參考：[Mitsubishi Electric GT Works3 Software Manuals：GOT2000／GT Designer3 官方手冊索引](https://us.mitsubishielectric.com/fa/en/products/hmi/human-machine-interface/software/gt-works3/manuals/)
-
-## 延伸閱讀
-
-- [HMI 手動與自動模式怎麼在畫面上清楚區分](/articles/hmi-manual-auto-mode-control-ownership)
-- [HMI 維護模式的畫面與一般操作畫面要怎麼分開](/articles/hmi-maintenance-mode-screen-permissions)
+此資料夾的讀取器對 metadata、event 欄位、seq 與 ISO UTC serverTime 都有固定且有界的教學契約（最多 12 events、序列化後最多 4096 UTF-8 bytes）。它不提供帳號驗證、輸入控制、服務持久化、可信時鐘、PLC 寫入、實機 revision 原子性或 exactly-once 設備效果。畫面顯示已輸入 55、或單純讀到 55，都不能取代關聯讀回證據。

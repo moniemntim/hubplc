@@ -1,0 +1,34 @@
+{
+  "description": "Synthetic offline FC03 read-plan fixture. It does not describe a real PLC or device map.",
+  "map": {
+    "minAddress": 0,
+    "maxAddress": 199,
+    "deviceMaxQuantity": 50,
+    "forbiddenRanges": [
+      { "start": 120, "end": 129 },
+      { "start": 150, "end": 151 }
+    ]
+  },
+  "basePlan": [
+    { "name": "A", "start": 0, "quantity": 40 },
+    { "name": "B", "start": 40, "quantity": 40 },
+    { "name": "C", "start": 80, "quantity": 40 },
+    { "name": "D", "start": 130, "quantity": 20 },
+    { "name": "E", "start": 152, "quantity": 28 },
+    { "name": "F", "start": 180, "quantity": 20 }
+  ],
+  "alternateBoundaryPlan": [
+    { "name": "A", "start": 0, "quantity": 40 },
+    { "name": "B", "start": 40, "quantity": 39 },
+    { "name": "C", "start": 79, "quantity": 41 },
+    { "name": "D", "start": 130, "quantity": 20 },
+    { "name": "E", "start": 152, "quantity": 28 },
+    { "name": "F", "start": 180, "quantity": 20 }
+  ],
+  "boundaryItem": { "name": "synthetic-32-bit-at-79", "start": 79, "width": 2 },
+  "invalidPlans": {
+    "forbiddenRange": [{ "name": "C", "start": 80, "quantity": 50 }],
+    "outOfRange": [{ "name": "F", "start": 180, "quantity": 22 }],
+    "deviceCap": [{ "name": "A", "start": 0, "quantity": 51 }]
+  }
+}

@@ -1,96 +1,107 @@
 ---
 title: Modbus TCP MBAP Header Transaction ID Unit ID 與 Length 欄位判讀
-description: 拆解 Modbus TCP MBAP Header 的 Transaction ID、Protocol ID、Length、Unit ID 與 PDU，並用離線十六進位封包手算 Length 和配對回覆。
-date: 2026-09-17
+description: 用可重跑的離線位元組案例驗算 MBAP 的 Length、Transaction ID 與 Unit ID，並處理 TCP 拆包與合包。
+date: 2026-09-28
 author: 茂伯
 draft: false
 ---
 
-## 先看 Modbus TCP 的封包分層
+## 先分清楚 MBAP 的 7 bytes 與讀取邊界的 6 bytes
 
-Modbus TCP 的應用資料放在 TCP 連線中，外層 ADU 由 MBAP Header 加上 Modbus PDU 組成。MBAP Header 有四個欄位：Transaction Identifier 2 bytes、Protocol Identifier 2 bytes、Length 2 bytes、Unit Identifier 1 byte；接著才是 PDU 的 Function Code 和資料。它沒有 Modbus RTU 的 CRC 欄位，不能把 MBAP 當成 RTU 封包直接解析。
+Modbus TCP 的 ADU 是 **MBAP Header（7 bytes）加上 PDU**。MBAP 的前 6 bytes 是 Transaction ID、Protocol ID 與 Length；第 7 byte 才是 Unit Identifier。因此，接收端可以先累積 6 bytes 讀取 Length，再等待完整的 `6 + Length` bytes；完整 ADU 的 MBAP Header 仍是 7 bytes。
 
-| 欄位 | 長度 | 用途 | 判讀重點 |
-| --- | --- | --- | --- |
-| Transaction ID | 2 bytes | 把請求和回覆配對 | 通常由 Client 管理，回覆應帶回相同值 |
-| Protocol ID | 2 bytes | 協定識別 | Modbus TCP 規定為 0x0000 |
-| Length | 2 bytes | 後續 Unit ID 加 PDU 的 byte 數 | 不包含前面 6 bytes MBAP |
-| Unit ID | 1 byte | 伺服器或下游單元識別 | 閘道場景尤其重要 |
-| PDU | 變動 | 功能碼與資料 | 從功能碼開始解析 |
+| 位移   | 欄位                   | 長度    | 本文的檢查方式                                          |
+| ------ | ---------------------- | ------- | ------------------------------------------------------- |
+| 0–1    | Transaction Identifier | 2 bytes | 回覆在同一 TCP 連線中應帶回請求值，用來配對。           |
+| 2–3    | Protocol Identifier    | 2 bytes | Modbus protocol 為 `0000`。                             |
+| 4–5    | Length                 | 2 bytes | 後續 bytes 數，包含 Unit ID 與 PDU，不含前 6 bytes。    |
+| 6      | Unit Identifier        | 1 byte  | 依直接 TCP 裝置或 gateway 拓樸判讀。                    |
+| 7 之後 | PDU                    | 可變    | Function Code 加資料；FC03 request PDU 固定為 5 bytes。 |
 
-參考：[Modbus Organization《MODBUS Messaging on TCP/IP Implementation Guide》V1.0b，3.1.2 MODBUS On TCP/IP Application Data Unit 與 3.1.3 MBAP Header description 章節；查閱日期 2026-09-17。](https://www.modbus.org/file/secure/messagingimplementationguide.pdf)
+[Modbus Messaging on TCP/IP Implementation Guide V1.0b §3.1.2–§3.1.3](https://www.modbus.org/file/secure/messagingimplementationguide.pdf) 定義上述欄位，並明示 Length 是 Unit Identifier 和 data fields 的後續 byte count。該文件也指出此長度資訊用來辨認被拆到多個 TCP packets 的訊息邊界。
 
-## Length 怎麼算 先數後續 bytes
+## 一筆 FC03 請求與回覆，逐 byte 驗算 Length
 
-Length 欄位的計算範圍是 Unit ID 加上 PDU，不包含前面的 Transaction ID、Protocol ID、Length 本身。以讀取 Holding Registers 的請求為例，Unit ID 1 byte，加上 PDU 的 Function Code 1、Starting Address 2、Quantity 2，共 6 bytes，所以 Length=0x0006。回覆若有 Function Code 1、Byte Count 1、資料 N bytes，Length=1+1+1+N。
+以下都是真正寫入本站離線範例檔的合成 bytes；沒有 PCAP、Wireshark 擷取、PLC 連線或硬體測試。
 
-| 封包 | Unit ID | PDU 長度 | Length | 原因 |
-| --- | --- | --- | --- | --- |
-| 讀取請求 FC03 | 1 | 5 | 0x0006 | 1+1+2+2 |
-| FC03 回覆2 registers | 1 | 6 | 0x0007 | 1+1+1+4 |
-| FC03 回覆3 registers | 1 | 8 | 0x0009 | 1+1+1+6 |
-| 例外回覆 | 1 | 2 | 0x0003 | 1+1+1 |
+```text
+請求：00 2A 00 00 00 06 01 03 00 10 00 02
+回覆：00 2A 00 00 00 07 01 03 04 00 64 00 C8
+```
 
-Length 是網路位元組數，不是 register 數量，也不是包含整個 TCP ADU 的總長度。若接收緩衝依 Length 組包，應先收到 6 bytes MBAP，再讀取 Length 指定的後續 bytes。實作還要處理 Length 不合理、半包、合包和連線關閉。
+| 欄位           | 請求             | 回覆                | 為何成立                                                            |
+| -------------- | ---------------- | ------------------- | ------------------------------------------------------------------- |
+| Transaction ID | `002A`           | `002A`              | 同一連線上的此回覆可配對這筆 pending request。                      |
+| Protocol ID    | `0000`           | `0000`              | Modbus protocol。                                                   |
+| Length         | `0006`           | `0007`              | 請求：Unit 1 + PDU 5；回覆：Unit 1 + FC 1 + byte count 1 + data 4。 |
+| Unit ID        | `01`             | `01`                | gateway 場景可作下游路由；本例只驗證回覆與請求相同。                |
+| PDU            | `03 00 10 00 02` | `03 04 00 64 00 C8` | 起始偏移 `0010`、讀 2 registers；回覆 data 為 4 bytes。             |
 
-## 離線十六進位封包配對
+因此請求完整長度是 `6 + 6 = 12` bytes，回覆是 `6 + 7 = 13` bytes。兩個原始 16-bit register 為 `0064` 與 `00C8`。它們的工程意義、正負號、倍率和 word order 必須由目標設備資料表決定，不能從 MBAP 推得。
 
-以下是離線虛構封包，不連線設備。請求：00 2A 00 00 00 06 01 03 00 10 00 02。回覆：00 2A 00 00 00 07 01 03 04 00 64 00 C8。請按位元組拆解，不要把空格或換行當成封包內容。
+[Modbus Application Protocol V1.1b3 §6.3](https://www.modbus.org/file/secure/modbusprotocolspecification.pdf) 指定 FC03 的數量為 1–125 registers，回覆資料為每 register 兩 bytes；所以本例 2 registers 的正常資料長度是 4 bytes。
 
-| 位移 | 請求欄位 | 值 | 回覆欄位 | 值 |
-| --- | --- | --- | --- | --- |
-| 0-1 | Transaction ID | 0x002A | Transaction ID | 0x002A |
-| 2-3 | Protocol ID | 0x0000 | Protocol ID | 0x0000 |
-| 4-5 | Length | 0x0006 | Length | 0x0007 |
-| 6 | Unit ID | 0x01 | Unit ID | 0x01 |
-| 7 | Function | 0x03 | Function | 0x03 |
-| 8之後 | Address/Qty | 位移8～11<br>00 10 00 02 | ByteCount/Data | 位移8～12<br>04 00 64 00 C8 |
+## TCP 拆包：5 bytes 不是一個「短封包」
 
-回覆的 Length=7，因為 Unit ID 1 + Function 1 + Byte Count 1 + Data 4。Transaction ID 相同，所以可配對到這一筆請求；回覆資料是兩個 16-bit register：0x0064 和 0x00C8。這只證明封包欄位可依規格解析，不代表地址 0x0010 對應的工程意義已正確。
+範例串流把上面第一筆請求刻意分成兩次交給接收端：
 
-參考：[Modbus Application Protocol Specification V1.1b3，PDU、功能碼 03 與例外回覆章節；TCP Implementation Guide V1.0b，3.1.3 MBAP Header description。兩份文件共同支持本文的 PDU／MBAP 分界與功能碼解讀。](https://www.modbus.org/file/secure/messagingimplementationguide.pdf)
+```text
+chunk 1：00 2A 00 00 00
+chunk 2：06 01 03 00 10 00 02
+```
 
-## Transaction ID Unit ID 與多筆請求
+第一個 chunk 只有 5 bytes，連 Length 都還少一個 byte，接收端只能保留它，不能解析 Transaction ID 後就猜 PDU。加入第二個 chunk 後共有 12 bytes；讀到 Length=`0006`，再確認剛好有 `6 + 6` bytes，才輸出一筆 ADU。
 
-同一 TCP 連線上可能出現多筆請求。Transaction ID 的工作是讓 Client 把回覆對回原請求；不要只用『先送先收』的假設。離線檢查時，建立 pending 表，保存 Transaction ID、Unit ID、功能碼、位址、送出時間和預期長度。回覆若 Transaction ID 不在 pending 表、Unit ID 不符或 PDU 功能碼與請求不符，就先標成配對失敗。
+這不是「TCP 封包長度必須為 12」的規則。TCP 提供有序 byte stream；分段位置由 TCP/IP stack 決定。應用程式要以 MBAP Length 做組框，不能把每一次 `recv()`、每一列日誌或每個 TCP segment 當成一筆 Modbus 交易。
 
-| 待回覆ID／Unit／FC | 收到ID／Unit／FC | 判定 |
-| --- | --- | --- |
-| 002A／01／03 | 002A／01／03 | 相符，續查長度與資料 |
-| 002B／01／04 | 002A／01／03 | 不能配對002B；另查是否有002A等待中 |
-| 002C／05／03 | 002C／01／03 | ID相同但Unit不符 |
-| 002D／01／03 | 002D／01／83 | 例外回覆，另讀exception code |
+## TCP 合包：一個 chunk 也可以含兩筆 ADU
 
-Unit ID 在直接 TCP 伺服器可能被固定或依設備規格使用，在 TCP-to-Serial gateway 場景則常用來識別下游單元。不要看到 Unit ID=1 就推論所有設備都必須使用 1；先查拓樸、閘道和目標資料表。Protocol ID 若不是規格預期值，也應先拒絕或標記異常。
+同一離線 fixture 的第二個 chunk 在第一筆請求結束後，還接著完整放入另一筆 12-byte FC03 request：
 
-Transaction ID 的配對範圍是同一 TCP 連線；不同連線可以出現相同 ID。同一連線尚未完成的請求不要重用同一 ID，並要處理逾時後遲到的回覆。TCP 保證位元組流順序，卻不保證一次接收剛好是一個完整 ADU；一個 ADU 可能分成多次收到，也可能一次收到多個。
+```text
+00 2B 00 00 00 06 01 03 00 12 00 02
+```
 
-## Wireshark 截圖 完成判定與限制
+正確迴圈的結果是先切出 TID `002A` 的 12 bytes，再繼續從剩餘資料切出 TID `002B` 的 12 bytes。若只在一次讀取後解析一筆並丟掉餘額，第二筆會遺失；若把兩筆連起來當一筆，就會使第一筆 Length 驗算失敗。
 
-1. 截圖保留封包方向、TCP stream、完整 MBAP 7 bytes（含 Unit ID）、PDU 與時間戳。
+可直接下載並在本機執行的離線檔案如下：[`modbus-framing.mjs`](/examples/modbus-framing/modbus-framing.mjs)、[`stream-fixtures.json`](/examples/modbus-framing/stream-fixtures.json) 與 [`stream-demo.mjs`](/examples/modbus-framing/stream-demo.mjs)。demo 只示範「累積、依 `6 + Length` 切出、保留剩餘 bytes」，輸出兩筆 Transaction ID 與 remainder；不開 socket，也不連線設備。
 
-2. 在文件中標出 Transaction ID、Protocol ID、Length、Unit ID、Function Code 五個重點。
+三檔存到同一資料夾，使用 Node.js 22 或以上，在該資料夾執行：
 
-3. 遮蔽 IP、帳號、設備名稱等不必要的敏感資訊，但不能遮住用來驗算的十六進位欄位。
+```text
+node stream-demo.mjs
+```
 
-4. 用 Length 重新計算後續位元組數，再用 Transaction ID 和 Unit ID 配對。
+預期輸出 `TID: 002A, 002B` 及 `remain: 0`。這只驗證組框；前述 pending 交易配對與 PDU 語意檢查並未由此 parser 實作。
 
-5. 將截圖來源、擷取時間、過濾條件和是否為虛構案例寫清楚。
+## Transaction ID 與 Unit ID 的配對規則
 
-完成後應看到：MBAP 的 7 bytes 和 PDU 分界正確；Length 等於 Unit ID 加 PDU 長度；Protocol ID 符合所用規格；回覆 Transaction ID 能找到對應請求；Unit ID 和功能碼符合拓樸與請求。失敗時先查：是否把 Length 算成整個封包、是否漏掉 Unit ID、是否誤把 RTU CRC 放進 TCP、是否將十六進位位元組順序讀反。 MBAP 是 7 bytes，但接收端可以先讀前6 bytes取得 Length，再收指定的後續 bytes；這兩個數字用途不同。
+在同一 TCP 連線上，建立 pending 表至少保留 Transaction ID、Unit ID、Function Code、位址、數量與逾時時間。收到回覆後先找同一連線的 Transaction ID，再核對 Unit ID 及正常／例外 Function Code。
 
-適用型號與限制：本文適用 Modbus TCP 封包離線判讀，不是 RS-485 RTU 封包教學。案例中的 IP、Unit ID、Transaction ID 和 register 資料皆為虛構。不同設備可能對 Unit ID、併發請求、連線逾時和例外處理有額外限制，需查目標設備文件。若要交給維護人員使用，還應附上 TCP stream、封包時間、連線端點和設備資料表版本，否則單看一段十六進位無法判定整個交易是否成功。
+| pending                 | 收到回覆              | 判讀                                               |
+| ----------------------- | --------------------- | -------------------------------------------------- |
+| `002A`／Unit `01`／FC03 | `002A`／`01`／`03`    | 可續查 byte count 與資料長度。                     |
+| `002B`／Unit `01`／FC04 | `002A`／`01`／`03`    | 不是 `002B` 的回覆；可檢查 `002A` 是否仍在等待。   |
+| `002C`／Unit `05`／FC03 | `002C`／`01`／`03`    | Transaction ID 相同仍不能略過 Unit ID 不符。       |
+| `002D`／Unit `01`／FC03 | `002D`／`01`／`83 02` | 是 FC03 exception response，不能當 register data。 |
 
-封包判讀的順序建議固定：先找 TCP stream，再確認 MBAP 是否完整，接著驗證 Length，最後才解析 PDU。若 Length 指向的 bytes 尚未收齊，等待下一個 TCP segment；若超出緩衝，標記封包格式或組包錯誤。TCP 是串流，不保證一次 recv 就得到一個完整 Modbus ADU，這也是不能只依讀取呼叫次數切封包的原因。
+Transaction ID 的唯一性範圍是連線中尚在等待的交易，不是全系統永久 ID；逾時後遲到的回覆也要明確處理。官方 TCP guide 指定 client 初始化 Transaction ID，server 從請求複製；Unit Identifier 在透過 serial-line 或其他 bus 的 gateway 路由時尤其重要，server 回覆應帶回同一值。
 
-| 問題 | 回答 |
-| --- | --- |
-| Length 包不包含哪裡？ | 不包含前 6 bytes MBAP，計算 Unit ID 加 PDU。 |
-| TCP 也要 CRC 嗎？ | Modbus TCP 的 MBAP/PDU 封裝不使用 RTU CRC；不要混用兩種 ADU。 |
-| Transaction ID 可以都用 0 嗎？ | 要依 Client 實作與併發策略；若需要配對多筆請求，必須能區分交易。 |
-| Unit ID 一律是 1 嗎？ | 不是。直接伺服器或 gateway 的使用方式要看拓樸與設備規格。 |
+## 先驗 Length，再驗 PDU，不要混入 RTU CRC
+
+以下離線檢查順序可讓錯誤位置明確：
+
+1. 先累積至少 6 bytes，讀 Protocol ID 與 Length；`0000` 以外的 Protocol ID 不按本篇 Modbus TCP 例子繼續解碼。
+2. 等到 `6 + Length` bytes 全部到齊，切出一筆 ADU；資料不足時保留 remainder，不能補零或借用下一筆。
+3. 以 Transaction ID、同一連線、Unit ID、Function Code 配對 request/response。
+4. 正常 FC03/FC04 response 再比對 byte count 是否為請求 register 數量的 `2 × N`；exception response 則只讀 exception code。
+5. 最後才套用設備資料表的位址基準、型別與倍率。
+
+Modbus TCP 的 MBAP/PDU 不包含 Modbus RTU 的 CRC。把 RTU CRC 兩 bytes算進 TCP 的 Length，或以 RTU 站號取代 Unit Identifier，都會使上述驗算偏移。
+
+本文沒有驗證真實 PLC、從站、網路、封包擷取工具或設備對併發請求的額外限制。用於現場時，請另保存完整雙向 byte stream、時間、端點及設備資料表版本，並以目標設備文件確認 Unit ID、逾時與併發策略。
 
 ## 延伸閱讀
 
-- [Modbus例外碼05 06 0A 0B 忙碌與閘道路徑怎麼分開查](/articles/modbus-exception-05-06-0a-0b-troubleshooting)
-- [Modbus TCP連線重用與併發請求 TID 逾時與MBAP封包邊界](/articles/modbus-tcp-connection-reuse-concurrency)
+- [Modbus 0x01 0x02 0x03 0x04 怎麼選 從設備表做成可驗收的讀取清單](/articles/modbus-function-code-01-04-read-list)
+- [Modbus TCP資料分塊與最大讀取量](/articles/modbus-tcp-register-block-read-limits)

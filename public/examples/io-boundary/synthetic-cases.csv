@@ -1,0 +1,8 @@
+case_id,layer,evidence_kind,injected_current_mA,raw,quality,expected_engineering_percent,interpretation
+L1_4,software,synthetic,4,800,Good,0,scale_only
+L1_12,software,synthetic,12,2400,Good,50,scale_only
+L1_20,software,synthetic,20,4000,Good,100,scale_only
+L1_8,software,synthetic,8,1600,Good,25,scale_only
+X_RAW,terminal_example,synthetic,12,3200,Good,75,check_configuration_before_changing_formula
+X_SENSOR,sensor_example,synthetic,10,2000,Good,37.5,verify_physical_reference_and_sensor_path
+X_BAD,quality_example,synthetic,12,2400,Bad,50,arithmetic_only_do_not_use_for_control

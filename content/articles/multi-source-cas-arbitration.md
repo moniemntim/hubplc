@@ -1,77 +1,84 @@
 ---
-title: 兩來源同時更新同一資料如何仲裁
-description: 以中央權威版本、CAS與單一寫入者仲裁兩來源更新，示範A/B同持v7時僅一方形成v8，並處理重試、epoch與fencing。
+title: 雙來源更新：用 SQLite 條件寫入重現版本衝突與舊主拒絕
+description: 下載實際本機 SQLite 案例，讓兩個 Node 程序競爭版本7，驗證一筆提交、一筆衝突，以及原請求重播與 epoch fencing。
 date: 2026-09-21
 author: 茂伯
 draft: false
 category: PLC 程式與控制
 ---
 
-## 先定義誰是資料的裁判
+## 這次直接跑資料庫，不只畫版本流程
 
-兩個來源同時修改同一筆配方、設定或狀態時，不能用「最後收到的訊息」猜誰應該勝出。網路延遲、重送和不同來源時鐘都可能讓較舊內容晚到。先指定中央權威資料庫或服務，所有寫入都經過它判斷；A與B是請求者，不直接互相覆寫。
+兩個來源都看到版本7，分別想改成55.0°C與52.0°C。真正需要證明的是：版本條件與更新在同一個儲存邊界成立，不能先 SELECT，再不帶條件地 UPDATE。
 
-本篇用版本號與CAS（compare-and-set）示例。資料目前是v7，讀取者提交更新時必須帶expected_version=7。中央服務只有在目前仍為v7時，才以一次原子操作寫入新payload並產生v8；條件不成立就回覆衝突，讓呼叫者重新讀取，不把舊內容強行蓋上去。
+本例使用 **Node.js 24.19.0 內建 SQLite，真正在本機建立資料庫**。一條示範依序送 A、B；另一條用兩個 child process 開啟同一資料庫，各讀版本7後等待共同啟動訊號，再各送一次更新。這不是 PLC／網路／多主叢集實測，也沒有建立正式認證服務。
 
-CAS的版本是中央資料的序列，不是來源自己填的時間或流水號。A與B都持v7時，A先成功形成v8；B稍後仍拿v7來寫，條件已不成立，因此拒絕。成功者要回傳新版本和寫入結果，失敗者要能辨認conflict與格式錯誤、權限錯誤的差異。
+把 [store.mjs](/examples/cas-setting/store.mjs)、[demo.mjs](/examples/cas-setting/demo.mjs)、[race.mjs](/examples/cas-setting/race.mjs)、[race-worker.mjs](/examples/cas-setting/race-worker.mjs)、[self-test.mjs](/examples/cas-setting/self-test.mjs)、[practice.mjs](/examples/cas-setting/practice.mjs)、[README.md](/examples/cas-setting/README.md) 存在同一資料夾，以 Node.js 24.19.0 執行：
 
-單一寫入者可在中央服務內實現串行化決策，但「單一」指同一資料的權威寫入路徑，不代表現場一定只有一台電腦。備援切換時還要有epoch或fencing token，使舊主即使恢復連線也不能繼續寫入。這是架構概念，不能宣稱Q系列PLC原生提供CAS或fencing。
+```powershell
+node self-test.mjs
+node demo.mjs
+```
 
-## 用v7案例走過成功與拒絕
+每次都在作業系統暫存目錄建立新的 `hubplc-cas-*` 資料夾，保存本次 SQLite 檔供查看；不會覆寫既有檔案，也不會自動刪除。無須安裝 npm 套件。
 
-初始資料是key=recipe-R7、version=7、payload=P7。A讀到v7並提出P8A，B也讀到v7並提出P8B。中央先收到A，檢查權威版本仍是7，原子地保存P8A並回傳version=8。接著B的expected_version仍是7，中央回傳VersionConflict；P8B不得成為目前值。
+固定 stdout：
 
-B收到衝突後可重新讀取v8，向使用者顯示A已先更新，再由使用者合併或重新提出以v8為前提的P9B。若業務規則允許欄位級合併，也要由中央服務依明確規則產生新版本；不能由B自行把v7與v8拼接後假定沒有衝突。
+```text
+A=COMMITTED version=8 raw=550
+B=VERSION_CONFLICT version=8 raw=550
+A-replay=COMMITTED replay=true version=8
+A-changed=IDEMPOTENCY_CONFLICT
+old-writer=FENCED
+reopen-query=COMMITTED current_version=8 epoch=2
+two-process-race committed=1 conflicts=1 version=8
+CAS demo: PASS
+```
 
-版本相等只能表示兩次讀取看到了同一中央序列點，無法證明跨來源誰比較新。來源A的時鐘10:00與B的時鐘10:05不能拿來last timestamp wins，因為時區、校時、延遲和故障都會破壞這個假設。若需要事件時間，保存它作為描述欄位，不用它取代CAS裁決。
+競爭案例不保證 A 或 B 勝出：共同啟動不是實體同時。它只斷言本次兩個請求中一筆提交、一筆衝突、最終版本8；不能從一次重播推導任意負載下的效能或公平性。
 
-每次請求要有request_id、expected_version、payload摘要、來源識別與中央回覆。成功重試同一request_id時，中央應回傳原先結果；若同一request_id卻帶不同payload，回報IdempotencyConflict並拒絕，避免逾時重送造成第二次不同寫入。
+## 固定欄位與 SQL 條件
 
-## 重試 主備與fencing
+資源固定 `TEMP_SP`，raw 是0..1000的安全整數，raw÷10是°C；起始 raw=500、version=7、epoch=1。A/B 是程式指定的教學來源，不是使用者自行填字串就完成認證。請求只接受 id、expectedVersion、raw、epoch 四欄；id 限1..40個大寫英數字或連字號。
 
-請求送出後逾時不等於寫入失敗。呼叫者先用同一request_id查詢結果或重送完全相同的payload；不可因沒有收到回覆就換一個request_id再寫。中央保存足夠的冪等紀錄期限，期限和容量要由系統規格決定，不能在本文任意給出設備通用值。
+`BEGIN IMMEDIATE` 取得本資料庫寫入交易後，先查同 id 的請求結果，再執行具條件的 UPDATE。核心條件為：
 
-主備切換時，新的主服務取得較大的epoch或fencing token，寫入層檢查token仍是目前有效者。舊主即使網路恢復，提交舊epoch也應被拒絕。這需要中央儲存、鎖或代理層共同實作；PLC的掃描週期、資料寄存器或一般互鎖不能自動等同分散式fencing。
+```sql
+WHERE id='TEMP_SP'
+  AND version=?
+  AND version<2147483647
+  AND (SELECT epoch FROM authority WHERE id=1)=?
+```
 
-若權威服務本身不可用，來源可進入pending而不是各自建立兩個v8。待恢復後重新以expected_version仲裁，並保留來源原始請求。若產品要求離線操作，需另定衝突檔案、人工合併和回放順序，不能把離線時鐘當成跨來源真實順序。
+值、版本、最後提交來源、operation_id 與資料庫產生的 UTC 時間在同一 UPDATE 更新；回覆結果存入 operations，再 COMMIT。若 operations 寫入失敗，整個交易回滾，值和版本不能獨自留下。
 
-正常結果是中央只有一個v8，目前payload可查、A的請求成功、B的請求明確衝突。失敗排查先看中央版本、expected_version、request_id和epoch，再看傳輸重試；不要先把所有衝突改成「最後到達者成功」，那會讓問題更難重現。
+SQLite 的 [UPDATE 文件](https://www.sqlite.org/lang_update.html)說明 WHERE 決定更新列，零列更新本身不是 SQL 錯誤。本例會在同一交易內分辨 NOT_FOUND、FENCED、VERSION_EXHAUSTED 與 VERSION_CONFLICT；不把零列當成功。SQLite 的[交易文件](https://www.sqlite.org/lang_transaction.html)則說明單一同時寫入交易及 BEGIN IMMEDIATE；這不是跨資料庫或設備的原子保證。
 
-同一次重試要保留request_id、expected_version和完整內容，不能只固定識別碼卻更新前提版本。中央應先查已完成請求紀錄，再判斷新請求的版本條件；否則已成功的A重送時，會被自己造成的v8誤判為衝突。請求結果與資料更新也需一致保存。
+## 重播不能變成另一筆修改
 
-## 驗收與適用限制
+| 情境                                   | 本例結果             | 是否再改值       |
+| -------------------------------------- | -------------------- | ---------------- |
+| A 以 v7 更新                           | COMMITTED，成為 v8   | 是               |
+| B 仍以 v7 更新                         | VERSION_CONFLICT     | 否               |
+| 同 id、來源、版本、raw、epoch 完全相同 | 原結果加 replay=true | 否               |
+| 同 id 改內容或來源                     | IDEMPOTENCY_CONFLICT | 否               |
+| 重新開啟資料庫後查原 id                | 原結果仍可查         | 否               |
+| 查不到 id                              | NOT_FOUND            | 不推論未寫入設備 |
 
-離線驗收至少測：A/B同持v7、A先到、B先到、同request_id重送、同request_id換payload、逾時後查詢、主備epoch變更、來源時鐘故意偏移，以及中央版本已被第三者更新。每列記錄預期版本、勝負、回覆代碼和目前payload摘要。
+operations 保存已進入交易的成功、版本衝突及 fencing 等結果；格式不合法／未列入的來源不建立紀錄。結果是**當次交易的歷史快照**：原操作回覆的 current.version=8，不代表查詢當下整體仍是8；目前值要另呼叫 read()。
 
-CAS只保護「以某版本為前提的整體更新」。它不會自動判斷兩個欄位是否可安全合併，也不會檢查製程互鎖、權限或配方工程範圍。中央服務仍要在CAS前做schema、權限和業務檢查；成功版本也不等於已寫入控制器或設備已採用。
+換了 expectedVersion 或 epoch 就是不同內容，不能沿用舊 id。衝突後應先重新讀取、看過差異，再建立新意圖與新 id；HMI 的保留草稿流程接[多人改值案例](/articles/hmi-concurrent-edit-last-writer-version)。更廣的逾時與冪等限制見[冪等鍵與重複寫入](/articles/idempotency-key-duplicate-write)。
 
-若資料分散在多個權威系統，先收斂成一個可裁決的版本來源，或設計明確的交易與事件順序。不要讓A資料庫和B資料庫各自發號v8再互相覆蓋。事件日誌要保存舊版本、新版本、來源、request_id、epoch與原因，支援事後重播。
+## epoch 在哪裡阻止舊主
 
-衝突回覆要讓操作員看懂：顯示目前中央版本、提出者看到的版本、目前payload摘要與下一步重新讀取建議。不要只回傳一個模糊的寫入失敗。自動重試也要有次數與退避上限，並在達到上限時保留原請求供人工決定。
+demo 先把資料庫 authority.epoch 由1改成2。舊寫入者即使帶目前 version=8，epoch仍是1，也會被 UPDATE 的儲存條件阻擋，回 FENCED。只有新 epoch 且版本吻合的新請求才可能提交。
 
-版本號應由中央單調產生，並與資料內容一同提交。若中央回覆v8卻找不到對應payload，表示儲存或讀取流程不一致，應進入故障狀態而不是讓來源自行補寫。讀取也可回傳版本與摘要，協助呼叫者確認自己拿到的是同一份資料。
+這只是同一 SQLite 權威檔案內的協作寫入約束。`rotateEpoch()` 是人工測試入口，沒有做選主、租約、權限或網路分割處理；擁有任意 SQL 寫入權限的人可繞過本 API，其他直寫 PLC 的通道也不受它保護。已完成的舊請求可以回傳歷史結果，但不會因此重新寫入。
 
-事件紀錄要可區分拒絕與未到達中央的請求。沒有中央回覆時標為unknown，查詢後才決定成功或失敗，避免把網路超時誤記成安全拒絕。
+要改測結果，執行 `node practice.mjs`。先保持 `secondExpectedVersion=7`，B應衝突、目前仍550@v8；再把該常數改8並重跑，B應提交、目前520@v9。`firstRaw`／`secondRaw` 可改0..1000的整數，每次練習都用新資料庫，不必刪掉固定 demo 的斷言。這個改8的練習代表已重新讀取並確認新版本；正式介面不能在衝突後自動替使用者改版本重送。
 
-若更新包含數值設定，CAS成功前仍要驗證單位、上下限和互鎖；例如兩個來源各自修改不同欄位，也可能合併後違反整體製程條件。中央裁決的是版本順序，不是安全審查的替代品。
+## 限制與故障判讀
 
-本文提供分散式資料設計與案例。實際Q系列PLC專案若需要寫入，仍須依目標CPU、通訊模組、權限和現場安全程序另行驗證。
+版本及 epoch 上限2147483647，沒有回捲；operations 上限1000筆，滿了回 LEDGER_FULL，不自動淘汰舊 id。SQLite busy timeout 設5000 ms，若未能取得交易或檔案錯誤，程式會拋錯；這不是已確認的版本衝突，也沒有無限自動重試。
 
-## 常見問題
-
-問：B的時間比較晚，能否直接勝出？答：不能；不同來源時鐘無法可靠決定新舊，應以中央CAS版本裁決。
-
-問：A與B都從v7讀取，是否可以都產生v8？答：中央只能接受一個符合expected_version=7的原子更新，另一個應回報衝突。
-
-問：逾時後換request_id重送比較安全嗎？答：不安全；保留同request_id與完全相同payload，才能辨認原請求是否已成功。
-
-問：epoch與fencing是Q PLC內建功能嗎？答：本文只說明架構概念，不能據此宣稱Q PLC原生支援，須由專案的中央服務與寫入層實作。
-
-參考：[IETF HTTP條件請求規範，說明ETag與If-Match可用於避免以過期表示覆蓋目前表示；本文CAS與版本流程是資料設計延伸，不是PLC API。](https://www.rfc-editor.org/rfc/rfc9110.html#name-if-match)
-
-參考：[PostgreSQL官方文件的交易隔離與序列化概念，可作為中央原子更新與衝突重試的資料庫參考；實際系統仍須核對所用儲存層。](https://www.postgresql.org/docs/current/transaction-iso.html)
-
-## 延伸閱讀
-
-- [浮點NaN與Inf在控制前如何攔截](/articles/float-nan-inf-control-gate)
-- [統計重置如何保存前段結算](/articles/statistics-reset-segmented-snapshot)
+本例不做備份還原、跨主機共用檔案、斷電、重啟後換資料世代、硬體生效或安全控制驗證。資料庫重開只證明本機已提交紀錄仍在；不能拿它宣稱設備命令 exactly-once。Node 所用 API 見 [v24.19.0 SQLite 文件](https://nodejs.org/download/release/v24.19.0/docs/api/sqlite.html)。

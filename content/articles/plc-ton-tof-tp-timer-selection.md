@@ -1,105 +1,95 @@
 ---
-title: TON TOF 與 TP 計時器怎麼選 以輸入輸出時間線比較
-description: 用同一組輸入時間線比較 TON、TOF、TP，處理輸入提早消失、重觸發與中途修改 PT，並標明 Schneider 文件平台與 QCPU 的限制。
-date: 2026-09-17
+title: TON、TOF、TP 怎麼選：先把兩秒 TON 做出來
+description: 直接操作逐掃描 TON 模型，測試連續成立、提前放開與重新計時，再用時間線區分 TOF 和 TP。
+date: 2026-09-28
 author: 茂伯
 draft: false
 ---
 
-## 先看輸入與輸出要怎麼走
+## 用輸出需求選計時器
 
-選計時器不要先看指令名稱，先寫出輸入何時成立、輸出何時應成立。TON 把輸入成立後的等待時間放在輸出變 ON 之前；TOF 在輸入由 ON 變 OFF 後，讓輸出再維持一段時間；TP 由觸發開始輸出固定脈衝。三者都可能有 IN、PT、Q、ET 這類欄位，但實際型別、時間解析度、啟動與重觸發規則要以目標平台文件為準。
+| 你要的行為 | 選擇 | 輸出何時變 1 |
+| --- | --- | --- |
+| 訊號連續成立兩秒才允許 | TON，延時接通 | IN 維持 1 到設定時間後 |
+| 訊號消失後再保持兩秒 | TOF，延時斷開 | IN=1 時即為 1；下降後延遲關閉 |
+| 一次觸發產生兩秒脈衝 | TP，脈衝 | 上升緣開始即為 1 |
 
-| 需求 | 選擇方向 | 輸入提早消失時 | 輸出重點 |
+本篇以 CODESYS Standard 文件定義說明三者。**上方模型只實作固定 PT=2000 ms 的 TON**，不是 TOF／TP 模擬，也不是 CODESYS 執行環境。模型結果不能當成 PLC 計時精度或掃描時間的量測。
+
+## 認清 IN、PT、Q、ET
+
+| 名稱 | 意義 | 本例設定 |
+| --- | --- | --- |
+| IN | 計時條件，BOOL | 勾選為 1、取消為 0 |
+| PT | 設定時間，TIME | 固定 2000 ms，不在執行中變更 |
+| Q | 計時完成輸出，BOOL | 初始 0 |
+| ET | 自本次 IN 上升起的經過時間 | 初始 0；本模型顯示上限 2000 ms |
+
+第一次掃描在虛擬時間 0 ms，之後每次增加 100 ms。計時從第一次取樣到 IN=1 的掃描開始，不從滑鼠勾選的瞬間開始。
+
+## 操作一：連續 ON，剛好到兩秒
+
+1. 按「全部重設」，勾 IN，按一次「執行 1 掃描」。第 1 掃描、0 ms，ET=0、Q=0。
+2. 按「執行 10 掃描」。第 11 掃描、1000 ms，ET=1000、Q=0。
+3. 再按一次「執行 10 掃描」。第 21 掃描、2000 ms，ET=2000、Q=1。
+4. 取消 IN 並掃描一次，ET=0、Q=0。
+
+| 觀察時間 | IN | ET | Q |
 | --- | --- | --- | --- |
-| 輸入穩定一段時間才允許動作 | TON | 計時通常被重置或停止，須查平台 | 達到 PT 後 Q 才 ON |
-| 輸入放開後延後關閉 | TOF | 下降緣開始計時 | PT 到期前 Q 維持 ON |
-| 觸發後只輸出固定時間 | TP | 依平台決定重觸發 | Q 由觸發開始維持 PT |
-| 按住才動 | 不一定用計時器 | 直接使用電平並設停止條件 | Q 跟隨輸入 |
+| 0 ms，第一次看見 ON | 1 | 0 ms | 0 |
+| 1000 ms | 1 | 1000 ms | 0 |
+| 1900 ms | 1 | 1900 ms | 0 |
+| 2000 ms | 1 | 2000 ms | 1 |
+| 2100 ms，取消 IN 後掃描 | 0 | 0 ms | 0 |
 
-本文選用 Schneider Electric EcoStruxure Machine Expert Standard Library 作為具體文件平台，因其官方頁面分別定義 TON、TOF、TP 與 TIME/PT/ET 介面。這只是文件核對平台，不代表 TON、TOF、TP 可直接套用到 Q06UDVCPU；Q 系列的計時器指令、時間單位和解析度仍須另查 Mitsubishi 對應 CPU 與工程軟體手冊。
+這是從起點經過 2000 ms，不是沒有起點的「掃描二十次」。如果輸入只在兩次取樣之間短暫變化，模型不會看到。實機還須另外核對輸入更新、硬體濾波與任務週期。
 
-## 分開畫出 TON TOF TP 的輸入時間線
+## 操作二：ON 一秒就放開
 
-以下是教學合成案例：PT=2 秒，時間由 0 到 6 秒，每 1 秒取樣一次。三條輸入時間線分開看：TON 的 IN 在 0 秒變 ON 並維持；TOF 的 IN 在 0 秒為 ON、1 秒變 OFF；TP 的 IN 在 0 秒產生上升緣，之後保持 OFF。表格是手算預期，沒有宣稱模擬器或實機已執行。實際 PLC 掃描不是每秒一次，正式測試應用更細的取樣記錄。
+重新開始，IN=1 掃描一次，再執行 10 掃描到 1000 ms。取消 IN 並掃描，時間 1100 ms、ET=0、Q=0。保持 OFF 執行 10 掃描，Q 仍為 0，不會在原定期限突然輸出。
 
-| 時間(s) | TON IN/Q | TOF IN/Q | TP 觸發/Q | 說明 |
-| --- | --- | --- | --- | --- |
-| 0 | 1/0 | 1/1 | 1/1 | TON 開始計時；TOF 仍 ON；TP 開始 |
-| 1 | 1/0 | 0/1 | 0/1 | TOF 下降後延時；TP 尚未到期 |
-| 2 | 1/1 | 0/1 | 0/0 | TON 到 PT；TP 關閉；TOF 未到期 |
-| 3 | 1/1 | 0/0 | 0/0 | TOF 已關閉；TON 仍 ON |
-| 4 | 1/1 | 0/0 | 0/0 | 保持結果 |
-| 5 | 1/1 | 0/0 | 0/0 | 保持結果 |
-| 6 | 1/1 | 0/0 | 0/0 | 案例結束 |
+再勾 IN 並掃描，ET 從 0 重新開始。先前的一秒不會累加；若需要累積 ON 時間，那是保持型計時需求，不能用本例 TON 代替。
 
-案例中的 TOF 在 t=1 秒下降，若 PT=2 秒，時間線預期在 t=3 秒附近關閉；表格以取樣點展示，所以邊界落在哪一掃描要依平台時間基準。不要把『2 秒』誤讀成精確到毫秒。
+## PLC 程式每次呼叫同一個實例
 
-## 提早消失 重複觸發與中途改 PT
+以下採 CODESYS Standard 的 TON 名稱與介面。先在 ST 程式宣告兩個 BOOL 及一個 TON 實例，再由週期任務執行。這是文件語法對照，本站未在 CODESYS 或目標 CPU 編譯／執行，沒有宣稱是可直接匯入的專案。
 
-1. 先在規格表寫出 IN 的上升、下降與可能重複觸發時間，再決定計時器。
+```iecst
+VAR
+    Condition : BOOL := FALSE;
+    AllowRun  : BOOL := FALSE;
+    DelayOn   : TON;
+END_VAR
 
-2. 本篇 TON 在 IN 提早降為0時重置計時，Q維持0；例如只ON 1秒便放開，不會在原定2秒時突然輸出。
-
-3. 本篇 TOF 的 IN 再升為1時，Q保持1並取消目前的關閉延遲；下次下降再重新計時。
-
-4. 本篇 TP 在 PT 尚未到期時再次出現上升緣，不延長目前脈衝；不要把它當可重觸發的延長器。
-
-5. 在執行中改變 PT：分別測試縮短與延長，記錄當前 ET、Q 和下一次觸發的結果。
-
-```text
-通用偽碼（需依目標 PLC 語法調整）：
-TonInst(IN := Start, PT := T#2s);
-Ready := TonInst.Q;
-TofInst(IN := Permit, PT := T#2s);
-OutputEnable := TofInst.Q;
-TpInst(IN := Trigger, PT := T#2s);
-Pulse := TpInst.Q;
-這段只表示資料流，實作時需建立符合平台語法的功能塊實例，並確認功能塊每個循環被呼叫。
+DelayOn(IN := Condition, PT := T#2s);
+AllowRun := DelayOn.Q;
 ```
 
-參考：[Schneider Machine Expert V1.1 TON 上升開始計時 下降重置](https://product-help.schneider-electric.com/Machine%20Expert/V1.1/en/standard/topics/ton.htm)
+不要把整個 DelayOn 呼叫放在 `IF Condition THEN` 裡，導致 Condition=FALSE 時功能塊不再被呼叫。本例需要功能塊看到 IN=FALSE 才能重置。監看表至少放 Condition、DelayOn.ET、DelayOn.Q、AllowRun。
 
-參考：[Schneider Machine Expert V1.1 TOF 下降後延遲關閉](https://product-help.schneider-electric.com/Machine%20Expert/V1.1/en/plc_fbfun/topics/tof.htm)
+依據：[CODESYS Standard TON](https://content.helpme-codesys.com/en/libs/Standard/Current/Timer/TON.html)的型別、上升開始、下降重置規則。其他 PLC 的 T 裝置或時間基數不能只因名稱相似就照抄。
 
-參考：[Schneider Machine Expert V1.1 TP 固定脈衝與重觸發行為](https://product-help.schneider-electric.com/Machine%20Expert/V1.1/en/plc_fbfun/topics/tp.htm)
+## TOF 和 TP：同一條輸入時間線，結果不同
 
-## 完成後應看到什麼 失敗先查哪裡
+以下依文件推導，**沒有在上方模型執行**。PT=2 s，初始 IN=0；t=0 上升、t=1 下降，之後維持 0：
 
-| 測試 | 完成後應看到 | 不同時先查 |
+| 時間 | IN | TON Q | TOF Q | TP Q |
+| --- | --- | --- | --- | --- |
+| 0 s，剛上升 | 1 | 0 | 1 | 1 |
+| 1 s，已下降 | 0 | 0 | 1 | 1 |
+| 2 s | 0 | 0 | 1 | 0 |
+| 3 s | 0 | 0 | 0 | 0 |
+
+TON 未連續滿兩秒，所以從未輸出；TOF 從 t=1 的下降開始等兩秒；TP 從 t=0 的上升開始輸出兩秒。這張表不能推論重觸發或執行中修改 PT 的規則。
+
+依據：[CODESYS Standard TOF](https://content.helpme-codesys.com/en/libs/Standard/Current/Timer/TOF.html)、[CODESYS Standard TP](https://content.helpme-codesys.com/en/libs/Standard/Current/Timer/TP.html)。時間表是本篇範例；實機輸出還包含任務取樣與輸出更新。
+
+## 結果不對時，先看這三項
+
+| 故障 | 先觀察 | 下一步 |
 | --- | --- | --- |
-| TON 穩定 ON 超過 PT | Q 在 PT 後 ON | PT 單位、掃描週期、IN 是否持續成立 |
-| TON 提早 OFF | Q 不應提前 ON | 平台對 IN 下降時 ET/Q 的定義 |
-| TOF 放開 | Q 維持至 PT 後關閉 | 下降緣是否被取樣、時間基準 |
-| TP 單次觸發 | Q 維持約 PT 後關閉 | 觸發條件、實例是否重複呼叫 |
-| 重複觸發 | 依官方規則重新開始或被忽略 | 功能塊版本與重觸發說明 |
+| Q 永遠不到 1 | IN 是否每次掃描都維持 1 | 查是否有一掃描掉訊號，使 ET 歸零 |
+| IN 已 OFF，ET／Q 像卡住 | 同一 TON 是否仍被呼叫 | 查呼叫是否藏在條件分支，或監看了另一實例 |
+| 約兩秒但每次略有差異 | 任務週期及實際輸入／輸出時間 | 區分邏輯門檻、取樣與實體反應，不用本模型估計實機誤差 |
 
-若時間總是偏長或偏短，先查工程軟體顯示的 TIME 單位、CPU 時基、掃描時間與輸入更新，再查功能塊的 ET。若 Q 一直不變，查實例是否真的在週期程式呼叫；若同一實例在多個段被呼叫，先合併呼叫點。完成判定必須看 IN、ET、Q 三者，不只看輸出燈。把測試結果分成三種證據：邏輯證據是輸入序列與預期時間線；工程軟體證據是編譯器對型別、時間常數與功能塊實例的接受結果；設備證據則是實際輸入、輸出與量測時間。三者不能互相冒充。
-
-適用型號與限制：本文適用於具計時功能的 PLC 概念教學；TON/TOF/TP 的名稱和 IEC 風格介面以 Schneider Machine Expert 文件為例。未提供特定 Q 系列 CPU 的計時器手冊，因此不得把本文偽碼或 TIME 行為當成 QCPU 可編譯程式。計時器也不是安全延遲或急停功能；安全時間需由安全控制器、硬體與風險評估確認。
-
-## 常見問題與附錄檢查表
-
-| 問題 | 回答 |
-| --- | --- |
-| TON 和 TP 都能延遲，怎麼分？ | TON 要求輸入持續成立後才輸出；TP 是被觸發後輸出固定脈衝，需求不同。 |
-| TOF 輸入一 OFF 就開始延遲嗎？ | 在 Schneider 文件定義中，下降緣啟動延遲；其他平台仍須查其文件。 |
-| PT 改了，計時會重新開始嗎？ | 不能猜。把中途改 PT 列入測試，依目標平台的功能塊規則判定。 |
-| 可不可以把計時器直接當防抖？ | 可以是一般邏輯方案之一，但輸入濾波、脈衝寬度和設備安全需求仍要另行評估。 |
-
-1. 列出每個計時器的 IN、PT、Q、ET 資料型別與單位。
-
-2. 以 0～6 秒合成序列先手算，再逐掃描記錄實際值。
-
-3. 把提前消失、重複觸發、PT 中途改變列為邊界測試。
-
-附錄操作建議：先用不接輸出的內部位元做測試，避免尚未核對的計時邏輯直接控制馬達、電磁閥或加熱器。將輸入強制值、時間設定和預期輸出寫在同一張表，測完解除強制並確認程式回到正常模式。若使用 HMI 修改 PT，還要測試空值、負值、超大值和運轉中變更；不符合範圍時應拒絕套用或回報錯誤，而不是讓計時器收到未定義參數。
-
-當你要把計時器放進實際流程，請再問一次：輸入是狀態還是事件，輸出是持續允許還是一次脈衝，時間是否必須從硬體時間戳開始計算。TON 適合條件連續成立的確認，TOF 適合保留輸出一段時間，TP 適合把一次觸發轉成固定長度訊號。若需求同時包含確認時間、保持時間和逾時故障，可能需要多個計時器與明確狀態，而不是把三個功能混在一個線圈後面。先畫時間線，再決定程式結構。
-
-參考：[Schneider Electric Machine Expert V1.1〈Differences Between a Function and a Function Block〉說明功能塊具內部記憶、需要透過實例呼叫；這是理解計時器不能任意重複呼叫的官方依據。](https://product-help.schneider-electric.com/Machine%20Expert/V1.1/en/SoLibref/SoLibref/Function_and_Function_Block_Representation/Function_and_Function_Block_Representation-2.htm)
-
-## 延伸閱讀
-
-- [兩個命令同時成立怎麼辦 PLC 優先順序與互斥條件設計](/articles/plc-command-priority-mutual-exclusion)
-- [PLC 每秒觸發為什麼會越跑越慢 週期事件與時間累積誤差](/articles/plc-periodic-event-accumulated-timing-error)
+完成後應能解釋：為什麼中途 OFF 不能接續前一次 ET，以及 TOF 和 TP 為何在同一條時間線上於不同時間關閉。若要把「超過兩秒還沒完成」視為故障，接著做[帶逾時的順序控制案例](/articles/plc-state-machine-three-step-sequence)。

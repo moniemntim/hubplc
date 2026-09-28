@@ -1,0 +1,409 @@
+<!doctype html>
+<html lang="zh-Hant">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width,initial-scale=1" />
+    <title>警報優先級與反應期限練習</title>
+    <style>
+      :root {
+        font-family: system-ui, 'Microsoft JhengHei', sans-serif;
+        color: #172b3a;
+        background: #f3f6f8;
+        line-height: 1.6;
+      }
+      * {
+        box-sizing: border-box;
+      }
+      body {
+        margin: 0;
+      }
+      main {
+        max-width: 1100px;
+        margin: auto;
+        padding: 28px 20px;
+      }
+      h1 {
+        font-size: clamp(1.4rem, 4vw, 2rem);
+        line-height: 1.3;
+      }
+      p {
+        max-width: 75ch;
+      }
+      .eyebrow {
+        font-size: 0.85rem;
+        font-weight: 700;
+        color: #42596a;
+      }
+      .panel {
+        background: white;
+        border: 1px solid #b6c6d0;
+        border-radius: 12px;
+        padding: 20px;
+        margin: 20px 0;
+      }
+      .controls {
+        display: flex;
+        gap: 20px;
+        flex-wrap: wrap;
+        align-items: center;
+      }
+      label {
+        display: block;
+        font-weight: 650;
+      }
+      input[type='range'] {
+        width: min(300px, 100%);
+        display: block;
+      }
+      select,
+      button {
+        font: inherit;
+        min-height: 44px;
+        padding: 6px 12px;
+        border: 1px solid #627d8d;
+        border-radius: 6px;
+        background: white;
+        color: inherit;
+      }
+      button {
+        cursor: pointer;
+      }
+      button:focus-visible,
+      input:focus-visible,
+      select:focus-visible {
+        outline: 3px solid #006e8a;
+        outline-offset: 3px;
+      }
+      input[type='checkbox'] {
+        width: 20px;
+        height: 20px;
+        vertical-align: middle;
+      }
+      output {
+        font-weight: 750;
+      }
+      #scope {
+        font-weight: 650;
+      }
+      #list {
+        display: grid;
+        gap: 12px;
+        padding: 0;
+        list-style: none;
+      }
+      li {
+        background: white;
+        border: 1px solid #b6c6d0;
+        border-left: 6px solid #315c78;
+        border-radius: 8px;
+        padding: 16px;
+      }
+      li.overdue {
+        border-left-color: #a32424;
+      }
+      li.low {
+        border-left-color: #54654c;
+      }
+      .theme-v2 li {
+        border-left-color: #553c7b;
+      }
+      .theme-v2 li.overdue {
+        border-left-color: #8a4200;
+      }
+      .theme-v2 li.low {
+        border-left-color: #365d60;
+      }
+      .rowhead {
+        display: flex;
+        gap: 12px;
+        flex-wrap: wrap;
+        align-items: baseline;
+      }
+      .rowhead h2 {
+        font-size: 1.05rem;
+        margin: 0;
+      }
+      .tag {
+        font-weight: 750;
+        font-size: 0.9rem;
+      }
+      .details {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(210px, 1fr));
+        gap: 4px 18px;
+        margin-top: 8px;
+      }
+      .details p {
+        margin: 0;
+      }
+      .due {
+        font-weight: 750;
+      }
+      .muted {
+        color: #435b6b;
+      }
+      .mono li {
+        border-left-color: #333 !important;
+      }
+      .mono {
+        filter: grayscale(1);
+      }
+      .hint {
+        font-size: 0.9rem;
+      }
+      .empty {
+        padding: 24px;
+        background: white;
+        border: 1px dashed #627d8d;
+      }
+      @media (max-width: 400px) {
+        main {
+          padding: 18px 12px;
+        }
+        .panel {
+          padding: 14px;
+        }
+        .details {
+          grid-template-columns: 1fr;
+        }
+        select {
+          max-width: 100%;
+        }
+      }
+      @media print {
+        .controls {
+          display: none;
+        }
+        body {
+          background: white;
+        }
+        li {
+          break-inside: avoid;
+          border-left-color: black !important;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <main>
+      <p class="eyebrow">合成資料 · 可離線操作</p>
+      <h1>警報優先級與反應期限</h1>
+      <p>
+        先看優先級與剩餘時間，再看狀態與建議動作。拖動虛擬時間不會清除、確認或重設任何警報。
+      </p>
+      <section class="panel" aria-label="練習控制">
+        <div class="controls">
+          <div>
+            <label for="time"
+              >虛擬時間 <output id="clock" for="time">14:01:00</output></label
+            ><input
+              id="time"
+              type="range"
+              min="60"
+              max="240"
+              step="1"
+              value="60"
+              aria-label="14點後的秒數"
+            />
+          </div>
+          <div>
+            <button type="button" id="at60">14:01:00</button>
+            <button type="button" id="at180">14:03:00</button>
+          </div>
+          <div>
+            <label for="filter">檢視範圍</label
+            ><select id="filter">
+              <option value="all">全部五筆</option>
+              <option value="active">只看作用中</option>
+              <option value="unacked">只看未確認</option>
+            </select>
+          </div>
+          <label><input id="mono" type="checkbox" /> 黑白顯示</label>
+          <div>
+            <label for="theme">色彩版本</label>
+            <select id="theme">
+              <option value="v1">原版 theme/v1</option>
+              <option value="v2">候選 theme/v2</option>
+            </select>
+          </div>
+        </div>
+        <p id="scope" role="status"></p>
+        <p id="theme-status" role="status">
+          色彩版本 theme/v1；只改左側色條，狀態與排序不變。
+        </p>
+        <p class="hint">
+          規則版本 display-priority/v1。先 High、再
+          Low；同級內按逾期、未到期、期限未設定、條件已消失分組，再比較到期時間、發生時間與
+          ID。逾期不自動升級成 Critical。
+        </p>
+      </section>
+      <ol id="list" aria-label="警報清單"></ol>
+      <p class="muted">
+        這五筆是固定的14:01資料快照。虛擬時間只用來計算反應期限，不是現場監控；沒有設備連線、Ack或Reset按鈕。期限與建議動作僅供本練習，不是製程或安全允許時間。
+      </p>
+    </main>
+    <script>
+      'use strict';
+      const rows = Object.freeze(
+        [
+          {
+            id: 'Q1',
+            title: '包裝重量偏差',
+            priority: 'High',
+            rank: 2,
+            started: 0,
+            response: 300,
+            active: true,
+            acked: false,
+            action: '依核准程序隔離受影響批次；本例不執行設備動作。',
+          },
+          {
+            id: 'Q2',
+            title: '封口品質偏差',
+            priority: 'High',
+            rank: 2,
+            started: 30,
+            response: 120,
+            active: true,
+            acked: true,
+            action: '確認已隔離的批次與處置紀錄；已確認仍需追蹤。',
+          },
+          {
+            id: 'Q3',
+            title: '已恢復的溫度偏差',
+            priority: 'High',
+            rank: 2,
+            started: 10,
+            response: 120,
+            active: false,
+            acked: false,
+            action: '核對歷史與恢復證據；仍待人員確認。',
+          },
+          {
+            id: 'Q4',
+            title: '待審查的品質警報',
+            priority: 'High',
+            rank: 2,
+            started: 20,
+            response: null,
+            active: true,
+            acked: false,
+            action: '反應期限未設定，轉交工程審查；不可把缺值當零。',
+          },
+          {
+            id: 'M1',
+            title: '保養排程提醒',
+            priority: 'Low',
+            rank: 0,
+            started: 5,
+            response: null,
+            active: true,
+            acked: false,
+            action: '本班安排保養工作；本例作為低級提示對照。',
+          },
+        ].map(Object.freeze),
+      );
+      const time = document.getElementById('time'),
+        filter = document.getElementById('filter'),
+        list = document.getElementById('list');
+      const idCompare = (a, b) => (a < b ? -1 : a > b ? 1 : 0);
+      function key(row, now) {
+        const due = row.response === null ? null : row.started + row.response;
+        return [
+          -row.rank,
+          !row.active ? 3 : due === null ? 2 : now >= due ? 0 : 1,
+          due === null ? Number.MAX_SAFE_INTEGER : due,
+          row.started,
+          row.id,
+        ];
+      }
+      function compare(a, b, now) {
+        const x = key(a, now),
+          y = key(b, now);
+        for (let i = 0; i < x.length; i++) {
+          const difference = idCompare(x[i], y[i]);
+          if (difference) return difference;
+        }
+        return 0;
+      }
+      function el(tag, text, className) {
+        const item = document.createElement(tag);
+        item.textContent = text;
+        if (className) item.className = className;
+        return item;
+      }
+      function render() {
+        const now = Number(time.value);
+        document.getElementById('clock').textContent =
+          `14:${String(Math.trunc(now / 60)).padStart(2, '0')}:${String(now % 60).padStart(2, '0')}`;
+        time.setAttribute(
+          'aria-valuetext',
+          document.getElementById('clock').textContent,
+        );
+        const visible = rows
+          .filter(
+            (r) =>
+              filter.value === 'all' ||
+              (filter.value === 'active' ? r.active : !r.acked),
+          )
+          .sort((a, b) => compare(a, b, now));
+        document.getElementById('scope').textContent =
+          `檢視：${filter.options[filter.selectedIndex].text}；顯示 ${visible.length}／${rows.length} 筆；固定合成快照。`;
+        list.replaceChildren();
+        for (const row of visible) {
+          const due = row.response === null ? null : row.started + row.response;
+          const item = el('li', '');
+          item.dataset.id = row.id;
+          if (row.active && due !== null && now >= due)
+            item.classList.add('overdue');
+          if (row.rank === 0) item.classList.add('low');
+          const head = el('div', '', 'rowhead');
+          head.append(
+            el('span', `${row.priority} · ${row.id}`, 'tag'),
+            el('h2', row.title),
+          );
+          const details = el('div', '', 'details');
+          details.append(
+            el(
+              'p',
+              `${row.active ? '作用中' : '條件已消失'}／${row.acked ? '已確認' : '未確認'}`,
+              'state',
+            ),
+          );
+          const deadlineText = !row.active
+            ? '反應倒數不適用（條件已消失）'
+            : due === null
+              ? '反應期限：未設定'
+              : now >= due
+                ? `已逾期 ${now - due} 秒（仍為 ${row.priority}）`
+                : `剩餘 ${due - now} 秒`;
+          details.append(el('p', deadlineText, 'due'));
+          item.append(head, details, el('p', row.action, 'action'));
+          list.append(item);
+        }
+      }
+      time.addEventListener('input', render);
+      document.getElementById('theme').addEventListener('change', (event) => {
+        const version = event.target.value;
+        document.body.classList.toggle('theme-v2', version === 'v2');
+        document.getElementById('theme-status').textContent =
+          `色彩版本 theme/${version}；只改左側色條，狀態與排序不變。`;
+      });
+      filter.addEventListener('change', render);
+      document.getElementById('at60').addEventListener('click', () => {
+        time.value = '60';
+        render();
+      });
+      document.getElementById('at180').addEventListener('click', () => {
+        time.value = '180';
+        render();
+      });
+      document
+        .getElementById('mono')
+        .addEventListener('change', (e) =>
+          document.body.classList.toggle('mono', e.target.checked),
+        );
+      render();
+    </script>
+  </body>
+</html>

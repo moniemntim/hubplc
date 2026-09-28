@@ -1,0 +1,287 @@
+<!doctype html>
+<html lang="zh-Hant">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Alert dialog 焦點與警報摘要教材</title>
+    <style>
+      :root {
+        color-scheme: light;
+        font-family: system-ui, sans-serif;
+      }
+      * {
+        box-sizing: border-box;
+      }
+      body {
+        margin: 0;
+        background: #f1f5f9;
+        color: #102a43;
+      }
+      #background {
+        display: grid;
+        gap: 1rem;
+        margin: auto;
+        max-width: 58rem;
+        min-height: 100vh;
+        padding: 1rem;
+      }
+      .panel {
+        border: 1px solid #b8c7d9;
+        border-radius: 0.75rem;
+        background: #fff;
+        padding: 1rem;
+      }
+      .alert-summary {
+        border-left: 0.5rem solid #b42318;
+        background: #fff2f0;
+      }
+      h1,
+      h2,
+      p {
+        margin-top: 0;
+      }
+      label,
+      input,
+      button {
+        font: inherit;
+      }
+      input {
+        display: block;
+        width: 100%;
+        margin: 0.5rem 0 1rem;
+        padding: 0.65rem;
+        border: 1px solid #486581;
+        border-radius: 0.35rem;
+      }
+      button {
+        min-height: 2.6rem;
+        padding: 0.45rem 0.8rem;
+        border: 1px solid #334e68;
+        border-radius: 0.35rem;
+        background: #fff;
+        color: #102a43;
+        cursor: pointer;
+      }
+      button + button {
+        margin-inline-start: 0.5rem;
+      }
+      button:focus-visible,
+      input:focus-visible {
+        outline: 0.22rem solid #005fcc;
+        outline-offset: 0.18rem;
+      }
+      dialog {
+        width: min(34rem, calc(100vw - 2rem));
+        border: 0;
+        border-radius: 0.75rem;
+        box-shadow: 0 0.8rem 2rem rgb(16 42 67 / 35%);
+        color: #102a43;
+        padding: 1.25rem;
+      }
+      dialog::backdrop {
+        background: rgb(16 42 67 / 58%);
+      }
+      .dialog-alert {
+        border: 1px solid #b42318;
+        border-radius: 0.4rem;
+        background: #fff2f0;
+        padding: 0.7rem;
+      }
+      .actions {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 0.5rem;
+        justify-content: end;
+        margin-top: 1rem;
+      }
+      .actions button + button {
+        margin-inline-start: 0;
+      }
+      #confirm-delete {
+        background: #b42318;
+        border-color: #7a271a;
+        color: #fff;
+      }
+      .muted {
+        color: #486581;
+        font-size: 0.93rem;
+      }
+      @media (max-width: 22rem) {
+        #background {
+          padding: 0.65rem;
+        }
+        .panel {
+          padding: 0.75rem;
+        }
+        dialog {
+          padding: 1rem;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <main id="background">
+      <section
+        class="panel alert-summary"
+        aria-labelledby="alert-summary-title"
+      >
+        <h1 id="alert-summary-title">固定非模態警報摘要</h1>
+        <p id="alert-summary" role="status" aria-live="polite">
+          來源：MOTOR-7；狀態：高溫仍啟用；合成警報 0 筆。
+        </p>
+        <p class="muted">
+          摘要更新不移動鍵盤焦點；它不是確認、Ack 或 Reset 控制。
+        </p>
+      </section>
+      <section class="panel" aria-labelledby="draft-title">
+        <h2 id="draft-title">主編輯草稿</h2>
+        <label for="draft">交班草稿</label>
+        <input id="draft" value="Batch 7 local draft" autocomplete="off" />
+        <button id="request-delete" type="button">刪除本機草稿</button>
+        <button id="inject-now" type="button">注入警報</button>
+        <button id="inject-after" type="button">1000ms 後注入一次警報</button>
+        <button id="reset-demo" type="button">重設教材狀態</button>
+        <p id="result" role="status">本機草稿尚未刪除。</p>
+        <p id="control-state">Ack=未確認；Reset=0；只示範本機 UI state。</p>
+      </section>
+    </main>
+
+    <dialog
+      id="delete-dialog"
+      role="alertdialog"
+      aria-modal="true"
+      aria-labelledby="dialog-title"
+      aria-describedby="dialog-description"
+    >
+      <h2 id="dialog-title">刪除本機草稿？</h2>
+      <p id="dialog-description">
+        此動作只清除本頁草稿，不會 Ack 警報，也不會送出 Reset。
+      </p>
+      <p id="dialog-alert" class="dialog-alert" role="status">
+        目前沒有對話框內的新合成警報。
+      </p>
+      <button id="inject-dialog" type="button">注入警報</button>
+      <div class="actions">
+        <button id="cancel-delete" type="button">取消</button>
+        <button id="confirm-delete" type="button">確認刪除</button>
+      </div>
+    </dialog>
+
+    <script>
+      (() => {
+        const background = document.getElementById('background');
+        const draft = document.getElementById('draft');
+        const requestDelete = document.getElementById('request-delete');
+        const injectNow = document.getElementById('inject-now');
+        const injectAfterButton = document.getElementById('inject-after');
+        const reset = document.getElementById('reset-demo');
+        const dialog = document.getElementById('delete-dialog');
+        const cancel = document.getElementById('cancel-delete');
+        const confirm = document.getElementById('confirm-delete');
+        const injectDialog = document.getElementById('inject-dialog');
+        const summary = document.getElementById('alert-summary');
+        const dialogAlert = document.getElementById('dialog-alert');
+        const result = document.getElementById('result');
+        const controlState = document.getElementById('control-state');
+        const initialDraft = 'Batch 7 local draft';
+        let alarmCount = 0;
+        let opener = null;
+        let pendingAlarmTimer = null;
+
+        function render() {
+          summary.textContent = `來源：MOTOR-7；狀態：高溫仍啟用；合成警報 ${alarmCount} 筆。`;
+          dialogAlert.textContent =
+            alarmCount === 0
+              ? '目前沒有對話框內的新合成警報。'
+              : `目前合成警報總數 ${alarmCount} 筆；刪除草稿不會 Ack 或 Reset。`;
+          controlState.textContent =
+            'Ack=未確認；Reset=0；只示範本機 UI state。';
+        }
+
+        function injectAlarm() {
+          alarmCount += 1;
+          render();
+        }
+
+        function injectAfter(milliseconds) {
+          const delay =
+            Number.isSafeInteger(milliseconds) && milliseconds >= 0
+              ? milliseconds
+              : 0;
+          if (pendingAlarmTimer !== null)
+            window.clearTimeout(pendingAlarmTimer);
+          pendingAlarmTimer = window.setTimeout(() => {
+            pendingAlarmTimer = null;
+            injectAlarm();
+          }, delay);
+        }
+
+        function setModal(open) {
+          background.inert = open;
+          background.setAttribute('aria-hidden', String(open));
+        }
+
+        function openDelete() {
+          if (dialog.open) return;
+          opener = document.activeElement;
+          dialog.showModal();
+          setModal(true);
+          cancel.focus();
+        }
+
+        function closeDelete(reason) {
+          if (dialog.open) dialog.close(reason);
+        }
+
+        requestDelete.addEventListener('click', openDelete);
+        cancel.addEventListener('click', () => closeDelete('cancel'));
+        confirm.addEventListener('click', () => {
+          draft.value = '';
+          result.textContent = '本機草稿已清除；Ack=未確認；Reset=0。';
+          closeDelete('confirm');
+        });
+        injectNow.addEventListener('click', injectAlarm);
+        injectAfterButton.addEventListener('click', () => {
+          draft.focus();
+          injectAfter(1000);
+        });
+        injectDialog.addEventListener('click', injectAlarm);
+        reset.addEventListener('click', () => {
+          if (dialog.open) closeDelete('reset');
+          if (pendingAlarmTimer !== null) {
+            window.clearTimeout(pendingAlarmTimer);
+            pendingAlarmTimer = null;
+          }
+          alarmCount = 0;
+          draft.value = initialDraft;
+          result.textContent = '本機草稿尚未刪除。';
+          render();
+        });
+        dialog.addEventListener('close', () => {
+          setModal(false);
+          if (opener instanceof HTMLElement && opener.isConnected)
+            opener.focus();
+        });
+        dialog.addEventListener('keydown', (event) => {
+          if (event.key !== 'Tab') return;
+          const controls = [injectDialog, cancel, confirm];
+          const index = controls.indexOf(document.activeElement);
+          if (event.shiftKey && index <= 0) {
+            event.preventDefault();
+            confirm.focus();
+          } else if (!event.shiftKey && index === controls.length - 1) {
+            event.preventDefault();
+            injectDialog.focus();
+          }
+        });
+        render();
+        window.alertDialogDemo = {
+          injectAfter,
+          injectAlarm,
+          isOpen: () => dialog.open,
+          reset: () => reset.click(),
+        };
+      })();
+    </script>
+  </body>
+</html>

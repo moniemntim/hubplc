@@ -1,0 +1,15 @@
+{
+  "dataset": "serial-ascii-stx-length-etx-synthetic-v1",
+  "synthetic": true,
+  "validChunks": [
+    { "now": 0, "bytes": [2, 48] },
+    { "now": 1, "bytes": [48, 53, 72, 69] },
+    { "now": 2, "bytes": [76, 76, 79, 3, 2, 48, 48, 49, 90, 3] }
+  ],
+  "faults": {
+    "lengthSyntax": [2, 48, 65],
+    "lengthRange": [2, 49, 50, 57],
+    "payload": [2, 48, 48, 49, 128],
+    "etx": [2, 48, 48, 49, 65, 4]
+  }
+}

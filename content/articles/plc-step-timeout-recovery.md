@@ -1,89 +1,93 @@
 ---
-title: 流程卡在某一步 怎麼設計等待上限與故障復歸
-description: 用明確時間線設定等待期限，保留故障步驟與輸入快照，再由可驗收條件復歸。
+title: PLC 步驟等待逾時：5000 ms 邊界、故障快照與重新啟動
+description: 下載單一步驟等待模型，重播 4999 ms 成功、5000 ms 逾時與復歸被拒絕，核對故障快照和新 Start 的條件。
 date: 2026-09-17
 author: 茂伯
 draft: false
 ---
 
-## 先把問題拆開 定義狀態 請求與完成條件
+## 這次只處理一個等待步驟
 
-把流程卡住視為可診斷事件，而不是讓線圈一直等。案例固定走PREPARE、WAIT_SENSOR_B、VERIFY、DONE；每次進入步驟都記EnterStep並將Elapsed歸零，只有指定的Sensor B條件成立才能離開等待。
+流程已要求動作，SensorB 卻遲遲沒到位，程式需要回答三件事：從何時開始等、何時停止等待、故障後怎樣重新開始。本篇固定等待上限為 **5000 ms**，是教材自訂值，不是設備建議參數。
 
-| 項目 | 應定義 | 不要混淆 |
+附件是已執行的 Node.js 離線模型，沒有連 PLC 或輸出端子。`output` 只是虛擬命令；它變成 false 不等於量到設備已停。本站未執行原廠模擬器或機台測試。
+
+本例只用 `IDLE → WAIT_SENSOR_B → DONE/FAULT`，不放入沒有定義內容的 PREPARE 或 VERIFY。完整多步驟流程見[三步驟狀態機](/articles/plc-state-machine-three-step-sequence)；這裡專注等待與復歸證據。
+
+## 下載後怎麼跑
+
+將 [wait-model.mjs](/examples/plc-step-timeout/wait-model.mjs) 和 [demo.mjs](/examples/plc-step-timeout/demo.mjs) 放在同一資料夾，使用 Node.js 22.13.0 以上執行：
+
+```powershell
+node demo.mjs
+```
+
+會印出四段案例，每列是輸入快照與處理後狀態的 JSON。時間來自每列 `nowMs`，不是程式跑一輪就加一毫秒；沒有即時等待五秒。
+
+## 先核對初值、允許條件與優先順序
+
+初態 IDLE、output=false、沒有錯誤／快照。Start 初次必須先觀察到 false，之後 false→true 才能開始；初始就保持 true 不啟動。Reset 也必須先在 `valid=true` 時觀察到 false，下一次按下才形成一次復歸請求。
+
+每列省略的 Start、Reset、Stop、SensorB、Ack 預設 false；valid、permit 預設 true。若要重播長按，必須在每列明寫 true，不會自動沿用前一列輸入。
+
+| 起始狀態 | 處理規則 |
+| --- | --- |
+| IDLE | 新 Start 且 valid、permit 為 true，Stop、SensorB 為 false，才開始等待 |
+| WAIT_SENSOR_B | Stop → 無效品質 → permit 消失 → 到時 → SensorB，到前者成立便不再判後者 |
+| DONE | 保持到 Ack，Reset 不代替 Ack |
+| FAULT | 有效的新 Reset 且符合相同準備條件，回 IDLE；不直接重試等待 |
+
+上述 Stop 是普通邏輯條件，不是安全急停功能。`valid` 表示本次輸入快照是否可用；真正專案需定義它如何由模組品質與資料年齡產生。
+
+## 案例一、二：4999 成功，5000 到位仍逾時
+
+兩條線都先在 nowMs=0 觀察 Start=false，在 nowMs=10 以 Start=true 進入 WAIT_SENSOR_B，記下 enteredAtMs=10。Elapsed 永遠是 `nowMs - enteredAtMs`，等待期間不重設起點。
+
+| 案例 | nowMs | Elapsed | SensorB | 結果 |
+| --- | --- | --- | --- | --- |
+| success-4999 | 5009 | 4999 | true | DONE、output=false |
+| timeout-5000 | 5010 | 5000 | true | FAULT、TIMEOUT_B、output=false |
+
+第二條線在 1010、3010、5009 ms 的觀察仍是等待；到了 5010，即使 SensorB 同時為 true，也按本例「到時優先」進故障。若你的規格接受邊界同時到位，必須同步修改程式、文字和驗收答案，不能只改一個比較符號。
+
+第三段 `late-sample-5030` 故意直到 nowMs=5040 才再次呼叫，故障快照記錄的 Elapsed 是 **5030 ms**。程式只能在下一個觀察點發現已到期，不能捏造它在 5000 ms 當刻就執行過。
+
+## 快照保存故障當下，不跟著目前感測器變
+
+進 FAULT 時保存 `lastFault`：錯誤碼、故障步驟、進入等待時間、故障觀察時間、Elapsed、SensorB、valid、permit、Stop，以及故障前的虛擬命令。FAULT 期間不覆寫它；成功復歸與下一次啟動後也仍保留，直到另一個新故障取代。
+
+`timeout-5000` 的關鍵欄位應為：
+
+```text
+code=TIMEOUT_B
+faultStep=WAIT_SENSOR_B
+enteredAtMs=10
+atMs=5010
+elapsedMs=5000
+sensorB=true
+outputBefore=true
+```
+
+這表示故障觀察當刻已看到到位，但依規格仍太晚。它與「故障時為 false，後來才變 true」是不同證據。本模型只保存最後一筆故障，不是永久日誌；要做歷史追蹤，須另外保存逐列輸出。
+
+## 案例四：Reset 被拒絕後，長按不會自動重試
+
+`reset-requires-new-press` 延續到時故障，依序重播：
+
+| nowMs | 輸入重點 | 預期狀態／動作 |
 | --- | --- | --- |
-| 未開始 | Permit/Start未成立 | 當成逾時 |
-| 進行過慢 | Elapsed達上限 | 清除快照 |
-| 回饋矛盾 | 輸入與狀態不符 | 假裝完成 |
-| 逾時重試 | RetryCount | 無限制重試 |
+| 5020 | Reset=true、SensorB=true | FAULT／reset-rejected |
+| 5030 | Reset 仍 true、SensorB 已 false | 仍 FAULT，不自動接受長按 |
+| 5040 | Reset=false | 重新允許下一次按下 |
+| 5050 | Reset=true、Start=true | 回 IDLE／reset-accepted，不同輪啟動 |
+| 5060 | Start 仍 true | 保持 IDLE，這不是新上升緣 |
+| 5070 | Start=false | 釋放 Start |
+| 5080 | Start=true | 新 WAIT_SENSOR_B，enteredAtMs=5080 |
 
-驗證狀態：本文為虛擬邏輯推演與練習規格，未附模擬器執行或實體設備測試紀錄；請用內部狀態觀察，不接實體輸出。
+本例把 SensorB 未清除視為新一輪前提不成立，不代表感測器必然損壞。Reset 拒絕時先查來源、極性、品質與設備目前位置，而不是把條件旁路。`valid=false` 也會解除 Reset 的允許記憶，恢復有效後需重新觀察釋放再按下。
 
-## 建立流程 先做狀態表 再寫轉移
+## 移植前還缺哪些證據
 
-建立EnterStep、EnterTime、Elapsed、TimeoutB、SensorB、FaultStep與ErrorCode。進入WAIT_SENSOR_B時記錄EnterTime；Elapsed為現在時間減進入時間，不能每掃描隨意加一當毫秒。本例Elapsed≥5000 ms即逾時，逾時優先於同次觀察的到位；尚未逾時才檢查SensorB。
+真正等待上限要依設備動作、允許延遲及任務／I/O 更新設計，不能因故障頻繁就一直加長。此模型沒有判斷實體輸出已關閉，也沒有自動重試、斷電保持與機械互鎖。
 
-1. 進入 WAIT_SENSOR_B，記錄 EnterStep 與輸入快照。
-
-2. 讓 Sensor B 維持 0，使用已核對時間來源更新Elapsed。
-
-3. 到5000 ms時確認 FAULT、TIMEOUT_B、FaultStep。
-
-4. Reset 前確認輸出停止、前提合理，先回IDLE，再由新Start進PREPARE。
-
-驗收記錄必須保留 EnterTime、Elapsed、SensorB、FaultStep 與 ErrorCode。這些欄位要能重建「何時開始等、到期限時看見什麼、為何拒絕復歸」，而不是只留下目前的感測器值。
-
-## 具體合成案例 逐掃描核對正常與邊界
-
-案例從進入WAIT起算時間。t=0記錄起點，t=1000、3000、4999 ms仍未到位，保持等待；t=5000 ms進FAULT。這是五個觀察時刻，不是五個PLC掃描等於五秒。若t=4999 ms已到位，可進VERIFY；若直到t=5000才同時看到到位，依本例逾時優先，不回成功。
-
-| 進入等待後時間 | 輸入觀察 | 狀態 | 預期處理 |
-| --- | --- | --- | --- |
-| 0 ms | SensorB=0 | WAIT_SENSOR_B | 記錄EnterTime |
-| 1000 ms | SensorB=0 | WAIT_SENSOR_B | Elapsed=1000 |
-| 3000 ms | SensorB=0 | WAIT_SENSOR_B | Elapsed=3000 |
-| 4999 ms | SensorB=0 | WAIT_SENSOR_B | 未達期限 |
-| 5000 ms | SensorB=0或剛變1 | FAULT | TIMEOUT_B 逾時優先 |
-
-## 用故障快照決定復歸之前要查什麼
-
-先把故障當下的資料保存一份，包含等待步驟、進入時間、經過時間、感測器值、來源品質與命令狀態。故障後的感測器可能才變化，若畫面只顯示目前值，維護人員會看到已到位，卻不知道逾時當下其實仍未到位。快照讓兩個時間點能分開比較。
-
-本例在期限到達時優先判逾時，這是一個可驗收的規格選擇。若工程需求改成同時到位視為成功，就必須一起修改判斷順序、邊界表和驗收答案。不要只改某個比較符號，讓正文寫大於等於，程式卻只在大於時故障，留下難以重現的一個取樣差。
-
-復歸前先看原因是否已排除。感測器回饋矛盾、資料品質無效或外部模組仍忙碌時，不能因操作員按了重置就直接回等待。將復歸被拒絕的原因顯示出來；重置命令只提出意圖，程式仍須檢查可以重新開始的條件。
-
-復歸成功後，本例回待機，由新的啟動重新走準備步驟。這樣可以重新建立計時起點和輸入前提，不沿用失敗工作的時間或完成旗標。若需求允許原步重試，則要另外定義哪些資料可保留、哪些動作可能重複，以及最大重試次數，不能只把故障位元清零。
-
-沒有到位訊號也不一定就是接線斷線。先查輸入模組是否有對應變化，再查程式讀取的位址與極性，接著查到位訊號是否短於取樣間隔，最後才判斷等待時間是否不合理。每改一個條件就重跑正常、不到位與期限邊界三組案例，保存修改前後的證據。
-
-本篇五秒是假設上限，選擇真正上限時應納入設備動作時間、允許延遲與通訊更新時間。不能因故障頻繁就一直加長，直到表面沒有告警；若機構變慢或回饋品質惡化，較長等待只會延後發現問題。先用時間紀錄分辨正常變動與異常延遲，再決定合理設定。
-
-## 失敗先查 適用限制與常見問題
-
-故障復歸固定由Reset觸發：先停止輸出、保留錯誤記錄，確認故障原因已排除且復歸前提成立後清除目前ErrorCode並回IDLE，歷史紀錄保留。完成結果是每一個等待都有上限；失敗先查目前FaultStep和Elapsed，再量測SensorB實際狀態，最後檢查TimeoutB單位與計時器基準。
-
-### 三個常見問題
-
-所有等待都用同一 Timeout 可以嗎？不建議，不同步驟合理時間不同。逾時能直接回等待嗎？要先停止輸出並完成復歸。Sensor B 一直 ON 就是壞嗎？先查前提、極性與位址。
-
-逾時設計要避免兩個極端：上限太短會把正常延遲誤判成故障，上限太長則讓維護人員等待沒有診斷訊號。請從流程需求取得合理時間，再考慮掃描週期、感測器更新、機構慣性與允許重試次數。每次進入狀態只初始化一次計時；持續等待時保存 Elapsed，不要每掃描重設。故障畫面至少顯示 FaultStep、ErrorCode、EnterTime、Elapsed、輸入快照和 RetryCount。復歸後重新走前置檢查，若 Sensor B 仍矛盾就再次停在故障，而不是用 Reset 連續跳過問題。
-
-建議把逾時和感測器品質分開記錄。Sensor B=0 可能是尚未到位，也可能是輸入斷線；若模組能提供品質位元，先判斷品質再判斷值。若沒有品質位元，至少保存最後變化時間與連續 0 的長度。逾時後的 FAULT 應可由維護人員重現：相同前提下再次測試，ErrorCode、FaultStep 和輸入快照要一致。
-
-建立故障紀錄時，ErrorCode 不要只寫數字。至少同時保存文字說明、FaultStep、輸入極性、進入時間和復歸次數。維護人員依紀錄先重現相同輸入，再判斷是感測器、接線、條件設定還是流程時限。若修正上限後故障消失，仍要確認新上限沒有掩蓋機構未到位，並把修改前後的測試資料保留。
-
-## 操作驗收與適用限制
-
-驗收結果是SensorB及時到位才進VERIFY並Done，逾時則固定進FAULT且ErrorCode=TIMEOUT_B、FaultStep=WAIT_SENSOR_B。限制是Elapsed的單位與計時基準取決於你的PLC程式和設定，不能把本文的5000 ms直接套用到所有CPU。
-
-先測成功到位、永遠不到位、剛好逾時三個邊界。重新啟動前確認輸出已關閉與故障原因已記錄；若Reset後立即再逾時，優先查SensorB接點邏輯、TimeoutB單位及EnterTime是否只在進入步驟時記錄。
-
-參考：[三菱 QnUCPU 使用手冊 程式執行與裝置資料](https://dl.mitsubishielectric.com/dl/fa/document/manual/plc/sh080807eng/sh080807engaf.pdf)
-
-適用型號與限制：5000 ms 是本例的等待上限，Elapsed 的來源與解析度必須依目標 CPU、工程軟體、感測器更新與設備允許時間確認。
-
-## 延伸閱讀
-
-- [點動 持續運轉與單次動作 三種操作命令怎麼定義](/articles/plc-jog-run-single-cycle)
-- [暫停 繼續 取消與重置 如何避免 PLC 流程重新做錯一步](/articles/plc-pause-resume-cancel-reset)
+現場驗證要額外保留時間來源與解析度、到位訊號取得方式、命令到實際輸出的差異，以及每項復歸前提的依據。任務根本未執行時，這個等待程式也不會自行檢查期限；那是[Watchdog 與遺漏週期排查](/articles/plc-watchdog-timeout-diagnosis)要處理的另一層問題。

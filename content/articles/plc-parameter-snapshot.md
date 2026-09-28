@@ -1,119 +1,78 @@
 ---
-title: 執行中修改參數會發生什麼 PLC 工作參數快照設計
-description: 以編輯、確認及工作快照固定本批參數，讓新設定在明確邊界生效。
+title: PLC 工作參數快照：確認後，下一批才換新版本
+description: 用可下載的 Node 逐掃描模型，分開 Edit、Confirmed、JobSnapshot，核對確認、工作接受、完成與中止的版本邊界。
 date: 2026-09-17
 author: 茂伯
 draft: false
+category: PLC 程式與控制
 ---
 
-## 先分開三份參數
+## 先定義本例的接受與拒絕規則
 
-操作員在 HMI 修改目標數量與等待時間時，PLC 可能正執行一個批次。若工作邏輯直接讀編輯中的欄位，批次前半段可能用 100 件，後半段突然變成 120 件；多欄位還可能讀到一新一舊。教學採三份資料：Edit 是尚未確認的畫面值，Confirmed 是檢查過的設定，Snapshot 是某一批次接受工作時鎖定的值。只有 Snapshot 能被執行中的流程讀取。
+這是 Node.js 24.19.0 的離線逐掃描教材；每次呼叫是一個模型掃描，沒有連 PLC、HMI、設備或原廠模擬器。它說明工作參數何時固定，不能證明實機的同步、結構複製原子性、保持記憶或任何 PLC 機種的適用性。
 
-| 資料 | 可由誰寫入 | 何時生效 |
-| --- | --- | --- |
-| Edit | HMI | 按下確認前 |
-| Confirmed | PLC 確認流程 | 確認脈衝且範圍合法 |
-| Snapshot | PLC 工作接受流程 | 建立工作時整批複製 |
+本例只有兩個參數：`qty` 是 1 到 1000 的安全整數，`wait_ms` 是 0 到 60000 的安全整數。提交的 `Edit` 必須剛好有這兩欄；少欄、多欄、字串、NaN、無限大、非整數或超界，確認一律拒絕。拒絕不會改 `Confirmed` 或 version。version 從 1 起，最高是 2147483647；到上限後拒絕確認，不做回捲。
 
-1. 設定量程、單位與小數位，先定義合法範圍。
+`confirm` 只在上升沿提交，按住不會重複確認；失敗後也要先放開，再按一次才重試。`acceptRequest` 是保持到 PLC 回覆的層級請求：IDLE 時上升沿最多建立一份工作，保持為 1 不會重複啟動；要再建立新工作，必須先放開再重新提出請求。RUN 時收到的新請求拒絕且不排隊。
 
-2. 用 confirm_id 或版本號表示一次完整確認，不以單一欄位變化當完成。
+`complete` 與 `abort` 只能二擇一。RUN 時它們會將目前快照留在 `lastJob`，並清除 `JobSnapshot`、回到 IDLE；IDLE 時只是忽略。兩者同掃描為模型輸入錯誤，避免猜測優先順序。IDLE 的任一 terminal 訊號優先於新或等待中的 acceptRequest：terminal 仍顯示 ignored，但工作請求回覆 `terminal_signal_active`、清除等待，必須放開後重新提出。
 
-3. 工作接受時複製所有欄位與版本，之後只讀 Snapshot。
+## 三份資料各自何時改動
 
-## 定義快照交易規則
+| 資料        | 誰在本模型寫入       | 何時供工作使用                 |
+| ----------- | -------------------- | ------------------------------ |
+| Edit        | 每次掃描輸入         | 尚未生效，可包含未確認或無效值 |
+| Confirmed   | 合法 confirm 上升沿  | 等下一次工作接受               |
+| JobSnapshot | 接受一份 IDLE 工作時 | RUN 全程只讀這一版             |
 
-本例規則如下：確認只在 confirm 上升沿處理；PLC 先逐欄檢查 Edit，任何一欄失敗就整筆拒絕；成功時將 Edit 複製到 Confirmed，version 加一。若目前沒有 RUN 工作，下一次接受工作立即建立新 Snapshot；若工作已 RUN，新版本只標記為 next_version，等目前批次結束才使用。複製必須被視為一個不可分割的邏輯交易，不能讓工作程式在複製中間讀取。
+工作開始後，Edit 可以繼續改，Confirmed 也可以有新版本；現有 RUN 的 `JobSnapshot` 不變。這是「下一工作才更新」：新版本不會改寫已接受工作的數量或等待時間。
 
-```text
-教學偽碼，非指定PLC語法：
-ConfirmEvent := rising(confirm)
-若ConfirmEvent：
-  驗證完整且穩定的Edit提交資料
-  若合法：new_ver:=Confirmed.ver+1；複製內容；Confirmed.ver:=new_ver
-若accept_request且未busy且本次無ConfirmEvent：
-  Snapshot:=Confirmed；job_ver:=Snapshot.ver；busy:=TRUE
-若確認與接受同時：保持accept_request，下次掃描再接受
-工作只使用Snapshot.qty與Snapshot.wait_ms
-複製與提交須以目標平台支援的同步方式實作。
+## 下載並執行固定掃描案例
+
+把以下五個檔案放在同一個資料夾，以 Node.js 24.19.0 或更新版執行。不需 npm 套件或網路連線。
+
+- [模型](/examples/parameter-snapshot/parameter-snapshot-model.mjs)
+- [固定輸入](/examples/parameter-snapshot/fixtures.mjs)
+- [self-test](/examples/parameter-snapshot/self-test.mjs)
+- [逐掃描 demo](/examples/parameter-snapshot/demo.mjs)
+- [README](/examples/parameter-snapshot/README.md)
+
+```powershell
+node self-test.mjs
+node demo.mjs
 ```
 
-| 時間 | Edit.qty | Confirmed.ver | Snapshot.qty | 說明 |
-| --- | --- | --- | --- | --- |
-| T0 | 100 | 7 | 100 | 批次 A 執行 |
-| T1 | 120 | 7 | 100 | 只修改未確認值 |
-| T2 | 120 | 8 | 100 | 確認成功，A 不變 |
-| T3 | 120 | 8 | 120 | A 結束，批次 B 接受 |
-| T4 | 120 | 8 | 120 | B 全程一致 |
-
-## 避免新舊混合與半套更新
-
-多欄位更新的核心不是複製速度，而是讀取者知道哪一版完整。可評估經同步保護的雙緩衝：寫入 inactive 結構，寫完並檢查 checksum 或欄位版本後，最後才切換 active_index。讀取者鎖定本次active索引並完成複製前，寫入者不能重新使用該緩衝；單靠切換索引不保證跨任務一致性。切換與寫入順序要在規格中寫死；發現版本不一致就停在上一版並報警。
-
-| 檢查項 | 成功條件 | 失敗處置 |
-| --- | --- | --- |
-| 範圍 | qty 1–1000、wait 0–60000 ms | 拒絕整筆，不改 Confirmed |
-| 版本 | Snapshot.ver=job_ver | 停止接受並記錄版本錯誤 |
-| 複製完整性 | 整份資料校驗值符合預期 | 保留上一快照，要求重送 |
-| 生效時機 | 工作邊界明確 | 顯示 next_version 等待中 |
-
-虛擬事件：批次 A 目標 100、等待 500 ms，在第 3 掃描操作員改成 120/700；第 4 掃描確認得到版本 8，但 A 的 Snapshot 仍是 100/500。A 完成後，B 才取得 120/700。這樣產量與時間都能回溯到 job_ver=7 或 8。
-
-設計畫面時，請同時顯示三個版本：編輯版本、已確認版本、目前工作版本。操作員看到「待下批生效」比看到數值突然跳動更容易判斷。建立快照時要連同單位、倍率、上下限、模式旗標一起複製；只複製目標數量而漏掉倍率，仍然是混合版本。可在每個結構放 magic、length、version、checksum，讀取前先檢查 magic 與 length，錯誤就沿用上一個有效快照。工作結束時保留 job_ver 和實際使用值，報表才能回答「這批為何在這個時間完成」。
-
-## 實作與驗收步驟
-
-版本流程固定為先計算 new_ver=Confirmed.ver+1，再以 new_ver 與完整 Edit 複製成 Confirmed；不可讓 Edit.ver 覆蓋版本。確認與接受同掃描時，本例先提交確認、下一掃描才接受，因此使用新版本且規則與偽碼一致。checksum 是對整份結構計算。
-
-請把「何時生效」寫成操作員看得懂的流程：編輯、確認、等待目前工作結束、下一工作接受。每一階段都顯示版本與原因。若參數需要同時更新，例如目標量、速度、溫度上限，確認按鈕只能提交完整表單；單欄位寫入一律進 Edit。對資料傳輸分段的介面，先寫長度與資料，再寫完成旗標，PLC 讀到完成旗標後才驗證並建立 Confirmed；若逾時，完成旗標清除且版本不變。快照建立後，工作內部禁止任何程式寫入 Snapshot，必須透過停止、取消或新工作流程處理。工作完成報告應包含 job_ver、開始與結束時間、每個實際採用欄位，並與操作員確認的版本相互對照。這樣發生產品差異時，可以判斷是設定問題、傳輸問題還是流程未依快照讀取。
-
-版本切換也要處理取消工作：若目前工作被停止，Snapshot 仍保留並標記 ABORTED，不能把未完成的數值寫回 Confirmed。重新啟動時先決定是續跑原 job_ver 或建立新工作，兩者不可混用。
-
-若確認資料來自 QJ71C24N 等通訊介面，請把通訊接收區與工作資料區分開；接收區更新時不直接供流程使用。依實際通訊協議驗證完整訊息及其必要欄位，再產生 confirm_request。當回應逾時或校驗錯誤，Confirmed 版本不變，畫面顯示上一個有效版本與錯誤原因。
-
-驗收時連續執行三批，第一批使用版本 12，第二批使用版本 13，第三批在確認失敗後仍使用版本 13；將每批實際值與報表列印結果比對。
-
-1. 在監看表放 Edit、Confirmed、Snapshot 的全部欄位與版本。
-
-2. 工作執行中改一欄、再改第二欄，確認 Snapshot 不變。
-
-3. 故意輸入超界值，確認 Confirmed 與 Snapshot 都保留舊值。
-
-4. 在批次邊界重新接受工作，確認新版本完整出現。
-
-## 實作與驗收步驟 續
+`demo.mjs` 固定輸出完整 12 列，最後是 `demo: PASS`。每列的 `snapshot_values=qty/wait_ms` 讓讀者直接核對整份資料，而非只看 version。第 2 掃描確認 `120/700` 且同時提出工作，顯示 `confirm=accepted accept=deferred`；第 3 掃描請求仍保持，才建立 snapshot version 8。
 
 ```text
-你可以用一個批次案例逐步驗證快照。批次 A 接受時 qty=100、wait_ms=500、speed=20，版本是 12。操作員先把 qty 改成 120，尚未按確認時，Confirmed 與 Snapshot 都仍是 100；按確認後，Confirmed 一次變成 120、版本 13，但 A 仍讀版本 12。接著操作員只修改 wait_ms=700 而未確認，下一批若此時被接受，仍只能取得版本 13 的 120/500，不能取得 120/700。這個結果可證明「編輯」與「已提交」確實隔離。
-多欄位檢查要有明確失敗規則。例如 qty=120 合法但 wait_ms=-1 不合法，整筆確認失敗，Confirmed 的三個欄位和版本完全不變；畫面應顯示哪一欄失敗。若通訊在傳送欄位中途斷線，請求不可被視為確認成功，應等待下一個完整封包或逾時退回。若工作接受與確認在同一掃描同時成立，先完成確認，再由規格決定接受舊版或新版；本例採先確認、下一掃描接受，並把該規則寫在測試表。
+1 IDLE confirmed=7 snapshot=- snapshot_values=- confirm=none accept=none terminal=none
+2 IDLE confirmed=8 snapshot=- snapshot_values=- confirm=accepted accept=deferred terminal=none
+3 RUN confirmed=8 snapshot=8 snapshot_values=120/700 confirm=none accept=accepted terminal=none
+4 RUN confirmed=8 snapshot=8 snapshot_values=120/700 confirm=none accept=none terminal=none
+5 RUN confirmed=8 snapshot=8 snapshot_values=120/700 confirm=rejected accept=none terminal=none
+6 RUN confirmed=8 snapshot=8 snapshot_values=120/700 confirm=none accept=none terminal=none
+7 RUN confirmed=9 snapshot=8 snapshot_values=120/700 confirm=accepted accept=none terminal=none
+8 IDLE confirmed=9 snapshot=- snapshot_values=- confirm=none accept=none terminal=completed
+9 IDLE confirmed=9 snapshot=- snapshot_values=- confirm=none accept=none terminal=none
+10 RUN confirmed=9 snapshot=9 snapshot_values=200/900 confirm=none accept=accepted terminal=none
+11 RUN confirmed=9 snapshot=9 snapshot_values=200/900 confirm=none accept=none terminal=none
+12 IDLE confirmed=9 snapshot=- snapshot_values=- confirm=none accept=none terminal=aborted
+demo: PASS
 ```
 
-### 完成後應看到什麼結果
+第 5 掃描的 `qty=0` 拒絕後，version 仍是 8。第 7 掃描合法確認成 version 9，但工作仍讀 snapshot version 8；完成後的第 10 掃描才建立 version 9 的新工作。第 11 掃描保持 acceptRequest 為 1，沒有第二次接受。
 
-同一 job_ver 內所有循環都使用同一組數量與時間；執行中修改只影響 Edit 或 next_version；批次邊界切換後，新工作一次取得全部新欄位。
+## 同掃描確認和接受，為何要等一掃描
 
-### 失敗時先查哪裡
+本例先處理 confirm。若 confirm 上升沿合法且 acceptRequest 也剛上升，模型回覆 `deferred`，要求請求保持到下一掃描；下一掃描才從新的 Confirmed 複製完整 JobSnapshot。這可明確避免工作在同一掃描混入確認前後的欄位。
 
-先查工作程式是否繞過 Snapshot 讀了 Edit，再查確認脈衝是否重複、版本是否在複製前就切換，最後查雙緩衝切換與 HMI 通訊是否允許半套資料。
+若同掃描確認被拒絕，這次工作請求也回覆 `confirmation_rejected`，不會偷偷用舊 Confirmed 啟動。若等待確認的 acceptRequest 在下一掃描前放開，回覆 `accept_request_released_before_ack`，不建立工作。這是本例的握手規則；移植時必須用目標 PLC、HMI 與通訊協議實際支援的 request／ack 設計驗證。
 
-### 適用型號與限制
+## 實機移植前仍要另外驗證
 
-可套用 Q06UDVCPU 搭配 QJ71C24N 或其他介面的批次控制設計；資料結構複製、通訊更新與保持設定須按 CPU、GX Works 版本及實際介面確認。
-
-## 常見問題與來源
-
-### FAQ
-
-```text
-問：為何不能讓目前工作即時追新參數？答：那會失去批次可追溯性，除非規格明定分段生效。
-問：版本號一定要有嗎？答：至少要有等效的 commit 標記，否則無法證明多欄位同版。
-問：HMI 送值很快會不會仍讀半套？答：以確認交易和 active 切換隔離，工作只讀已提交結構。
-```
-
-參考：[三菱 QnUCPU 使用手冊 程式執行與裝置資料](https://dl.mitsubishielectric.com/dl/fa/document/manual/plc/sh080807eng/sh080807engaf.pdf)
+模型只做一個 JavaScript 函式內的狀態轉換。跨 PLC task、HMI 分段傳送、通訊斷線、重啟後的保留值、實際 job 完成證據及安全聯鎖，都沒有在此驗證。若要用在設備，需把完整表單、確認脈衝、request／ack、RUN／complete／abort 與版本上下限對應到實際 CPU、程式與現場驗收紀錄；不可把這個離線 PASS 當成真正 PLC 的原子或同步證明。
 
 ## 延伸閱讀
 
-- [狀態進入時只執行一次 如何分開初始化與每掃描動作](/articles/plc-state-entry-once)
-- [兩個流程共用一個資源 PLC 排他控制與公平排程](/articles/plc-exclusive-resource-scheduler)
+- [PLC 狀態進入時只執行一次：分開初始化與每掃描動作](/articles/plc-state-entry-once)
+- [PLC 故障復歸：長按只接受一次的離線練習](/articles/plc-fault-reset-single-acceptance)

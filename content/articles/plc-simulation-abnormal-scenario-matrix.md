@@ -1,114 +1,79 @@
 ---
-title: PLC 模擬測試不只看正常流程 建立異常情境矩陣
-description: 以 WAIT、RUN、DONE、ERROR、CANCELLED 五狀態與 300 ms 固定逾時，驗證正常、缺回饋、重複 Request 與 Cancel 四條獨立時間線。
+title: PLC 異常情境矩陣 以 RequestId 重現逾時 取消與晚到回饋
+description: 用可離線執行的 Node 模型，固定驗證 WAIT、RUN、DONE、ERROR、CANCELLED 的 RequestId、Ack 與 300 ms 邊界。
 date: 2026-09-17
 author: 茂伯
 draft: false
 ---
 
-## 先把流程狀態與識別碼定死
+## 先固定這個離線模型的契約
 
-本例是沒有連接實體設備的虛擬工作流程。狀態只有 WAIT、RUN、DONE、ERROR、CANCELLED 五種；所有其他文字都不是狀態。WAIT 表示沒有現行工作且可以接受新請求，RUN 表示已接受一個工作並等待回饋，DONE 表示結果已保存但尚未完成確認，ERROR 表示 300 ms 內未收到合格回饋，CANCELLED 表示外部取消已被接受。ERROR 和 CANCELLED 都必須先復歸才可回到 WAIT。
+這是純 JavaScript 的教學模型，不連 PLC、I/O、通訊或安全回路。它刻意只處理一件進行中的工作，用 `WAIT`、`RUN`、`DONE`、`ERROR`、`CANCELLED` 五種狀態驗證異常事件；它不是另一篇「三步驟順序控制」的實作，也不宣稱任何廠牌或硬體行為。
 
-每個工作有 RequestId 和 FeedbackId。接受 RequestId=17 時，CurrentRequestId 設為 17；只有 FeedbackId=17 才能完成，FeedbackId=16 或 18 都記錄為 LATE_OR_WRONG_FEEDBACK，不能改變終態。工作者完成後發布帶RequestId的結果，呼叫端保存結果後回送AckId。工作者收到匹配的AckId後，控制器清除 CurrentRequestId、結果快照與計時器，狀態才回 WAIT。
+| 狀態 | 保留內容 | 能離開的事件 |
+| --- | --- | --- |
+| `WAIT` | 無現行工作 | 新的 Request 上升緣且 ID 未重用 → `RUN` |
+| `RUN` | `CurrentRequestId`、300 ms deadline | Cancel → `CANCELLED`；到時 → `ERROR`；正確 Feedback → `DONE` |
+| `DONE` | RequestId 與結果快照 | 相同 `AckId` → 清理後 `WAIT` |
+| `ERROR` | RequestId 與 `TIMEOUT` | 明確 Reset → 清理後 `WAIT` |
+| `CANCELLED` | RequestId 與 `CANCEL` | 明確 Reset → 清理後 `WAIT` |
 
-| 狀態 | 可接受事件 | 固定離開條件 | 禁止事項 |
-| --- | --- | --- | --- |
-| WAIT | 新Request | 接受後→RUN | 不能處理無主Feedback |
-| RUN | 匹配Feedback、Cancel、到時 | DONE、CANCELLED、ERROR | Busy新Request拒收 |
-| DONE | Ack | Ack確認→WAIT | 晚到Feedback不改結果 |
-| ERROR | 復歸 | 復歸→WAIT | 不自動接續舊工作 |
-| CANCELLED | 復歸 | 清理後→WAIT | 晚到Feedback不改終態 |
+`DONE` 不是可立刻開始下一筆的訊號。它保留結果快照直到**之後的掃描**收到相同 `AckId`。`ERROR` 與 `CANCELLED` 不接受 Ack 來清理，只有 Reset 可以回 `WAIT`。這樣終態不會因下一筆輸入覆蓋前一筆的證據。
 
-Busy 時收到新 Request，一律回覆 BUSY_REJECT，不佇列、不覆蓋現行工作，也不增加現行工作的重試次數。這個規格讓四條時間線可以互相比較；若產品真的需要佇列，必須另寫資料結構和驗收，不能把拒收案例解讀成排隊。
+模型的輸入是取樣後的一個掃描快照：
 
-狀態名稱也要作為介面契約的一部分。HMI 顯示 DONE 時，使用者應知道它仍等待 Ack；顯示 ERROR 時，應看到 TIMEOUT 而不是泛稱故障。這些文字不改變控制邏輯，卻能防止操作員在錯誤狀態重送同一 Request。
+| 欄位 | 意義 |
+| --- | --- |
+| `nowMs` | 單調、不倒退的整數毫秒時間 |
+| `requestLevel`、`requestId` | Request 是**電平**，模型只把 `false → true` 視為一次明確 Request 事件 |
+| `feedbackId`、`ackId` | 本掃描到達的一個回饋或確認；`null` 代表沒有事件 |
+| `cancel`、`reset` | 本掃描可觀察到的命令 |
 
-## 300 ms 到時與同掃描事件的規則
+省略的布林欄位預設為 false，省略的 ID 預設為 null；要表示保持高位，每筆快照都須明寫 requestLevel=true 與 requestId。Cancel 只在 RUN 有效，Reset 只在 ERROR／CANCELLED 有效；它們不是 WAIT 的啟動互鎖。
 
-本例的 Timeout 固定為 300 ms，從接受 Request 的時間戳 t_accept 開始計算。當 elapsed>=300 ms 且仍在 RUN，產生 ERROR、Reason=TIMEOUT、保存 RequestId，停止等待並清除工作輸出。到時優先於正常 Feedback：如果在同一個掃描同時觀察到elapsed>=300 ms和匹配Feedback，先寫入 ERROR，再把該 Feedback 記為 LATE_FEEDBACK；不能回到 DONE。選擇這個規則是為了讓已超過服務期限的回饋不被誤算為及時完成。
+因此 Request 持續為 `true` 不會反覆送件；即使在 `ERROR` 或 `CANCELLED` 時 Reset 回到 `WAIT`，仍保持為 `true` 的 Request 也不會被當成新事件。要再送一件，先釋放 Request，再以新的 ID 產生上升緣。模型不把「高電平」當作佇列，也不把 Busy 拒收的 Request 留待日後執行。
 
-Cancel 的優先級高於到時，也高於正常回饋。若同一掃描同時有 Cancel、elapsed>=300 ms 和 FeedbackId=CurrentRequestId，結果固定為 CANCELLED，Reason=CANCEL，晚到或同掃描回饋只記錄事件，不改終態。這個規則必須在程式和測試表中寫出，否則不同任務順序可能產生不同答案。
+已**接受**的 ID 必須在同一模型生命週期內嚴格遞增，Reset 也不會清掉 `lastAcceptedRequestId`。這是刻意簡化的永不重用政策：舊 `FeedbackId=17` 絕不會在之後配到新的 Request 17。重啟、跨通道或有限序號回捲不在這個模型範圍；實際協議要保留世代／連線範圍等可比對欄位，不能重設計數器後假設舊回覆已消失。
 
-| 同掃描事件 | 先後規則 | 終態 | 記錄 |
-| --- | --- | --- | --- |
-| Cancel+Timeout+匹配Feedback | Cancel最高 | CANCELLED | 取消、回饋、到時均留痕 |
-| Timeout+匹配Feedback | Timeout優先 | ERROR | LATE_FEEDBACK |
-| Cancel+錯誤Feedback | Cancel最高 | CANCELLED | 錯誤回饋另記 |
-| 只匹配Feedback且<300ms | 正常回饋 | DONE | FeedbackId相符 |
+## 同掃描優先順序和 300 ms 邊界
 
-每個掃描只選一個終態轉移。實作可先把輸入事件取成快照，再按照 Cancel、Timeout、匹配 Feedback 的順序判斷；這是本案例的明確優先序，不是依平台碰巧的程式排列。若平台的時間來源解析度低於 1 ms，測試資料要使用可表示的時間點，不能宣稱比時間來源更精確。
+在掃描開始時已是 `RUN`，模型固定依序處理 `Cancel > Timeout > Feedback`。`elapsed >= 300` 就是到時，故 299 ms 的正確回饋會 `DONE`，300 ms 的同掃描正確回饋會 `ERROR/TIMEOUT`，該回饋另記為 `LATE_FEEDBACK`。Cancel 與到時、回饋同掃描時固定為 `CANCELLED/CANCEL`，回饋也只留下 `LATE_FEEDBACK` 診斷。
 
-時間邊界測試固定三個點：299 ms 仍在 RUN，300 ms 進 ERROR，301 ms 已是 ERROR。正常Feedback在小於300毫秒時可進DONE，因此299毫秒可完成；300 ms 同掃描依本例的逾時優先規則進 ERROR。若平台時間單位不是毫秒，先將腳本換算成平台可表示的 tick，再在報告中註明換算誤差。
+錯誤 ID 和晚到 ID 的意義不同：`RUN` 內不相符的回饋是 `WRONG_FEEDBACK`，工作仍繼續等待；已經進入任一終態後收到的回饋是 `LATE_FEEDBACK`，不會改寫終態。`WAIT` 收到的回饋是 `ORPHAN_FEEDBACK`。本掃描才由 `WAIT` 接受的 Request 不會接受同掃描 Feedback；這避免將尚未建立的工作和一個同掃描資料誤配。
 
-## 四條獨立時間線從同一初始條件開始
+| 同掃描起始狀態與輸入 | 固定結果 |
+| --- | --- |
+| `RUN`，Cancel + 到時 + 正確 Feedback | `CANCELLED`，記錄 `LATE_FEEDBACK` |
+| `RUN`，到時 + 正確 Feedback | `ERROR/TIMEOUT`，記錄 `LATE_FEEDBACK` |
+| `RUN`，未到時 + 錯誤 Feedback | 保持 `RUN`，記錄 `WRONG_FEEDBACK` |
+| `DONE`，錯誤 Ack | 保持 `DONE`，記錄 `BAD_ACK` |
+| 任一非 `WAIT`，Request 上升緣 | 拒收新請求、不取代原工作；其他事件仍按上述規則處理 |
 
-四條案例都從 t=0、狀態 WAIT、CurrentRequestId=0、計時器清零、結果快照空白開始。每條只改變指定事件，其他輸入保持為 0。這樣正常、缺回饋、重複 Request 和 Cancel 的差異可以歸因於單一事件，而不是前一條測試遺留的狀態。
+## 下載與執行四條獨立時間線
 
-| 案例 | 事件時間 | 狀態序列 | 最終證據 |
-| --- | --- | --- | --- |
-| 正常 | 0 Request17；120 ms Feedback17；180 ms Ack | WAIT→RUN→DONE→WAIT | 結果17、Ack17 |
-| 缺回饋 | 0 Request17；300 ms到時 | WAIT→RUN→ERROR | TIMEOUT、無Done |
-| 重複Request | 0 Request17；100 ms Request18；150 ms Feedback17 | WAIT→RUN；拒收18；DONE | BUSY_REJECT18 |
-| Cancel | 0 Request17；120 ms Cancel；350 ms Feedback17 | WAIT→RUN→CANCELLED | Cancel優先、晚到丟棄 |
+範例只需要 [Node.js 22.13.0 或更新版本](https://nodejs.org/en/download)；沒有套件安裝、網路服務或設備下載。取得同目錄的 [模型](/examples/plc-abnormal-matrix/abnormal-matrix-model.mjs)、[時間線與邊界 fixture](/examples/plc-abnormal-matrix/fixtures.mjs)、[輸出程式](/examples/plc-abnormal-matrix/demo.mjs) 和 [README](/examples/plc-abnormal-matrix/README.md) 後，在下載檔案所在的資料夾執行：
 
-正常線在 120 ms 收到相同 FeedbackId，進 DONE；180 ms Ack 被確認後回 WAIT。缺回饋線在 elapsed=300 ms 的掃描進 ERROR，即使 301 ms 才到 Feedback17，也只留下 LATE_FEEDBACK。重複線的 Request18 不影響 Request17，不能把 CurrentRequestId 改成 18；150 ms 的 Feedback17 仍可正常完成。取消線在 120 ms 進 CANCELLED，350 ms 的 Feedback17 不得把它改回 DONE。
+```powershell
+node demo.mjs
+```
 
-1. 每條測試先寫入同一份初始快照與測試編號。
+每個 fixture 都從新的 `initialMatrix()` 開始，沒有共用狀態或重用 ID 的捷徑。
 
-2. 以單調時間戳注入事件，不用畫面操作時間代替事件時間。
+| fixture | 時間線 | 要核對的證據 |
+| --- | --- | --- |
+| `normal` | 17 在 0 ms 接受、120 ms 回饋、180 ms Ack | `WAIT → RUN → DONE → WAIT`，結果與 Ack 都是 17 |
+| `timeout` | 17 在 0 ms 接受，300 ms 沒有回饋 | `ERROR/TIMEOUT`；301 ms 的 17 是 `LATE_FEEDBACK` |
+| `busyReject` | 17 執行時，100 ms 送 18，150 ms 回饋 17 | 18 是 `BUSY_REJECT`，17 仍可完成 |
+| `cancel` | 17 在 120 ms Cancel，350 ms 才回饋 | `CANCELLED/CANCEL`；晚到回饋不改狀態，Reset 才清理 |
 
-3. 每個掃描記錄 State、RequestId、FeedbackId、elapsed、Ack與Reason。
+demo 最後另印出 feedback-at-299、feedback-at-300、feedback-at-301 與 cancel-timeout-feedback 四段，各自終態應為 DONE、ERROR、ERROR、CANCELLED。本站測試另覆蓋 299、300、301 ms 和 Cancel/Timeout/Feedback 同掃描，並檢查錯誤回饋、錯誤 Ack、Request 持續為高及已接受 ID 不可重用。輸出中的 `scanEvents` 是該掃描的診斷，而非新的狀態；要保存完整證據時，像 demo 一樣逐列收集。
 
-4. 完成後檢查晚到事件是否只增加診斷紀錄，沒有重寫終態。
+## 現場轉用前仍要補的事
 
-5. 清理後重新從 WAIT 開始下一條，確認沒有沿用舊 ID。
-
-每一條時間線的初始條件都要包含輸出命令為 0、結果快照無效、Ack 狀態為未送出，以及診斷計數歸零。若只把 State 設為 WAIT 而保留上一個 CurrentRequestId，下一個 Feedback 可能被錯誤配對。測試報告要把初值列出來，讓第二個人能在相同條件重播。
-
-## 復歸 Ack 與晚到回饋
-
-DONE 不是立即 WAIT。DONE 保留結果和 RequestId，等待對應 Ack；AckId 或 AckRequestId 不相符時回覆 BAD_ACK，狀態仍留在 DONE。收到 Ack17 後才清除工作資料並回 WAIT，下一個 Request 才能接受。ERROR 與 CANCELLED 也不自動回 WAIT，必須收到明確 Reset，先清除輸出命令、計時器、Feedback 暫存和 CurrentRequestId，再回 WAIT。
-
-晚到 Feedback 的處理固定為記錄後丟棄。若 Request17 在 300 ms 到時進 ERROR，301 ms 的 Feedback17 不可重新開啟工作；若 Cancel 在 120 ms 先成立，350 ms 的 Feedback17 同樣不改 CANCELLED。記錄至少包含 FeedbackId、收到時間、當時終態與丟棄原因，供日後查出通訊延遲。
-
-| 事件 | 當時狀態 | 狀態是否改變 | 回覆或紀錄 |
-| --- | --- | --- | --- |
-| Ack16 | DONE(Request17) | 否 | BAD_ACK |
-| Ack17 | DONE(Request17) | 是→WAIT | 完成確認 |
-| Reset | ERROR(Request17) | 是→WAIT | 清理完成 |
-| Feedback17晚到 | ERROR或CANCELLED | 否 | LATE_FEEDBACK |
-| Request18於RUN | RUN(Request17) | 否 | BUSY_REJECT |
-
-復歸測試要再確認輸入仍為 1 的情況。例如 Reset 只是一個掃描脈衝，回 WAIT 後同一個 Request 訊號若仍維持為 1，是否會被視為新請求，必須在介面定義中決定。本例要求 Request 必須有新的上升緣與新的 RequestId；保持舊值不會自動重新接受。
-
-清理完成的驗收不是只看狀態名稱。要逐項確認輸出命令已撤除、計時器已停、結果快照的 Valid 位元已清除、CurrentRequestId 回到 0、晚到事件只增加診斷紀錄。若其中一項仍保留，下一個工作可能讀到上一個工作的資料，即使畫面已顯示 WAIT。
-
-每次呼叫都更新Request邊緣記憶，Reset不得把持續為TRUE的輸入偽裝成新上升緣。新的工作識別碼須避免與仍可能晚到的舊回饋重用；實際系統可搭配啟動世代和序號。四條教學線各自重設17只適用彼此完全隔離的測試，不代表正式流程可每次都重用17。
-
-## FAQ 模擬範圍與驗收
-
-問：300 ms 同掃描收到 Feedback，為什麼選 ERROR？本例把到時優先，因為服務期限已到；Feedback 只保留為 LATE_FEEDBACK。問：Cancel 和 Timeout 同掃描呢？Cancel 優先，終態固定 CANCELLED。問：Busy 的 Request 會排隊嗎？不會，本例直接 BUSY_REJECT 且不影響現行工作。問：Ack 何時回 WAIT？只有 DONE 收到匹配 Ack，或 ERROR/CANCELLED 收到明確 Reset 並完成清理後，才回 WAIT。
-
-驗收資料要保存每個掃描的狀態與事件，不能只保存四條時間線的最後一列。若同一個掃描含有多個事件，依本例優先序逐項列出判定，讓審查者能重算為何是 CANCELLED 或 ERROR。
-
-1. 四條時間線各執行三次，核對狀態序列與 RequestId。
-
-2. 在 299 ms、300 ms、301 ms 各測一次回饋，確認到時邊界。
-
-3. 在同一掃描注入 Cancel、Timeout與匹配回饋，確認 Cancel 優先。
-
-4. 測試晚到 Feedback、錯誤 Ack與 Busy Request，確認終態不被改寫。
-
-5. 保存模擬器設定、輸入腳本、每掃描紀錄與未測項目。
-
-適用限制：本文是虛擬狀態機與合成時間線，沒有指定 PLC 型號、任務週期、I/O 更新或實體通訊延遲。CODESYS Simulation Mode 官方頁面所描述的模擬能力與實際目標平台並不等價；狀態轉移、時間解析度、通訊逾時和安全停機仍須在目標工程環境補測。
-
-參考：[CODESYS Testing in Simulation Mode](https://content.helpme-codesys.com/en/CODESYS%20Development%20System/_cds_testing_in_simulation_mode.html)
-
-參考：[CODESYS ST Statement: CASE](https://content.helpme-codesys.com/en/CODESYS%20Development%20System/_cds_st_instruction_case.html)
+這個模型只有明確的單一掃描輸入和整數時間，沒有任務排程、I/O 刷新、通訊重送、斷電保持或安全功能。實際工程要先定義時間來源、Request 上升緣在哪個任務產生、ID 的重啟世代，以及回饋是否能攜帶足以比對的欄位；再在目標工程以實際週期與失聯情境補測。不要把 `BUSY_REJECT` 解讀成排隊，也不要把模型測試通過當成設備或安全驗收。
 
 ## 延伸閱讀
 
-- [強制值與模擬輸入有什麼不同 PLC 測試資料的使用範圍](/articles/plc-forcing-vs-simulated-input)
-- [PLC 最小可重現專案 保留兩模組資料偏移案例](/articles/plc-minimal-reproduction-module-offset)
+- [請求 接受 完成與失敗 如何設計 PLC 模組間握手](/articles/plc-request-accept-result-handshake)
+- [序號重用遇到舊回覆如何安全丟棄](/articles/sequence-reuse-late-response)
+- [流程卡在某一步 怎麼設計等待上限與故障復歸](/articles/plc-step-timeout-recovery)

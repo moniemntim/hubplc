@@ -1,0 +1,9 @@
+{
+  "evidenceId": "EV-20260928-001",
+  "assetId": "LINE-2",
+  "start": "2026-09-28T09:12:00+08:00",
+  "endExclusive": "2026-09-28T09:13:00+08:00",
+  "timezone": "+08:00",
+  "aggregation": "arithmetic_mean",
+  "quality": ["Good"]
+}

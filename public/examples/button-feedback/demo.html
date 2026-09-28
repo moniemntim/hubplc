@@ -1,0 +1,395 @@
+<!doctype html>
+<html lang="zh-Hant">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width,initial-scale=1" />
+    <title>HMI 命令回饋離線演練</title>
+    <style>
+      :root {
+        font-family: system-ui, 'Microsoft JhengHei', sans-serif;
+        color: #172b3a;
+        background: #f4f7f8;
+        line-height: 1.55;
+      }
+      * {
+        box-sizing: border-box;
+      }
+      body {
+        margin: 0;
+      }
+      main {
+        max-width: 920px;
+        margin: auto;
+        padding: 24px 16px;
+      }
+      h1 {
+        font-size: clamp(1.4rem, 4vw, 2rem);
+        line-height: 1.25;
+      }
+      .card {
+        background: white;
+        border: 1px solid #b6c6d0;
+        border-radius: 10px;
+        padding: 18px;
+        margin: 16px 0;
+      }
+      .controls {
+        display: flex;
+        gap: 12px;
+        flex-wrap: wrap;
+        align-items: end;
+      }
+      label {
+        display: grid;
+        gap: 4px;
+        font-weight: 700;
+      }
+      button,
+      select {
+        min-height: 44px;
+        padding: 7px 12px;
+        font: inherit;
+        border: 1px solid #627d8d;
+        border-radius: 6px;
+        background: white;
+        color: inherit;
+      }
+      button {
+        cursor: pointer;
+      }
+      button:disabled {
+        cursor: not-allowed;
+        opacity: 0.62;
+      }
+      button:focus-visible,
+      select:focus-visible {
+        outline: 3px solid #006e8a;
+        outline-offset: 3px;
+      }
+      dl {
+        display: grid;
+        grid-template-columns: max-content 1fr;
+        gap: 6px 14px;
+        margin: 0;
+      }
+      dt {
+        font-weight: 750;
+      }
+      dd {
+        margin: 0;
+        overflow-wrap: anywhere;
+      }
+      #state {
+        font-size: 1.3rem;
+        font-weight: 800;
+      }
+      .unknown {
+        color: #7a4700;
+      }
+      .terminal {
+        color: #17613a;
+      }
+      .rejected {
+        color: #992323;
+      }
+      #history {
+        padding-left: 1.3rem;
+      }
+      #history li {
+        margin: 6px 0;
+        overflow-wrap: anywhere;
+      }
+      .hint {
+        color: #415967;
+      }
+      @media (max-width: 420px) {
+        main {
+          padding: 18px 12px;
+        }
+        .card {
+          padding: 14px;
+        }
+        .controls > * {
+          max-width: 100%;
+          min-width: 0;
+        }
+        .controls label,
+        .controls select {
+          width: 100%;
+        }
+        dl {
+          grid-template-columns: 1fr;
+          gap: 2px;
+        }
+        dd {
+          margin-bottom: 8px;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <main>
+      <p>固定合成資料 · 無設備輸出</p>
+      <h1>OP17 值 55：命令回饋狀態演練</h1>
+      <p>
+        按下按鈕只建立本頁的教材命令；「下一步」注入固定虛擬 server
+        event，沒有網路、PLC、登入、持久化或真實後端冪等保證。
+      </p>
+      <section class="card" aria-label="演練控制">
+        <div class="controls">
+          <label
+            >情境
+            <select id="scenario">
+              <option value="normal">
+                正常：Accepted → Executing → Completed
+              </option>
+              <option value="rejected">拒絕：明確前置條件錯誤</option>
+              <option value="lost">回覆遺失：timeout → Unknown → lookup</option>
+            </select>
+          </label>
+          <label
+            >Unknown 的查詢結果
+            <select id="lookup-result">
+              <option value="Completed">明確 Completed</option>
+              <option value="Rejected">明確 Rejected</option>
+            </select>
+          </label>
+          <button type="button" id="send">送出 OP17=55</button>
+          <button type="button" id="next" disabled>下一步虛擬事件</button>
+          <button type="button" id="lookup" disabled>查詢原 commandId</button>
+          <button type="button" id="old-reply" disabled>
+            測試：舊命令回覆
+          </button>
+          <button type="button" id="reset">新的本機演練</button>
+        </div>
+        <p id="instruction" class="hint">
+          選情境後送出；此頁每次只處理一個本機命令。
+        </p>
+      </section>
+      <section class="card" aria-label="目前命令">
+        <p id="state" aria-live="polite">Idle</p>
+        <dl>
+          <dt>commandId</dt>
+          <dd id="command-id">尚未建立</dd>
+          <dt>request snapshot</dt>
+          <dd id="snapshot">尚未建立</dd>
+          <dt>虛擬 tick</dt>
+          <dd id="tick">0</dd>
+          <dt>事件數</dt>
+          <dd id="count">0／8</dd>
+          <dt>下一步</dt>
+          <dd id="next-expectation">先送出固定命令。</dd>
+        </dl>
+      </section>
+      <section class="card" aria-label="有限診斷紀錄">
+        <h2>history（最多 8 筆）</h2>
+        <p id="capacity" class="hint">尚可記錄診斷事件。</p>
+        <ol id="history"></ol>
+      </section>
+    </main>
+    <script>
+      'use strict';
+      const HISTORY_LIMIT = 8;
+      const terminal = new Set(['Completed', 'Rejected']);
+      let localCommandNumber = 0;
+      let sessionEpoch = 0;
+      let model;
+      const byId = (id) => document.getElementById(id);
+      const plans = {
+        normal: [
+          { type: 'Accepted' },
+          { type: 'Executing' },
+          { type: 'Completed', count: 1 },
+          { type: 'Accepted', late: true },
+        ],
+        rejected: [
+          { type: 'Rejected', reason: 'PRECONDITION_NOT_MET' },
+          { type: 'Accepted', late: true },
+        ],
+        lost: [
+          { type: 'Accepted' },
+          { type: 'Timeout' },
+          { type: 'Accepted', id: 'CMD-WRONG-ID' },
+        ],
+      };
+      function reset() {
+        sessionEpoch += 1;
+        model = {
+          state: 'Idle',
+          commandId: null,
+          snapshot: null,
+          scenario: null,
+          tick: 0,
+          planIndex: 0,
+          history: [],
+          historyFull: false,
+        };
+        render();
+      }
+      function record(text) {
+        if (model.history.length >= HISTORY_LIMIT) {
+          model.historyFull = true;
+          return false;
+        }
+        model.history.push('t' + model.tick + ' ' + text);
+        if (model.history.length === HISTORY_LIMIT) model.historyFull = true;
+        return true;
+      }
+      function event(event) {
+        if (model.historyFull) return false;
+        model.tick += 1;
+        const id = event.id ?? model.commandId;
+        if (id !== model.commandId) {
+          record('REJECTED_WRONG_ID ' + id);
+          return true;
+        }
+        if (terminal.has(model.state)) {
+          record('TERMINAL_IGNORED ' + event.type);
+          return true;
+        }
+        if (event.type === 'Accepted' && model.state === 'Pressed') {
+          model.state = 'Accepted';
+          record('Accepted ' + id);
+          return true;
+        }
+        if (event.type === 'Executing' && model.state === 'Accepted') {
+          model.state = 'Executing';
+          record('Executing ' + id);
+          return true;
+        }
+        if (
+          event.type === 'Completed' &&
+          (model.state === 'Executing' ||
+            (event.lookup && model.state === 'Unknown'))
+        ) {
+          model.state = 'Completed';
+          record(
+            event.lookup
+              ? 'Lookup Completed count=' + event.count
+              : 'Completed count=' + event.count,
+          );
+          return true;
+        }
+        if (
+          event.type === 'Rejected' &&
+          ['Pressed', 'Accepted', 'Executing', 'Unknown'].includes(model.state)
+        ) {
+          model.state = 'Rejected';
+          record('Rejected ' + (event.reason ?? 'LOOKUP_REJECTED'));
+          return true;
+        }
+        if (event.type === 'Timeout' && model.state === 'Accepted') {
+          model.state = 'Unknown';
+          record('Unknown timeout; lookup original id');
+          return true;
+        }
+        record(
+          'REJECTED_ILLEGAL_TRANSITION ' + event.type + ' from ' + model.state,
+        );
+        return true;
+      }
+      function send() {
+        if (model.state !== 'Idle') return;
+        localCommandNumber += 1;
+        model.commandId =
+          'CMD-OP17-' + String(localCommandNumber).padStart(2, '0');
+        model.snapshot = Object.freeze({
+          operation: 'OP17',
+          value: 55,
+          sessionEpoch,
+        });
+        model.scenario = byId('scenario').value;
+        model.state = 'Pressed';
+        model.tick += 1;
+        record('Pressed ' + model.commandId + ' snapshot=OP17:55');
+        render();
+      }
+      function next() {
+        if (model.historyFull) {
+          render();
+          return;
+        }
+        const plan = plans[model.scenario];
+        const item = plan[model.planIndex];
+        if (!item || model.state === 'Unknown') return;
+        if (event(item)) model.planIndex += 1;
+        render();
+      }
+      function lookup() {
+        if (model.state !== 'Unknown' || model.historyFull) return;
+        event({
+          type: byId('lookup-result').value,
+          count: 1,
+          reason: 'LOOKUP_EXPLICIT_REJECTION',
+          lookup: true,
+        });
+        render();
+      }
+      function oldReply() {
+        if (model.state === 'Idle' || model.historyFull) return;
+        const old =
+          localCommandNumber > 1
+            ? 'CMD-OP17-' + String(localCommandNumber - 1).padStart(2, '0')
+            : 'CMD-PRIOR-SESSION';
+        event({ type: 'Accepted', id: old });
+        render();
+      }
+      function render() {
+        const active = model.state !== 'Idle';
+        byId('state').textContent = model.state;
+        byId('state').className = terminal.has(model.state)
+          ? model.state === 'Rejected'
+            ? 'rejected'
+            : 'terminal'
+          : model.state === 'Unknown'
+            ? 'unknown'
+            : '';
+        byId('command-id').textContent = model.commandId ?? '尚未建立';
+        byId('snapshot').textContent = model.snapshot
+          ? 'operation=' +
+            model.snapshot.operation +
+            ' value=' +
+            model.snapshot.value +
+            ' session=' +
+            model.snapshot.sessionEpoch
+          : '尚未建立';
+        byId('tick').textContent = String(model.tick);
+        byId('count').textContent = model.history.length + '／' + HISTORY_LIMIT;
+        const plan = plans[model.scenario ?? byId('scenario').value];
+        const nextItem = plan[model.planIndex];
+        byId('next-expectation').textContent =
+          model.state === 'Unknown'
+            ? '結果未知：只能查詢此 commandId，不能新送。'
+            : nextItem
+              ? '下一個固定事件：' + nextItem.type
+              : '此情境沒有更多固定事件。';
+        byId('send').disabled = model.state !== 'Idle';
+        byId('scenario').disabled = active;
+        byId('next').disabled =
+          !active ||
+          model.historyFull ||
+          model.state === 'Unknown' ||
+          !nextItem;
+        byId('lookup').disabled =
+          model.historyFull || model.state !== 'Unknown';
+        byId('old-reply').disabled = !active || model.historyFull;
+        byId('history').replaceChildren(
+          ...model.history.map((line) => {
+            const item = document.createElement('li');
+            item.textContent = line;
+            return item;
+          }),
+        );
+        byId('capacity').textContent = model.historyFull
+          ? '容量已滿：停止狀態推進直到新的本機演練；這不是不可變 audit。'
+          : '尚可記錄診斷事件。';
+      }
+      byId('send').addEventListener('click', send);
+      byId('next').addEventListener('click', next);
+      byId('lookup').addEventListener('click', lookup);
+      byId('old-reply').addEventListener('click', oldReply);
+      byId('reset').addEventListener('click', reset);
+      reset();
+    </script>
+  </body>
+</html>

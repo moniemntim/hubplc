@@ -1,0 +1,2 @@
+"case_id","status","cpu_model","runtime_version","project_revision","task_name","interval_ms","priority","core_affinity","watchdog_time_and_unit","sensitivity","task_enabled","trace_complete","last_start","last_finish","execution_time_from_runtime","exception_code","output_default_setting","actual_output_after_exception","evidence_path"
+"real_case_01","not_run","","","","","","","","","","","","","","","","","",""

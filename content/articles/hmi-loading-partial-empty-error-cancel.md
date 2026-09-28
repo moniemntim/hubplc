@@ -1,93 +1,34 @@
 ---
-title: 畫面載入慢怎麼設計 loading partial empty error與cancel
-description: 設計畫面載入的loading、partial、empty、error與cancel狀態，使用request epoch避免舊回覆污染新查詢。
+title: HMI載入狀態：用 epoch 拒絕舊回覆，分開 partial、empty、error 與 cancel
+description: 單檔離線教材以固定 A/B 回覆驗證查詢身份、分頁快照、晚回覆拒絕與有界診斷。
 date: 2026-09-21
 author: 茂伯
 draft: false
 category: HMI 畫面與操作
 ---
 
-## 一 先把載入狀態說清楚
+## 固定初始狀態與身份
 
-畫面慢時最危險的不是等待本身，而是使用者不知道目前是尚未開始、只拿到部分資料、真的沒有資料，還是請求已失敗。先把狀態拆成loading、partial、empty、error與cancel，並保存requestId、epoch、開始時間、完成時間與最後錯誤。loading表示仍等待；partial表示已有一部分資料但不能宣稱完整；empty表示請求成功且結果集合為零；error表示這次請求失敗；cancel表示由使用者或新查詢主動取消。
+下載 [demo.html](/examples/loading-states/demo.html) 後以 Edge 開啟。初始為「尚未查詢」、rows=0、diagnostic=0。每次「查 A」或「查 B」會建立新 `epoch + query + snapshotVersion`，清除畫面 rows，並保存該 query 最近一次的凍結身份；所以按鈕不假設 A 永遠 epoch 1 或 B 永遠 epoch 2。
 
-以設備清單為例，使用者選擇區域A後，畫面先顯示loading與查詢條件，不要把上一個區域的數字塗成新結果。第一批回來時進入partial，顯示「已載入12/40筆」只能在服務端真的提供total或可計算進度時使用；不知道總數時只顯示「已收到12筆，仍在載入」，不能用時間或已完成請求數假造百分比。
+| 回覆    | 分頁契約           | 預期                                            |
+| ------- | ------------------ | ----------------------------------------------- |
+| A、B    | 固定 2 頁          | 收到任一單頁都是 partial；兩頁都收到才 complete |
+| EMPTY   | 固定 1 頁、零 rows | 成功 empty，不是假 error                        |
+| UNKNOWN | rows 總數未知      | 只寫已收到 N 筆，不顯示百分比                   |
 
-資料來源也要標示快照時間與查詢範圍。若使用者按重新整理，先保存舊畫面供比較，再建立新epoch；新結果完整驗證後才替換。若資料是即時值與歷史值混合，分別標示來源，不能因同一張卡片就假定更新時間相同。
+## 可重現的操作
 
-| 狀態 | 資料意義 | 畫面應做什麼 |
-| --- | --- | --- |
-| loading | 尚未完成 | 保留查詢條件與取消入口 |
-| partial | 部分結果 | 標示不完整、允許重試 |
-| empty | 成功但零筆 | 顯示篩選條件與清空結果 |
-| error | 本次失敗 | 保留錯誤碼與重試 |
-| cancel | 主動停止 | 停止更新並說明已取消 |
+1. 按「查 A」→「A 第1頁 partial」：顯示 A、`pages=1/2`、A-1。
+2. 按「查 B」：epoch 增加、rows 清空。再按 B 第1頁，顯示 B partial。
+3. 按「晚到 A 第2頁」：仍是 B，diagnostic 為 `STALE_REJECTED`。這是 A 舊身份，不是把畫面上的 B 偽裝成 A。
+4. 按 B 第2頁：顯示 complete 與 B-1、B-2、B-3。接著按 exact duplicate，rows 不增；按 conflict，出現 `PAGE_CONFLICT_REJECTED`，已收頁不會覆寫。
+5. 按成功 empty 後立刻按「取消後晚回覆」，或按固定 error 後立刻按同一鈕：它會使用目前身份，記錄 `TERMINAL_REJECTED`，不會把 empty/error 改成 partial。身份不相符的其他回覆則是 `STALE_REJECTED`。
+6. 按查 B→取消目前查詢→取消後晚回覆：畫面保持 cancelled，晚回覆為 `STALE_REJECTED`。這只表示本畫面不再接受資料，未宣稱遠端工作已停止。
+7. 按未知總數：只顯示「已收到 1 筆（總數未知）」。
 
-這些是介面資訊狀態，不是PLC或機台安全狀態。主控制流程仍應由獨立服務處理，不能因HMI轉圈就阻塞控制迴圈，也不能因畫面顯示empty就把設備值寫成零。
+重試練習：先完成 A/B 一輪，再重新按「查 A」與「查 B」，重複步驟 1–4。按鈕會使用最新凍結身份；不要手改 epoch 或把舊 rows 當作新 snapshot。這個例子不做通用 retry、fetch、遠端取消、後端快照或 PLC/HMI 平台保證。
 
-## 二 epoch防止舊頁回覆污染
+rows 上限為 4；超出時記錄 `ROW_LIMIT_REJECTED` 並保留既有 rows。diagnostic 只有最近 16 筆，採 rolling 丟棄最舊項，不能作稽核紀錄。
 
-每次新查詢增加requestEpoch，例如從區域A切到B時由17變18。所有送出的請求都帶epoch與查詢條件；回覆抵達時只接受等於目前epoch且未被取消的資料，epoch較小的回覆標為stale並丟棄或寫入診斷。requestId用來追蹤單次請求，epoch用來表示目前畫面意圖，兩者不要混成一個欄位。
-
-具體時間線可這樣測：10:00:00送A(epoch7)，10:00:00.050使用者改選B，送B(epoch8)並清空A的partial標記；10:00:00.120收到B第一頁，顯示B partial；10:00:00.200才收到A最後一頁，因epoch7不是目前epoch8，不能覆蓋B。取消也要增加epoch或標記取消時間，使已在網路中的回覆不再更新元件。
-
-分頁查詢必須把pageCursor與epoch一起保存。使用者按下一頁後，若篩選條件改變，舊cursor不可沿用；若服務端回覆順序不固定，依序號合併同epoch頁面，缺頁時保留partial並指出缺少哪一頁。不要假定TCP先送出的回覆一定先到應用程式。
-
-實作上可把每頁回覆視為不可變結果，合併時以epoch、查詢雜湊與頁碼去重。若相同頁重試兩次，第二份不能造成筆數加倍；若頁碼缺失，顯示partial並列出缺頁。這比單純把陣列append到畫面可靠。
-
-| 事件 | epoch | 畫面結果 |
-| --- | --- | --- |
-| 送A | 7 | loading(A) |
-| 切B | 8 | 取消A，loading(B) |
-| B第1頁 | 8 | partial(B) |
-| A最後頁 | 7 | 丟棄stale |
-
-## 三 取消 錯誤與重試
-
-取消按鈕的完成條件是畫面不再接受該epoch的資料，不是保證遠端工作立刻停止。若API支援取消，送出cancel並等待確認；若不支援，客戶端仍可本地忽略晚回覆，並在日誌記錄remote cancellation unavailable。重試要產生新requestId，沿用同一epoch只有在查詢意圖仍相同時才合理。
-
-error狀態要顯示可行動的原因，例如權限不足、逾時、格式錯誤或服務不可用，而不是只寫「載入失敗」。重試前先判斷是否為可重試錯誤；權限錯誤重試不會改變結果，資料格式錯誤應保留回覆摘要供維護。部分資料若已顯示，也要標示其時間與不完整性，不可在error後假裝是完整快照。
-
-empty與error不能混淆。查詢成功且零筆表示條件有效但沒有符合項目，應提供檢查時間範圍、設備篩選與權限的入口；error表示沒有取得可信的結果，不能顯示空表讓使用者以為真的沒有資料。若只收到部分頁後逾時，狀態仍是partial加明確逾時，而不是empty。
-
-重試要保留退避與上限，例如第一次逾時後等待1秒，再送一次新requestId；第二次仍失敗就停在error並提供人工重試。不要在畫面每次重繪時重新送請求，否則使用者只是在捲動頁面也會造成伺服器洪水。
-
-| 失敗現象 | 先查 | 不要做的事 |
-| --- | --- | --- |
-| 舊區域覆蓋新區域 | epoch與回覆時間 | 只靠最後寫入順序 |
-| 空表但服務逾時 | HTTP/服務錯誤與complete旗標 | 把error當empty |
-| 重試重複資料 | requestId、頁碼、去重鍵 | 無條件追加 |
-| 取消後仍變畫面 | 取消epoch與元件生命週期 | 相信按鈕已中止遠端 |
-
-同epoch重試同一頁仍需辨認有效attempt或相同快照版本，不能讓已放棄的慢回覆覆蓋後來成功結果。查詢會變動的資料時，以服務端快照或一致的資料版本分頁；只比頁碼不足以保證合併出同一時間的完整集合。
-
-## 四 驗收與限制
-
-驗收先用可控假資料製造五種情況：正常一次完成、分批partial後完成、成功零筆、伺服器error、使用者取消。再加入A慢B快的亂序回覆，確認舊epoch不會更新B。測試畫面離開、重新登入、瀏覽器斷線與服務重啟，檢查元件卸載後回覆不會寫入不存在的畫面。
-
-進度顯示要有證據來源。若服務端只知道已完成的頁數，不知道總頁數，就顯示「已完成3頁」；若有total=40且收到12筆，才可顯示30%。估計剩餘時間只能標示估計，不能冒充保證。長查詢可提供背景工作ID與最近更新時間，讓使用者離開畫面後仍能回查。
-
-畫面取消、重試與控制命令要分開。查詢取消只停止顯示更新，不撤銷已送往PLC的命令；若產品有命令撤銷，必須另定服務端契約與結果狀態。所有實例的requestId、epoch與錯誤原因應可供支援人員查詢，但不把這些介面設計宣稱為安全功能。
-
-完成結果應讓使用者回答四件事：目前顯示是否完整、資料屬於哪次查詢、何時更新、失敗後下一步是什麼。若任一項無法回答，先補狀態與稽核欄位，再調整動畫或顏色。
-
-對主控制的隔離可用獨立排程、資源預算、佇列與逾時策略設計；僅分帳號並不能保證效能隔離。查詢服務慢時只影響查詢畫面，控制服務仍依自己的即時資料與聯鎖運作；兩者共用資料庫時也要分辨查詢快照與控制可信值。
-
-## 五 FAQ與官方來源
-
-FAQ1：可以用百分比動畫讓等待看起來更快嗎？答：只有有實際total或可計算工作量才顯示百分比，否則用不定進度與文字狀態。
-
-FAQ2：取消按鈕按下後，遠端工作一定停止嗎？答：不一定；要看服務契約。客戶端至少要拒絕被取消epoch的晚回覆。
-
-FAQ3：partial資料能直接當完整快照寫入控制嗎？答：不能。partial只供顯示或診斷，控制用途需等待完整且驗證通過的資料。
-
-FAQ4：empty與error如何分？答：empty是成功零筆，error是沒有取得可信結果，兩者要有不同狀態與排查路徑。
-
-參考：[W3C WAI-ARIA Authoring Practices，Alert pattern對不打斷工作流程的訊息與不可過快消失的說明。](https://www.w3.org/WAI/ARIA/apg/patterns/alert/)
-
-參考：[W3C WAI-ARIA 1.2 Recommendation，ARIA狀態與元件語意規範。](https://www.w3.org/TR/wai-aria-1.2/)
-
-## 延伸閱讀
-
-- [即時歷史時間基準校正](/articles/realtime-history-time-basis-correction)
-- [彈窗層級怎麼排 警報可見 焦點可操作與確認分工](/articles/hmi-alert-dialog-focus-layering)
+本批以 Edge 驗證 A/B 晚回覆、partial/complete、terminal empty/error、cancel、duplicate/conflict、未知總數與 320/768/1440px。請將這些畫面 state 與設備命令、安全控制分開判讀；可搭配[事件時間線](/articles/hmi-event-timeline-alarm-operation-note)追溯資料身份。

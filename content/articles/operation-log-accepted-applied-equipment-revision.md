@@ -1,128 +1,66 @@
 ---
-title: 操作log怎麼記才可追查 從畫面變更到設備結果
-description: 設計包含畫面、tag、權威old/new、單位、使用者、可信時間、operationId、result與設備revision的操作log。
+title: 操作 log 怎麼判讀 accepted、applied 與設備版本
+description: 以可下載的 operation-log-v1 離線事件鏈，從固定 seq、accepted、unknown 到關聯 readback 證據，判讀 OP-884 是否真的套用。
 date: 2026-09-21
 author: 茂伯
 draft: false
 category: HMI 畫面與操作
 ---
 
-## 一 先定義一筆操作事件
+## 先看固定的 OP-884 資料契約
 
-操作log不是把畫面文字複製到檔案，而是描述誰在何時對哪個畫面或tag提出什麼變更，以及設備最後回報什麼結果。欄位應包含screen、tag、oldValue、newValue、unit、user、trustedServerTs、operationId、result與equipmentRevision。operationId串起確認、送出、回覆和失敗，不用時間戳代替唯一識別。
+本例分析合成的 operation-log-v1 事件鏈，不連 PLC、不驗證帳號權限、不保存實際日誌，也不證明日誌耐久性。metadata 固定為 `operationId=OP-884`、`user=U17`、`equipment=EQ-A`、`tag=TEMP_SP`、`screen=Recipe`、單位 °C、畫面舊值 50、權威舊值 52、預期 revision 42、新要求值 55。權威值是 fixture 假設，不能當成真實設備讀值。metadata 的所有 own key 與值都必須符合這個固定契約，key 的插入順序不影響判讀；要改 metadata，必須同步修改模型與 fixture，而不是直接拿本例分析任意真實 production log。
 
-欄位定義須固定並供查詢。
+事件必須有從 1 起連續的 `seq` 與四位年份、含毫秒的 ISO UTC `serverTime`（例如 `2026-09-28T00:00:01.000Z`），模型依 `seq` 判讀，絕不按時鐘重排。時間倒退會標示 warning，並不表示伺服器時鐘天然可信。事件上限是 12 筆和對「已傳入物件序列」序列化後的 4096 UTF-8 bytes，不是在配置物件前限制任意原始 log 檔。只接受 JSON 形資料；循環引用或 `BigInt` 會是 invalid。未知欄位一律拒絕，避免把 password、token 或其他敏感欄位寫進本例。這些是教材輸入限制，並非正式記錄服務的容量或安全保證。
 
-oldValue必須由權威服務在提交前讀取，不能拿HMI快取當舊值。畫面看到50.0時，別人可能已改成52.0；提交前若服務讀到52.0，就應把52.0記為old並依revision規則要求重新確認。newValue也要保存canonical型別與單位，避免50和50.0無法比較。密碼、token與金鑰應排除原文並記錄變更事件；不可用一般雜湊當成適用所有秘密的保護。
+## 下載並重跑判讀案例
 
-操作類型也要標示read、write、ack、cancel或login，避免只看tag就誤解事件。若是批次操作，另存批次識別與筆數。
+把下列五個檔案放進同一個資料夾，以 Node.js 24.19.0 或更新版執行。沒有 npm 套件、網路或設備連線。
 
-若操作來自批次匯入，old/new以每個tag分行保存，批次結果不能掩蓋單筆失敗。
+- [判讀模型](/examples/operation-log/model.mjs)
+- [合成 fixture](/examples/operation-log/fixtures.mjs)
+- [完整 self-test](/examples/operation-log/self-test.mjs)
+- [逐案例 demo](/examples/operation-log/demo.mjs)
+- [README](/examples/operation-log/README.md)
 
-| 欄位 | 例值 | 用途 |
-| --- | --- | --- |
-| screen/tag | Recipe/Temp | 定位介面與欄位 |
-| old/new/unit | 52/55/°C | 權威變更內容 |
-| user | U17 | 責任歸屬 |
-| trustedServerTs | 10:03:12Z | 事件時間 |
-| operationId | OP-884 | 串接流程 |
-| result | accepted/applied | 分清階段 |
-| equipmentRevision | 42 | 提交前後版本 |
+```powershell
+node self-test.mjs
+node demo.mjs
+```
 
-tamper evidence只能表示系統能偵測部分修改，例如鏈結hash或集中保存，不可宣稱log天然不可竄改。
+預期輸出清楚列出結果和原因：
 
-## 二 accepted不等於applied
+```text
+success: result=applied reason=correlated_readback_proof
+acceptedOnly: result=accepted reason=accepted_not_applied
+disconnectUnknown: result=unknown reason=disconnect_after_send
+unknownResolved: result=applied reason=correlated_readback_proof
+sameValueWrongOperation: result=unknown reason=readback_proof_incomplete_or_mismatched
+revisionConflict: result=rejected reason=VERSION_CONFLICT observed=43 expected=42
+malformedMissingProof: result=invalid reason=event_fields_invalid_or_sensitive
+missingSequence: result=invalid reason=sequence_missing_duplicate_or_out_of_order
+demo: PASS
+```
 
-accepted代表服務接受請求進入處理，不代表設備已採用。result至少分accepted、sent、applied、rejected、unknown與partial。設備回讀值、回覆版本或明確commit結果到達前，不把accepted改寫成applied。若連線在送出後中斷，結果是unknown，要查設備狀態而不是盲目重送。
+## accepted 與 sent 都不是 applied
 
-案例：10:00:00建立OP-884，權威old=52°C、new=55°C、revision=42；10:00:01服務accepted，10:00:02送出，10:00:03設備回讀55°C、revision=43，且可關聯OP-884，才記applied。若10:00:02.5斷線，log記unknown並保存最後步驟，不能把畫面綠勾當設備證據。
+模型初始狀態就是 `pending`，所以可省略第一筆顯式 `pending` event；正常鏈可寫成 `pending → accepted → sent → readback`。accepted 只代表本例的服務端接受紀錄；sent 只代表已送出。斷線發生在 sent 後，結果是 unknown，不能重送 OP-884 來賭它尚未執行。應先查相同 operation ID 的結果，或依現場流程交由人工確認。
 
-同一operationId的事件依追加式政策保存，後續結果以新事件追加或有版本的狀態表呈現。不要覆蓋原始accepted時間與回覆內容。
+readback 只有同時符合 operation ID、equipment、tag、值 55、revisionBefore 42、revisionAfter 43 時才是 applied。這套完整來源關聯契約與 `revisionAfter = revisionBefore + 1` 都是本教材的定義，不是所有設備的版本規則。讀到同樣的 55 但 operation ID 或 target 不符，仍是 unknown；缺少版本欄位的 readback 是 invalid。事後讀到不同值也不是 rejected 的證據，模型保留 unknown。本例只實作服務接受後、尚未送設備前的 VERSION_CONFLICT 拒絕，其他拒絕原因不在此教材；例如 `VERSION_CONFLICT observed=43 expected=42`；observed 必須是安全、非負且不同於 expected 的整數。
 
-result的語意要寫入資料字典。accepted是服務收到且通過初步檢查，sent是請求已發出，applied是設備證實採用；rejected與unknown分別代表明確拒絕和結果未知。不要把網路HTTP 200直接映射成applied。
+這讓維護人員可以從已有 log 依序核對：先找 OP-884、看 accepted／sent 是否只停在中間狀態，再找完整關聯 readback，最後比 expected 和 observed revision。非法轉換、重複／缺少 seq 都是 invalid，模型不會從部分事件猜出成功。
 
-若設備回覆只有「收到」沒有回讀能力，最多記accepted或sent；可以另記equipmentAck，但不能猜測參數已生效。對未知結果提供查詢、人工確認與禁止重複的入口。
+## 時間與讀取限制
 
-服務端接收old值時要把讀取時間與revision放在同一快照，不能先讀old、隔很久才讀revision。兩者不一致時重新取快照。
+serverTime 要格式正確，倒退會得到 warning，方便人員發現時鐘或匯入順序問題；但因果仍由 seq 決定。模型不校時、不驗證伺服器來源，也沒有 hash chain、簽章或不可竄改保證。OWASP 對日誌提出事件、時間、使用者、結果及避免記錄敏感資料的建議；本例只採用其中可明示的欄位最小化概念，並不等同完整安全日誌系統。[OWASP Logging Cheat Sheet](https://cheatsheetseries.owasp.org/cheatsheets/Logging_Cheat_Sheet.html)
 
-時間格式統一使用帶時區的ISO表示，並保存伺服器與設備時間的差異。
+本例也不把「先讀 revision 再寫值」說成真實設備的原子比較寫入。若需要防止 TOCTOU，設備或權威服務必須提供相符的條件更新契約，再用實機與權限流程驗收。
 
-若事件跨越多個服務，保留correlationId與原始operationId，避免只剩最後一跳。
+## 發生 unknown 時下一步
 
-| 時間 | 事件 | result | 證據 |
-| --- | --- | --- | --- |
-| 10:00:00 | 建立 | pending | 權威old/revision42 |
-| 10:00:01 | 服務接收 | accepted | 權限與格式通過 |
-| 10:00:02 | 送設備 | sent | request已發出 |
-| 10:00:03 | 讀回 | applied | 55°C/revision43 |
-| 中斷未回覆 | 查不到 | unknown | 不可推測 |
-
-## 三 可信時間與設備版本
-
-trustedServerTs是服務端產生的標準時間；clientTs可另存但不能取代。設備source timestamp也分欄保存。時鐘不同步時記錄offset或confidence，不能用使用者電腦時間排列因果。operationId、server timestamp與設備revision一起使用，才能把畫面操作和設備狀態連起來。
-
-equipmentRevision要在提交前讀取並在結果中回讀。若提交前為42，另一操作使它變43，原操作應回Conflict，要求重新讀old/new；不要因newValue仍是55就覆蓋。這是防止檢查與使用之間內容被換掉的基本門檻。
-
-數值、單位、null、未提供與redacted不可共用空字串。秘密欄位記錄redacted=true及變更類型，不保存可供猜測驗證的密碼摘要。
-
-trustedServerTs與equipmentTimestamp可同時保存，並標示各自時鐘來源。服務端排序以server事件鏈為主，設備時間只作來源資訊；若兩者差異大，記錄timeConfidence而不是默默調整。
-
-revision須在權威端與接受修改做原子條件判定；前後各讀一次只能發現部分競爭，不能阻止覆蓋。自己的成功修改也會使版本變動，不能一見跳版就判衝突。沒有條件寫入能力時，明列限制與所有寫入入口。
-
-設備只回傳部分欄位時，另記驗證不完整，不能因此斷言部分寫入。partial須有部分套用證據；完整回讀也要核對目標、版本及操作關聯，讀到相同值不必然是本次命令造成。
-
-對回讀不一致建立獨立reason，不把它改成一般rejected，方便區分設備拒絕與資料驗證失敗。
-
-設備拒絕時保存設備錯誤碼與服務判定，兩者不要互相覆蓋。
-
-| 情境 | 應記錄 | 結果 |
-| --- | --- | --- |
-| 時鐘偏移 | serverTs、clientTs、confidence | 可解釋時間差 |
-| revision衝突 | 舊/目前revision | Conflict |
-| 秘密欄位 | redacted、變更類型 | 不寫原文 |
-| 設備未回讀 | 最後步驟、連線狀態 | unknown |
-
-## 四 驗收與證據強度
-
-驗收涵蓋成功、權限拒絕、格式拒絕、revision衝突、設備逾時、回讀不一致與log儲存失敗。每次檢查screen、tag、old/new/unit、user、trustedServerTs、operationId、result與equipmentRevision是否齊全。
-
-tamper evidence可用hash chain、只讀複本、集中收集與存取稽核提高可信度；它仍不是不可竄改證明。驗收要測修改偵測、缺號、時間倒退與重放operationId。
-
-畫面、tag與設備識別要使用穩定ID，不要只記顯示名稱。名稱可能被翻譯或重新命名，穩定ID才能把多次操作串在同一資產上。若一次操作改多個tag，保留同一operationId並列出欄位順序。
-
-oldValue若是陣列或結構，log要保存版本化摘要與checksum，不能只記「已修改」。單位轉換也要保留原始輸入與canonical值，否則事後無法分辨使用者輸入錯誤還是服務轉換。
-
-每筆事件還應標示schema版本與來源信任區，讓日後欄位改版或跨服務轉送時能辨認資料語意。
-
-log記錄服務與設備結果，安全停機、聯鎖與設備授權仍由獨立契約和驗證負責。完成標準是能回答誰、哪個欄位、從什麼到什麼、何時、送到哪台設備及最後結果。
-
-失敗排查順序是先查operationId事件鏈，再比對權威old、revision和設備回讀，最後看畫面快取。
-
-log驗收要檢查欄位缺失、超長值、換行注入與非法時間格式。輸入來自其他信任區時先驗證與清理，避免log本身被用來混入假事件。
-
-集中保存與本地緩衝都要記錄送出失敗。若log儲存滿或服務中斷，應發出可觀測告警並保留最小必要事件，不要讓錯誤被靜默吞掉。
-
-查詢log時以operationId和equipmentRevision交叉篩選，讓維護人員能找出同一版本的所有操作。
-
-log查詢介面也要記錄誰查了哪些敏感事件，避免稽核資料本身成為無記錄的讀取。
-
-欄位缺少時記錄缺少原因，不能用空值補齊後假裝完整。
-
-## 五 FAQ與官方來源
-
-FAQ1：畫面顯示old值可以直接寫log嗎？答：不行；oldValue以權威提交前讀值為準。
-
-FAQ2：accepted可以寫成成功嗎？答：只能表示服務接受；applied要有設備回讀或明確結果。
-
-FAQ3：hash chain能保證log不可竄改嗎？答：不能，只能提高修改可偵測性。
-
-FAQ4：秘密欄位要完整記錄嗎？答：不要；排除秘密內容，保存操作類型與結果。
-
-參考：[OWASP Logging Cheat Sheet，事件欄位、時間、使用者、結果、秘密排除與完整性建議。](https://cheatsheetseries.owasp.org/cheatsheets/Logging_Cheat_Sheet.html)
-
-參考：[OWASP Transaction Authorization，服務端驗證、交易狀態與TOCTOU防護。](https://cheatsheetseries.owasp.org/cheatsheets/Transaction_Authorization_Cheat_Sheet.html)
+unknown 不是失敗、也不是成功。保存 operation ID、最後 seq、最後 serverTime、equipment、tag 與目前證據，建立結果查詢或人工確認入口；不要直接把同一按鈕重送成新操作。HMI 重新連線、查詢重建與按鈕重新武裝可參考 [HMI 重連案例：丟棄舊回覆，保留未知命令，放開再按才送出](/articles/hmi-reconnect-stale-callback-unknown-write)。服務端用同一識別處理重送，則另看 [重送寫入如何用冪等鍵保護同一筆資料庫效果](/articles/idempotency-key-duplicate-write)。
 
 ## 延伸閱讀
 
-- [匯出失敗如何分辨權限路徑與資料錯誤](/articles/export-failure-classification-atomic-publish)
-- [HMI重連後怎麼刷新 查詢重建與舊命令防重送](/articles/hmi-reconnect-stale-callback-unknown-write)
+- [HMI 重連案例：丟棄舊回覆，保留未知命令，放開再按才送出](/articles/hmi-reconnect-stale-callback-unknown-write)
+- [重送寫入如何用冪等鍵保護同一筆資料庫效果](/articles/idempotency-key-duplicate-write)

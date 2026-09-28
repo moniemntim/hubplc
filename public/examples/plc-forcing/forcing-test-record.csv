@@ -1,0 +1,8 @@
+case_id,method,sim_mode,sim_input,physical_snapshot,expected_effective_input,expected_input_source,expected_probe_entry_seen,expected_probe_after_program_write,expected_probe_after_cycle,observed_effective_input,observed_input_source,observed_probe_entry_seen,observed_probe_after_program_write,observed_probe_after_cycle,result_status,codesys_version,target_runtime,task_interval,operator,observed_at,notes
+S1,source_selection,TRUE,TRUE,FALSE,TRUE,1,,,,,,,,,not_run,,,,,,"Write the three source inputs together; do not force them."
+S2,source_selection,TRUE,FALSE,TRUE,FALSE,1,,,,,,,,,not_run,,,,,,"Write the three source inputs together; do not force them."
+S3,source_selection,FALSE,TRUE,FALSE,FALSE,2,,,,,,,,,not_run,,,,,,"Write the three source inputs together; do not force them."
+S4,source_selection,FALSE,FALSE,TRUE,TRUE,2,,,,,,,,,not_run,,,,,,"Write the three source inputs together; do not force them."
+W1,write_values,,,,,,TRUE,FALSE,FALSE,,,,,,not_run,,,,,,"Write ClearProbeEvidence=TRUE and confirm it and ProbeEntrySeen are FALSE; in a later cycle write WriteForceProbe=TRUE."
+F1,force_values,,,,,,TRUE,FALSE,TRUE,,,,,,not_run,,,,,,"Write ClearProbeEvidence=TRUE and confirm it and ProbeEntrySeen are FALSE; in a later cycle force WriteForceProbe=TRUE."
+C1,cleanup,,,,,,,,FALSE,,,,,,not_run,,,,,,"Debug > Unforce All Values; allow one following task cycle before observing."

@@ -1,108 +1,108 @@
 ---
-title: Modbus 0x01 0x02 0x03 0x04 怎麼選 從資料表建立讀取清單
-description: 把 Coils、Discrete Inputs、Holding Registers、Input Registers 分開，將設備資料表的權限與位址轉成讀取清單，並用 byte count 驗收回覆。
-date: 2026-09-17
+title: Modbus 0x01 0x02 0x03 0x04 怎麼選 從設備表做成可驗收的讀取清單
+description: 依資料模型而不是 0xxxx／4xxxx 顯示編號選功能碼；用完整假設案例核對位址、bit 打包、register 長度與例外回覆。
+date: 2026-09-28
 author: 茂伯
 draft: false
 ---
 
-## 四種讀取功能碼先分清楚
+設備表能不能直接變成輪詢清單，關鍵不在於欄位寫了「40001」，而在於它明確說出資料模型、位址基準、型別與讀取規則。先把這四項補齊，才選 0x01、0x02、0x03 或 0x04；再用回覆的功能碼與長度驗收。本文的封包都是 **PDU**，沒有 RTU 的站號與 CRC，也沒有 TCP 的 MBAP。
 
-Modbus 的功能碼不是單純看資料表前綴。0x01 讀取 Coils，0x02 讀取 Discrete Inputs，0x03 讀取 Holding Registers，0x04 讀取 Input Registers。前兩者以 bit 為單位，後兩者以 16 位元 register 為單位。Holding Registers 在協定資料模型中可讀寫，Input Registers 通常是輸入或量測資料；實際設備仍要以它自己的資料表說明為準。
+## 先用資料模型選功能碼
 
-| 功能碼 | 資料模型 | 單位 | 典型語意 | 讀回 byte count |
+| 功能碼 | 標準資料模型 | 一個資料單位 | PDU 數量範圍 | 正常回覆資料 |
 | --- | --- | --- | --- | --- |
-| 0x01 (1) | Coils | bit | 可讀的線圈／輸出狀態 | ceil(數量/8) |
-| 0x02 (2) | Discrete Inputs | bit | 可讀的離散輸入 | ceil(數量/8) |
-| 0x03 (3) | Holding Registers | 16-bit register | 可讀寫設定或資料 | 2×數量 |
-| 0x04 (4) | Input Registers | 16-bit register | 唯讀量測或輸入資料 | 2×數量 |
+| 0x01 | Coils | 1 bit | 1–2000 coils | `ceil(N/8)` bytes，第一點在第一個 byte 的 bit 0 |
+| 0x02 | Discrete Inputs | 1 bit | 1–2000 inputs | `ceil(N/8)` bytes，排列同 0x01 |
+| 0x03 | Holding Registers | 16-bit register | 1–125 registers | `2 × N` bytes，每個 register 高 byte 在前 |
+| 0x04 | Input Registers | 16-bit register | 1–125 registers | `2 × N` bytes，每個 register 高 byte 在前 |
 
-表格中的『典型』不是保證。某設備可能把狀態映射到 0x03，也可能把某個保持暫存器標成唯讀。功能碼要由設備通訊表和協定定義共同確認，不能只看到 00001、10001、30001、40001 就直接猜。
+這是 Modbus 應用層的四個不同資料模型。標準把 Coils 和 Holding Registers 列在「internal」資料，Discrete Inputs 與 Input Registers 列在「physical discrete／input」資料；它沒有規定某廠商一定把「警報」放在哪一區，也沒有把 0x03 的可讀性變成每個 register 都可寫。功能碼與權限應由該設備的 map 決定。
 
-參考：[Modbus Organization《Modbus Application Protocol Specification》V1.1b3，資料模型與 Function Code 01 Read Coils、02 Read Discrete Inputs、03 Read Holding Registers、04 Read Input Registers 章節；查閱日期 2026-09-17。](https://www.modbus.org/file/secure/modbusprotocolspecification.pdf)
+官方依據：Modbus Application Protocol V1.1b3 §4.3 的資料模型表，以及 §6.1–§6.4 的功能碼、數量與回覆格式。[官方 PDF](https://www.modbus.org/file/secure/modbusprotocolspecification.pdf)
 
-## 把設備表的 R/W 欄轉成候選功能碼
+## 顯示編號不等於送出的位址
 
-下面是一台完全虛構設備的八列通訊表，已明確規定區域與 0-based PDU 位址，用來練習建立讀取清單。DI 是 Discrete Inputs，Coil 是 Coils，IR 是 Input Registers，HR 是 Holding Registers；同樣位址 0 在不同區域可代表不同資料。真實設備若沒有明示區域，就先列候選，不要只凭 R/W 決定功能碼。
+協定 PDU 的 starting address 是 16-bit、從零起算的偏移量。很多設備表另以 `00001`、`10001`、`30001`、`40001` 作人類可讀的區域編號；那是文件慣例，不能原封不動塞進 PDU。官方介紹也以 40001 對應第一個 holding register、其相對位址為 0 為例。
 
-| 虛構資料點 | PDU起址 | 區域／權限 | 讀取FC | 數量 | 資料定義 |
-| --- | --- | --- | --- | --- | --- |
-| 運轉狀態 | 0 | DI／R | 02 | 1 bit | 1=運轉 |
-| 警報狀態 | 1 | DI／R | 02 | 1 bit | 1=警報 |
-| 輸出許可 | 0 | Coil／R/W | 01 | 1 bit | 1=允許 |
-| 溫度 | 0 | IR／R | 04 | 1 reg | INT16 ×0.1 °C |
-| 壓力 | 1 | IR／R | 04 | 2 reg | UINT32 高字先 ×0.01 kPa |
-| 目標速度 | 0 | HR／R/W | 03 | 1 reg | UINT16 rpm |
-| 累計量 | 1 | HR／R | 03 | 2 reg | UINT32 高字先 件數 |
-| 模式碼 | 3 | HR／R/W | 03 | 1 reg | UINT16 列舉 |
+採用下列欄位記錄，每一列才可重現：
 
-『讀取清單』只處理讀取，不要因為 0x03 可讀就直接推論可寫。寫入要另查 0x05、0x06、0x0F、0x10 等功能碼與設備限制；本文不把 0x03 當寫入命令。
+| 設備表原文 | 資料模型／FC | 文件的位址表示法 | 送出的 PDU 位址 | 尚待確認 |
+| --- | --- | --- | --- | --- |
+| `40001 Speed` | Holding Register／0x03 | 顯示編號，第一點為 40001 | `0x0000` | 型別、倍率、可否寫入 |
+| `IR 9 Temperature` | Input Register／0x04 | 1-based 區內編號 | `0x0008` | 是否真的以 IR 表示 |
+| `Alarm bit 1` | 不足以判定 | 未列區域與 FC | 不填 | 要求原廠提供 map 或實際讀取範例 |
 
-## 位址 數量與回覆驗收
+若手冊已直接給 `offset 0` 或 `PDU address 0000h`，照該欄送出，不要再減一。若只給「40001」卻沒交代基準或功能碼，先標成待確認；以猜到的一次成功回覆去改寫工程文件，日後最容易造成偏一格的故障。
 
-1. 先確定設備手冊使用 0-based PDU 位址，還是用 1-based 顯示編號；將兩者分開記錄。
+## 一張假設設備表，拆成四筆請求
 
-2. 選定功能碼後，確認起始位址與讀取數量在該功能碼允許範圍內。
+以下是離線練習，假設設備手冊**明訂**使用 0-based PDU 位址、32-bit 值為高 word 在前，且允許同一資料模型的連續範圍合併。這不是任何真實設備的 map。
 
-3. 依資料模型計算預期 byte count：bit 類型為足以容納數量的整數 byte，register 類型為數量乘 2。
+| 資料點 | PDU 位址 | 模型／讀取 FC | 型別與本例解碼 |
+| --- | ---: | --- | --- |
+| 運轉、警報 | 0、1 | Discrete Inputs／0x02 | bit；1 表示該狀態成立 |
+| 輸出許可 | 0 | Coil／0x01 | bit；只在本例可讀 |
+| 溫度 | 0 | Input Register／0x04 | INT16，值 × 0.1 °C |
+| 壓力 | 1–2 | Input Registers／0x04 | UINT32，高 word 在前，值 × 0.01 kPa |
+| 目標速度、累計量、模式 | 0、1–2、3 | Holding Registers／0x03 | UINT16、UINT32、UINT16 |
 
-4. 收到回覆時先核對回覆功能碼、byte count、資料長度，再解碼數值。
+從這張表建立的清單如下。不同模型即使都從位址 0 開始，也不能合成一筆；同一模型中若手冊說有保留洞、區段限制或較小的最大數量，也要拆開。
 
-5. 若回覆功能碼最高位被設定，依例外回覆處理，不把 exception code 當成量測資料。
+| PDU 請求 | 本例讀取 | 預期回覆 byte count | 驗收重點 |
+| --- | --- | ---: | --- |
+| `01 00 00 00 01` | 1 coil | 1 | 只讀第一個資料 byte 的 bit 0 |
+| `02 00 00 00 02` | 運轉與警報 | 1 | bit 0＝運轉，bit 1＝警報 |
+| `04 00 00 00 03` | 溫度 1 word＋壓力 2 words | 6 | 三個 register 共六 bytes |
+| `03 00 00 00 04` | 速度、累計量 2 words、模式 | 8 | 四個 register 共八 bytes |
 
-依本例可拆成四筆：FC02 起址0數量2，byte count=1；FC01 起址0數量1，byte count=1；FC04 起址0數量3，byte count=6；FC03 起址0數量4，byte count=8。壓力佔2個register，與溫度一起讀是3個register，不是2個資料點。若手冊不允許跨區段合併，須拆請求。
+PDU 中 `00 00 00 03` 的前兩 bytes 是起始位址，後兩 bytes 是數量；不是「讀三個資料點」。壓力雖然是單一工程值，佔兩個 register，因此溫度加壓力要讀三個 register。
 
-| 請求 | 數量 | 預期 byte count | 驗收結果 |
-| --- | --- | --- | --- |
-| 0x01 起址0 | 1 coil | 1 | 只取bit0 |
-| 0x02 起址0 | 2 inputs | 1 | bit0運轉、bit1警報 |
-| 0x03 起址0 | 4 registers | 8 | 速度＋累計2字＋模式 |
-| 0x04 起址0 | 3 registers | 6 | 溫度1字＋壓力2字 |
+## 逐 byte 驗收兩種回覆
 
-本例 FC04 回覆 PDU 可為 04 06 00 FD 00 00 04 D2：00FD=253，乘0.1得到25.3 °C；0000 04D2依本例高字先組成1234，乘0.01得到12.34 kPa。這組倍率及32位排列是虛構設備的明訂規則，Modbus本身不替設備定義。若FC變84，後面是例外碼，不再按量測格式解碼。
+### Bit：0x02 讀取兩個離散輸入
 
-參考：[Modbus Application Protocol Specification V1.1b3 的 Function Code 01 至 04 章節，定義請求中的 starting address、quantity，以及回覆的 byte count 與資料排列；實際設備的位址基準仍需對照其資料表。](https://www.modbus.org/file/secure/modbusprotocolspecification.pdf)
+對請求 `02 00 00 00 02`，假設運轉與警報都為 1，正常回覆 PDU 是：
 
-## 文件未明示功能碼時怎麼記錄
+```text
+02 01 03
+│  │  └─ 0000 0011b：bit 0＝位址 0，bit 1＝位址 1
+│  └──── byte count＝1
+└─────── 功能碼＝0x02
+```
 
-遇到只寫『40001 溫度』卻沒有功能碼的資料表，不要自行填 0x03 後當成已確認。建立待確認紀錄：原始欄位、猜測依據、可能功能碼、要向供應商問的問題、驗證封包和不可宣稱的結論。若資料表同時提供範例封包，以範例中的功能碼與回覆長度優先核對。
+第一個請求點放在資料第一個 byte 的最低有效位，未使用的高位以零補齊，這是 §6.1／§6.2 的規則。`03` 不表示「值 3」；本例解作兩個 bit 都成立。若資料是 `02`，則位址 0 為 0、位址 1 為 1。
 
-| 待確認欄位 | 目前狀態 | 下一步 | 完成證據 |
-| --- | --- | --- | --- |
-| 40001 是 0-based 還是顯示編號 | 未確認 | 詢問設備廠商並比對封包 | 官方資料表或封包 |
-| 溫度是 0x03 還是 0x04 | 未確認 | 查資料模型與讀取範例 | 功能碼說明 |
-| 應用bit意義 | 待查設備定義 | 協定中首個請求bit放資料首byte最低位 | 另確認該bit代表運轉還是警報 |
-| 32-bit 字組順序 | 未確認 | 確認資料型態章節 | 兩 register 範例 |
-| 錯誤回覆 | 未確認 | 查 exception response | 例外封包 |
+### Register：0x04 讀取溫度與壓力
 
-完成後應看到：每一列讀取清單都有功能碼、起始位址基準、數量、預期 byte count 和資料型態；仍不確定的列被標為待確認，而不是藏在程式註解裡。失敗時先查：功能碼是否與資料模型一致、位址是否偏移一格、數量是否超出範圍、回覆 byte count 是否符合公式。
+對請求 `04 00 00 00 03`，假設原始溫度為 `00 FD`、壓力為 `00 00 04 D2`，正常回覆 PDU 是：
 
-適用型號與限制：本文適用 Modbus 應用層資料模型，可用於 RS-485 RTU 或 TCP 的 PDU 讀取概念；RTU/TCP 的外層封裝、CRC 或 MBAP 不在本篇主題。請以八列設備表與封包核對功能碼和資料位置。位址、倍率、資料型態和功能碼最終以目標設備原廠文件為準。實際導入前還要確認設備最大讀取數量、連續位址是否允許合併、通訊逾時與例外回覆策略，並把資料表版本保存進工程文件。
+```text
+04 06 00 FD 00 00 04 D2
+│  │  └───────────── 三個 register，共 6 bytes
+│  └──────────────── byte count＝6
+└─────────────────── 功能碼＝0x04
+```
 
-若一張設備表同時出現狀態 bit、量測 register 和設定 register，先按資料模型分組，再按連續位址排序。分組的好處是每個請求的功能碼和 byte count 更單純，回覆也比較容易驗證；但不要為了減少請求，把不同模型或不連續位址硬湊成一段。讀取清單的目標是可追溯與可驗收，不只是請求數最少。
+依本例**假設**的資料定義：`0x00FD` 是 253，溫度為 25.3 °C；`0x000004D2` 是 1234，壓力為 12.34 kPa。Modbus 只規定每個 16-bit register 的高 byte 先傳；32-bit word order、正負號、浮點格式、倍率和工程單位都必須由設備文件確認。byte count 正確也只證明訊框長度相符，不能證明解碼規則正確。
 
-## 常見問題 附錄與驗收清單
+## 例外回覆要停止解碼
 
-| 問題 | 回答 |
-| --- | --- |
-| 看到 40001 就一定用 0x03 嗎？ | 不一定。它可能只是顯示編號，先查設備資料表的資料模型與功能碼。 |
-| 0x03 讀到的資料可以直接寫回嗎？ | 不可以。讀取功能碼和寫入權限、寫入功能碼是不同問題。 |
-| bit 回覆為什麼不是每個 bit 一個 byte？ | Coils 和 Discrete Inputs 會以 bit 打包，byte count 依數量取足夠的整數 byte。 |
-| 回覆 byte count 對了就代表數值正確嗎？ | 只代表長度符合；位址、排列、倍率和有號性仍要核對。 |
+若請求 0x04 得到 `84 02`，`84` 是功能碼加上 `0x80`，`02` 是 exception code，不是第一個量測值。先把本筆交易記為「從站有回覆、要求被拒絕」，再查位址基準與整段範圍；不要把它歸類為 RS-485 沒回應，也不要用延長逾時掩蓋錯誤。
 
-位元讀取回覆由首個請求位址起，先放在第一個資料byte的最低位，剩餘高位依規格補零。以FC02讀起址0共2 bit為例，資料03代表運轉與警報都為1；資料02代表只有警報為1。這是協定打包方向，設備手冊還要說明每個bit的業務含義。
+Application Protocol V1.1b3 §7 說明 exception response 的功能碼形式與 exception code；§6.1–§6.4 的 state diagram 對讀取請求列出不支援功能、非法數量、非法位址與裝置失敗等分支。[官方 PDF](https://www.modbus.org/file/secure/modbusprotocolspecification.pdf)
 
-1. 逐列標示資料模型與功能碼。
+## 上線前的讀取清單檢查
 
-2. 確認起始位址、數量和 0-based／1-based 基準。
+1. 每列都記下原始 map 名稱、資料模型、功能碼、PDU 起始位址、數量、型別、word order、倍率與文件版本。
+2. 每筆請求先算出預期長度：bit 是 `ceil(N/8)`，register 是 `2×N`；收到後比對站號／外層交易身分、功能碼、byte count 與實際資料長度。
+3. 只用原廠標為可讀的測試點建立第一筆請求；有正常或例外回覆後，才分別處理通訊、位址與數值解碼問題。
+4. 對未明示的功能碼、位址基準或 32-bit 排列保留「待確認」，附上要問原廠的問題；不要把暫定值當成已驗證設定。
 
-3. 計算預期 byte count，保留請求與回覆十六進位字串。
-
-4. 將未明示功能碼和未驗證的數值解碼列為待確認。
-
-參考：[Modbus Organization 官方規格頁列出 Modbus Application Protocol V1.1b3 與功能碼說明；本文技術判斷以該規格和目標設備資料表為依據。](https://www.modbus.org/modbus-specifications)
+本篇適用於 Modbus PDU 的資料模型與回覆判讀。RTU 的站號、CRC、字元間隔，以及 Modbus TCP 的 MBAP 與 Unit Identifier，須另依傳輸方式核對。
 
 ## 延伸閱讀
 
-- [RS485 A/B標示不一致 用差動極性建立端子對照](/articles/rs485-ab-dplus-polarity-verification)
-- [Modbus寫入功能05 06 0F 10的選用與回讀](/articles/modbus-write-05-06-0f-10-readback)
+- [Modbus 寫入功能 05、06、0F、10 的選用與回讀](/articles/modbus-write-05-06-0f-10-readback)
+- [Modbus 有回應但數值不對的排查方法](/articles/modbus-response-wrong-value)
+- [RS485 A/B 標示不一致 用差動極性建立端子對照](/articles/rs485-ab-dplus-polarity-verification)

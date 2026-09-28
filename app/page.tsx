@@ -37,10 +37,10 @@ const lessons = [
     text: '切換按鈕、故障與來源品質，觀察一次接受、長按拒絕與故障保持。',
   },
   {
-    slug: 'modbus-response-wrong-value',
-    title: 'Modbus 有回應，數值卻不對',
-    label: '離線資料解析案例',
-    text: '依序核對位址、資料型別與 byte order，重現 12.5 的解析結果。',
+    slug: 'plc-analog-scaling-pressure-temperature-level',
+    title: '類比輸入換算與來源品質',
+    label: '頁面直接試算 · 數值判讀',
+    text: '切換 mA、原始值與來源品質，區分算得出的數字與可使用的工程值。',
   },
   {
     slug: 'plc-self-hold-set-reset-q-series',

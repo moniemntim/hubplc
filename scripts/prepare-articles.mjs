@@ -12,6 +12,19 @@ await fs.mkdir('lib', { recursive: true });
 await fs.mkdir('public', { recursive: true });
 const articles = [];
 const searchIndex = {};
+// Temporary publication hold is separate from source review/draft status.
+const hiddenSlugs = JSON.parse(
+  await fs.readFile('content/hidden-articles.json', 'utf8'),
+);
+if (
+  !Array.isArray(hiddenSlugs) ||
+  hiddenSlugs.some(
+    (slug) =>
+      typeof slug !== 'string' || !/^[a-z0-9]+(?:-[a-z0-9]+)*$/.test(slug),
+  )
+)
+  throw new Error('Invalid hidden article list');
+const hidden = new Set(hiddenSlugs);
 for (const file of (await fs.readdir(contentDir)).filter((file) =>
   file.endsWith('.md'),
 )) {
@@ -25,6 +38,7 @@ for (const file of (await fs.readdir(contentDir)).filter((file) =>
   }
   if (meta.draft !== 'false') continue;
   const slug = file.slice(0, -3);
+  if (hidden.has(slug)) continue;
   if (!/^[a-z0-9]+(?:-[a-z0-9]+)*$/.test(slug))
     throw new Error(file + ': 檔名請使用英文小寫、數字與連字號');
   for (const key of ['title', 'description', 'date', 'author'])
@@ -42,6 +56,15 @@ for (const file of (await fs.readdir(contentDir)).filter((file) =>
       img: ['src', 'alt', 'width', 'height', 'loading'],
     },
     allowedSchemes: ['https', 'http', 'mailto'],
+    transformTags: {
+      a: (tagName, attribs) => {
+        const url = new URL(attribs.href || '', 'https://hubplc.com');
+        const linkedSlug = url.pathname.match(/^\/articles\/([^/]+)\/?$/)?.[1];
+        if (url.origin === 'https://hubplc.com' && hidden.has(linkedSlug))
+          return { tagName: 'span', attribs: {} };
+        return { tagName, attribs };
+      },
+    },
   });
   const { text, ...enriched } = articleMetadata(meta, slug, safeHtml);
   articles.push({ ...meta, slug, ...enriched });

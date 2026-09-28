@@ -1,7 +1,7 @@
 {
   "totals": {
-    "unreviewed": 345,
-    "reviewed-local": 104,
+    "unreviewed": 341,
+    "reviewed-local": 108,
     "draft": 1
   },
   "articles": [
@@ -931,7 +931,7 @@
     },
     {
       "slug": "noise-spectrum-sampling-filter-selection",
-      "status": "unreviewed"
+      "status": "reviewed-local"
     },
     {
       "slug": "non-ascii-byte-length-framing",
@@ -1471,7 +1471,7 @@
     },
     {
       "slug": "resampling-original-imputed-flags",
-      "status": "unreviewed"
+      "status": "reviewed-local"
     },
     {
       "slug": "restart-first-batch-initialization",
@@ -1547,11 +1547,11 @@
     },
     {
       "slug": "sampling-aliasing-frequency-validation",
-      "status": "unreviewed"
+      "status": "reviewed-local"
     },
     {
       "slug": "sampling-and-aggregation-periods",
-      "status": "unreviewed"
+      "status": "reviewed-local"
     },
     {
       "slug": "scada-quality-value-age-display",

@@ -936,6 +936,42 @@
       "change": "基線/激勵/回程完整五筆，比例分母、獨立參考端案例和多工等待比較，所有資料合成。",
       "verification": "422 unit tests; sensor browser 6; layout 18; replacement/crosstalk arithmetic; tsc/oxlint/build; release evidence separately",
       "hardwareVerified": false
+    },
+    "sampling-aliasing-frequency-validation": {
+      "status": "reviewed-local",
+      "batch": 29,
+      "reviewDate": "2026-09-28",
+      "sha256": "9bc68577ae28595995193d02e723d67491dd41b38a1e3f43c13c889f782495b4",
+      "change": "頁面12筆相位感知取樣，70/100折返、提高fs與Nyquist相位邊界；刪減重複FAQ，明示非未知訊號偵測。",
+      "verification": "423 unit tests; alias browser 3; layout 18; case arithmetic; tsc/oxlint/build; release evidence separately",
+      "hardwareVerified": false
+    },
+    "noise-spectrum-sampling-filter-selection": {
+      "status": "reviewed-local",
+      "batch": 29,
+      "reviewDate": "2026-09-28",
+      "sha256": "691533be31c97aa39d91885333e6a00b6b3dd98e52866f39cb94dd5fbabe4f0d",
+      "change": "五點/十一點固定序列，群延遲、階躍與短脈衝代價；起算時刻與首末跨度分離。",
+      "verification": "423 unit tests; alias browser 3; layout 18; case arithmetic; tsc/oxlint/build; release evidence separately",
+      "hardwareVerified": false
+    },
+    "sampling-and-aggregation-periods": {
+      "status": "reviewed-local",
+      "batch": 29,
+      "reviewDate": "2026-09-28",
+      "sha256": "61c4e1ab4c8cd0d1e87d0563218228b6627e55e3d304ca37dd197826f781c24c",
+      "change": "四層週期契約、半開分鐘窗與缺测加權，61/64等可重算紀錄。",
+      "verification": "423 unit tests; alias browser 3; layout 18; case arithmetic; tsc/oxlint/build; release evidence separately",
+      "hardwareVerified": false
+    },
+    "resampling-original-imputed-flags": {
+      "status": "reviewed-local",
+      "batch": 29,
+      "reviewDate": "2026-09-28",
+      "sha256": "9eb7d5c447222607c59ec344cd7eb45c6b2b8d1b6b0511c0a41714cd3a73dc73",
+      "change": "七個格點完整序列，RAW/LINEAR/MISSING、最大缺口、禁止外推及保持年齡。",
+      "verification": "423 unit tests; alias browser 3; layout 18; case arithmetic; tsc/oxlint/build; release evidence separately",
+      "hardwareVerified": false
     }
   }
 }

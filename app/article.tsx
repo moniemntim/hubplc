@@ -6,6 +6,7 @@ import AnalogLesson from '@/components/analog-lesson';
 import FivePointLesson from '@/components/five-point-lesson';
 import FilterLesson from '@/components/filter-lesson';
 import SensorLesson from '@/components/sensor-lesson';
+import AliasLesson from '@/components/alias-lesson';
 import { practiceModes } from '@/lib/plc-practice';
 import ArticleReadingNav, {
   ArticleDirectoryLink,
@@ -104,6 +105,9 @@ export default function Article({
                 : 'step'
             }
           />
+        ) : null}
+        {article.slug === 'sampling-aliasing-frequency-validation' ? (
+          <AliasLesson />
         ) : null}
         <div className="article-reader__layout">
           <ArticleReadingNav toc={article.toc} />

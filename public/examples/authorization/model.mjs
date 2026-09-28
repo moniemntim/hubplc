@@ -70,6 +70,7 @@ export class TeachingAuthority {
     this.#log('READ', { user: auth.user, policyRevision: auth.policyRevision });
     return {
       decision: 'READ',
+      user: auth.user,
       target,
       value: this.#device.value,
       revision: this.#device.revision,
@@ -207,6 +208,48 @@ export class TeachingAuthority {
     this.#device.writeEnabled = ready;
     this.#log('DEVICE_READINESS', { ready });
     return { decision: 'UPDATED' };
+  }
+  // This only extends a fixture handle; it performs no password/identity check.
+  renewFixtureSession(sessionId, now) {
+    if (
+      typeof sessionId !== 'string' ||
+      !Object.hasOwn(this.#sessions, sessionId) ||
+      !clock(now) ||
+      now > Number.MAX_SAFE_INTEGER - 600000
+    )
+      throw new TypeError('invalid fixture renewal');
+    if (!this.#begin(now)) return { decision: 'AUDIT_FULL' };
+    this.#sessions[sessionId].expiresAt = now + 600000;
+    this.#log('FIXTURE_SESSION_RENEWED', {
+      user: this.#sessions[sessionId].user,
+    });
+    return { decision: 'RENEWED' };
+  }
+  lookup(sessionId, operationId, now) {
+    if (!this.#begin(now)) return { decision: 'AUDIT_FULL' };
+    const auth = this.#authorize(sessionId, 'A', false);
+    if (auth.reason) {
+      this.#log('LOOKUP_DENIED', { reason: auth.reason });
+      return { decision: auth.reason };
+    }
+    const op =
+      typeof operationId === 'string' ? this.#ops.get(operationId) : null;
+    if (!op || op.user !== auth.user) {
+      this.#log('LOOKUP_DENIED', { reason: 'RESULT_NOT_AVAILABLE' });
+      return { decision: 'RESULT_NOT_AVAILABLE' };
+    }
+    const applied = this.#audit.find(
+      (x) => x.action === 'APPLIED' && x.operationId === operationId,
+    );
+    this.#log('LOOKUP', { user: auth.user, operationId });
+    return {
+      decision: 'RESULT',
+      operationId,
+      status: op.status,
+      result: op.result,
+      value: op.payload.value,
+      appliedRevision: applied?.revision ?? null,
+    };
   }
   inspect() {
     return structuredClone({

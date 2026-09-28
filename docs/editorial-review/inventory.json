@@ -1,7 +1,7 @@
 {
   "totals": {
-    "unreviewed": 362,
-    "reviewed-local": 87,
+    "unreviewed": 360,
+    "reviewed-local": 89,
     "draft": 1
   },
   "articles": [
@@ -519,7 +519,7 @@
     },
     {
       "slug": "hmi-release-only-800ms-pointer-policy",
-      "status": "unreviewed"
+      "status": "reviewed-local"
     },
     {
       "slug": "hmi-report-filter-time-window-alarm-state",
@@ -543,7 +543,7 @@
     },
     {
       "slug": "hmi-session-timeout-unsent-draft",
-      "status": "unreviewed"
+      "status": "reviewed-local"
     },
     {
       "slug": "hmi-setting-value-change-confirm-readback",

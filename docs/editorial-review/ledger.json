@@ -783,6 +783,24 @@
       "change": "共用模式模型的Maintenance進出，工作單未驗證狀態另列，測試停止/復原核對等待與退出Manual。",
       "verification": "tests/mode-ownership.test.mjs; standalone-batch20.mjs; 410 unit tests; local/production release evidence separately",
       "hardwareVerified": false
+    },
+    "hmi-session-timeout-unsent-draft": {
+      "status": "reviewed-local",
+      "batch": 21,
+      "reviewDate": "2026-09-28",
+      "sha256": "5e6cc8525db4952ad4c37fa6b3749a3176eb394030d70db97bf749eab7b4bc74",
+      "change": "共用授權模型的草稿到期、同人重核對、版本衝突與已送出原ID查詢；六個獨立可下載附件與固定輸出。",
+      "verification": "tests/draft-session.test.mjs; tests/release-only-browser.mjs; standalone-batch21.mjs; 413 unit tests; local/production release evidence separately",
+      "hardwareVerified": false
+    },
+    "hmi-release-only-800ms-pointer-policy": {
+      "status": "reviewed-local",
+      "batch": 21,
+      "reviewDate": "2026-09-28",
+      "sha256": "68b4225eaaf0ce6ef8867fd12f4d287c7e3230478ed0290a9c4f94ab75ee71fe",
+      "change": "單檔瀏覽器練習：真實pointer與合成799/800/801ms分開，owner/取消/世代/容量與鍵盤替代操作。",
+      "verification": "tests/draft-session.test.mjs; tests/release-only-browser.mjs; standalone-batch21.mjs; 413 unit tests; local/production release evidence separately",
+      "hardwareVerified": false
     }
   }
 }

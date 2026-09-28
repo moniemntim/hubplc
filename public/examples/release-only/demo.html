@@ -1,0 +1,341 @@
+<!doctype html>
+<html lang="zh-Hant">
+  <meta charset="utf-8" /><meta
+    name="viewport"
+    content="width=device-width,initial-scale=1"
+  />
+  <title>放開才判定：800ms 長短按練習</title>
+  <style>
+    * {
+      box-sizing: border-box;
+    }
+    body {
+      margin: 0;
+      background: #f3f6fa;
+      color: #172735;
+      font:
+        17px/1.7 system-ui,
+        sans-serif;
+    }
+    main {
+      max-width: 850px;
+      margin: auto;
+      padding: 24px;
+    }
+    h1 {
+      font-size: 1.7rem;
+      line-height: 1.35;
+    }
+    button {
+      font: inherit;
+      padding: 10px 14px;
+      margin: 4px;
+      border: 1px solid #8394a5;
+      border-radius: 8px;
+      background: white;
+      color: #172735;
+      cursor: pointer;
+    }
+    button:focus-visible {
+      outline: 3px solid #005fcc;
+      outline-offset: 2px;
+    }
+    .pad {
+      padding: 40px 15px;
+      background: #dbeafe;
+      border: 3px solid #2563eb;
+      border-radius: 12px;
+      text-align: center;
+      touch-action: none;
+      user-select: none;
+    }
+    .pad[data-held='true'] {
+      background: #fde68a;
+    }
+    section {
+      margin: 24px 0;
+    }
+    pre {
+      background: #132738;
+      color: #edf7ff;
+      padding: 16px;
+      white-space: pre-wrap;
+      overflow-wrap: anywhere;
+      border-radius: 8px;
+    }
+    label {
+      display: block;
+    }
+    small {
+      display: block;
+    }
+    a {
+      color: #174ca0;
+    }
+    li {
+      overflow-wrap: anywhere;
+    }
+    @media (max-width: 400px) {
+      main {
+        padding: 16px;
+      }
+      button {
+        margin: 4px 0;
+        width: 100%;
+      }
+    }
+  </style>
+  <main>
+    <h1>放開才判定：800ms 長短按</h1>
+    <p>
+      離線瀏覽器教材。只產生本頁的手勢結果，沒有登入驗證、PLC
+      寫入或設備控制。按住多久都不會自動產生結果。
+    </p>
+    <label
+      ><input id="allowed" type="checkbox" checked />
+      允許本頁產生結果（教學開關）</label
+    >
+    <section>
+      <h2>真實滑鼠／觸控</h2>
+      <div id="pad" class="pad" data-held="false">在這裡按住，再於框內放開</div>
+      <p id="status" role="status" aria-live="polite">待操作</p>
+      <p>
+        拖到框外放開、取消、失焦或換頁都放棄該次手勢。第一個 pointer
+        擁有手勢；第二個不接手。
+      </p>
+      <button id="short">鍵盤替代：短按結果</button
+      ><button id="long">鍵盤替代：長按結果</button
+      ><small
+        >Tab 選到按鈕後用
+        Enter／空白鍵。這兩個按鈕直接選結果，不量測鍵盤按住時間。</small
+      >
+    </section>
+    <section>
+      <h2>固定輸入的合成測試</h2>
+      <p>
+        以下按鈕直接提供虛擬時間與事件；不是精確到 799ms
+        的真人觸控測量。每次測試先取消未放開的手勢。
+      </p>
+      <div id="cases"></div>
+      <button id="reset">清空並模擬換頁</button>
+    </section>
+    <h2>本頁結果 <span id="count">0</span> / 16</h2>
+    <p>
+      第 17
+      筆拒絕，不淘汰前面的結果；清空會開始新的頁面世代。這個計數不代表後端冪等性。
+    </p>
+    <pre id="results">[]</pre>
+    <h2>最近事件</h2>
+    <pre id="trace">[]</pre>
+    <p>
+      <a href="/articles/hmi-release-only-800ms-pointer-policy"
+        >回教學正文（需連線）</a
+      >
+    </p>
+  </main>
+  <script>
+    'use strict';
+    const $ = (id) => document.getElementById(id);
+    let generation = 1,
+      owner = null,
+      results = [],
+      trace = [];
+    const pad = $('pad');
+    function note(message) {
+      trace.push(message);
+      trace = trace.slice(-16);
+      render();
+    }
+    function render() {
+      pad.dataset.held = String(owner !== null);
+      $('status').textContent = owner ? '按住中：尚未產生結果' : '待操作';
+      $('count').textContent = results.length;
+      $('results').textContent = JSON.stringify(results, null, 2);
+      $('trace').textContent = JSON.stringify(trace, null, 2);
+    }
+    function cancel(reason) {
+      if (owner) {
+        owner = null;
+        note('CANCEL ' + reason);
+      }
+    }
+    function emit(kind, duration, source) {
+      if (!$('allowed').checked) {
+        note('DENIED');
+        return;
+      }
+      if (results.length >= 16) {
+        note('CAPACITY');
+        return;
+      }
+      results.push({
+        id: generation + ':' + (results.length + 1),
+        kind,
+        duration,
+        source,
+      });
+      render();
+    }
+    function down(id, time, gen) {
+      if (gen !== generation || !$('allowed').checked) {
+        note('IGNORED down');
+        return;
+      }
+      if (owner) {
+        note('SECOND_POINTER_IGNORED');
+        return;
+      }
+      if (!Number.isFinite(time) || time < 0) {
+        note('TIME_UNKNOWN');
+        return;
+      }
+      owner = { id, time, gen };
+      render();
+    }
+    function up(id, time, gen, inside = true, received = time) {
+      if (
+        gen !== generation ||
+        !owner ||
+        owner.id !== id ||
+        owner.gen !== gen
+      ) {
+        note('IGNORED up');
+        return;
+      }
+      const start = owner.time;
+      owner = null;
+      if (!inside) {
+        note('CANCEL outside');
+        return;
+      }
+      if (!Number.isFinite(time) || time < start) {
+        note('TIME_UNKNOWN');
+        return;
+      }
+      const duration = time - start;
+      note('release duration=' + duration + ' callback=' + received);
+      emit(duration >= 800 ? 'LongPress' : 'ShortPress', duration, 'pointer');
+    }
+    function mount() {
+      const gen = generation;
+      pad.onpointerdown = (e) => {
+        if (e.button !== 0) return;
+        e.preventDefault();
+        down(e.pointerId, e.timeStamp, gen);
+        if (owner?.id === e.pointerId) {
+          try {
+            pad.setPointerCapture(e.pointerId);
+          } catch {
+            cancel('capture failed');
+          }
+        }
+      };
+      pad.onpointerup = (e) => {
+        const r = pad.getBoundingClientRect();
+        up(
+          e.pointerId,
+          e.timeStamp,
+          gen,
+          e.clientX >= r.left &&
+            e.clientX <= r.right &&
+            e.clientY >= r.top &&
+            e.clientY <= r.bottom,
+          performance.now(),
+        );
+      };
+      pad.onpointercancel = (e) => {
+        if (gen === generation && owner?.id === e.pointerId)
+          cancel('pointercancel');
+      };
+      pad.onlostpointercapture = (e) => {
+        if (gen === generation && owner?.id === e.pointerId)
+          cancel('lost capture');
+      };
+    }
+    function reset() {
+      cancel('page change');
+      generation++;
+      results = [];
+      trace = [];
+      mount();
+      render();
+    }
+    window.addEventListener('blur', () => cancel('blur'));
+    window.addEventListener('pagehide', () => cancel('pagehide'));
+    document.addEventListener('visibilitychange', () => {
+      if (document.hidden) cancel('hidden');
+    });
+    $('allowed').onchange = () => {
+      if (!$('allowed').checked) cancel('permission changed');
+    };
+    $('short').onclick = () => {
+      cancel('explicit choice');
+      emit('ShortPress', null, 'explicit');
+    };
+    $('long').onclick = () => {
+      cancel('explicit choice');
+      emit('LongPress', null, 'explicit');
+    };
+    $('reset').onclick = reset;
+    function simulate(name) {
+      cancel('fixture start');
+      const gen = generation;
+      if (name === '舊世代') {
+        down(1, 0, gen);
+        cancel('fixture page change');
+        generation++;
+        mount();
+        down(2, 0, generation);
+        up(2, 801, gen);
+        cancel('fixture end');
+        return;
+      }
+      down(1, 0, gen);
+      if (name === '取消') {
+        cancel('fixture pointercancel');
+        up(1, 800, gen);
+        return;
+      }
+      if (name === '第二 pointer') {
+        down(2, 10, gen);
+        up(2, 801, gen);
+        up(1, 799, gen);
+        return;
+      }
+      if (name === '重複 release') {
+        up(1, 800, gen);
+        up(1, 800, gen);
+        return;
+      }
+      if (name === '時間倒退') {
+        up(1, -1, gen);
+        return;
+      }
+      if (name === '延遲 callback') {
+        up(1, 799, gen, true, 900);
+        return;
+      }
+      up(1, Number(name), gen);
+    }
+    for (const name of [
+      '799',
+      '800',
+      '801',
+      '第二 pointer',
+      '取消',
+      '延遲 callback',
+      '舊世代',
+      '重複 release',
+      '時間倒退',
+    ]) {
+      const b = document.createElement('button');
+      b.textContent =
+        '合成 ' + name + (Number.isFinite(Number(name)) ? 'ms' : '');
+      b.dataset.case = name;
+      b.onclick = () => simulate(name);
+      $('cases').append(b);
+    }
+    mount();
+    render();
+  </script>
+</html>

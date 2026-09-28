@@ -1,97 +1,90 @@
 ---
 title: 同一元件的長按與短按如何判定
-description: 採release-only長按政策：放開時以event timestamp判799ms短按、800ms長按，按住只顯示狀態，owner cancel、失焦與換頁取消，第二pointer忽略。
+description: 下載單檔瀏覽器案例，實際操作放開才判定的長短按，並用合成事件重現 799／800ms、第二 pointer、取消與晚到回覆邊界。
 date: 2026-09-21
 author: 茂伯
 draft: false
 category: HMI 畫面與操作
 ---
 
-## 一 把政策改成release-only
+## 先打開可以操作的範例
 
-本篇教你設計放開才判定的長短按元件，採release-only政策。按住期間只顯示Pressed或進度提示，不執行命令；放開時以同一手勢的event timestamp計算持續時間，799ms判ShortPress，800ms或以上判LongPress。一次手勢只產生一次結果，並在release處理完成後結束。
+[開啟或下載長短按練習頁](/examples/release-only/demo.html)。可直接在網站操作；也可另存完整 `demo.html`，用瀏覽器開啟本機檔案。程式、樣式都在單檔內，不需套件或網路。回正文的連結才需要連線。
 
-這裡的800ms是產品政策，不是安全停機時間。事件timestamp代表輸入事件發生的時間，callback實際執行可能較晚；平台若延遲送出release，服務仍依事件時間計算，但必須記錄延遲與平台限制。不能把callback到達時間當成使用者放開時間。按下與放開必須使用同一時間原点的單調事件時間，不能混用會校時跳動的日期時間。
+本例採 **放開才判定（release-only）**：同一個 pointer 按下與放開的事件時間相減，小於 800ms 為 ShortPress，800ms 以上為 LongPress。按住期間只變成黃色並顯示「尚未產生結果」，沒有到點執行的計時器。800ms 是此教材的互動政策，不是設備安全時間。
 
-按住到800ms只更新視覺提示，例如顯示「放開以執行長按」；在timer到點時不執行LongPress。這使規則不依賴即時timer，也避免使用者放開後又收到晚timer而重複觸發。
+結果只寫到頁面的清單，沒有 PLC 輸出或後端請求。以下分開驗證瀏覽器互動與合成事件；沒有原生 HMI 或觸控面板實測紀錄。
 
-事件時間必須來自同一手勢的pointerdown與pointerup，且精度要在設計中標明。若平台只提供整數毫秒，799與800是可區分的邊界；若事件時間被四捨五入，邊界附近應採較保守的提示或拒絕策略。頁面顯示的進度條可以反映按住時間，但它只提供視覺回饋，不得觸發命令。
+## 先做一次真實滑鼠操作
 
-release-only還要處理pointerup遺失，例如使用者拖出視窗、瀏覽器切頁或系統鎖定。此時不要以最後一次mousemove猜測長度；由owner失焦或頁面卸載事件取消手勢，並清除本地候選。重新回到頁面後，必須從新的pointerdown開始，不能接續舊的按住時間。
+1. 保持「允許本頁產生結果」勾選，在藍框內按下滑鼠左鍵，不放開。
+2. 等約一秒，確認框變黃，但結果數仍是 0。等待再久也不會自動增加。
+3. 在框內放開。結果數變成 1，`kind` 為 `LongPress`，`duration` 是此次瀏覽器事件時間差。
+4. 按「清空並模擬換頁」，再快速按下、放開。若實際時間差小於 800，結果為 `ShortPress`。
+5. 再清空，按住後拖到框外放開。結果應保持 0，事件欄出現 `CANCEL outside`。
 
-| release持續時間 | 結果 | 執行時機 |
-| --- | --- | --- |
-| 799ms | ShortPress | release處理時一次 |
-| 800ms | LongPress | release處理時一次 |
-| >800ms | LongPress | release處理時一次 |
-| 按住未放 | 尚未決定 | 只顯示提示 |
+快速按一下不能當作精確 799ms 的測量。系統負載、事件時間精度與輸入裝置都可能影響觀察。需要檢查邊界時，使用下一節固定輸入，不要求操作員靠手感按到 800ms。
 
-## 二 owner 失焦與換頁
+## 用合成輸入固定重現邊界
 
-每次pointerdown建立owner，保存pointerId、按下時間、generation與目前元件。只有相同owner的release才可產生ShortPress或LongPress；不同pointer一律ignored，不重新計時，也不改寫第一個手勢。若產品將來要支援多指，必須另定每個pointerId的狀態機。
+每個案例前先按「清空並模擬換頁」，再按表內按鈕。所有合成按鈕都先取消尚未完成的手勢；它們直接呼叫相同判定函式，不模擬完整的作業系統觸控事件鏈。
 
-pointercancel、視窗失焦、頁面切換與元件卸載都取消owner。取消只結束UI候選，不撤回已經存在的其他命令；在release-only政策下，取消發生前沒有LongPress命令，因為按住期間不執行。取消事件仍要記錄原因，避免看起來像遺失輸入。
+| 按鈕               | 固定輸入                                    | 預期新增結果                                  |
+| ------------------ | ------------------------------------------- | --------------------------------------------- |
+| 合成 799ms         | down 0、up 799                              | 1 筆 ShortPress，duration 799                 |
+| 合成 800ms         | down 0、up 800                              | 1 筆 LongPress，duration 800                  |
+| 合成 801ms         | down 0、up 801                              | 1 筆 LongPress，duration 801                  |
+| 合成 延遲 callback | up 799，但 callback 記錄為 900              | 仍是 1 筆 ShortPress                          |
+| 合成 第二 pointer  | pointer 1 按下；2 按下又放開；1 在 799 放開 | 只有 pointer 1 的 1 筆 ShortPress             |
+| 合成 取消          | 按下後先取消，再送 up 800                   | 0 筆                                          |
+| 合成 舊世代        | 換世代後把舊世代的 up 送給新候選            | 0 筆；舊 up 被忽略，新候選由 fixture 收尾取消 |
+| 合成 重複 release  | 同一手勢連送兩個 up 800                     | 只有 1 筆 LongPress                           |
+| 合成 時間倒退      | down 0、up -1                               | 0 筆，TIME_UNKNOWN                            |
 
-generation用來阻止舊頁callback更新新頁。頁面換頁時增加generation並清除owner；舊release到達時檢查generation不符便丟棄。重新綁事件時先解除舊listener，否則一次release可能被兩個handler各自解讀成兩次命令。
+「延遲 callback」的事件欄會顯示 `release duration=799 callback=900`。900 是合成測試提供的處理時間，不是瀏覽器真的卡住 101ms。結果依 799−0 判斷，不依處理程式何時獲得 CPU 判斷。
 
-owner欄位可用pointerId與頁面元件識別組合，建立後直到release、cancel或失焦前都不接受其他pointer。第二根手指碰到同一按鈕時，記錄ignored而不改變第一根手指的開始時間；第一根手指仍依原規則結束。若元件被重新掛載，先取消舊owner，再建立新元件，避免兩個listener各自發火。
+另做容量測試：清空後連按「合成 800ms」17 次，清單只保留前 16 筆，第 17 次出現 `CAPACITY`。這是教材的有界記錄政策，不會偷偷淘汰前面的證據；清空則開始新的頁面世代。
 
-頁面切換和權限改變也屬取消條件。若使用者在按住期間失去操作權限，回到release時只顯示SessionChanged，不執行短按或長按。這個判斷要在release時再次核對權限與頁面版本，不能只相信pointerdown時的快取，否則舊畫面可能提交新狀態。
+## 程式中要看的四個位置
 
-| 事件 | owner狀態 | 處理 |
-| --- | --- | --- |
-| pointerdown | 建立 | 等待同pointer release |
-| second pointer | 不擁有 | ignored |
-| blur/cancel | 取消 | 不產生結果 |
-| 換頁 | generation失效 | 丟棄舊事件 |
+用文字編輯器開啟下載的 HTML，搜尋以下函式名稱：
 
-## 三 事件時間與命令分離
+| 函式     | 責任                                           | 為什麼需要                               |
+| -------- | ---------------------------------------------- | ---------------------------------------- |
+| `down`   | 保存第一個 pointer 的 id、按下時間、世代       | 第二個 pointer 不能改寫起點或接手        |
+| `up`     | 核對 owner／世代，先清候選，再判時間與放開位置 | 重複 up 不再找到候選，因此不重複產生結果 |
+| `cancel` | 清除候選並記原因                               | 取消、失焦與離頁不能被猜成成功放開       |
+| `emit`   | 檢查本頁允許開關與 16 筆容量，再記結果         | 時间符合也不代表可以無條件產生結果       |
 
-案例一：pointerdown在0ms，release event timestamp為799ms，雖然callback在830ms才執行，仍判ShortPress；案例二：release timestamp為800ms，callback在860ms執行，判LongPress。兩者都在release處理時各產生一次，不能用callback時間重新分類。
+核心順序是：
 
-若event timestamp缺失、精度不足或跨頁不可比較，服務端不能假裝知道799與800的差別。此時把結果標TimeUnknown或要求平台提供可信事件時間，不用本地收到時間代替。事件時間與server log time分開保存。
+```js
+const duration = releaseEventTime - pressEventTime;
+const kind = duration >= 800 ? 'LongPress' : 'ShortPress';
+```
 
-命令若由release產生，建立operationId並把pointer owner、event timestamp、duration與payload摘要寫入。命令結果仍分Accepted、Applied、Rejected與Unknown；release完成只代表UI手勢完成，不能代表設備完成。放開按鈕也不會撤回已先送出的命令。
+這兩行只能放在 owner、世代、時間有效性與取消條件檢查之後。實際程式另外先清除候選；不能把這兩行直接貼到 down、timer、up 三個事件各執行一次。
 
-一次手勢的once-fire規則要在服務端或共享事件層去重。即使重複listener或重送release，operationId相同也只能保留一個結果；若payload不同則回Conflict而不是再執行。
+原生 pointer 路徑使用同一頁面事件的 `event.timeStamp`，callback 記錄使用 `performance.now()`；不混入日期時間 `Date.now()`。事件 timestamp 是瀏覽器提供的事件建立時間，不保證就是硬體接點變化的精確時刻。若宿主 HMI 給的是不同時間原點或精度不足的值，必須先確認契約，不能直接套本例的減法。
 
-例如pointerdown的eventTimestamp為1000，pointerup為1799，差值799，結果是ShortPress；另一個手勢在2000到2800，差值800，結果是LongPress。伺服器日誌的receivedAt可能晚數十毫秒，只用來排查傳輸，不可拿來改寫手勢分類。若兩個事件來自不同頁面epoch，整個手勢拒絕並要求重新開始。
+## 取消與其他輸入方式要一起測
 
-每次release只產生一個operationId，分類完成後立即把手勢標為fired。畫面重繪、網路重送或元件再次收到同一事件，都只能查詢此operationId的結果。若release回呼逾時，狀態標為Unknown並查詢；不可因沒有回覆就再次執行同一命令，也不可把伺服器接受當成設備已完成。
+範例在按下後取得 pointer capture，因此拖出框後仍有機會收到 release，再依本篇「框外放開即取消」政策處理。capture 失敗、`pointercancel`、`lostpointercapture`、視窗失焦、頁面隱藏、`pagehide` 或取消允許開關都會清除候選。再次操作必須重新按下。
 
-## 四 驗收與限制
+可在按住時切換到另一個視窗，再回來放開，確認沒有結果。這項人工測試依瀏覽器與作業系統而異；若沒有收到預期事件，請記錄環境，不要把「合成取消通過」當成此平台失焦路徑已驗證。自動測試中的 blur／cancel 是程式注入，真實滑鼠按下、持續與放開則由瀏覽器自動化輸入完成。
 
-驗收注入799ms、800ms、801ms、長按未放、pointercancel、失焦、換頁與second pointer。每個案例記錄pointerId、owner、event timestamp、server收到時間、generation、結果與operationId，確認短長按只在release產生一次。
+鍵盤使用者可用 Tab 選到「鍵盤替代：短按結果」或「鍵盤替代：長按結果」，再用 Enter／空白鍵選擇。這兩個原生按鈕直接表達意圖，結果 `source` 為 `explicit`、`duration` 為 null；它們沒有聲稱量測鍵盤長按。藍框只處理 pointer，不在 click 再補一份命令。
 
-測試平台事件延遲：讓callback比event timestamp晚50ms、500ms，確認分類不變但延遲可觀測。若平台沒有可靠timestamp，驗收報告應標示不能保證799/800邊界，要求產品選擇更寬的政策或改用平台明確事件。
+世代檢查用來拒絕帶有舊世代標記的程式回呼；合成案例只驗證這個條件。它不是瀏覽器原生事件的通用識別機制，也沒有證明所有裝置的晚到事件都能被辨識。
 
-release-only適合資訊介面與需要明確放開才執行的動作，不適合作為安全停機或人身保護機制。owner cancel與換頁只取消尚未產生的UI手勢，不是設備撤回。本文不假定任何廠牌HMI事件API。
+## 這個結果還不是設備完成
 
-完成標準是按住不執行、release依事件時間一次決定、799/800規則一致、第二pointer忽略、取消不產生命令、舊generation不污染新頁。
+`LongPress` 代表本頁完成一次手勢分類，後續如需提交設備命令，仍要做目前權限檢查、命令身分與結果查詢。前端時間戳可被客戶端修改，不能拿來證明操作員身分或授權。相關提交流程接續[操作權限案例](/articles/hmi-operation-permission-execution-authorization)與[按鈕操作回饋](/articles/hmi-button-command-feedback)，不要把本頁結果數當作設備執行次數。
 
-測試應固定事件時間序列，覆蓋799、800、801毫秒、pointercancel、blur、換頁、權限變更與第二pointer。每次測試都檢查分類、取消原因、operationId數量及命令送出次數；尤其是重繪與回呼延遲時，應仍只有一次送出。這些是介面行為驗收，不是安全功能驗證。
+本例的 ID 是「頁面世代：筆數」，只在該次頁面生命週期有意義；重載後會重設，不適合作為後端去重鍵。
 
-平台限制要在交付文件列出：瀏覽器可能延遲事件、背景分頁可能暫停腳本、觸控裝置可能產生不同pointer事件序列。若產品需要硬即時或安全停機，這個release-only按鈕不能取代專用控制器與獨立互鎖；它只負責把明確手勢轉成一筆可追蹤的請求。
+編輯驗證使用 Edge 自動化在 320／768／1440 寬度操作滑鼠、鍵盤與固定合成案例，並檢查溢出、程式錯誤與非預期網路請求。這些是桌面瀏覽器教材的測試，不涵蓋實體多點觸控、嵌入式 HMI、背景頁節流或現場設備。
 
-最後以日誌驗收一次手勢的完整鏈：pointerdown、視覺提示、pointerup或cancel、分類、授權檢查、operationId與送出結果。若缺少任一鏈結，就先標記資料不完整而不補猜；這能把介面故障和設備未回覆分開，讓排查從事件記錄開始。
+事件與 capture 行為可對照 [W3C Pointer Events](https://www.w3.org/TR/pointerevents3/)；事件時間定義見 [DOM Event.timeStamp](https://dom.spec.whatwg.org/#dom-event-timestamp)。800ms 門檻、框外取消與 16 筆上限為本例自訂。
 
-## 五 FAQ與官方來源
-
-FAQ1：按住到800ms會立即執行LongPress嗎？答：不會；本政策只在release依event timestamp決定。
-
-FAQ2：799ms但callback晚到會變成長按嗎？答：不會，只要event timestamp可信，仍判ShortPress。
-
-FAQ3：第二個pointer可以重新計時嗎？答：不行，本政策忽略second pointer。
-
-FAQ4：放開後能撤回已產生的設備命令嗎？答：不能假定；UI手勢與設備撤回是不同契約。
-
-參考：[W3C UI Events，事件時間與使用者介面事件模型背景。](https://www.w3.org/TR/uievents/)
-
-參考：[OWASP Transaction Authorization，交易狀態、服務端驗證與不可跳過的執行門檻。](https://cheatsheetseries.owasp.org/cheatsheets/Transaction_Authorization_Cheat_Sheet.html)
-
-參考：[W3C High Resolution Time：單調時間與時間原點。](https://www.w3.org/TR/hr-time-3/)
-
-## 延伸閱讀
-
-- [觸控誤觸的確認與取消流程](/articles/scoped-operationid-payload-conflict-cancel)
-- [序列ASCII框架解析_STX長度ETX與逾時重組](/articles/serial-ascii-stx-length-etx-framing)
+作者：茂伯。若結果不符，請寄至 [ceo@hubplc.com](mailto:ceo@hubplc.com)，附瀏覽器版本、滑鼠或觸控類型、操作順序及事件欄內容。

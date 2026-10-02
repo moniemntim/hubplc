@@ -40,9 +40,9 @@
     "rs485-no-response-troubleshooting": {
       "status": "reviewed-local",
       "batch": 1,
-      "reviewDate": "2026-09-28",
-      "sha256": "dbd9875c3e004511907c2b34b888261b94640c3586b3e47a88b13d04df1b68d2",
-      "change": "拆成未送出、未回覆、未接受三種觀察與下一步；非設備實測。",
+      "reviewDate": "2026-10-02",
+      "sha256": "daebeff41fb8a65578acba5a379b6a70b2f6df557ba068b086898b0374ca4886",
+      "change": "依 Modbus Serial Line V1.02 §2.5.1.1 更正字元間靜默間隔及不完整訊框處置。",
       "verification": "Modbus serial V1.02 文件核對；layout-browser",
       "hardwareVerified": false
     },
@@ -103,9 +103,9 @@
     "plc-fault-reset-single-acceptance": {
       "status": "reviewed-local",
       "batch": 24,
-      "reviewDate": "2026-09-28",
-      "sha256": "7b7870df495f520f09073f2c425f1b949ed880a59dd6f5d8d163b840e817eb58",
-      "change": "內容整改：頁面直接逐掃描操作，下載降為選配；新增ST完整宣告/實作/呼叫對照及NOT_RUN驗收表。ST尚未編譯或原廠模擬。",
+      "reviewDate": "2026-10-02",
+      "sha256": "c03453a50c524e7c81c699de9603de5aed91d24bc80529e2c273f753cc77c689",
+      "change": "修正兩處 Markdown 粗體解析；明示 CODESYS 與 FX5U 平台界線，新增 FX5U 證據驗收條件，未聲稱編譯或設備實測。",
       "verification": "tests/fault-reset.test.mjs; tests/fault-reset-browser.mjs; 415 unit tests; ST source reference not compiled; local/production release evidence separately",
       "hardwareVerified": false
     },
@@ -616,9 +616,9 @@
     "hmi-alert-dialog-focus-layering": {
       "status": "reviewed-local",
       "batch": 15,
-      "reviewDate": "2026-09-28",
-      "sha256": "20a7ccfb63549ff19cce3d723de7b5ebe9586c52fb9c45a2d62416ba2f779932",
-      "change": "單檔native alertdialog、可取消注入、焦點循環、inert與本機草稿。",
+      "reviewDate": "2026-10-02",
+      "sha256": "8cbd4574ec71d2ef9103774f6a30c665f37a22b04c84367d84629d6513203925",
+      "change": "標題、摘要與首節明示瀏覽器 HTML／ARIA Web HMI，區分 GOT、WinCC、EasyBuilder Pro 工程。",
       "verification": "tests/alert-dialog-browser.mjs",
       "hardwareVerified": false
     },

@@ -1,15 +1,21 @@
 ---
-title: HMI警報摘要與刪除確認：焦點、模態層與本機草稿要分開
-description: 用單檔離線案例驗證固定警報摘要、native alertdialog、鍵盤焦點與只刪本機草稿的界線。
+title: Web HMI 警報摘要與刪除確認：HTML／ARIA 焦點操作範例
+description: 適用瀏覽器 Web HMI 的單檔 HTML／ARIA 教材，驗證警報摘要、對話框焦點與本機草稿刪除；不是三菱、西門子或威綸 HMI 可直接匯入的工程。
 date: 2026-09-21
 author: 茂伯
 draft: false
 category: HMI 畫面與操作
 ---
 
+## 適用平台：瀏覽器 Web HMI
+
+本例使用 HTML、JavaScript、原生 `<dialog>` 與 WAI-ARIA，在 Microsoft Edge 操作。適合自行開發瀏覽器 Web HMI 的讀者；沒有連接 PLC，也沒有實作設備警報服務。
+
+三菱 GOT、Siemens WinCC 或威綸 EasyBuilder Pro 的讀者，可參考「警報摘要不搶輸入焦點、刪除草稿不等於確認警報」的操作原則；本檔不是這些平台的工程檔，DOM、ARIA、`showModal()` 與 `inert` 不能直接當作其元件設定。移植需依目標平台重新實作與驗證。
+
 ## 下載後直接操作
 
-下載唯一檔案：[demo.html](/examples/alert-dialog/demo.html)。以 Edge 開啟它即可；不需要伺服器、帳號或外部資源。這是固定合成資料的 UI 教材，不是 HMI、PLC、警報確認、Reset 或安全控制實作。
+下載唯一檔案：[demo.html](/examples/alert-dialog/demo.html)。以 Edge 開啟它即可；不需要伺服器、帳號或外部資源。這是固定合成資料的 Web UI 教材，不是完整工業 HMI、PLC、警報確認、Reset 或安全控制實作。
 
 1. 在「主編輯草稿」點入輸入欄，按「1000ms 後注入一次警報」。預期按鈕立即把焦點交回輸入欄；一秒後摘要顯示合成警報 1 筆，游標仍留在輸入欄。
 2. 按「刪除本機草稿」。預期 native `showModal()` 對話框開啟，角色是 `alertdialog`，有標題、說明，且初始焦點在「取消」。

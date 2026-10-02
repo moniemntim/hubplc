@@ -10,7 +10,9 @@ draft: false
 
 這一課只做一件事：清除一個內部故障保持位元 `fault`。故障原因仍存在時拒絕；原因解除後，必須先看到有效釋放，再按下才能清除。一次接受只產生一掃描的 `pulse`，長按不重複接受。
 
-**本文是本站自訂規則的 JavaScript 離線模型，沒有在 PLC 或原廠模擬器執行。**它不清除 CPU 診斷、不復歸驅動器、不處理安全迴路，也不啟動任何輸出。先在頁面核對規則，再閱讀下方 ST 程式對照；兩者的驗證狀態分開記錄。
+**本文是本站自訂規則的 JavaScript 離線模型，沒有在 PLC 或原廠模擬器執行。**
+
+它不清除 CPU 診斷、不復歸驅動器、不處理安全迴路，也不啟動任何輸出。先在頁面核對規則，再閱讀下方 ST 程式對照；兩者的驗證狀態分開記錄。
 
 ## 先在上方練習區完成三個動作
 
@@ -73,7 +75,13 @@ draft: false
 
 ## CODESYS V3：完整 ST 邏輯對照
 
-以下採 CODESYS V3 的 Function Block 宣告與呼叫形式。**此 ST 原始碼尚未在 CODESYS 編譯、模擬或實機測試，不能把瀏覽器通過當成原廠驗證。**確切 service pack、runtime／CPU 版本須填入驗收表，本文不虛構測試環境。
+平台提醒：下列宣告與呼叫範本採 CODESYS V3，不能直接視為 FX5U／GX Works3 工程。本站下一個原廠平台驗證目標為 FX5U；目前尚無 GX Works3 工程、編譯紀錄或 FX5U 實測證據，以下保留為邏輯對照。
+
+以下採 CODESYS V3 的 Function Block 宣告與呼叫形式。
+
+**此 ST 原始碼尚未在 CODESYS 編譯、模擬或實機測試，不能把瀏覽器通過當成原廠驗證。**
+
+確切 service pack、runtime／CPU 版本須填入驗收表，本文不虛構測試環境。
 
 下載 [FB_InternalFaultReset.st](/examples/fault-reset/FB_InternalFaultReset.st) 與 [PLC_PRG.st](/examples/fault-reset/PLC_PRG.st)。這是文字原始碼，不是可匯入的工程檔；檔內 DECLARATION、IMPLEMENTATION 分別貼入編輯器的宣告與實作區。
 
@@ -137,6 +145,14 @@ END_IF;
 CODESYS 的 [Function Block 官方文件](https://content.helpme-codesys.com/en/CODESYS%20Development%20System/_cds_obj_function_block.html) 說明實例、宣告／實作分區與呼叫形式。本文據此整理語法，並未取得本例的編譯結果。
 
 ## 哪些工作不在這個復歸範例內
+
+### FX5U 驗證要留下哪些證據
+
+FX5U 版本需在 GX Works3 另建測試工程，記錄 GX Works3 完整版本、CPU 完整型號與韌體，以及測試使用模擬器或實機。GX Works3 支援 ST 與標籤編程，但這不代表本頁 CODESYS 文字檔已通過轉換。[GX Works3 官方編程說明](https://us.mitsubishielectric.com/fa/en/products/cnt/programmable-controllers/engineering-software/gx-works3/programming/)
+
+驗收沿用上表 11 次掃描：先保存工程與完整編譯診斷，再保存每次掃描的三個輸入、Fault、Armed、AcceptedPulse。第 6、11 次應出現接受脈衝；第 4、9 次應維持故障，不能補做舊按壓。測試須能逐掃描施加輸入與擷取輸出；只截一張 Fault=0 的監看畫面不足以證明長按防重複或脈衝寬度。模擬紀錄與實機紀錄分開，未跑的項目保留 NOT_RUN。
+
+### 邏輯範圍與移植限制
 
 模型只有一次掃描內完成的「內部故障鎖存清除」。若復歸要等待伺服回覆或其他跨掃描動作，就需要另外設計處理中、完成、失敗與逾時，不能直接把 pulse 當成工作完成。`valid` 也不是模型自動檢測的斷線結果，需要來源提供。
 

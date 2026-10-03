@@ -9,6 +9,14 @@ export const categories = [
 export const tools = [
   ...conversionTools,
   {
+    slug: 'va-to-amps',
+    name: 'VA 至安培計算器',
+    category: '電路',
+    code: 'VA → A',
+    description: '輸入 VA／kVA 與電壓，計算單相或三相平衡負載的電流。',
+    keywords: 'VA kVA 安培 A 電流 視在功率 單相 三相 線電壓 伏安 amps',
+  },
+  {
     slug: 'key-derivation',
     name: '密鑰派生 PBKDF2／EvpKDF',
     category: '編碼',
@@ -293,6 +301,8 @@ export function getTool(slug: ToolSlug) {
 }
 
 export const toolExamples: Record<ToolSlug, string> = {
+  'va-to-amps':
+    '單相 1000 VA、220 V 約為 4.545 A；三相總容量 10 kVA、線電壓 380 V 約為 15.193 A。',
   ...conversionExamples,
   'key-derivation':
     'PBKDF2-HMAC-SHA256，密碼 password、UTF-8 鹽值 salt、迭代 1 次、256 bits：120fb6cffcf8b32c43e7225256c4f837a86548c92ccc35480805987cb70be17b。此為公開測試向量。',

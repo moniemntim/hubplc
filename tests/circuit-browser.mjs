@@ -36,6 +36,12 @@ const diagramToolSlugs = new Set([
   'lc-resonance',
   'preferred-resistor',
 ]);
+const noDiagramToolSlugs = new Set([
+  'ac-power-converter',
+  'power-factor',
+  'energy-cost',
+  'va-to-amps',
+]);
 page.on('pageerror', (error) => errors.push(error.message));
 page.on('console', (message) => {
   if (message.type() === 'error') errors.push(message.text());
@@ -56,7 +62,7 @@ try {
     console.log('Checking', tool.slug);
     const hasDiagram = diagramToolSlugs.has(tool.slug);
     assert.ok(
-      hasDiagram || tool.slug === 'va-to-amps',
+      hasDiagram || noDiagramToolSlugs.has(tool.slug),
       `declare diagram expectation for ${tool.slug}`,
     );
     await open(tool.slug);

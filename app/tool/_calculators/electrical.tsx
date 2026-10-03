@@ -22,6 +22,8 @@ const dcOptions = [
   { value: 'r', label: '電阻 Ω' },
   { value: 'p', label: '功率 W' },
 ] as const;
+const displayElectrical = (value: number) =>
+  electricalFormat(Number(value.toPrecision(7)));
 function ElectricalDiagram({
   kind,
   phase,
@@ -42,7 +44,7 @@ function ElectricalDiagram({
   if (kind === 'dc') {
     const label = (key: 'v' | 'i' | 'r' | 'p', unit: string) =>
       data
-        ? `${electricalFormat(key === 'r' ? (data.r ?? NaN) : data[key])} ${unit}`
+        ? `${displayElectrical(key === 'r' ? (data.r ?? NaN) : data[key])} ${unit}`
         : '';
     return (
       <svg viewBox="0 0 360 190" aria-label="直流電源與理想電阻負載">
@@ -54,22 +56,22 @@ function ElectricalDiagram({
         </g>
         <DiagramPart field={fieldFor('v')}>
           <text x="48" y="65">
-            V {label('v', 'V')}
+            V = {label('v', 'V')}
           </text>
         </DiagramPart>
         <DiagramPart field={fieldFor('r')}>
           <text x="278" y="100">
-            R {label('r', 'Ω')}
+            R = {label('r', 'Ω')}
           </text>
         </DiagramPart>
         <DiagramPart field={fieldFor('i')}>
           <text x="145" y="24">
-            I {label('i', 'A')} →
+            I = {label('i', 'A')} →
           </text>
         </DiagramPart>
         <DiagramPart field={fieldFor('p')}>
           <text x="145" y="178">
-            P {label('p', 'W')}
+            P = {label('p', 'W')}
           </text>
         </DiagramPart>
       </svg>
@@ -100,22 +102,22 @@ function ElectricalDiagram({
       </g>
       <DiagramPart field={phase === 'three' ? '線電壓' : 'RMS 電壓'}>
         <text x="70" y="20">
-          {phase === 'three' ? 'VL' : 'Vrms'}{' '}
-          {data ? `${electricalFormat(data.v)} V` : ''}
+          {phase === 'three' ? 'VL' : 'Vrms'} ={' '}
+          {data ? `${displayElectrical(data.v)} V` : ''}
         </text>
       </DiagramPart>
       <DiagramPart field="功率因數">
         <text x="70" y="178">
-          PF {data ? pf : ''}
+          PF = {data ? displayElectrical(Number(pf)) : ''}
         </text>
       </DiagramPart>
       <DiagramPart field={known === 'power' ? '實功率' : '電流'}>
         <text x="235" y="178">
-          P {data ? `${electricalFormat(data.p)} W` : ''}
+          P = {data ? `${displayElectrical(data.p)} W` : ''}
         </text>
       </DiagramPart>
       <text x="250" y="30">
-        I {data ? `${electricalFormat(data.i)} A` : ''}
+        I = {data ? `${displayElectrical(data.i)} A` : ''}
       </text>
       {phase === 'three' && (
         <>
@@ -144,20 +146,21 @@ export default function Electrical() {
     [bv, setBv] = useState('120'),
     [phase, setPhase] = useState<'single' | 'three'>('single'),
     [voltage, setVoltage] = useState('220'),
-    [pf, setPf] = useState('.8'),
+    [pf, setPf] = useState('0.8'),
     [known, setKnown] = useState<'power' | 'current'>('power'),
     [raw, setRaw] = useState('1000');
   const example = () => {
-    setKind('dc');
-    setA('v');
-    setAv('24');
-    setB('r');
-    setBv('120');
-    setPhase('single');
-    setVoltage('220');
-    setPf('.8');
-    setKnown('power');
-    setRaw('1000');
+    if (kind === 'dc') {
+      setA('v');
+      setAv('24');
+      setB('r');
+      setBv('120');
+      return;
+    }
+    setVoltage(phase === 'three' ? '400' : '220');
+    setPf('0.8');
+    setKnown('current');
+    setRaw('10');
   };
   const clear = () => {
     setAv('');
@@ -178,10 +181,10 @@ export default function Electrical() {
   const dcResult = dc.data ? (
     <ResultRows
       rows={[
-        { label: '電壓', value: electricalFormat(dc.data.v), unit: 'V' },
-        { label: '電流', value: electricalFormat(dc.data.i), unit: 'A' },
-        { label: '電阻', value: electricalFormat(dc.data.r), unit: 'Ω' },
-        { label: '功率', value: electricalFormat(dc.data.p), unit: 'W' },
+        { label: '電壓', value: displayElectrical(dc.data.v), unit: 'V' },
+        { label: '電流', value: displayElectrical(dc.data.i), unit: 'A' },
+        { label: '電阻', value: displayElectrical(dc.data.r), unit: 'Ω' },
+        { label: '功率', value: displayElectrical(dc.data.p), unit: 'W' },
       ]}
     />
   ) : (
@@ -190,9 +193,13 @@ export default function Electrical() {
   const acResult = ac.data ? (
     <ResultRows
       rows={[
-        { label: '實功率', value: electricalFormat(ac.data.p), unit: 'W' },
-        { label: '視在功率', value: electricalFormat(ac.data.va), unit: 'VA' },
-        { label: '線電流', value: electricalFormat(ac.data.i), unit: 'A' },
+        { label: '實功率', value: displayElectrical(ac.data.p), unit: 'W' },
+        { label: '視在功率', value: displayElectrical(ac.data.va), unit: 'VA' },
+        {
+          label: phase === 'three' ? '線電流' : '電流',
+          value: displayElectrical(ac.data.i),
+          unit: 'A',
+        },
       ]}
     />
   ) : (
@@ -218,11 +225,16 @@ export default function Electrical() {
       }
       notes={
         kind === 'dc' ? (
-          <>直流理想電阻負載：V = I R、P = V I。</>
+          <>直流理想電阻負載：V = I × R；P = V × I。</>
+        ) : phase === 'single' ? (
+          <>
+            單相交流使用 RMS 值：P = V<sub>RMS</sub> × I × PF；S = V
+            <sub>RMS</sub> × I = P ÷ PF。
+          </>
         ) : (
           <>
-            交流使用 RMS 值。平衡三相以線電壓計算：P = √3 × V<sub>L</sub> × I ×
-            PF。
+            平衡三相使用 RMS 線電壓與線電流：P = √3 × V<sub>L</sub> × I
+            <sub>L</sub> × PF；S = √3 × V<sub>L</sub> × I<sub>L</sub> = P ÷ PF。
           </>
         )
       }

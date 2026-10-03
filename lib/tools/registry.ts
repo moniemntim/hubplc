@@ -346,7 +346,7 @@ export const toolExamples: Record<ToolSlug, string> = {
   'voltage-divider':
     'Vin = 24 V，R1 = R2 = 10000 Ω：Vout = 12 V，電流 1.2 mA。',
   electrical:
-    '直流 24 V、0.2 A 對應 120 Ω、4.8 W；單相 220 V、10 A、PF 0.8 為 1760 W。',
+    '直流：24 V 與 120 Ω 得到 0.2 A、4.8 W。單相：220 V、10 A、PF 0.8 得到 1760 W。平衡三相：400 V、10 A、PF 0.8 約為 5542.563 W。',
   '555-timer':
     '無穩態 RA = RB = 10000 Ω、C = 0.000001 F：頻率約 48.09 Hz，占空比約 66.67%。',
   'resistor-color': '四環棕、黑、紅、金：1000 Ω ±5%，範圍 950–1050 Ω。',

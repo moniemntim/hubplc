@@ -232,13 +232,26 @@ try {
   await page.getByRole('textbox', { name: '阻值', exact: true }).fill('4.7');
   await expect(output).toContainText('4,700');
   await open('electrical');
+  await expect(page.locator('.tool-diagram')).toContainText('V = 24 V');
+  await expect(page.locator('.tool-diagram')).toContainText('I = 0.2 A');
   await choose('電路類型', '交流');
+  await expect(page.locator('.tool-foot')).toContainText('單相交流使用 RMS 值');
+  await page.getByRole('button', { name: '載入範例', exact: true }).click();
+  await expect(
+    page.getByRole('combobox', { name: '電路類型', exact: true }),
+  ).toContainText('交流');
+  await expect(output).toContainText('1,760 W');
+  await expect(output.getByText('電流', { exact: true })).toHaveCount(1);
   await choose('系統', '平衡三相');
   await choose('已知量', '電流 A');
   await page.getByRole('textbox', { name: '線電壓', exact: true }).fill('400');
   await page.getByRole('textbox', { name: '電流', exact: true }).fill('10');
   await expect(page.locator('.tool-diagram')).toContainText('L3');
-  await expect(output).toContainText('5,542.562');
+  await expect(page.locator('.tool-foot')).toContainText(
+    '平衡三相使用 RMS 線電壓與線電流',
+  );
+  await expect(output.getByText('線電流', { exact: true })).toHaveCount(1);
+  await expect(output).toContainText('5,542.563');
   checks.push(
     'SMD all formats/reverse, shunt zero, RC/reactance/LC inverses, 555 boundary, five-band reverse, three-phase AC',
   );

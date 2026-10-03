@@ -116,7 +116,12 @@ export default function VoltageDivider() {
               <rect x="110" y="120" width="20" height="35" />
             </g>
             <text x="145" y="143">
-              R2 {activeForward ? `${electricalFormat(Number(r2))} Ω` : ''}
+              R2{' '}
+              {activeForward
+                ? `${electricalFormat(Number(r2))} Ω`
+                : activeInverse
+                  ? `${electricalFormat(activeInverse.r2)} Ω`
+                  : ''}
             </text>
           </DiagramPart>
           <circle cx="120" cy="95" r="3" fill="currentColor" />

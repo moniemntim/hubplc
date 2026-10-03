@@ -37,6 +37,8 @@ await test('VA to amps rejects invalid inputs and unrepresentable results', () =
   assert.throws(() => vaToAmps('1e303', 'MVA', '220', 'single'));
   assert.throws(() => vaToAmps('1', 'VA', '5e-324', 'single'));
   assert.throws(() => vaToAmps('5e-324', 'VA', '1e308', 'single'));
+  assert.throws(() => vaToAmps('1e-400', 'VA', '220', 'single'));
+  assert.equal(vaToAmps('0e-400', 'VA', '220', 'single').amps, 0);
   assert.throws(() => vaToAmps('1', 'W', '220', 'single'));
   assert.throws(() => vaToAmps('1', 'VA', '220', 'dc'));
 });

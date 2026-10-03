@@ -13,6 +13,9 @@ export function vaToAmps(
     throw new Error('請選擇 VA、kVA 或 MVA。');
   const power = numberInput(powerRaw, '視在功率');
   const voltage = numberInput(voltageRaw, '電壓');
+  const powerSignificand = powerRaw.trim().split(/[eE]/, 1)[0];
+  if (power === 0 && /[1-9]/.test(powerSignificand))
+    throw new Error('視在功率過小，無法表示。');
   if (power < 0) throw new Error('視在功率不可小於 0。');
   if (voltage <= 0) throw new Error('電壓必須大於 0。');
   const va = power * (unit === 'MVA' ? 1e6 : unit === 'kVA' ? 1000 : 1);

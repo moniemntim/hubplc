@@ -16,6 +16,26 @@ const page = await browser.newPage({ viewport: { width: 1280, height: 900 } });
 await mockAdsense(page);
 const errors = [];
 const checks = [];
+const diagramToolSlugs = new Set([
+  'battery-life',
+  'capacitor-discharge',
+  'voltage-divider',
+  'electrical',
+  '555-timer',
+  'resistor-color',
+  'resistor-network',
+  'rc-time',
+  'capacitor-network',
+  'smd-capacitor',
+  'led-resistor',
+  'smd-resistor',
+  'current-divider',
+  'shunt-resistor',
+  'rc-filter',
+  'reactance',
+  'lc-resonance',
+  'preferred-resistor',
+]);
 page.on('pageerror', (error) => errors.push(error.message));
 page.on('console', (message) => {
   if (message.type() === 'error') errors.push(message.text());
@@ -34,33 +54,42 @@ try {
   await mkdir('outputs/circuit-qa', { recursive: true });
   for (const tool of tools.filter((tool) => tool.category === '電路')) {
     console.log('Checking', tool.slug);
+    const hasDiagram = diagramToolSlugs.has(tool.slug);
+    assert.ok(
+      hasDiagram || tool.slug === 'va-to-amps',
+      `declare diagram expectation for ${tool.slug}`,
+    );
     await open(tool.slug);
     assert.ok(
       await output.locator('dd').count(),
       `default result ${tool.slug}`,
     );
-    assert.ok(
-      await page.locator('.tool-diagram svg').count(),
-      `diagram ${tool.slug}`,
-    );
-    const inputFields = page.locator('.calculator-inputs .tool-field');
     let focusChecks = 0;
-    for (const field of await inputFields.all()) {
-      const name = await field.getAttribute('data-field');
-      const part = page.locator('[data-diagram-field]');
-      const match = part.and(
-        page.locator(`[data-diagram-field=${JSON.stringify(name)}]`),
+    if (hasDiagram) {
+      assert.ok(
+        await page.locator('.tool-diagram svg').count(),
+        `diagram ${tool.slug}`,
       );
-      if (await match.count()) {
-        const control = field.locator('input, button[role="combobox"]').first();
-        if (await control.count()) {
-          await control.focus();
-          await expect(match.first()).toHaveAttribute('data-focused', 'true');
-          focusChecks++;
+      const inputFields = page.locator('.calculator-inputs .tool-field');
+      for (const field of await inputFields.all()) {
+        const name = await field.getAttribute('data-field');
+        const part = page.locator('[data-diagram-field]');
+        const match = part.and(
+          page.locator(`[data-diagram-field=${JSON.stringify(name)}]`),
+        );
+        if (await match.count()) {
+          const control = field
+            .locator('input, button[role="combobox"]')
+            .first();
+          if (await control.count()) {
+            await control.focus();
+            await expect(match.first()).toHaveAttribute('data-focused', 'true');
+            focusChecks++;
+          }
         }
       }
+      assert.ok(focusChecks, `focus linkage ${tool.slug}`);
     }
-    assert.ok(focusChecks, `focus linkage ${tool.slug}`);
     const quantity = page.locator('.quantity-field').first();
     if (await quantity.count()) {
       const before = await output.innerText();
@@ -90,10 +119,12 @@ try {
     if (await first.count()) {
       await first.fill('invalid');
       await expect(output.locator('dd')).toHaveCount(0);
-      assert.doesNotMatch(
-        await page.locator('.tool-diagram').innerText(),
-        /NaN|Infinity/,
-      );
+      if (hasDiagram) {
+        assert.doesNotMatch(
+          await page.locator('.tool-diagram').innerText(),
+          /NaN|Infinity/,
+        );
+      }
     }
     await page.getByRole('button', { name: '清空', exact: true }).click();
     await expect(output.locator('dd')).toHaveCount(0);
@@ -103,7 +134,7 @@ try {
       `example recovery ${tool.slug}`,
     );
     checks.push(
-      `${tool.slug}: default, SVG, ${focusChecks} focus bindings, units, invalid, clear, example`,
+      `${tool.slug}: default, ${hasDiagram ? `SVG, ${focusChecks} focus bindings, ` : ''}units, invalid, clear, example`,
     );
   }
   await open('voltage-divider');
@@ -112,6 +143,7 @@ try {
   await expect(output).toContainText('8 V');
   await expect(page.locator('.tool-diagram')).toContainText('8 V');
   await choose('計算方式', '反算 R2');
+  await expect(page.locator('.tool-diagram')).toContainText('R2 20,000 Ω');
   await page.getByRole('textbox', { name: '目標 Vout', exact: true }).fill('');
   await expect(output.locator('dd')).toHaveCount(0);
   assert.doesNotMatch(
@@ -174,6 +206,10 @@ try {
   await expect(output.locator('dd')).toHaveCount(0);
   await open('reactance');
   await choose('計算', '反推元件值');
+  await page.getByRole('textbox', { name: '目標電抗', exact: true }).focus();
+  await expect(page.locator('.tool-diagram [data-focused="true"]')).toHaveCount(
+    0,
+  );
   await expect(output).toContainText('1e-7');
   await choose('元件', '電感（感抗）');
   await expect(output).toContainText('+j');
@@ -200,6 +236,15 @@ try {
   await expect(output).toContainText('102');
   await open('shunt-resistor');
   await choose('計算方式', '額定值與實測壓降');
+  await page.getByRole('textbox', { name: '額定電流', exact: true }).focus();
+  await expect(page.locator('.tool-diagram [data-focused="true"]')).toHaveCount(
+    0,
+  );
+  await page.getByRole('textbox', { name: '實測壓降', exact: true }).focus();
+  await expect(page.locator('[data-diagram-field="實測壓降"]')).toHaveAttribute(
+    'data-focused',
+    'true',
+  );
   await page
     .getByRole('textbox', { name: '實測壓降', exact: true })
     .fill('37.5');

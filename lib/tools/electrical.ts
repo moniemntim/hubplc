@@ -88,6 +88,10 @@ export function acElectrical(
   known: 'power' | 'current',
   raw: string,
 ) {
+  if (phase !== 'single' && phase !== 'three')
+    throw new Error('請選擇單相或三相。');
+  if (known !== 'power' && known !== 'current')
+    throw new Error('請選擇實功率或電流作為已知量。');
   const V = positive(voltage, 'RMS 線電壓'),
     factor = numberInput(pf, '功率因數');
   if (factor <= 0 || factor > 1)

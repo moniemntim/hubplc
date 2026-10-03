@@ -171,7 +171,7 @@ export function ShuntDiagram({
         stroke="currentColor"
         strokeWidth="2"
       />
-      <DiagramPart field={measured ? '額定電流' : '電流'}>
+      <DiagramPart field={measured ? '' : '電流'}>
         <path
           d="M65 122h35m-7-5 7 5-7 5"
           fill="none"
@@ -182,7 +182,7 @@ export function ShuntDiagram({
           I {val(data?.current, 'A')}
         </text>
       </DiagramPart>
-      <DiagramPart field={measured ? '額定壓降' : '電阻'}>
+      <DiagramPart field={measured ? '' : '電阻'}>
         <rect
           x="140"
           y="123"
@@ -307,12 +307,10 @@ export function ReactanceDiagram({
   kind,
   component,
   frequency,
-  inverse = false,
 }: {
   kind: 'capacitor' | 'inductor';
   component?: number;
   frequency?: number;
-  inverse?: boolean;
 }) {
   const cap = kind === 'capacitor';
   return (
@@ -327,7 +325,7 @@ export function ReactanceDiagram({
         stroke="currentColor"
         strokeWidth="2"
       />
-      <DiagramPart field={inverse ? '目標電抗' : cap ? 'C' : 'L'}>
+      <DiagramPart field={cap ? 'C' : 'L'}>
         {cap ? (
           <path
             d="M145 80h38m0-22v44m30-44v44m0-22h40"

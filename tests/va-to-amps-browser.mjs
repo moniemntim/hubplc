@@ -21,7 +21,23 @@ try {
     await page.getByRole('combobox', { name: label, exact: true }).click();
     await page.getByRole('option', { name: option, exact: true }).click();
   };
+  const expectSupplyLabels = async ({ formula, voltageLabel, resultLabel }) => {
+    await expect(page.locator('.tool-foot')).toContainText(formula);
+    await expect(result).toContainText(formula);
+    await expect(page.getByLabel(voltageLabel, { exact: true })).toHaveCount(1);
+    await expect(result.getByText(resultLabel, { exact: true })).toHaveCount(1);
+  };
+  await expectSupplyLabels({
+    formula: 'I = S ÷ V',
+    voltageLabel: '負載兩端電壓',
+    resultLabel: '負載電流',
+  });
   await choose('供電方式', '三相平衡／線電壓');
+  await expectSupplyLabels({
+    formula: 'I = S ÷ (√3 × VLL)',
+    voltageLabel: '線電壓 VLL',
+    resultLabel: '線電流（每條相線）',
+  });
   await choose('功率單位', 'kVA');
   await page.getByLabel('三相總視在功率', { exact: true }).fill('10');
   await page.getByLabel('線電壓 VLL', { exact: true }).fill('380');
@@ -32,6 +48,11 @@ try {
   await expect(result).toContainText('10,000');
   await choose('功率單位', 'kVA');
   await choose('供電方式', '三相平衡／相對中性線電壓');
+  await expectSupplyLabels({
+    formula: 'I = S ÷ (3 × VLN)',
+    voltageLabel: '相對中性線電壓 VLN',
+    resultLabel: '線電流（每條相線）',
+  });
   await page.getByLabel('三相總視在功率', { exact: true }).fill('6.6');
   await page.getByLabel('相對中性線電壓 VLN', { exact: true }).fill('220');
   await expect(result).toContainText('10 A');
@@ -41,6 +62,11 @@ try {
   await expect(result).toContainText('請填寫');
   await page.getByRole('button', { name: '載入範例', exact: true }).click();
   await expect(result).toContainText('4.54545454545');
+  await expectSupplyLabels({
+    formula: 'I = S ÷ V',
+    voltageLabel: '負載兩端電壓',
+    resultLabel: '負載電流',
+  });
   await mkdir('outputs/va-to-amps', { recursive: true });
   for (const width of [1440, 390, 320]) {
     await page.setViewportSize({ width, height: 950 });

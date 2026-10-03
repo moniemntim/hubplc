@@ -40,7 +40,6 @@ export default function Reactance() {
             kind={kind}
             component={result.data?.component}
             frequency={result.data?.frequency}
-            inverse={mode === 'inverse'}
           />
           {result.data && (
             <Curve

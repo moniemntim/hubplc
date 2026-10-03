@@ -33,6 +33,8 @@ await test('DC and AC electrical relations', () => {
   assert.ok(Math.abs(ac.i - 18.042) < 0.001);
   assert.equal(ac.va, 12500);
   assert.throws(() => acElectrical('single', '220', '1.1', 'power', '10'));
+  assert.throws(() => acElectrical('invalid', '220', '1', 'power', '10'));
+  assert.throws(() => acElectrical('single', '220', '1', 'invalid', '10'));
 });
 await test('555 formulas use NE555 thresholds and inverse consistency', () => {
   assert.ok(

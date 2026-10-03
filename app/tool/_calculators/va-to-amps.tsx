@@ -14,7 +14,7 @@ import {
 
 export default function VaToAmps() {
   const [supply, setSupply] = useState<Supply>('single');
-  const [unit, setUnit] = useState<'VA' | 'kVA'>('VA');
+  const [unit, setUnit] = useState<'VA' | 'kVA' | 'MVA'>('VA');
   const [power, setPower] = useState('1000');
   const [voltage, setVoltage] = useState('220');
   const result = attempt(() => vaToAmps(power, unit, voltage, supply));
@@ -29,8 +29,8 @@ export default function VaToAmps() {
       notes={
         <>
           <p>
-            {formula}。S 使用 VA，電壓使用 V，結果為 A；1 kVA = 1000
-            VA。電壓與電流皆為有效值（RMS）。
+            {formula}。S 使用 VA，電壓使用 V，結果為 A；1 MVA = 1000 kVA =
+            1,000,000 VA。電壓與電流皆為有效值（RMS）。
           </p>
           <p>
             單相填負載兩端電壓。三相填三相總視在功率；線電壓是兩條相線之間的電壓，相對中性線電壓則是一條相線對
@@ -89,6 +89,7 @@ export default function VaToAmps() {
         options={[
           { value: 'VA', label: 'VA' },
           { value: 'kVA', label: 'kVA' },
+          { value: 'MVA', label: 'MVA' },
         ]}
       />
       <NumberField

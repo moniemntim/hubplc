@@ -26,6 +26,11 @@ try {
   await page.getByLabel('三相總視在功率', { exact: true }).fill('10');
   await page.getByLabel('線電壓 VLL', { exact: true }).fill('380');
   await expect(result).toContainText('15.1934281366');
+  await choose('功率單位', 'MVA');
+  await page.getByLabel('三相總視在功率', { exact: true }).fill('0.01');
+  await expect(result).toContainText('15.1934281366');
+  await expect(result).toContainText('10,000');
+  await choose('功率單位', 'kVA');
   await choose('供電方式', '三相平衡／相對中性線電壓');
   await page.getByLabel('三相總視在功率', { exact: true }).fill('6.6');
   await page.getByLabel('相對中性線電壓 VLN', { exact: true }).fill('220');
@@ -55,7 +60,7 @@ try {
   assert.ok(index.includes('/tool/va-to-amps'));
   assert.deepEqual(errors, []);
   console.log(
-    'PASS: single/three phase, VA/kVA, validation, reset, responsive layout, directory and sitemap',
+    'PASS: single/three phase, VA/kVA/MVA, validation, reset, responsive layout, directory and sitemap',
   );
 } finally {
   await browser.close();

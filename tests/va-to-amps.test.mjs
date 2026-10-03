@@ -5,6 +5,13 @@ import { vaToAmps } from '../lib/tools/va-to-amps.ts';
 await test('VA to amps: single phase, total three-phase power and voltage basis', () => {
   assert.equal(vaToAmps('1100', 'VA', '110', 'single').amps, 10);
   assert.equal(vaToAmps('1.1', 'kVA', '110', 'single').amps, 10);
+  assert.equal(vaToAmps('1', 'MVA', '1000', 'single').amps, 1000);
+  for (const supply of ['single', 'three-line', 'three-neutral']) {
+    assert.deepEqual(
+      vaToAmps('1', 'MVA', '11000', supply),
+      vaToAmps('1000', 'kVA', '11000', supply),
+    );
+  }
   assert.ok(
     Math.abs(
       vaToAmps('10', 'kVA', '380', 'three-line').amps - 15.1934281365691,
@@ -27,6 +34,7 @@ await test('VA to amps rejects invalid inputs and unrepresentable results', () =
   for (const raw of ['', '0', '-1', 'NaN'])
     assert.throws(() => vaToAmps('1000', 'VA', raw, 'single'));
   assert.throws(() => vaToAmps('1e308', 'kVA', '220', 'single'));
+  assert.throws(() => vaToAmps('1e303', 'MVA', '220', 'single'));
   assert.throws(() => vaToAmps('1', 'VA', '5e-324', 'single'));
   assert.throws(() => vaToAmps('5e-324', 'VA', '1e308', 'single'));
   assert.throws(() => vaToAmps('1', 'W', '220', 'single'));

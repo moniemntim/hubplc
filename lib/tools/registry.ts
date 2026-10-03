@@ -13,8 +13,8 @@ export const tools = [
     name: 'VA 至安培計算器',
     category: '電路',
     code: 'VA → A',
-    description: '輸入 VA／kVA 與電壓，計算單相或三相平衡負載的電流。',
-    keywords: 'VA kVA 安培 A 電流 視在功率 單相 三相 線電壓 伏安 amps',
+    description: '輸入 VA／kVA／MVA 與電壓，計算單相或三相平衡負載的電流。',
+    keywords: 'VA kVA MVA 安培 A 電流 視在功率 單相 三相 線電壓 伏安 amps',
   },
   {
     slug: 'key-derivation',

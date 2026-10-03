@@ -9,6 +9,30 @@ export const categories = [
 export const tools = [
   ...conversionTools,
   {
+    slug: 'ac-power-converter',
+    name: '交流功率換算計算器',
+    category: '電路',
+    code: 'W ↔ A',
+    description: '整合安培、電壓、W／kW／MW、VA／kVA／MVA與功率因數換算。',
+    keywords: '安培 kW 瓦特 電壓 VA kVA MVA 單相 三相 功率換算',
+  },
+  {
+    slug: 'power-factor',
+    name: '功率因數計算器',
+    category: '電路',
+    code: 'P / S',
+    description: '由實功率、視在功率或虛功率計算功率因數與相位角。',
+    keywords: '功率因數 PF cosφ kW kVA kvar 實功率 視在功率 虛功率',
+  },
+  {
+    slug: 'energy-cost',
+    name: '能耗與電費計算器',
+    category: '電路',
+    code: 'kW × h',
+    description: '計算kWh、焦耳、平均功率與依自訂每度電價估算的電費。',
+    keywords: '電費 用電量 能耗 kWh 度數 焦耳 J 千瓦時 平均功率',
+  },
+  {
     slug: 'va-to-amps',
     name: 'VA 至安培計算器',
     category: '電路',
@@ -301,6 +325,10 @@ export function getTool(slug: ToolSlug) {
 }
 
 export const toolExamples: Record<ToolSlug, string> = {
+  'ac-power-converter': '平衡三相 10 kW、380 V、PF 0.8，線電流約為 18.99 A。',
+  'power-factor': '實功率 8 kW、視在功率 10 kVA：PF = 0.8，虛功率 6 kvar。',
+  'energy-cost':
+    '1 kW 每天使用 8 小時、共 30 天：用電量 240 kWh；每度 3 元時估算 720 元。',
   'va-to-amps':
     '單相 1000 VA、220 V 約為 4.545 A；三相總容量 10 kVA、線電壓 380 V 約為 15.193 A。',
   ...conversionExamples,

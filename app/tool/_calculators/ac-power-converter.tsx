@@ -19,23 +19,57 @@ const modes = [
   { value: 'current-to-power', label: '安培 → W／kW／VA／kVA' },
   { value: 'power-to-current', label: 'W／kW／MW → 安培' },
   { value: 'power-to-voltage', label: 'W／kW／MW → 電壓' },
+  { value: 'apparent-to-current', label: 'VA／kVA／MVA → 安培' },
   { value: 'apparent-to-real', label: 'VA／kVA／MVA → W／kW' },
   { value: 'real-to-apparent', label: 'W／kW／MW → VA／kVA' },
+  { value: 'apparent-units', label: 'VA／kVA／MVA 單位換算' },
 ] as const;
-export default function AcPowerConverter() {
-  const [mode, setMode] = useState<AcPowerMode>('current-to-power');
-  const [phase, setPhase] = useState<PhaseSystem>('single');
-  const [value, setValue] = useState('10');
-  const [unit, setUnit] = useState('A');
-  const [other, setOther] = useState('220');
-  const [pf, setPf] = useState('0.8');
-  const isApparent = mode === 'apparent-to-real';
+export type AcPowerPreset = {
+  mode: AcPowerMode;
+  phase?: PhaseSystem;
+  unit?: string;
+  value?: string;
+  other?: string;
+  pf?: string;
+  fixedMode?: boolean;
+};
+export default function AcPowerConverter({
+  preset = { mode: 'current-to-power' },
+}: {
+  preset?: AcPowerPreset;
+}) {
+  const initialPhase = preset.phase ?? 'single';
+  const initialUnit =
+    preset.unit ??
+    (preset.mode === 'current-to-power'
+      ? 'A'
+      : ['apparent-to-current', 'apparent-to-real', 'apparent-units'].includes(
+            preset.mode,
+          )
+        ? 'kVA'
+        : 'kW');
+  const [mode, setMode] = useState<AcPowerMode>(preset.mode);
+  const [phase, setPhase] = useState<PhaseSystem>(initialPhase);
+  const [value, setValue] = useState(preset.value ?? '10');
+  const [unit, setUnit] = useState(initialUnit);
+  const [other, setOther] = useState(
+    preset.other ?? (initialPhase === 'three' ? '380' : '220'),
+  );
+  const [pf, setPf] = useState(preset.pf ?? '0.8');
+  const isApparent = [
+    'apparent-to-current',
+    'apparent-to-real',
+    'apparent-units',
+  ].includes(mode);
   const isCurrent = mode === 'current-to-power';
   const needsOther = [
     'current-to-power',
     'power-to-current',
     'power-to-voltage',
+    'apparent-to-current',
   ].includes(mode);
+  const needsPowerFactor =
+    phase !== 'dc' && !['apparent-to-current', 'apparent-units'].includes(mode);
   const result = attempt(() =>
     acPowerConvert(mode, phase, value, unit as never, other, pf),
   );
@@ -44,7 +78,11 @@ export default function AcPowerConverter() {
     setUnit(
       next === 'current-to-power'
         ? 'A'
-        : next === 'apparent-to-real'
+        : [
+              'apparent-to-current',
+              'apparent-to-real',
+              'apparent-units',
+            ].includes(next)
           ? 'kVA'
           : 'kW',
     );
@@ -70,16 +108,20 @@ export default function AcPowerConverter() {
         result.data ? (
           <ResultRows
             rows={[
-              {
-                label: '實功率',
-                value: formatNumber(result.data.watts),
-                unit: 'W',
-              },
-              {
-                label: '實功率',
-                value: formatNumber(result.data.watts / 1000),
-                unit: 'kW',
-              },
+              ...(!['apparent-to-current', 'apparent-units'].includes(mode)
+                ? [
+                    {
+                      label: '實功率',
+                      value: formatNumber(result.data.watts),
+                      unit: 'W',
+                    },
+                    {
+                      label: '實功率',
+                      value: formatNumber(result.data.watts / 1000),
+                      unit: 'kW',
+                    },
+                  ]
+                : []),
               {
                 label: '視在功率',
                 value: formatNumber(result.data.va),
@@ -120,12 +162,14 @@ export default function AcPowerConverter() {
         )
       }
     >
-      <Choice
-        label="換算方向"
-        value={mode}
-        onChange={(v) => setModeSafely(v as AcPowerMode)}
-        options={modes}
-      />
+      {!preset.fixedMode && (
+        <Choice
+          label="換算方向"
+          value={mode}
+          onChange={(v) => setModeSafely(v as AcPowerMode)}
+          options={modes}
+        />
+      )}
       <Choice
         label="供電方式"
         value={phase}
@@ -177,18 +221,29 @@ export default function AcPowerConverter() {
             unit={mode === 'power-to-voltage' ? 'A' : 'V'}
           />
         )}
-        {phase !== 'dc' && (
+        {needsPowerFactor && (
           <NumberField label="功率因數" value={pf} onChange={setPf} />
         )}
       </div>
       <ToolActions
         onExample={() => {
-          setPhase('three');
-          setModeSafely('power-to-current');
-          setUnit('kW');
-          setValue('10');
-          setOther('380');
-          setPf('0.8');
+          if (preset.fixedMode) {
+            setMode(preset.mode);
+            setPhase(initialPhase);
+            setUnit(initialUnit);
+            setValue(preset.value ?? '10');
+            setOther(
+              preset.other ?? (initialPhase === 'three' ? '380' : '220'),
+            );
+            setPf(preset.pf ?? '0.8');
+          } else {
+            setPhase('three');
+            setModeSafely('power-to-current');
+            setUnit('kW');
+            setValue('10');
+            setOther('380');
+            setPf('0.8');
+          }
         }}
         onClear={() => {
           setValue('');

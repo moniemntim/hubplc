@@ -10,13 +10,30 @@ import {
   ToolActions,
   ToolPanel,
 } from '../_components/controls';
-export default function EnergyCost() {
-  const [mode, setMode] = useState<EnergyMode>('from-power');
-  const [value, setValue] = useState('1');
-  const [unit, setUnit] = useState('kW');
-  const [hours, setHours] = useState('8');
-  const [days, setDays] = useState('30');
-  const [rate, setRate] = useState('3');
+export type EnergyPreset = {
+  mode: EnergyMode;
+  unit?: string;
+  value?: string;
+  hours?: string;
+  days?: string;
+  rate?: string;
+  fixedMode?: boolean;
+};
+export default function EnergyCost({
+  preset = { mode: 'from-power' },
+}: {
+  preset?: EnergyPreset;
+}) {
+  const initialUnit =
+    preset.unit ?? (preset.mode === 'from-power' ? 'kW' : 'kWh');
+  const [mode, setMode] = useState<EnergyMode>(preset.mode);
+  const [value, setValue] = useState(preset.value ?? '1');
+  const [unit, setUnit] = useState(initialUnit);
+  const [hours, setHours] = useState(
+    preset.hours ?? (preset.mode === 'from-power' ? '8' : '1'),
+  );
+  const [days, setDays] = useState(preset.days ?? '30');
+  const [rate, setRate] = useState(preset.rate ?? '3');
   const result = attempt(() =>
     energyAndCost(mode, value, unit as never, hours, days, rate),
   );
@@ -69,15 +86,17 @@ export default function EnergyCost() {
         )
       }
     >
-      <Choice
-        label="計算方向"
-        value={mode}
-        onChange={(v) => switchMode(v as EnergyMode)}
-        options={[
-          { value: 'from-power', label: '功率＋時間 → 用電量與電費' },
-          { value: 'from-energy', label: '用電量＋時間 → 平均功率' },
-        ]}
-      />
+      {!preset.fixedMode && (
+        <Choice
+          label="計算方向"
+          value={mode}
+          onChange={(v) => switchMode(v as EnergyMode)}
+          options={[
+            { value: 'from-power', label: '功率＋時間 → 用電量與電費' },
+            { value: 'from-energy', label: '用電量＋時間 → 平均功率' },
+          ]}
+        />
+      )}
       <div className="fields-grid">
         <Choice
           label={mode === 'from-power' ? '功率單位' : '能量單位'}
@@ -127,11 +146,12 @@ export default function EnergyCost() {
       </div>
       <ToolActions
         onExample={() => {
-          switchMode('from-power');
-          setValue('1');
-          setHours('8');
-          setDays('30');
-          setRate('3');
+          setMode(preset.mode);
+          setUnit(initialUnit);
+          setValue(preset.value ?? '1');
+          setHours(preset.hours ?? (preset.mode === 'from-power' ? '8' : '1'));
+          setDays(preset.days ?? '30');
+          setRate(preset.rate ?? '3');
         }}
         onClear={() => {
           setValue('');

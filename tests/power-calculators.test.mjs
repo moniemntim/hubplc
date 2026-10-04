@@ -49,6 +49,15 @@ await test('power conversion covers DC, single phase and balanced three phase', 
     acPowerConvert('current-to-power', 'dc', '10', 'A', '24', '').watts,
     240,
   );
+  near(
+    acPowerConvert('apparent-to-current', 'three', '10', 'kVA', '380', '')
+      .current,
+    10000 / (Math.sqrt(3) * 380),
+  );
+  assert.equal(
+    acPowerConvert('apparent-units', 'single', '1', 'MVA', '', '').va,
+    1000000,
+  );
 });
 
 await test('power factor solves P/S and P/Q triangles', () => {

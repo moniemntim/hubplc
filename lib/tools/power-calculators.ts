@@ -38,8 +38,10 @@ export type AcPowerMode =
   | 'current-to-power'
   | 'power-to-current'
   | 'power-to-voltage'
+  | 'apparent-to-current'
   | 'apparent-to-real'
-  | 'real-to-apparent';
+  | 'real-to-apparent'
+  | 'apparent-units';
 
 export function acPowerConvert(
   mode: AcPowerMode,
@@ -49,7 +51,10 @@ export function acPowerConvert(
   voltageOrCurrentRaw: string,
   pfRaw: string,
 ) {
-  const pf = phase === 'dc' ? 1 : powerFactor(pfRaw);
+  const pf =
+    phase === 'dc' || ['apparent-to-current', 'apparent-units'].includes(mode)
+      ? 1
+      : powerFactor(pfRaw);
   const multiplier = phaseMultiplier(phase);
   let voltage = 0;
   let current = 0;
@@ -78,6 +83,15 @@ export function acPowerConvert(
       current = positive(voltageOrCurrentRaw, '電流');
       voltage = finite(watts / (multiplier * current * pf), '電壓');
     }
+  } else if (mode === 'apparent-to-current') {
+    const value = positive(valueRaw, '視在功率');
+    va = toVa(value, valueUnit as ApparentUnit);
+    voltage = positive(
+      voltageOrCurrentRaw,
+      phase === 'three' ? '線電壓' : '電壓',
+    );
+    current = finite(va / (multiplier * voltage), '電流');
+    watts = 0;
   } else if (mode === 'apparent-to-real') {
     const value = positive(valueRaw, '視在功率');
     va = toVa(value, valueUnit as ApparentUnit);
@@ -86,6 +100,10 @@ export function acPowerConvert(
     const value = positive(valueRaw, '實功率');
     watts = toWatts(value, valueUnit as PowerUnit);
     va = finite(watts / pf, '視在功率');
+  } else if (mode === 'apparent-units') {
+    const value = nonnegative(valueRaw, '視在功率');
+    va = toVa(value, valueUnit as ApparentUnit);
+    watts = 0;
   } else {
     throw new Error('請選擇有效的換算方向。');
   }

@@ -10,7 +10,7 @@ export async function mockAdsense(page) {
       await route.fulfill({
         status: 200,
         contentType: 'application/javascript',
-        body: '/* AdSense mocked for automated verification. */',
+        body: 'window.adsbygoogle = window.adsbygoogle || [];',
       });
     },
   );

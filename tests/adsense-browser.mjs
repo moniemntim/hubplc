@@ -8,6 +8,7 @@ const cases = [
   ['/', true],
   ['/tool', true],
   ['/articles', false],
+  ['/articles/acceptance-pass-untested-not-applicable', true],
   ['/privacy', false],
   ['/about', false],
   ...tools.map((t) => [`/tool/${t.slug}`, t.category !== '編碼']),
@@ -30,6 +31,13 @@ for (const [path, allowed] of cases) {
     assert.ok(tags[0].includes(`src="${ADSENSE_URL}"`));
     assert.match(tags[0], /\basync(?:="")?[\s>]/);
     assert.match(tags[0], /crossorigin="anonymous"/i);
+    assert.match(html, /class="adsbygoogle"/);
+    assert.match(html, /data-ad-client="ca-pub-8014147345117745"/);
+    assert.match(html, /data-ad-slot="8116472709"/);
+    assert.match(html, /data-ad-format="auto"/);
+    assert.match(html, /data-full-width-responsive="true"/);
+  } else {
+    assert.ok(!html.includes('class="adsbygoogle"'), `${path}: no ad unit`);
   }
 }
 const browser = await chromium.launch({
@@ -52,6 +60,12 @@ try {
     await expect(
       page.locator('head script[src*="adsbygoogle.js"]'),
     ).toHaveCount(1);
+    const unit = page.locator('ins.adsbygoogle');
+    await expect(unit).toHaveCount(1);
+    await expect(unit).toHaveAttribute('data-ad-slot', '8116472709');
+    await expect
+      .poll(() => page.evaluate(() => window.adsbygoogle?.length))
+      .toBe(1);
     await page.getByRole('textbox', { name: '訊號值', exact: true }).fill('12');
     await expect(page.getByRole('region', { name: '計算結果' })).toContainText(
       '50',
@@ -66,6 +80,7 @@ try {
     await page.locator('a[href="/tool/password-generator"]').click();
     await expect(page.locator('h1')).toContainText('密碼');
     await expect(page.locator('script[src*="adsbygoogle.js"]')).toHaveCount(0);
+    await expect(page.locator('ins.adsbygoogle')).toHaveCount(0);
     assert.equal(
       adRequests.length,
       count,

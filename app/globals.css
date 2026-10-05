@@ -1030,6 +1030,24 @@ button:disabled {
   font-size: 14px;
   color: #2c6a55;
 }
+
+.hubplc-ad-unit {
+  width: 100%;
+  min-height: 90px;
+  margin: 18px auto 28px;
+  overflow: hidden;
+}
+
+.hubplc-ad-unit:has(.adsbygoogle[data-ad-status='unfilled']) {
+  display: none;
+}
+
+@media (max-width: 600px) {
+  .hubplc-ad-unit {
+    min-height: 60px;
+    margin-block: 12px 20px;
+  }
+}
 .tool-result pre {
   background: #0a2c25;
   border: 1px solid #416357;

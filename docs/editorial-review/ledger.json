@@ -1,6 +1,42 @@
 {
   "scope": "全部發布文章；每篇需閱讀正文，機器掃描不等於完成",
   "articles": {
+    "0-10v-analog-load-ground-response-open-circuit": {
+      "status": "reviewed-local",
+      "batch": 31,
+      "reviewDate": "2026-10-07",
+      "sha256": "0a779757863f85e4516b8d6d4fde20595afeb4a3c115954bdcc66a551e8eb0fa",
+      "change": "重寫為輸出電阻、輸入阻抗與地電位差試算；三點注入及開路邊界分開。",
+      "verification": "tests/io-path-lesson.test.mjs; tests/io-path-lesson-browser.mjs; NI analog wiring documentation; no hardware test",
+      "hardwareVerified": false
+    },
+    "24v-high-low-side-bjt-mosfet-switching": {
+      "status": "reviewed-local",
+      "batch": 31,
+      "reviewDate": "2026-10-07",
+      "sha256": "ba71d0df8bfd9f56c5e03c41451a5b1e89bda43729bda7ed03311c45beee8530",
+      "change": "重寫為高低側測點、MOSFET/BJT損失與線圈箝位衰減案例；未提供成品驅動電路。",
+      "verification": "tests/io-path-lesson.test.mjs; tests/io-path-lesson-browser.mjs; TI SLVAF04; no coil waveform test",
+      "hardwareVerified": false
+    },
+    "24v-input-reverse-polarity-tvs-surge-protection": {
+      "status": "reviewed-local",
+      "batch": 31,
+      "reviewDate": "2026-10-07",
+      "sha256": "ee135604acad8ee46132cf9808eaa93cb98c59779db062b84445396d7764d8ac",
+      "change": "重寫為最低供電與最高箝位雙邊預算，區分反接、回灌、TVS與故障切除。",
+      "verification": "tests/io-path-lesson.test.mjs; tests/io-path-lesson-browser.mjs; TI TVS and ideal diode documentation; no surge test",
+      "hardwareVerified": false
+    },
+    "actuator-output-end-to-end": {
+      "status": "reviewed-local",
+      "batch": 31,
+      "reviewDate": "2026-10-07",
+      "sha256": "4bf20863f93f9e4fd5079ad5af47589f6ba96d1a9ffe7af110638a545644168a",
+      "change": "重寫為PLC命令、輸出、線圈、能量機構與回饋五層；以兩端電壓和電流決定下一步。",
+      "verification": "tests/io-path-lesson.test.mjs; tests/io-path-lesson-browser.mjs; deterministic offline electrical model; no actuator test",
+      "hardwareVerified": false
+    },
     "24vdc-sensor-power-voltage-drop": {
       "status": "reviewed-local",
       "batch": 30,

@@ -1,21 +1,21 @@
 {
   "totals": {
-    "unreviewed": 337,
-    "reviewed-local": 112,
+    "reviewed-local": 116,
+    "unreviewed": 334,
     "draft": 1
   },
   "articles": [
     {
       "slug": "0-10v-analog-load-ground-response-open-circuit",
-      "status": "unreviewed"
+      "status": "reviewed-local"
     },
     {
       "slug": "24v-high-low-side-bjt-mosfet-switching",
-      "status": "unreviewed"
+      "status": "reviewed-local"
     },
     {
       "slug": "24v-input-reverse-polarity-tvs-surge-protection",
-      "status": "unreviewed"
+      "status": "reviewed-local"
     },
     {
       "slug": "24vdc-field-box-pluggable-power-integrity-hot-swap",
@@ -59,7 +59,7 @@
     },
     {
       "slug": "actuator-output-end-to-end",
-      "status": "unreviewed"
+      "status": "reviewed-local"
     },
     {
       "slug": "alarm-acknowledge-clear-occurrence",
@@ -1799,6 +1799,10 @@
     },
     {
       "slug": "wrong-import-removal-evidence",
+      "status": "unreviewed"
+    },
+    {
+      "slug": "xca-ecu-https-certificate-setup",
       "status": "unreviewed"
     },
     {

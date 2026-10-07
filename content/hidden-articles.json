@@ -1,11 +1,7 @@
 [
-  "0-10v-analog-load-ground-response-open-circuit",
-  "24v-high-low-side-bjt-mosfet-switching",
-  "24v-input-reverse-polarity-tvs-surge-protection",
   "355-industrial-event-diagnosis",
   "356-event-diagnosis",
   "accumulator-wraparound-precision-loss",
-  "actuator-output-end-to-end",
   "analog-output-signal-splitter-load-capacity",
   "archive-event-retrieval-verification",
   "average-valid-sample-count",

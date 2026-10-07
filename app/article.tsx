@@ -8,6 +8,7 @@ import FilterLesson from '@/components/filter-lesson';
 import SensorLesson from '@/components/sensor-lesson';
 import AliasLesson from '@/components/alias-lesson';
 import PowerLesson from '@/components/power-lesson';
+import IoPathLesson from '@/components/io-path-lesson';
 import { practiceModes } from '@/lib/plc-practice';
 import ArticleReadingNav, {
   ArticleDirectoryLink,
@@ -38,6 +39,7 @@ type RelatedArticle = {
   title: string;
   description: string;
   date: string;
+  author: string;
   category: string;
   readingMinutes: number;
   tags?: string[];
@@ -48,6 +50,13 @@ const powerLessonModes = {
   '24vdc-oring-redundancy-capacity-overload': 'redundancy',
   '24vdc-field-box-pluggable-power-integrity-hot-swap': 'hotplug',
   '24vdc-ups-branch-event-correlation': 'events',
+} as const;
+
+const ioPathLessonModes = {
+  '0-10v-analog-load-ground-response-open-circuit': 'analog',
+  '24v-high-low-side-bjt-mosfet-switching': 'switch',
+  '24v-input-reverse-polarity-tvs-surge-protection': 'protect',
+  'actuator-output-end-to-end': 'actuator',
 } as const;
 
 export default function Article({
@@ -61,6 +70,9 @@ export default function Article({
   const category = article.category || 'PLC 實務筆記';
   const powerLessonMode = article.slug
     ? powerLessonModes[article.slug as keyof typeof powerLessonModes]
+    : undefined;
+  const ioPathLessonMode = article.slug
+    ? ioPathLessonModes[article.slug as keyof typeof ioPathLessonModes]
     : undefined;
 
   return (
@@ -122,6 +134,9 @@ export default function Article({
         ) : null}
         {article.slug && powerLessonMode ? (
           <PowerLesson key={article.slug} mode={powerLessonMode} />
+        ) : null}
+        {article.slug && ioPathLessonMode ? (
+          <IoPathLesson key={article.slug} mode={ioPathLessonMode} />
         ) : null}
         <div className="article-reader__layout">
           <ArticleReadingNav toc={article.toc} />

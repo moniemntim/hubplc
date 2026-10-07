@@ -72,6 +72,13 @@ void test('article publishing excludes drafts and strips active HTML', async () 
     assert.equal(index.length, 1);
     assert.equal(index[0].slug, 'published');
     assert.equal('html' in index[0], false);
+    assert.match(
+      await fs.readFile(
+        path.join(temp, 'app/articles/(posts)/published/page.tsx'),
+        'utf8',
+      ),
+      /const related=.* as NonNullable<Parameters<typeof Article>\[0\]\["related"\]>/,
+    );
     const fulltext = JSON.parse(
       await fs.readFile(path.join(temp, 'public/article-search.json'), 'utf8'),
     );

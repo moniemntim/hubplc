@@ -167,7 +167,7 @@ for (const article of articles) {
     JSON.stringify(readerArticle) +
     ';\nconst related=' +
     JSON.stringify(related) +
-    ';\nexport const metadata={title:article.title,description:article.description,alternates:{canonical:"https://hubplc.com/articles/"+article.slug}};\nexport default function Page(){return <Article article={article} related={related}/>;}\n';
+    ' as NonNullable<Parameters<typeof Article>[0]["related"]>;\nexport const metadata={title:article.title,description:article.description,alternates:{canonical:"https://hubplc.com/articles/"+article.slug}};\nexport default function Page(){return <Article article={article} related={related}/>;}\n';
   await fs.writeFile(path.join(folder, 'page.tsx'), source);
 }
 console.log(

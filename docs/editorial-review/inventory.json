@@ -1,7 +1,7 @@
 {
   "totals": {
-    "unreviewed": 341,
-    "reviewed-local": 108,
+    "unreviewed": 337,
+    "reviewed-local": 112,
     "draft": 1
   },
   "articles": [
@@ -19,19 +19,19 @@
     },
     {
       "slug": "24vdc-field-box-pluggable-power-integrity-hot-swap",
-      "status": "unreviewed"
+      "status": "reviewed-local"
     },
     {
       "slug": "24vdc-oring-redundancy-capacity-overload",
-      "status": "unreviewed"
+      "status": "reviewed-local"
     },
     {
       "slug": "24vdc-sensor-power-voltage-drop",
-      "status": "unreviewed"
+      "status": "reviewed-local"
     },
     {
       "slug": "24vdc-ups-branch-event-correlation",
-      "status": "unreviewed"
+      "status": "reviewed-local"
     },
     {
       "slug": "355-industrial-event-diagnosis",

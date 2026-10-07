@@ -7,6 +7,7 @@ import FivePointLesson from '@/components/five-point-lesson';
 import FilterLesson from '@/components/filter-lesson';
 import SensorLesson from '@/components/sensor-lesson';
 import AliasLesson from '@/components/alias-lesson';
+import PowerLesson from '@/components/power-lesson';
 import { practiceModes } from '@/lib/plc-practice';
 import ArticleReadingNav, {
   ArticleDirectoryLink,
@@ -42,6 +43,13 @@ type RelatedArticle = {
   tags?: string[];
 };
 
+const powerLessonModes = {
+  '24vdc-sensor-power-voltage-drop': 'branch',
+  '24vdc-oring-redundancy-capacity-overload': 'redundancy',
+  '24vdc-field-box-pluggable-power-integrity-hot-swap': 'hotplug',
+  '24vdc-ups-branch-event-correlation': 'events',
+} as const;
+
 export default function Article({
   article,
   related = [],
@@ -51,6 +59,9 @@ export default function Article({
 }) {
   const relatedArticles = related.slice(0, 3);
   const category = article.category || 'PLC 實務筆記';
+  const powerLessonMode = article.slug
+    ? powerLessonModes[article.slug as keyof typeof powerLessonModes]
+    : undefined;
 
   return (
     <main className="article-reader">
@@ -108,6 +119,9 @@ export default function Article({
         ) : null}
         {article.slug === 'sampling-aliasing-frequency-validation' ? (
           <AliasLesson />
+        ) : null}
+        {article.slug && powerLessonMode ? (
+          <PowerLesson key={article.slug} mode={powerLessonMode} />
         ) : null}
         <div className="article-reader__layout">
           <ArticleReadingNav toc={article.toc} />

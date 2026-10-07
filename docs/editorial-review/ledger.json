@@ -1,6 +1,42 @@
 {
   "scope": "全部發布文章；每篇需閱讀正文，機器掃描不等於完成",
   "articles": {
+    "24vdc-sensor-power-voltage-drop": {
+      "status": "reviewed-local",
+      "batch": 30,
+      "reviewDate": "2026-10-07",
+      "sha256": "e606eff59f66adb546f1c9187316b9a34c3155cda2b9f8404a39b373e83c6590",
+      "change": "重寫為支路壓降試算、三點量測與驗收表；FX5U只作供電圖邊界，未聲稱硬體量測。",
+      "verification": "tests/power-lesson.test.mjs; tests/power-lesson-browser.mjs; Mitsubishi FX5U hardware manual; no hardware test",
+      "hardwareVerified": false
+    },
+    "24vdc-oring-redundancy-capacity-overload": {
+      "status": "reviewed-local",
+      "batch": 30,
+      "reviewDate": "2026-10-07",
+      "sha256": "2a795d5906ac63ce80e30c05e1d80ea44a2e73c9e33116a36769f5fa966a1a55",
+      "change": "重寫為單台失效容量、隔離與配線壓降的N+1判定，並區分ORing、均流與備援。",
+      "verification": "tests/power-lesson.test.mjs; tests/power-lesson-browser.mjs; Phoenix Contact active redundancy documentation; no hardware test",
+      "hardwareVerified": false
+    },
+    "24vdc-field-box-pluggable-power-integrity-hot-swap": {
+      "status": "reviewed-local",
+      "batch": 30,
+      "reviewDate": "2026-10-07",
+      "sha256": "7f6bb57b61a9c00d0a138ebfc3c858b5b23e6d51507e36c0bd6e0b13bb1ee000",
+      "change": "重寫為輸入電容、限流餘量與充電時間案例，明示可拆接頭不等於帶電插拔。",
+      "verification": "tests/power-lesson.test.mjs; tests/power-lesson-browser.mjs; TI TPS2663x datasheet; no hot-plug hardware test",
+      "hardwareVerified": false
+    },
+    "24vdc-ups-branch-event-correlation": {
+      "status": "reviewed-local",
+      "batch": 30,
+      "reviewDate": "2026-10-07",
+      "sha256": "59246344d169c9ba2c8994760ee51727bbe50f1d6668b2818faa6e5a45fba666",
+      "change": "重寫為取樣漏失、跨設備時鐘誤差與六筆事件判讀，將觀察、推論與缺證分開。",
+      "verification": "tests/power-lesson.test.mjs; tests/power-lesson-browser.mjs; deterministic offline timing model; no UPS or FX5U test",
+      "hardwareVerified": false
+    },
     "plc-self-hold-set-reset-q-series": {
       "status": "reviewed-local",
       "batch": 1,

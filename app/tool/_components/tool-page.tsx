@@ -36,7 +36,6 @@ export default function ToolPage({
           descriptionZh={tool.description}
           descriptionEn={english.description}
         />
-        {tool.category !== '編碼' && <AdSense />}
         <LanguageSwitcher />
         <LocalizedNav
           className="breadcrumbs"
@@ -134,6 +133,7 @@ export default function ToolPage({
           </p>
         </aside>
         <PlcGuide slug={slug} />
+        {tool.category !== '編碼' && <AdSense />}
         <div className="tool-page-end">
           <Link href="/tool">
             ← <LocalizedText zh="返回工具總覽" en="Back to all tools" />

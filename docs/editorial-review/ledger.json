@@ -1044,6 +1044,15 @@
       "change": "七個格點完整序列，RAW/LINEAR/MISSING、最大缺口、禁止外推及保持年齡。",
       "verification": "423 unit tests; alias browser 3; layout 18; case arithmetic; tsc/oxlint/build; release evidence separately",
       "hardwareVerified": false
+    },
+    "xca-ecu-https-certificate-setup": {
+      "status": "reviewed-local",
+      "batch": 32,
+      "reviewDate": "2026-10-12",
+      "sha256": "725d93b458233221ad9a86951bdb23ff408e1b108589a3e01bbc6c7d89e6f362",
+      "change": "逐段審查既有 XCA、固定 IP SAN、Windows 根憑證匯入與瀏覽器驗證流程；不改動原文。19 張本機截圖皆存在且與圖號一一對應。",
+      "verification": "全文、front matter 與 19/19 本機圖片路徑核對；XCA Step by Step、XCA Certificate Input Dialog、Chrome DevTools Security 三個引用網址於 2026-10-12 回應 HTTP 200；prepare-articles 產出117篇公開文章。來源與PNG原始位元組未見 PEM 私鑰標記或密碼/API key/secret/token 的指派格式；未執行OCR或實機ECU/Windows部署驗證。",
+      "hardwareVerified": false
     }
   }
 }

@@ -1,7 +1,7 @@
 {
   "totals": {
-    "reviewed-local": 116,
-    "unreviewed": 334,
+    "reviewed-local": 117,
+    "unreviewed": 333,
     "draft": 1
   },
   "articles": [
@@ -1803,7 +1803,7 @@
     },
     {
       "slug": "xca-ecu-https-certificate-setup",
-      "status": "unreviewed"
+      "status": "reviewed-local"
     },
     {
       "slug": "zero-volt-return-pe-fe-grounding-stepper-common-return",

@@ -74,9 +74,9 @@ export default function About() {
           類比訊號換算案例
         </Link>
         與
-        <Link href="/articles/modbus-response-wrong-value">
+        <Link href="/articles/blackbox-observable">
           {' '}
-          Modbus 數值判讀案例
+          Modbus 離線讀取與驗收案例
         </Link>
         可搭配本站工具逐步核對。
       </p>

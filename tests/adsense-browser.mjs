@@ -6,7 +6,7 @@ import { ADSENSE_URL, mockAdsense } from './adsense-mock.mjs';
 const base = process.env.TEST_BASE_URL ?? 'http://127.0.0.1:8787';
 const cases = [
   ['/', true],
-  ['/tool', true],
+  ['/tool', false],
   ['/articles', false],
   ['/articles/acceptance-pass-untested-not-applicable', true],
   ['/privacy', false],
@@ -70,12 +70,29 @@ try {
     await expect(page.getByRole('region', { name: '計算結果' })).toContainText(
       '50',
     );
+    assert.equal(
+      await page.locator('ins.adsbygoogle').evaluate((unit) => {
+        const example = document.querySelector('.tool-example');
+        const end = document.querySelector('.tool-page-end');
+        return Boolean(
+          example &&
+          end &&
+          example.compareDocumentPosition(unit) &
+            Node.DOCUMENT_POSITION_FOLLOWING &&
+          unit.compareDocumentPosition(end) & Node.DOCUMENT_POSITION_FOLLOWING,
+        );
+      }),
+      true,
+      'calculator ad follows worked content and precedes only exit navigation',
+    );
     assert.ok(
       await page.evaluate(
         () => document.documentElement.scrollWidth <= innerWidth,
       ),
     );
     await page.goto(base + '/tool');
+    await expect(page.locator('script[src*="adsbygoogle.js"]')).toHaveCount(0);
+    await expect(page.locator('ins.adsbygoogle')).toHaveCount(0);
     const count = adRequests.length;
     await page.locator('a[href="/tool/password-generator"]').click();
     await expect(page.locator('h1')).toContainText('密碼');
@@ -87,6 +104,34 @@ try {
       'native navigation to sensitive tool must not load ads',
     );
   }
+  await page.goto(base + '/');
+  await expect(page.locator('ins.adsbygoogle')).toHaveCount(1);
+  assert.equal(
+    await page.locator('ins.adsbygoogle').evaluate((unit) => {
+      const editorial = document.querySelector('.home-editorial');
+      return Boolean(
+        editorial &&
+        editorial.compareDocumentPosition(unit) &
+          Node.DOCUMENT_POSITION_FOLLOWING,
+      );
+    }),
+    true,
+    'home ad follows featured tools, lessons and editorial content',
+  );
+  await page.goto(base + '/articles/acceptance-pass-untested-not-applicable');
+  await expect(page.locator('ins.adsbygoogle')).toHaveCount(1);
+  assert.equal(
+    await page.locator('ins.adsbygoogle').evaluate((unit) => {
+      const content = document.querySelector('.article-reader__layout');
+      return Boolean(
+        content &&
+        content.compareDocumentPosition(unit) &
+          Node.DOCUMENT_POSITION_FOLLOWING,
+      );
+    }),
+    true,
+    'article ad follows the article content',
+  );
   assert.deepEqual(errors, []);
   console.log(
     `PASS ${cases.length} HTML pages: correct publisher, one async anonymous script in head only on allowed pages; desktop/mobile calculator and sensitive-page navigation; no real ad impressions`,

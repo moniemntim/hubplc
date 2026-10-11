@@ -92,6 +92,13 @@ try {
   await result('數值', '-10');
   await open('/about');
   await expect(page.locator('#report')).toBeVisible();
+  const aboutArticleLinks = await page
+    .locator('main a[href^="/articles/"]')
+    .evaluateAll((links) => links.map((link) => link.getAttribute('href')));
+  for (const href of aboutArticleLinks) {
+    const linkedArticle = await page.request.get(base + href);
+    assert.equal(linkedArticle.status(), 200, `about article link ${href}`);
+  }
   const template = await page.request.get(
     base + '/content-report-template.txt',
   );

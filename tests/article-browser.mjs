@@ -11,6 +11,8 @@ const articles = JSON.parse(
 );
 const lastPage = Math.ceil(articles.length / 12);
 const lastPageCount = articles.length - (lastPage - 1) * 12;
+const oldestDate = articles.map((article) => article.date).sort()[0];
+const exampleSlug = 'blackbox-observable';
 const browser = await chromium.launch({
   headless: true,
   executablePath:
@@ -91,22 +93,20 @@ try {
   checks.push('Category + search combination and URL reload preserve controls');
 
   await page.getByRole('button', { name: '清除篩選' }).click();
-  await search.fill('11062');
+  await search.fill('offline_known_result');
   await expect(page.locator('.library-articles')).toHaveAttribute(
     'aria-busy',
     'false',
   );
   await expect(
-    page.locator(
-      'a.library-article[href="/articles/q-series-rs485-modbus-rtu"]',
-    ),
+    page.locator(`a.library-article[href="/articles/${exampleSlug}"]`),
   ).toBeVisible();
   assert.ok(
     (await page.locator('.library-article-category').allTextContents()).some(
       (text) => text.includes('內文符合'),
     ),
   );
-  checks.push('Body-only 11062 search finds existing Q-series tutorial');
+  checks.push('Body-only search finds a published Modbus case');
 
   await search.fill('zzzz-no-such-article-999');
   await expect(cards).toHaveCount(0);
@@ -115,7 +115,7 @@ try {
   ).toBeVisible();
   await page.getByRole('button', { name: '顯示所有文章' }).click();
   await page.getByRole('combobox', { name: '文章排序' }).selectOption('oldest');
-  await expect(cards.first()).toContainText('2026-09-08');
+  await expect(cards.first()).toContainText(oldestDate);
   await page.getByRole('combobox', { name: '文章排序' }).selectOption('newest');
   await page.getByRole('button', { name: '卡片顯示' }).click();
   await expect(page.locator('.library-articles-grid')).toBeVisible();
@@ -183,7 +183,7 @@ try {
         path: `${output}/directory-mobile.png`,
         fullPage: true,
       });
-    await open('/articles/q-series-rs485-modbus-rtu');
+    await open(`/articles/${exampleSlug}`);
     await expect(page.locator('.article-reader__toc-mobile')).toBeVisible();
     await page.locator('.article-reader__toc-mobile summary').click();
     await expect(
@@ -200,7 +200,7 @@ try {
     }
   }
   await page.setViewportSize({ width: 1440, height: 1000 });
-  await open('/articles/q-series-rs485-modbus-rtu');
+  await open(`/articles/${exampleSlug}`);
   await noOverflow('reader desktop');
   await page.screenshot({
     path: `${output}/reader-desktop.png`,

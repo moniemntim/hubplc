@@ -52,7 +52,6 @@ const lessons = [
 export default function Home() {
   return (
     <main className="shell home-page">
-      <AdSense />
       <div className="intro">
         <div>
           <p className="eyebrow">HUBPLC / PLC 工具與操作教學</p>
@@ -133,6 +132,7 @@ export default function Home() {
           </a>
         </p>
       </section>
+      <AdSense />
     </main>
   );
 }

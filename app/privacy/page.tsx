@@ -7,7 +7,7 @@ export default function Privacy() {
     <main className="prose">
       <p className="eyebrow">PRIVACY</p>
       <h1>隱私說明</h1>
-      <p>更新日期：2026 年 10 月 8 日</p>
+      <p>更新日期：2026 年 10 月 12 日</p>
       <h2>工具輸入</h2>
       <p>
         本站工具在瀏覽器內處理輸入內容，不會主動將工具輸入傳送到本站伺服器。一般換算工具不儲存輸入；碼錶的本機儲存與分享方式說明如下。
@@ -47,9 +47,9 @@ export default function Privacy() {
       </p>
       <h2>廣告與分析</h2>
       <p>
-        本站在首頁、工具總覽、已發布文章及一般計算工具頁使用 Google AdSense
-        廣告。密碼、加解密、QR Code 與其他編碼分類工具頁不載入 AdSense
-        程式碼。本站未加入第三方流量分析或會員系統。
+        本站可能在首頁、已發布文章及一般計算工具頁的實質內容後使用 Google
+        AdSense 廣告；工具總覽、密碼、加解密、QR Code 與其他編碼分類工具頁不載入
+        AdSense 程式碼。本站未加入第三方流量分析或會員系統。
       </p>
       <p>
         Google 與其他第三方廣告供應商可能使用 Cookie

@@ -77,7 +77,6 @@ export default function Article({
 
   return (
     <main className="article-reader">
-      <AdSense />
       <div className="article-reader__frame">
         <header className="article-reader__header">
           <ArticleDirectoryLink />
@@ -145,6 +144,7 @@ export default function Article({
             dangerouslySetInnerHTML={{ __html: article.html }}
           />
         </div>
+        <AdSense />
 
         <footer className="article-reader__footer">
           <p>

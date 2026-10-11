@@ -10,12 +10,16 @@ const browser = await chromium.launch({
     'C:/Program Files (x86)/Microsoft/Edge/Application/msedge.exe',
 });
 const page = await browser.newPage();
+await page.addInitScript(() =>
+  localStorage.setItem('hubplc:locale', 'zh-Hant'),
+);
 const errors = [];
 page.on('pageerror', (error) => errors.push(error.message));
 await mockAdsense(page);
 async function open(path) {
   const response = await page.goto(base + path);
   assert.equal(response.status(), 200, path);
+  await page.waitForLoadState('networkidle');
 }
 async function choose(label, option) {
   await page.getByRole('combobox', { name: label, exact: true }).click();

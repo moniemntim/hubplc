@@ -47,6 +47,9 @@ const browser = await chromium.launch({
 });
 try {
   const page = await browser.newPage();
+  await page.addInitScript(() =>
+    localStorage.setItem('hubplc:locale', 'zh-Hant'),
+  );
   await mockAdsense(page);
   const errors = [];
   const adRequests = [];

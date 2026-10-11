@@ -1,5 +1,6 @@
 'use client';
 import { useState } from 'react';
+import { useToolLanguage } from '@/components/tool-language';
 import { unitGroups, convertUnit } from '@/lib/tools/units';
 import { attempt, formatNumber } from '@/lib/tools/core';
 import Link from '@/components/site-link';
@@ -49,7 +50,58 @@ function exampleFor(groupId: string) {
   return groupExamples[groupId] ?? groupExamples.pressure;
 }
 
+const englishGroupNotes: Record<string, string> = {
+  pressure:
+    'This converts pressure units only; it does not convert gauge pressure to absolute pressure. mmH₂O uses standard gravity.',
+  flow: 'Mass flow and volumetric flow are different quantities and cannot be converted directly. US gpm uses US liquid gallons.',
+  time: 'A day is fixed at 24 hours.',
+  mass: '“Weight” here means mass, not force.',
+  temperature:
+    'Temperature is calculated on absolute scales; input cannot be below absolute zero (0 K).',
+  speed:
+    'Mach uses a reference speed of sound of 343 m/s. Actual Mach number depends on local temperature and medium.',
+  power:
+    'Horsepower has several definitions; mechanical hp and metric PS are listed separately.',
+  storage:
+    'kB, MB, GB and TB are decimal (1000); KiB, MiB, GiB and TiB are binary (1024). B means byte and b means bit.',
+};
+
+const englishUnitLabels: Record<string, string> = {
+  'mmH₂O（標準重力）': 'mmH₂O (standard gravity)',
+  'g/s（質量）': 'g/s (mass)',
+  'kg/s（質量）': 'kg/s (mass)',
+  'kg/h（質量）': 'kg/h (mass)',
+  't/h（質量）': 't/h (mass)',
+  公噸: 'metric tonne',
+  '美制 gallon': 'US gallon',
+  '英制 gallon': 'imperial gallon',
+  '海里 nmi': 'nautical mile nmi',
+  '節 kn': 'knot kn',
+  'Mach（參考音速 343 m/s）': 'Mach (reference speed 343 m/s)',
+  '機械 hp': 'mechanical hp',
+  '公制 PS': 'metric PS',
+  '度 °': 'degree °',
+  '弧度 rad': 'radian rad',
+  '百分度 gon': 'gradian gon',
+  '圈 turn': 'turn',
+  '角分 ′': 'arcminute ′',
+  '角秒 ″': 'arcsecond ″',
+  'kB（十進位）': 'kB (decimal)',
+  'MB（十進位）': 'MB (decimal)',
+  'GB（十進位）': 'GB (decimal)',
+  'TB（十進位）': 'TB (decimal)',
+  'KiB（二進位）': 'KiB (binary)',
+  'MiB（二進位）': 'MiB (binary)',
+  'GiB（二進位）': 'GiB (binary)',
+  'TiB（二進位）': 'TiB (binary)',
+};
+
+function englishUnitLabel(label: string) {
+  return englishUnitLabels[label] ?? label;
+}
+
 export default function UnitConverter({ fixedGroup }: { fixedGroup?: string }) {
+  const { tr } = useToolLanguage();
   const initialGroup = fixedGroup ?? 'pressure';
   const initialExample = exampleFor(initialGroup);
   const initial =
@@ -94,10 +146,14 @@ export default function UnitConverter({ fixedGroup }: { fixedGroup?: string }) {
       notes={
         <>
           <p>
-            一般單位：先乘以來源單位的 SI
-            係數，再除以目標單位係數。溫度另外計算零點偏移。
+            {tr(
+              '一般單位：先乘以來源單位的 SI 係數，再除以目標單位係數。溫度另外計算零點偏移。',
+              'For general units, multiply by the source unit SI factor, then divide by the target unit factor. Temperature offsets are calculated separately.',
+            )}
           </p>
-          {group.note && <p>{group.note}</p>}
+          {group.note && (
+            <p>{tr(group.note, englishGroupNotes[group.id] ?? group.note)}</p>
+          )}
         </>
       }
       result={
@@ -106,13 +162,15 @@ export default function UnitConverter({ fixedGroup }: { fixedGroup?: string }) {
             <ResultRows
               rows={[
                 {
-                  label: '換算結果',
+                  label: tr('換算結果', 'Conversion result'),
                   value: formatNumber(result.data),
-                  unit: target.label,
+                  unit: tr(target.label, englishUnitLabel(target.label)),
                 },
               ]}
             />
-            <CopyButton text={`${formatNumber(result.data)} ${target.label}`} />
+            <CopyButton
+              text={`${formatNumber(result.data)} ${tr(target.label, englishUnitLabel(target.label))}`}
+            />
           </>
         ) : (
           <Notice>{result.error}</Notice>
@@ -122,41 +180,88 @@ export default function UnitConverter({ fixedGroup }: { fixedGroup?: string }) {
       {!fixedGroup && (
         <>
           <Choice
-            label="物理量分類"
+            label={tr('物理量分類', 'Physical quantity category')}
             value={groupId}
             onChange={changeGroup}
             options={unitGroups.map((item) => ({
               value: item.id,
-              label: item.label,
+              label: tr(
+                item.label,
+                (
+                  {
+                    長度: 'Length',
+                    溫度: 'Temperature',
+                    質量: 'Mass',
+                    面積: 'Area',
+                    體積: 'Volume',
+                    壓力: 'Pressure',
+                    功率: 'Power',
+                    時間: 'Time',
+                    角度: 'Angle',
+                    電容量: 'Capacitance',
+                    速度: 'Speed',
+                    儲存容量: 'Storage capacity',
+                    流量: 'Flow',
+                  } as Record<string, string>
+                )[item.label] ?? item.label,
+              ),
             }))}
           />
-          <nav className="crypto-related" aria-label="常用單位換算捷徑">
+          <nav
+            className="crypto-related"
+            aria-label={tr(
+              '常用單位換算捷徑',
+              'Common unit-conversion shortcuts',
+            )}
+          >
             {dedicatedPages.map(([id, label]) => (
               <Link key={id} href={`/tool/${id}-converter`}>
-                {label}
+                {tr(
+                  label,
+                  (
+                    {
+                      長度: 'Length',
+                      溫度: 'Temperature',
+                      質量: 'Mass',
+                      面積: 'Area',
+                      體積: 'Volume',
+                      壓力: 'Pressure',
+                      功率: 'Power',
+                      時間: 'Time',
+                      角度: 'Angle',
+                      電容量: 'Capacitance',
+                      速度: 'Speed',
+                      儲存容量: 'Storage capacity',
+                    } as Record<string, string>
+                  )[label],
+                )}
               </Link>
             ))}
           </nav>
         </>
       )}
-      <NumberField label="輸入數值" value={raw} onChange={setRaw} />
+      <NumberField
+        label={tr('輸入數值', 'Input value')}
+        value={raw}
+        onChange={setRaw}
+      />
       <div className="fields-grid">
         <Choice
-          label="來源單位"
+          label={tr('來源單位', 'Source unit')}
           value={fromId}
           onChange={changeFrom}
           options={group.units.map((item) => ({
             value: item.id,
-            label: item.label,
+            label: tr(item.label, englishUnitLabel(item.label)),
           }))}
         />
         <Choice
-          label="目標單位"
+          label={tr('目標單位', 'Target unit')}
           value={toId}
           onChange={setToId}
           options={compatible.map((item) => ({
             value: item.id,
-            label: item.label,
+            label: tr(item.label, englishUnitLabel(item.label)),
           }))}
         />
       </div>
@@ -168,14 +273,14 @@ export default function UnitConverter({ fixedGroup }: { fixedGroup?: string }) {
           if (result.data !== undefined) setRaw(String(result.data));
         }}
       >
-        ⇄ 交換方向
+        ⇄ {tr('交換方向', 'Swap direction')}
       </button>
       <div className="action-row">
         <button className="action secondary" onClick={() => setRaw('')}>
-          清空
+          {tr('清空', 'Clear')}
         </button>
         <button className="action secondary" onClick={loadExample}>
-          載入範例
+          {tr('載入範例', 'Load example')}
         </button>
       </div>
     </ToolPanel>

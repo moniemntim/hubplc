@@ -6,6 +6,7 @@ import {
   type QuantityKind,
 } from '@/lib/tools/quantity';
 import { Choice, NumberField } from './controls';
+import { useToolLanguage } from '@/components/tool-language';
 
 function display(raw: string, factor: number) {
   try {
@@ -29,6 +30,7 @@ export function QuantityField({
   kind: QuantityKind;
   initialUnit?: string;
 }) {
+  const { tr } = useToolLanguage();
   const options = quantityUnits[kind];
   const initial =
     options.find((unit) => unit.label === initialUnit) ??
@@ -55,15 +57,15 @@ export function QuantityField({
           try {
             si = scaleQuantity(next, unit.factor);
           } catch {
-            si = `無效數值：${next}`;
+            si = `${tr('無效數值：', 'Invalid value: ')}${next}`;
           }
           setState({ kind, unit: unit.label, raw: next, lastValue: si });
           onChange(si);
         }}
       />
       <Choice
-        label={`${label} 單位`}
-        shortLabel="單位"
+        label={`${label} ${tr('單位', 'unit')}`}
+        shortLabel={tr('單位', 'Unit')}
         value={unit.label}
         options={options.map((item) => ({
           value: item.label,
@@ -75,9 +77,11 @@ export function QuantityField({
           setState({
             kind,
             unit: next,
-            raw: value.startsWith('無效數值：')
-              ? raw
-              : display(value, selected.factor),
+            raw:
+              value.startsWith('無效數值：') ||
+              value.startsWith('Invalid value: ')
+                ? raw
+                : display(value, selected.factor),
             lastValue: value,
           });
         }}

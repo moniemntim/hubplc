@@ -20,6 +20,9 @@ const context = await browser.newContext({
   acceptDownloads: true,
   permissions: ['clipboard-read', 'clipboard-write'],
 });
+await context.addInitScript(() => {
+  localStorage.setItem('hubplc:locale', 'zh-Hant');
+});
 const page = await context.newPage();
 await mockAdsense(page);
 const errors = [];

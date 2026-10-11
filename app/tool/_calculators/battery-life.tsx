@@ -1,6 +1,7 @@
 'use client';
 
 import { useState } from 'react';
+import { useToolLanguage } from '@/components/tool-language';
 import { attempt, formatNumber } from '@/lib/tools/core';
 import {
   batteryCapacityToAh,
@@ -27,16 +28,28 @@ function BatteryDiagram({
   currentA?: number;
   usablePercent?: number;
 }) {
+  const { tr } = useToolLanguage();
   const fill = Math.max(0, Math.min(100, usablePercent ?? 0));
   return (
-    <svg viewBox="0 0 360 180" aria-label="電池供應固定平均電流負載示意">
-      <title>{'電池壽命的固定平均電流模型'}</title>
+    <svg
+      viewBox="0 0 360 180"
+      aria-label={tr(
+        '電池供應固定平均電流負載示意',
+        'Battery supplying a fixed average-current load',
+      )}
+    >
+      <title>
+        {tr(
+          '電池壽命的固定平均電流模型',
+          'Fixed average-current battery-life model',
+        )}
+      </title>
       <g fill="none" stroke="currentColor" strokeWidth="2">
         <rect x="35" y="45" width="110" height="65" rx="6" />
         <path d="M145 65h12v25h-12M157 77h63m-8-6 8 6-8 6M225 55v45h80v-45h-80" />
         <path d="M65 77h18m-9-9v18M109 77h18" />
       </g>
-      <DiagramPart field="可用容量">
+      <DiagramPart field={tr('可用容量', 'Usable capacity')}>
         <rect x="48" y="95" width="84" height="8" rx="4" fill="none" />
         <rect
           x="48"
@@ -48,29 +61,30 @@ function BatteryDiagram({
           stroke="none"
         />
         <text x="35" y="130" fontSize="13">
-          可用{' '}
+          {tr('可用', 'Usable')}{' '}
           {usablePercent === undefined ? '' : `${formatNumber(usablePercent)}%`}
         </text>
       </DiagramPart>
-      <DiagramPart field="電池容量">
+      <DiagramPart field={tr('電池容量', 'Battery capacity')}>
         <text x="35" y="145" fontSize="13">
-          容量{' '}
+          {tr('容量', 'Capacity')}{' '}
           {capacityAh === undefined ? '' : `${formatNumber(capacityAh)} Ah`}
         </text>
       </DiagramPart>
-      <DiagramPart field="平均負載電流">
+      <DiagramPart field={tr('平均負載電流', 'Average load current')}>
         <text x="190" y="135" fontSize="13">
           Iavg {currentA === undefined ? '' : `${formatNumber(currentA)} A`}
         </text>
       </DiagramPart>
       <text x="265" y="82" textAnchor="middle" fontSize="13">
-        固定負載
+        {tr('固定負載', 'Fixed load')}
       </text>
     </svg>
   );
 }
 
 export default function BatteryLife() {
+  const { tr } = useToolLanguage();
   const [capacity, setCapacity] = useState('2000');
   const [capacityUnit, setCapacityUnit] = useState<BatteryCapacityUnit>('mAh');
   const [current, setCurrent] = useState('.1');
@@ -119,8 +133,10 @@ export default function BatteryLife() {
       }
       notes={
         <>
-          公式：時間（h）= 有效容量（Ah）÷
-          平均負載電流（A）。這是理想、固定電流的估計；電池狀況、年齡、溫度與放電率都會改變實際續航。參考{' '}
+          {tr(
+            '公式：時間（h）= 有效容量（Ah）÷ 平均負載電流（A）。這是理想、固定電流的估計；電池狀況、年齡、溫度與放電率都會改變實際續航。參考',
+            'Formula: time (h) = usable capacity (Ah) ÷ average load current (A). This is an ideal fixed-current estimate; battery condition, age, temperature, and discharge rate all affect actual runtime. Reference:',
+          )}{' '}
           <a href="https://www.digikey.tw/en/resources/conversion-calculators/conversion-calculator-battery-life">
             DigiKey Battery Life Calculator
           </a>
@@ -132,22 +148,22 @@ export default function BatteryLife() {
           <ResultRows
             rows={[
               {
-                label: '預估續航',
+                label: tr('預估續航', 'Estimated runtime'),
                 value: formatNumber(result.data.hours),
                 unit: 'h',
               },
               {
-                label: '預估天數',
+                label: tr('預估天數', 'Estimated days'),
                 value: formatNumber(result.data.days),
-                unit: '天',
+                unit: tr('天', 'days'),
               },
               {
-                label: '有效容量',
+                label: tr('有效容量', 'Usable capacity'),
                 value: formatNumber(result.data.usableCapacityAh),
                 unit: 'Ah',
               },
               {
-                label: '平均負載電流',
+                label: tr('平均負載電流', 'Average load current'),
                 value: formatNumber(result.data.currentA),
                 unit: 'A',
               },
@@ -159,15 +175,15 @@ export default function BatteryLife() {
       }
     >
       <div className="fields-grid">
-        <div data-field="電池容量">
+        <div data-field={tr('電池容量', 'Battery capacity')}>
           <NumberField
-            label="電池容量"
+            label={tr('電池容量', 'Battery capacity')}
             value={capacity}
             onChange={setCapacity}
           />
           <Choice
-            label="電池容量單位"
-            shortLabel="單位"
+            label={tr('電池容量單位', 'Battery capacity unit')}
+            shortLabel={tr('單位', 'Unit')}
             value={capacityUnit}
             onChange={changeCapacityUnit}
             options={[
@@ -177,14 +193,14 @@ export default function BatteryLife() {
           />
         </div>
         <QuantityField
-          label="平均負載電流"
+          label={tr('平均負載電流', 'Average load current')}
           value={current}
           onChange={setCurrent}
           kind="current"
           initialUnit="mA"
         />
         <NumberField
-          label="可用容量"
+          label={tr('可用容量', 'Usable capacity')}
           value={usablePercent}
           onChange={setUsablePercent}
           unit="%"

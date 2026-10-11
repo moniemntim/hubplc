@@ -1,6 +1,7 @@
 'use client';
 import { DiagramPart } from './controls';
 import { formatNumber } from '@/lib/tools/core';
+import { useToolLanguage } from '@/components/tool-language';
 const val = (n: number | undefined, u: string) =>
   n !== undefined && Number.isFinite(n) ? formatNumber(n) + ' ' + u : '—';
 function Ground({ x, y }: { x: number; y: number }) {
@@ -28,18 +29,27 @@ export function NetworkDiagram({
   sourceField?: string;
   sourceText?: string;
 }) {
+  const { tr } = useToolLanguage();
   const h = values.length * 84 + 80;
   return (
     <section
       className="network-visual"
-      aria-label="完整電路圖，可捲動查看所有元件"
+      aria-label={tr(
+        '完整電路圖，可捲動查看所有元件',
+        'Complete circuit diagram; scroll to view all components',
+      )}
     >
       <svg
         className="network-schematic"
         viewBox={`0 0 420 ${h}`}
-        aria-label={`${symbol} ${mode === 'series' ? '串聯' : '並聯'}，${values.length} 顆`}
+        aria-label={`${symbol} ${mode === 'series' ? tr('串聯', 'series') : tr('並聯', 'parallel')}, ${values.length} ${tr('顆', 'components')}`}
       >
-        <title>{`完整 ${values.length} 顆元件電路`}</title>
+        <title>
+          {tr(
+            `完整 ${values.length} 顆元件電路`,
+            `Complete circuit with ${values.length} components`,
+          )}
+        </title>
         {sourceField && (
           <DiagramPart field={sourceField}>
             <text x="35" y="22" fontSize="14">
@@ -159,19 +169,25 @@ export function ShuntDiagram({
   };
   measured?: boolean;
 }) {
+  const { tr } = useToolLanguage();
   return (
     <svg
       viewBox="0 0 420 240"
-      aria-label="電流流經分流電阻，電壓表跨接電阻兩端"
+      aria-label={tr(
+        '電流流經分流電阻，電壓表跨接電阻兩端',
+        'Current flows through a shunt resistor; a voltmeter is connected across it',
+      )}
     >
-      <title>分流電阻量測位置</title>
+      <title>
+        {tr('分流電阻量測位置', 'Shunt resistor measurement position')}
+      </title>
       <path
         d="M30 135H140M280 135H390"
         fill="none"
         stroke="currentColor"
         strokeWidth="2"
       />
-      <DiagramPart field={measured ? '' : '電流'}>
+      <DiagramPart field={measured ? '' : tr('電流', 'Current')}>
         <path
           d="M65 122h35m-7-5 7 5-7 5"
           fill="none"
@@ -182,7 +198,7 @@ export function ShuntDiagram({
           I {val(data?.current, 'A')}
         </text>
       </DiagramPart>
-      <DiagramPart field={measured ? '' : '電阻'}>
+      <DiagramPart field={measured ? '' : tr('電阻', 'Resistance')}>
         <rect
           x="140"
           y="123"
@@ -196,7 +212,13 @@ export function ShuntDiagram({
           R {val(data?.resistance, 'Ω')}
         </text>
       </DiagramPart>
-      <DiagramPart field={measured ? '實測壓降' : '壓降'}>
+      <DiagramPart
+        field={
+          measured
+            ? tr('實測壓降', 'Measured voltage drop')
+            : tr('壓降', 'Voltage drop')
+        }
+      >
         <path
           d="M140 135V55H190M230 55H280V135"
           fill="none"
@@ -215,11 +237,11 @@ export function ShuntDiagram({
           V
         </text>
         <text x="210" y="22" textAnchor="middle" fontSize="14">
-          壓降 {val(data?.voltage, 'V')}
+          {tr('壓降', 'Voltage drop')} {val(data?.voltage, 'V')}
         </text>
       </DiagramPart>
       <text x="210" y="211" textAnchor="middle" fontSize="14">
-        功耗 {val(data?.power, 'W')}
+        {tr('功耗', 'Power')} {val(data?.power, 'W')}
       </text>
     </svg>
   );
@@ -233,10 +255,14 @@ export function RcDiagram({
   resistance?: number;
   capacitance?: number;
 }) {
+  const { tr } = useToolLanguage();
   const high = type === 'highpass';
   return (
-    <svg viewBox="0 0 420 250" aria-label={`RC ${high ? '高通' : '低通'}電路`}>
-      <title>{`一階 RC ${high ? '高通' : '低通'}`}</title>
+    <svg
+      viewBox="0 0 420 250"
+      aria-label={`RC ${high ? tr('高通', 'high-pass') : tr('低通', 'low-pass')} ${tr('電路', 'circuit')}`}
+    >
+      <title>{`${tr('一階', 'First-order')} RC ${high ? tr('高通', 'high-pass') : tr('低通', 'low-pass')}`}</title>
       <path
         d="M35 70H110M190 70H370M280 70V105"
         fill="none"
@@ -312,13 +338,22 @@ export function ReactanceDiagram({
   component?: number;
   frequency?: number;
 }) {
+  const { tr } = useToolLanguage();
   const cap = kind === 'capacitor';
   return (
     <svg
       viewBox="0 0 420 145"
-      aria-label={cap ? '電容交流電抗' : '電感交流電抗'}
+      aria-label={
+        cap
+          ? tr('電容交流電抗', 'Capacitive AC reactance')
+          : tr('電感交流電抗', 'Inductive AC reactance')
+      }
     >
-      <title>{cap ? '容抗 −jXc' : '感抗 +jXL'}</title>
+      <title>
+        {cap
+          ? tr('容抗 −jXc', 'Capacitive reactance −jXc')
+          : tr('感抗 +jXL', 'Inductive reactance +jXL')}
+      </title>
       <path
         d="M35 80H145M253 80H385"
         fill="none"
@@ -345,7 +380,7 @@ export function ReactanceDiagram({
           {cap ? 'C' : 'L'} {val(component, cap ? 'F' : 'H')}
         </text>
       </DiagramPart>
-      <DiagramPart field="頻率">
+      <DiagramPart field={tr('頻率', 'Frequency')}>
         <text x="210" y="126" textAnchor="middle" fontSize="14">
           f {val(frequency, 'Hz')}
         </text>
@@ -358,9 +393,16 @@ export function LcDiagram({
 }: {
   data?: { inductance: number; capacitance: number; frequency: number };
 }) {
+  const { tr } = useToolLanguage();
   return (
-    <svg viewBox="0 0 420 215" aria-label="理想電感與電容串聯諧振回路">
-      <title>理想 LC 諧振</title>
+    <svg
+      viewBox="0 0 420 215"
+      aria-label={tr(
+        '理想電感與電容串聯諧振回路',
+        'Ideal series LC resonant circuit',
+      )}
+    >
+      <title>{tr('理想 LC 諧振', 'Ideal LC resonance')}</title>
       <path
         d="M40 85H90M198 85H275M325 85H380V155H40V85"
         fill="none"
@@ -400,12 +442,12 @@ export function LcDiagram({
 export function Curve({
   points,
   label,
-  yLabel = '增益',
+  yLabel,
   lowLabel = '',
   midLabel = '',
   highLabel = '',
   marker = false,
-  field = '指定頻率',
+  field,
 }: {
   points: string;
   label: string;
@@ -416,16 +458,17 @@ export function Curve({
   marker?: boolean;
   field?: string;
 }) {
+  const { tr } = useToolLanguage();
   return (
     <svg viewBox="0 0 420 185" aria-label={label}>
       <title>{label}</title>
       <path d="M45 25V130H395" fill="none" stroke="currentColor" />
       <text x="10" y="18" fontSize="13">
-        {yLabel}
+        {yLabel ?? tr('增益', 'Gain')}
       </text>
       <path d={points} fill="none" stroke="#08755d" strokeWidth="3" />
       {marker && (
-        <DiagramPart field={field}>
+        <DiagramPart field={field ?? tr('指定頻率', 'Specified frequency')}>
           <path d="M220 25V130" stroke="#b17716" strokeDasharray="4 4" />
           <text x="220" y="151" textAnchor="middle" fontSize="12">
             {midLabel}
@@ -439,7 +482,7 @@ export function Curve({
         {highLabel}
       </text>
       <text x="220" y="178" textAnchor="middle" fontSize="13">
-        頻率 Hz（對數刻度）
+        {tr('頻率 Hz（對數刻度）', 'Frequency Hz (log scale)')}
       </text>
     </svg>
   );

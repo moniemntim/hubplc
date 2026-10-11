@@ -2,6 +2,7 @@
 import { useState } from 'react';
 import { attempt, formatNumber } from '@/lib/tools/core';
 import { rcFilter, rcFilterInverse } from '@/lib/tools/frequency';
+import { useToolLanguage } from '@/components/tool-language';
 import {
   Choice,
   Notice,
@@ -15,10 +16,12 @@ function Response({
   type,
   cutoff,
   inverse,
+  tr,
 }: {
   type: 'lowpass' | 'highpass';
   cutoff: number;
   inverse: boolean;
+  tr: (zh: string, en: string) => string;
 }) {
   const points = Array.from({ length: 61 }, (_, i) => {
     const ratio = 10 ** ((i / 60) * 4 - 2),
@@ -31,10 +34,17 @@ function Response({
   return (
     <Curve
       points={points}
-      label="RC 幅度響應，截止點以虛線標示"
-      yLabel="|Vout/Vin|：0 至 1"
+      label={tr(
+        'RC 幅度響應，截止點以虛線標示',
+        'RC magnitude response; cutoff is marked by a dashed line',
+      )}
+      yLabel={tr('|Vout/Vin|：0 至 1', '|Vout/Vin|: 0 to 1')}
       marker
-      field={inverse ? '目標截止頻率' : '指定頻率'}
+      field={
+        inverse
+          ? tr('目標截止頻率', 'Target cutoff frequency')
+          : tr('指定頻率', 'Specified frequency')
+      }
       lowLabel={formatNumber(cutoff / 100)}
       midLabel={'fc ' + formatNumber(cutoff)}
       highLabel={formatNumber(cutoff * 100)}
@@ -42,6 +52,7 @@ function Response({
   );
 }
 export default function RcFilter() {
+  const { tr } = useToolLanguage();
   const [type, setType] = useState<'lowpass' | 'highpass'>('lowpass'),
     [mode, setMode] = useState('forward'),
     [r, setR] = useState('10000'),
@@ -67,25 +78,47 @@ export default function RcFilter() {
               type={type}
               cutoff={result.data.cutoff}
               inverse={mode === 'inverse'}
+              tr={tr}
             />
           )}
         </>
       }
       notes={
         <>
-          fc = 1/(2πRC)。低通 H = 1/(1+jf/fc)；高通 H =
-          j(f/fc)/(1+jf/fc)。理想電源阻抗為零、輸出負載阻抗無限大。曲線橫軸為對數頻率，縱軸為電壓增益。
+          {tr(
+            'fc = 1/(2πRC)。低通 H = 1/(1+jf/fc)；高通 H = j(f/fc)/(1+jf/fc)。理想電源阻抗為零、輸出負載阻抗無限大。曲線橫軸為對數頻率，縱軸為電壓增益。',
+            'fc = 1/(2πRC). Low-pass H = 1/(1+jf/fc); high-pass H = j(f/fc)/(1+jf/fc). Source impedance is ideally zero and output load impedance infinite. The curve uses logarithmic frequency and voltage gain.',
+          )}
         </>
       }
       result={
         result.data ? (
           <ResultRows
             rows={[
-              { label: '電阻 R', value: result.data.resistance, unit: 'Ω' },
-              { label: '截止頻率', value: result.data.cutoff, unit: 'Hz' },
-              { label: '指定頻率電壓增益', value: result.data.gain },
-              { label: '增益', value: result.data.gainDb, unit: 'dB' },
-              { label: '相位', value: result.data.phaseDeg, unit: '°' },
+              {
+                label: tr('電阻 R', 'Resistance R'),
+                value: result.data.resistance,
+                unit: 'Ω',
+              },
+              {
+                label: tr('截止頻率', 'Cutoff frequency'),
+                value: result.data.cutoff,
+                unit: 'Hz',
+              },
+              {
+                label: tr('指定頻率電壓增益', 'Gain at specified frequency'),
+                value: result.data.gain,
+              },
+              {
+                label: tr('增益', 'Gain'),
+                value: result.data.gainDb,
+                unit: 'dB',
+              },
+              {
+                label: tr('相位', 'Phase'),
+                value: result.data.phaseDeg,
+                unit: '°',
+              },
             ]}
           />
         ) : (
@@ -94,21 +127,27 @@ export default function RcFilter() {
       }
     >
       <Choice
-        label="濾波器"
+        label={tr('濾波器', 'Filter')}
         value={type}
         onChange={(v) => setType(v as typeof type)}
         options={[
-          { value: 'lowpass', label: '低通' },
-          { value: 'highpass', label: '高通' },
+          { value: 'lowpass', label: tr('低通', 'Low-pass') },
+          { value: 'highpass', label: tr('高通', 'High-pass') },
         ]}
       />
       <Choice
-        label="計算"
+        label={tr('計算', 'Calculation')}
         value={mode}
         onChange={setMode}
         options={[
-          { value: 'forward', label: '由 R、C 求截止頻率' },
-          { value: 'inverse', label: '由 fc、C 反推 R' },
+          {
+            value: 'forward',
+            label: tr('由 R、C 求截止頻率', 'Find cutoff from R and C'),
+          },
+          {
+            value: 'inverse',
+            label: tr('由 fc、C 反推 R', 'Find R from fc and C'),
+          },
         ]}
       />
       <div className="fields-grid">
@@ -122,7 +161,7 @@ export default function RcFilter() {
           />
         ) : (
           <QuantityField
-            label="目標截止頻率"
+            label={tr('目標截止頻率', 'Target cutoff frequency')}
             value={target}
             onChange={setTarget}
             kind="frequency"
@@ -136,7 +175,7 @@ export default function RcFilter() {
           initialUnit="nF"
         />
         <QuantityField
-          label="指定頻率"
+          label={tr('指定頻率', 'Specified frequency')}
           value={sample}
           onChange={setSample}
           kind="frequency"

@@ -2,6 +2,7 @@
 import { useState } from 'react';
 import { attempt, formatNumber } from '@/lib/tools/core';
 import { currentDivider } from '@/lib/tools/networks';
+import { useToolLanguage } from '@/components/tool-language';
 import {
   Choice,
   Notice,
@@ -13,6 +14,7 @@ import { QuantityField } from '@/app/tool/_components/quantity';
 import { NetworkDiagram } from '@/app/tool/_components/network-components';
 const example = ['100', '220', '330'];
 export default function CurrentDivider() {
+  const { tr } = useToolLanguage();
   const [source, setSource] = useState<'voltage' | 'current'>('voltage'),
     [raw, setRaw] = useState('12'),
     [values, setValues] = useState(example);
@@ -27,17 +29,24 @@ export default function CurrentDivider() {
           mode="parallel"
           values={result.data ? nums : nums.map(() => NaN)}
           currents={result.data?.branches.map((b) => b.current)}
-          sourceField={source === 'voltage' ? '電源電壓' : '總電流'}
+          sourceField={
+            source === 'voltage'
+              ? tr('電源電壓', 'Supply voltage')
+              : tr('總電流', 'Total current')
+          }
           sourceText={
             result.data
-              ? `電源 ${formatNumber(result.data.voltage)} V · 總電流 ${formatNumber(result.data.totalCurrent)} A`
+              ? `${tr('電源', 'Supply')} ${formatNumber(result.data.voltage)} V · ${tr('總電流', 'Total current')} ${formatNumber(result.data.totalCurrent)} A`
               : undefined
           }
         />
       }
       notes={
         <>
-          並聯支路共用相同電壓；依歐姆定律計算各支路電流與理想功耗。各支路電流總和等於總電流。
+          {tr(
+            '並聯支路共用相同電壓；依歐姆定律計算各支路電流與理想功耗。各支路電流總和等於總電流。',
+            "Parallel branches share the same voltage. Ohm's law calculates each branch current and ideal power; their currents sum to the total current.",
+          )}
         </>
       }
       result={
@@ -45,27 +54,27 @@ export default function CurrentDivider() {
           <ResultRows
             rows={[
               {
-                label: '等效電阻',
+                label: tr('等效電阻', 'Equivalent resistance'),
                 value: formatNumber(result.data.equivalent),
                 unit: 'Ω',
               },
               {
-                label: '支路電壓',
+                label: tr('支路電壓', 'Branch voltage'),
                 value: formatNumber(result.data.voltage),
                 unit: 'V',
               },
               {
-                label: '總電流',
+                label: tr('總電流', 'Total current'),
                 value: formatNumber(result.data.totalCurrent),
                 unit: 'A',
               },
               {
-                label: '總功耗',
+                label: tr('總功耗', 'Total power'),
                 value: formatNumber(result.data.totalPower),
                 unit: 'W',
               },
               ...result.data.branches.map((b, i) => ({
-                label: `R${i + 1} 支路`,
+                label: `R${i + 1} ${tr('支路', 'branch')}`,
                 value: `${formatNumber(b.current)} A / ${formatNumber(b.percent)}% / ${formatNumber(b.power)} W`,
               })),
             ]}
@@ -76,16 +85,20 @@ export default function CurrentDivider() {
       }
     >
       <Choice
-        label="已知來源"
+        label={tr('已知來源', 'Known source')}
         value={source}
         onChange={(v) => setSource(v as typeof source)}
         options={[
-          { value: 'voltage', label: '電源電壓' },
-          { value: 'current', label: '總電流' },
+          { value: 'voltage', label: tr('電源電壓', 'Supply voltage') },
+          { value: 'current', label: tr('總電流', 'Total current') },
         ]}
       />
       <QuantityField
-        label={source === 'voltage' ? '電源電壓' : '總電流'}
+        label={
+          source === 'voltage'
+            ? tr('電源電壓', 'Supply voltage')
+            : tr('總電流', 'Total current')
+        }
         value={raw}
         onChange={setRaw}
         kind={source === 'voltage' ? 'voltage' : 'current'}
@@ -108,7 +121,7 @@ export default function CurrentDivider() {
           disabled={values.length >= 20}
           onClick={() => setValues((xs) => [...xs, '100'])}
         >
-          新增支路
+          {tr('新增支路', 'Add branch')}
         </button>
         <button
           type="button"
@@ -116,7 +129,7 @@ export default function CurrentDivider() {
           disabled={values.length <= 2}
           onClick={() => setValues((xs) => xs.slice(0, -1))}
         >
-          移除支路
+          {tr('移除支路', 'Remove branch')}
         </button>
       </div>
       <ToolActions

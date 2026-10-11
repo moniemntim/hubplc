@@ -1,5 +1,6 @@
 'use client';
 import { useEffect, useRef, useState } from 'react';
+import { useToolLanguage } from '@/components/tool-language';
 import {
   currencies,
   convertCurrency,
@@ -20,6 +21,18 @@ import {
 } from '../_components/controls';
 
 export default function CurrencyConverter() {
+  const { tr } = useToolLanguage();
+  const currencyOptions = currencies.map((item) => ({
+    ...item,
+    label: tr(
+      item.label,
+      item.label
+        .replace('美元', 'US Dollar')
+        .replace('新台幣', 'Taiwan Dollar')
+        .replace('日圓', 'Japanese Yen')
+        .replace('歐元', 'Euro'),
+    ),
+  }));
   const [from, setFrom] = useState<Currency>('USD'),
     [to, setTo] = useState<Currency>('TWD');
   const [amount, setAmount] = useState('100'),
@@ -64,7 +77,9 @@ export default function CurrencyConverter() {
   async function loadRates() {
     cancel();
     setRates(null);
-    setStatus('讀取每日參考匯率…');
+    setStatus(
+      tr('讀取每日參考匯率…', 'Loading daily reference exchange rates…'),
+    );
     setBusy(true);
     const controller = new AbortController();
     active.current = controller;
@@ -78,20 +93,33 @@ export default function CurrencyConverter() {
         cache: 'no-cache',
       });
       if (!response.ok)
-        throw new Error('匯率服務暫時無法使用，請稍後重試或改用手動匯率。');
+        throw new Error(
+          tr(
+            '匯率服務暫時無法使用，請稍後重試或改用手動匯率。',
+            'The exchange-rate service is temporarily unavailable. Try again later or use a manual rate.',
+          ),
+        );
       const parsed = validateRates(await response.json());
       if (current !== revision.current) return;
       setRates(parsed);
       setCheckedAt(Date.now());
-      setStatus('已取得參考匯率，資料日期請見結果。');
+      setStatus(
+        tr(
+          '已取得參考匯率，資料日期請見結果。',
+          'Reference rates loaded; see the result for data dates.',
+        ),
+      );
     } catch (error) {
       if (current !== revision.current) return;
       setStatus(
         controller.signal.aborted
-          ? '讀取逾時，請重試或改用手動匯率。'
+          ? tr(
+              '讀取逾時，請重試或改用手動匯率。',
+              'Request timed out. Try again or use a manual rate.',
+            )
           : error instanceof Error
             ? error.message
-            : '無法讀取匯率。',
+            : tr('無法讀取匯率。', 'Unable to load exchange rates.'),
       );
     } finally {
       clearTimeout(timeout);
@@ -110,7 +138,13 @@ export default function CurrencyConverter() {
           : rates
             ? currencyQuote(from, to, rates)
             : undefined;
-    if (!quote) throw new Error('請先取得參考匯率，或切換至手動輸入。');
+    if (!quote)
+      throw new Error(
+        tr(
+          '請先取得參考匯率，或切換至手動輸入。',
+          'Load reference rates first, or switch to manual entry.',
+        ),
+      );
     return { ...quote, amount: convertCurrency(amount, quote.rate) };
   });
   const displayed = result.data?.amount.toLocaleString('zh-TW', {
@@ -125,15 +159,24 @@ export default function CurrencyConverter() {
       notes={
         <>
           <p>
-            換算金額＝原金額 × 匯率。線上模式先取得每 1 USD
-            的各幣別參考值，再計算交叉匯率；不同幣別可能有不同資料日期。顯示小數位只影響四捨五入，不改變計算使用的匯率。
+            {tr(
+              '換算金額＝原金額 × 匯率。線上模式先取得每 1 USD 的各幣別參考值，再計算交叉匯率；不同幣別可能有不同資料日期。顯示小數位只影響四捨五入，不改變計算使用的匯率。',
+              'Converted amount = original amount × exchange rate. Online mode obtains reference values per 1 USD, then calculates cross rates; currencies may have different data dates. Display decimals affect rounding only, not the rate used.',
+            )}
           </p>
           <p>
-            資料來源：<a href="https://frankfurter.dev/">Frankfurter</a>{' '}
-            的每日綜合參考匯率，並非即時成交價或銀行現鈔／即期買賣價。結果不含手續費、價差與稅費。週末、假日或資料源延遲時可能沿用較早日期。
+            {tr('資料來源：', 'Data source: ')}
+            <a href="https://frankfurter.dev/">Frankfurter</a>{' '}
+            {tr(
+              '的每日綜合參考匯率，並非即時成交價或銀行現鈔／即期買賣價。結果不含手續費、價差與稅費。週末、假日或資料源延遲時可能沿用較早日期。',
+              'daily aggregate reference rates, not live trade prices or bank cash/spot rates. Results exclude fees, spreads and taxes. Weekends, holidays or source delays may retain an earlier date.',
+            )}
           </p>
           <p>
-            只有按下「取得最新參考匯率」才會向外部服務下載固定的一組匯率，不傳送金額或所選幣別組合。外部服務可取得一般連線資訊；本站不儲存輸入或匯率。手動模式完全在瀏覽器運算。
+            {tr(
+              '只有按下「取得最新參考匯率」才會向外部服務下載固定的一組匯率，不傳送金額或所選幣別組合。外部服務可取得一般連線資訊；本站不儲存輸入或匯率。手動模式完全在瀏覽器運算。',
+              'The browser downloads a fixed set of rates only after you click “Get latest reference rates”; it does not send the amount or selected currency pair. The external service receives normal connection information. This site stores neither inputs nor rates, and manual mode runs entirely in the browser.',
+            )}
           </p>
         </>
       }
@@ -142,7 +185,11 @@ export default function CurrencyConverter() {
           <>
             <ResultRows
               rows={[
-                { label: '換算金額', value: displayed!, unit: to },
+                {
+                  label: tr('換算金額', 'Converted amount'),
+                  value: displayed!,
+                  unit: to,
+                },
                 {
                   label: `1 ${from}`,
                   value: formatNumber(result.data.rate),
@@ -152,13 +199,21 @@ export default function CurrencyConverter() {
             />
             <p>
               {from === to
-                ? '相同幣別，匯率為 1。'
+                ? tr('相同幣別，匯率為 1。', 'Same currency; the rate is 1.')
                 : mode === 'manual'
-                  ? '使用手動匯率，未連線查價。'
-                  : `資料日期：${result.data.dates.join('／')}（Frankfurter）`}
+                  ? tr(
+                      '使用手動匯率，未連線查價。',
+                      'Using a manual rate; no online lookup.',
+                    )
+                  : `${tr('資料日期：', 'Data date: ')}${result.data.dates.join(' / ')} (Frankfurter)`}
             </p>
             {stale && (
-              <Notice>資料已超過 7 天，請檢查資料日期或改用手動匯率。</Notice>
+              <Notice>
+                {tr(
+                  '資料已超過 7 天，請檢查資料日期或改用手動匯率。',
+                  'Data is older than 7 days. Check the data date or use a manual rate.',
+                )}
+              </Notice>
             )}
             <CopyButton text={`${amount} ${from} ≈ ${displayed} ${to}`} />
           </>
@@ -168,7 +223,7 @@ export default function CurrencyConverter() {
       }
     >
       <Choice
-        label="匯率來源"
+        label={tr('匯率來源', 'Exchange-rate source')}
         value={mode}
         onChange={(value) => {
           cancel();
@@ -178,29 +233,39 @@ export default function CurrencyConverter() {
           setStatus('');
         }}
         options={[
-          { value: 'online', label: '每日參考匯率' },
-          { value: 'manual', label: '手動輸入匯率' },
+          {
+            value: 'online',
+            label: tr('每日參考匯率', 'Daily reference rates'),
+          },
+          {
+            value: 'manual',
+            label: tr('手動輸入匯率', 'Manual exchange rate'),
+          },
         ]}
       />
-      <NumberField label="金額" value={amount} onChange={setAmount} />
+      <NumberField
+        label={tr('金額', 'Amount')}
+        value={amount}
+        onChange={setAmount}
+      />
       <div className="fields-grid">
         <Choice
-          label="來源幣別"
+          label={tr('來源幣別', 'Source currency')}
           value={from}
           onChange={(value) => {
             setFrom(value as Currency);
             setManual('');
           }}
-          options={currencies}
+          options={currencyOptions}
         />
         <Choice
-          label="目標幣別"
+          label={tr('目標幣別', 'Target currency')}
           value={to}
           onChange={(value) => {
             setTo(value as Currency);
             setManual('');
           }}
-          options={currencies}
+          options={currencyOptions}
         />
       </div>
       {mode === 'manual' && from !== to && (
@@ -211,12 +276,12 @@ export default function CurrencyConverter() {
         />
       )}
       <Choice
-        label="顯示小數位"
+        label={tr('顯示小數位', 'Display decimals')}
         value={places}
         onChange={setPlaces}
         options={[0, 2, 4, 6].map((value) => ({
           value: String(value),
-          label: `${value} 位小數`,
+          label: tr(`${value} 位小數`, `${value} decimal places`),
         }))}
       />
       <div className="action-row">
@@ -227,7 +292,9 @@ export default function CurrencyConverter() {
             disabled={busy}
             onClick={() => void loadRates()}
           >
-            {busy ? '讀取中…' : '取得最新參考匯率'}
+            {busy
+              ? tr('讀取中…', 'Loading…')
+              : tr('取得最新參考匯率', 'Get latest reference rates')}
           </button>
         )}
         {busy && (
@@ -236,10 +303,10 @@ export default function CurrencyConverter() {
             className="action secondary"
             onClick={() => {
               cancel();
-              setStatus('已取消讀取。');
+              setStatus(tr('已取消讀取。', 'Loading cancelled.'));
             }}
           >
-            取消讀取
+            {tr('取消讀取', 'Cancel loading')}
           </button>
         )}
         <button
@@ -251,7 +318,7 @@ export default function CurrencyConverter() {
             setManual(result.data ? String(1 / result.data.rate) : '');
           }}
         >
-          ⇄ 交換幣別
+          ⇄ {tr('交換幣別', 'Swap currencies')}
         </button>
         <button
           type="button"
@@ -267,17 +334,20 @@ export default function CurrencyConverter() {
             setManual('32');
           }}
         >
-          載入範例
+          {tr('載入範例', 'Load example')}
         </button>
         <button type="button" className="action secondary" onClick={clear}>
-          清空
+          {tr('清空', 'Clear')}
         </button>
       </div>
       <output className="crypto-status" aria-live="polite">
         {status}
       </output>
       <p className="field-help">
-        範例匯率 32 為示範值，不代表目前匯率。金額上限 10¹⁵。
+        {tr(
+          '範例匯率 32 為示範值，不代表目前匯率。金額上限 10¹⁵。',
+          'Example rate 32 is illustrative and does not represent the current rate. Amount limit: 10¹⁵.',
+        )}
       </p>
     </ToolPanel>
   );

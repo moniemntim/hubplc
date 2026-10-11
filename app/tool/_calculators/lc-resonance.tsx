@@ -2,6 +2,7 @@
 import { useState } from 'react';
 import { attempt, formatNumber } from '@/lib/tools/core';
 import { lcResonance } from '@/lib/tools/frequency';
+import { useToolLanguage } from '@/components/tool-language';
 import {
   Choice,
   Notice,
@@ -12,6 +13,7 @@ import {
 import { QuantityField } from '@/app/tool/_components/quantity';
 import { LcDiagram } from '@/app/tool/_components/network-components';
 export default function LcResonance() {
+  const { tr } = useToolLanguage();
   const [known, setKnown] = useState<'lc' | 'lf' | 'cf'>('lc'),
     [a, setA] = useState('.001'),
     [b, setB] = useState('.000001');
@@ -29,8 +31,10 @@ export default function LcResonance() {
       diagram={<LcDiagram data={result.data} />}
       notes={
         <>
-          理想諧振頻率 f0 = 1 / (2π√LC)。此工具不估算元件寄生參數、Q
-          值或實際頻寬。
+          {tr(
+            '理想諧振頻率 f0 = 1 / (2π√LC)。此工具不估算元件寄生參數、Q 值或實際頻寬。',
+            'Ideal resonant frequency f0 = 1 / (2π√LC). This tool does not estimate component parasitics, Q, or actual bandwidth.',
+          )}
         </>
       }
       result={
@@ -38,17 +42,17 @@ export default function LcResonance() {
           <ResultRows
             rows={[
               {
-                label: '電感 L',
+                label: tr('電感 L', 'Inductance L'),
                 value: formatNumber(result.data.inductance),
                 unit: 'H',
               },
               {
-                label: '電容 C',
+                label: tr('電容 C', 'Capacitance C'),
                 value: formatNumber(result.data.capacitance),
                 unit: 'F',
               },
               {
-                label: '諧振頻率 f0',
+                label: tr('諧振頻率 f0', 'Resonant frequency f0'),
                 value: formatNumber(result.data.frequency),
                 unit: 'Hz',
               },
@@ -60,13 +64,22 @@ export default function LcResonance() {
       }
     >
       <Choice
-        label="已知量"
+        label={tr('已知量', 'Known values')}
         value={known}
         onChange={(v) => setKnown(v as typeof known)}
         options={[
-          { value: 'lc', label: 'L 與 C 求頻率' },
-          { value: 'lf', label: 'L 與頻率求 C' },
-          { value: 'cf', label: 'C 與頻率求 L' },
+          {
+            value: 'lc',
+            label: tr('L 與 C 求頻率', 'Find frequency from L and C'),
+          },
+          {
+            value: 'lf',
+            label: tr('L 與頻率求 C', 'Find C from L and frequency'),
+          },
+          {
+            value: 'cf',
+            label: tr('C 與頻率求 L', 'Find L from C and frequency'),
+          },
         ]}
       />
       <div className="fields-grid">

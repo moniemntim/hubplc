@@ -2,6 +2,7 @@
 
 import { useId } from 'react';
 import { DiagramPart } from './controls';
+import { useToolLanguage } from '@/components/tool-language';
 
 /** Wraparound terminations, with no axial leads. The MLCC body is unmarked. */
 export function ChipPackage({
@@ -13,6 +14,7 @@ export function ChipPackage({
   code?: string;
   field: string;
 }) {
+  const { tr } = useToolLanguage();
   const id = useId().replace(/:/g, '');
   const capacitor = kind === 'capacitor';
   return (
@@ -21,14 +23,20 @@ export function ChipPackage({
       viewBox="0 0 420 220"
       aria-label={
         capacitor
-          ? 'SMD 積層陶瓷電容：陶瓷本體與兩端金屬端電極'
-          : `SMD 晶片電阻：黑色本體、金屬端電極，標記 ${code || '未輸入'}`
+          ? tr(
+              'SMD 積層陶瓷電容：陶瓷本體與兩端金屬端電極',
+              'SMD multilayer ceramic capacitor: ceramic body and metal terminals',
+            )
+          : `${tr('SMD 晶片電阻：黑色本體、金屬端電極，標記', 'SMD chip resistor: black body, metal terminals, marking')} ${code || tr('未輸入', 'not entered')}`
       }
     >
       <title>
         {capacitor
-          ? 'SMD 積層陶瓷電容外觀示意'
-          : `SMD 晶片電阻標記 ${code || '未輸入'}`}
+          ? tr(
+              'SMD 積層陶瓷電容外觀示意',
+              'SMD multilayer ceramic capacitor illustration',
+            )
+          : `${tr('SMD 晶片電阻標記', 'SMD chip resistor marking')} ${code || tr('未輸入', 'not entered')}`}
       </title>
       <defs>
         <linearGradient id={`${id}-metal`} x1="0" y1="0" x2="0.3" y2="1">

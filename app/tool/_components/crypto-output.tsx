@@ -1,5 +1,6 @@
 'use client';
 import { CopyButton } from './controls';
+import { useToolLanguage } from '@/components/tool-language';
 
 export function CryptoOutput({
   value,
@@ -10,6 +11,7 @@ export function CryptoOutput({
   name: string;
   onReuse?: () => void;
 }) {
+  const { tr } = useToolLanguage();
   function download() {
     if (value === null) return;
     const url = URL.createObjectURL(
@@ -25,7 +27,7 @@ export function CryptoOutput({
     <>
       {value !== null ? (
         <>
-          <label htmlFor="crypto-output">結果</label>
+          <label htmlFor="crypto-output">{tr('結果', 'Result')}</label>
           <textarea
             id="crypto-output"
             value={value}
@@ -35,9 +37,9 @@ export function CryptoOutput({
             aria-live="off"
           />
           <p className="crypto-result-size">
-            {value.length.toLocaleString()} 字元 ·{' '}
-            {new TextEncoder().encode(value).length.toLocaleString()}{' '}
-            bytes（UTF-8）
+            {value.length.toLocaleString()} {tr('字元', 'characters')} ·{' '}
+            {new TextEncoder().encode(value).length.toLocaleString()} bytes
+            (UTF-8)
           </p>
           <div className="action-row">
             <CopyButton text={value} />
@@ -46,7 +48,7 @@ export function CryptoOutput({
               className="action secondary"
               onClick={download}
             >
-              下載結果
+              {tr('下載結果', 'Download result')}
             </button>
             {onReuse && (
               <button
@@ -54,16 +56,19 @@ export function CryptoOutput({
                 className="action secondary"
                 onClick={onReuse}
               >
-                將結果帶入反向操作
+                {tr('將結果帶入反向操作', 'Use result for reverse operation')}
               </button>
             )}
           </div>
           <p className="crypto-result-note">
-            複製或下載只會在你按下按鈕後執行。清空頁面不會刪除已複製或下載的內容。
+            {tr(
+              '複製或下載只會在你按下按鈕後執行。清空頁面不會刪除已複製或下載的內容。',
+              'Copying or downloading happens only after you press a button. Clearing the page does not delete copied or downloaded content.',
+            )}
           </p>
         </>
       ) : (
-        <p>結果會顯示在這裡。</p>
+        <p>{tr('結果會顯示在這裡。', 'The result will appear here.')}</p>
       )}
     </>
   );

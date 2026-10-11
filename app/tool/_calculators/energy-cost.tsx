@@ -1,5 +1,6 @@
 'use client';
 import { useState } from 'react';
+import { useToolLanguage } from '@/components/tool-language';
 import { attempt, formatNumber } from '@/lib/tools/core';
 import { energyAndCost, type EnergyMode } from '@/lib/tools/power-calculators';
 import {
@@ -24,6 +25,7 @@ export default function EnergyCost({
 }: {
   preset?: EnergyPreset;
 }) {
+  const { tr } = useToolLanguage();
   const initialUnit =
     preset.unit ?? (preset.mode === 'from-power' ? 'kW' : 'kWh');
   const [mode, setMode] = useState<EnergyMode>(preset.mode);
@@ -47,10 +49,15 @@ export default function EnergyCost({
     <ToolPanel
       notes={
         <>
-          用電量 E = P × t；1 kWh = 1000 Wh = 3,600,000
-          J。電費是用電量乘以自行輸入的每度電價。實際帳單可能另含級距、契約容量、功率因數、需量、基本費與稅費。公式參考{' '}
+          {tr(
+            '用電量 E = P × t；1 kWh = 1000 Wh = 3,600,000 J。電費是用電量乘以自行輸入的每度電價。實際帳單可能另含級距、契約容量、功率因數、需量、基本費與稅費。公式參考',
+            'Energy E = P × t; 1 kWh = 1000 Wh = 3,600,000 J. Cost is energy use multiplied by your entered price per kWh. Actual bills may also include tiers, contracted capacity, power factor, demand, base charges, and taxes. Formula reference:',
+          )}{' '}
           <a href="https://www1.eere.energy.gov/education/pdfs/lesson301.pdf">
-            美國能源部 kWh 計算教材
+            {tr(
+              '美國能源部 kWh 計算教材',
+              'US Department of Energy kWh calculation guide',
+            )}
           </a>
           。
         </>
@@ -60,24 +67,27 @@ export default function EnergyCost({
           <ResultRows
             rows={[
               {
-                label: '用電量',
+                label: tr('用電量', 'Energy use'),
                 value: formatNumber(result.data.kwh),
-                unit: 'kWh（度）',
+                unit: tr('kWh（度）', 'kWh'),
               },
               {
-                label: '用電量',
+                label: tr('用電量', 'Energy use'),
                 value: formatNumber(result.data.joules),
                 unit: 'J',
               },
               {
-                label: mode === 'from-power' ? '輸入功率' : '平均功率',
+                label:
+                  mode === 'from-power'
+                    ? tr('輸入功率', 'Input power')
+                    : tr('平均功率', 'Average power'),
                 value: formatNumber(result.data.watts / 1000),
                 unit: 'kW',
               },
               {
-                label: '估算電費',
+                label: tr('估算電費', 'Estimated cost'),
                 value: formatNumber(result.data.cost),
-                unit: '元',
+                unit: tr('元', 'currency units'),
               },
             ]}
           />
@@ -88,18 +98,34 @@ export default function EnergyCost({
     >
       {!preset.fixedMode && (
         <Choice
-          label="計算方向"
+          label={tr('計算方向', 'Calculation direction')}
           value={mode}
           onChange={(v) => switchMode(v as EnergyMode)}
           options={[
-            { value: 'from-power', label: '功率＋時間 → 用電量與電費' },
-            { value: 'from-energy', label: '用電量＋時間 → 平均功率' },
+            {
+              value: 'from-power',
+              label: tr(
+                '功率＋時間 → 用電量與電費',
+                'Power + time → energy use and cost',
+              ),
+            },
+            {
+              value: 'from-energy',
+              label: tr(
+                '用電量＋時間 → 平均功率',
+                'Energy use + time → average power',
+              ),
+            },
           ]}
         />
       )}
       <div className="fields-grid">
         <Choice
-          label={mode === 'from-power' ? '功率單位' : '能量單位'}
+          label={
+            mode === 'from-power'
+              ? tr('功率單位', 'Power unit')
+              : tr('能量單位', 'Energy unit')
+          }
           value={unit}
           onChange={setUnit}
           options={
@@ -118,30 +144,38 @@ export default function EnergyCost({
           }
         />
         <NumberField
-          label={mode === 'from-power' ? '功率' : '用電量'}
+          label={
+            mode === 'from-power'
+              ? tr('功率', 'Power')
+              : tr('用電量', 'Energy use')
+          }
           value={value}
           onChange={setValue}
           unit={unit}
         />
         <NumberField
-          label={mode === 'from-power' ? '每日使用時間' : '總時間'}
+          label={
+            mode === 'from-power'
+              ? tr('每日使用時間', 'Daily usage time')
+              : tr('總時間', 'Total time')
+          }
           value={hours}
           onChange={setHours}
-          unit="小時"
+          unit={tr('小時', 'hours')}
         />
         {mode === 'from-power' && (
           <NumberField
-            label="使用天數"
+            label={tr('使用天數', 'Usage days')}
             value={days}
             onChange={setDays}
-            unit="天"
+            unit={tr('天', 'days')}
           />
         )}
         <NumberField
-          label="每度電價"
+          label={tr('每度電價', 'Price per kWh')}
           value={rate}
           onChange={setRate}
-          unit="元/kWh"
+          unit={tr('元/kWh', 'currency/kWh')}
         />
       </div>
       <ToolActions

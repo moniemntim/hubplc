@@ -8,6 +8,7 @@ import {
   resistorColorReverse,
 } from '@/lib/tools/electrical';
 import { attempt } from '@/lib/tools/core';
+import { useToolLanguage } from '@/components/tool-language';
 import {
   Choice,
   ToolPanel,
@@ -16,28 +17,31 @@ import {
   DiagramPart,
   ToolActions,
 } from '@/app/tool/_components/controls';
-const name = (band: string) => resistorBands.displayNames[band] ?? band;
-const options = resistorBands.colors.map((value) => ({
-  value,
-  label: `${name(value)} ${resistorBands.colors.indexOf(value)}`,
-  color: resistorBands.colorHex[value],
-}));
-const multiplierLabel = (value: string) => {
-  const multiplier = resistorBands.multipliers[value];
-  return `${name(value)} ×10^${Math.round(Math.log10(multiplier))}`;
-};
-const multiplierOptions = Object.keys(resistorBands.multipliers).map(
-  (value) => ({
+type Translate = (zh: string, en: string) => string;
+const name = (band: string, tr: Translate) =>
+  tr(resistorBands.displayNames[band] ?? band, band);
+const optionsFor = (tr: Translate) =>
+  resistorBands.colors.map((value) => ({
     value,
-    label: multiplierLabel(value),
+    label: `${name(value, tr)} ${resistorBands.colors.indexOf(value)}`,
     color: resistorBands.colorHex[value],
-  }),
-);
-const toleranceOptions = Object.keys(resistorBands.tolerances).map((value) => ({
-  value,
-  label: `${name(value)} ±${resistorBands.tolerances[value]}%`,
-  color: resistorBands.colorHex[value],
-}));
+  }));
+const multiplierLabel = (value: string, tr: Translate) => {
+  const multiplier = resistorBands.multipliers[value];
+  return `${name(value, tr)} ×10^${Math.round(Math.log10(multiplier))}`;
+};
+const multiplierOptionsFor = (tr: Translate) =>
+  Object.keys(resistorBands.multipliers).map((value) => ({
+    value,
+    label: multiplierLabel(value, tr),
+    color: resistorBands.colorHex[value],
+  }));
+const toleranceOptionsFor = (tr: Translate) =>
+  Object.keys(resistorBands.tolerances).map((value) => ({
+    value,
+    label: `${name(value, tr)} ±${resistorBands.tolerances[value]}%`,
+    color: resistorBands.colorHex[value],
+  }));
 function BandDiagram({
   bands,
   reverse,
@@ -45,15 +49,20 @@ function BandDiagram({
   bands: string[];
   reverse?: boolean;
 }) {
+  const { tr } = useToolLanguage();
   const id = useId().replace(/:/g, '');
   const digits = bands.length - 2;
   const role = (i: number) =>
-    i < digits ? `有效數字 ${i + 1}` : i === digits ? '倍率' : '容差';
+    i < digits
+      ? `${tr('有效數字', 'Significant digit')} ${i + 1}`
+      : i === digits
+        ? tr('倍率', 'Multiplier')
+        : tr('容差', 'Tolerance');
   const detail = (band: string, i: number) => {
     if (i < digits)
-      return `${name(band)} ${resistorBands.colors.indexOf(band as (typeof resistorBands.colors)[number])}`;
-    if (i === digits) return multiplierLabel(band);
-    return `${name(band)} ±${resistorBands.tolerances[band]}%`;
+      return `${name(band, tr)} ${resistorBands.colors.indexOf(band as (typeof resistorBands.colors)[number])}`;
+    if (i === digits) return multiplierLabel(band, tr);
+    return `${name(band, tr)} ±${resistorBands.tolerances[band]}%`;
   };
   const silhouette =
     'M110 102Q110 78 132 78H154Q163 78 170 87Q176 92 188 92H332Q344 92 350 83Q354 78 364 78H388Q410 78 410 102V138Q410 162 388 162H364Q354 162 350 157Q344 148 332 148H188Q176 148 170 153Q163 162 154 162H132Q110 162 110 138Z';
@@ -64,19 +73,24 @@ function BandDiagram({
       <div className="component-eyebrow">
         AXIAL ·{' '}
         {bands.length
-          ? `${bands.length === 5 ? '五' : '四'}環軸向電阻`
-          : '軸向電阻'}
+          ? `${bands.length === 5 ? tr('五', 'Five') : tr('四', 'Four')}${tr('環軸向電阻', '-band axial resistor')}`
+          : tr('軸向電阻', 'Axial resistor')}
       </div>
       <svg
         className="resistor-illustration"
         viewBox="0 35 520 180"
         aria-label={
           bands.length
-            ? `電阻色環：${bands.map(name).join('、')}`
-            : '電阻色環：尚未輸入有效值'
+            ? `${tr('電阻色環：', 'Resistor color bands: ')}${bands.map((band) => name(band, tr)).join(', ')}`
+            : tr(
+                '電阻色環：尚未輸入有效值',
+                'Resistor color bands: no valid value entered',
+              )
         }
       >
-        <title>軸向電阻色環示意</title>
+        <title>
+          {tr('軸向電阻色環示意', 'Axial resistor color-band illustration')}
+        </title>
         <defs>
           <clipPath id={`${id}-body-clip`}>
             <path d={silhouette} />
@@ -124,7 +138,11 @@ function BandDiagram({
           <DiagramPart
             key={i}
             field={
-              reverse ? (i === bands.length - 1 ? '容差色環' : '阻值') : role(i)
+              reverse
+                ? i === bands.length - 1
+                  ? tr('容差色環', 'Tolerance band')
+                  : tr('阻值', 'Resistance')
+                : role(i)
             }
           >
             <title>{`${role(i)}：${detail(band, i)}`}</title>
@@ -154,8 +172,14 @@ function BandDiagram({
       <figcaption>
         <p className="component-caption">
           {bands.length
-            ? '由左至右讀取 · 最右環為容差'
-            : '輸入有效值後顯示色環'}
+            ? tr(
+                '由左至右讀取 · 最右環為容差',
+                'Read left to right · the rightmost band is tolerance',
+              )
+            : tr(
+                '輸入有效值後顯示色環',
+                'Color bands appear after entering a valid value',
+              )}
         </p>
         {bands.length > 0 && (
           <div className="band-legend">
@@ -177,6 +201,7 @@ function BandDiagram({
   );
 }
 export default function ResistorColor() {
+  const { tr } = useToolLanguage();
   const [count, setCount] = useState<4 | 5>(4),
     [mode, setMode] = useState('forward'),
     [bands, setBands] = useState(['brown', 'black', 'red', 'gold']),
@@ -196,6 +221,9 @@ export default function ResistorColor() {
   const forward = attempt(() => resistorColor(count, bands)),
     reverse = attempt(() => resistorColorReverse(value, count, tolerance));
   const digits = count === 4 ? 2 : 3;
+  const options = optionsFor(tr);
+  const multiplierOptions = multiplierOptionsFor(tr);
+  const toleranceOptions = toleranceOptionsFor(tr);
   function change(i: number, v: string) {
     setBands((old) => old.map((x, n) => (n === i ? v : x)));
   }
@@ -203,22 +231,22 @@ export default function ResistorColor() {
     <ResultRows
       rows={[
         {
-          label: '阻值',
+          label: tr('阻值', 'Resistance'),
           value: electricalFormat(forward.data.resistance),
           unit: 'Ω',
         },
         {
-          label: '容差',
+          label: tr('容差', 'Tolerance'),
           value: electricalFormat(forward.data.tolerance),
           unit: '%',
         },
         {
-          label: '下限',
+          label: tr('下限', 'Minimum'),
           value: electricalFormat(forward.data.minimum),
           unit: 'Ω',
         },
         {
-          label: '上限',
+          label: tr('上限', 'Maximum'),
           value: electricalFormat(forward.data.maximum),
           unit: 'Ω',
         },
@@ -230,8 +258,11 @@ export default function ResistorColor() {
   const reverseResult = reverse.data ? (
     <ResultRows
       rows={[
-        { label: '色環', value: reverse.data.bands.map(name).join('、') },
-        { label: '阻值', value: reverse.data.label },
+        {
+          label: tr('色環', 'Color bands'),
+          value: reverse.data.bands.map((band) => name(band, tr)).join(', '),
+        },
+        { label: tr('阻值', 'Resistance'), value: reverse.data.label },
       ]}
     />
   ) : (
@@ -250,18 +281,20 @@ export default function ResistorColor() {
       diagram={diagram ?? <BandDiagram bands={[]} />}
       notes={
         <>
-          四色環為兩位有效數字；五色環為三位。反算僅輸出可精確表示的阻值，容差不改變標稱阻值。{' '}
-          資料參考：
+          {tr(
+            '四色環為兩位有效數字；五色環為三位。反算僅輸出可精確表示的阻值，容差不改變標稱阻值。資料參考：',
+            'Four bands use two significant digits and five bands use three. Reverse conversion outputs only exactly representable resistance values; tolerance does not change nominal resistance. Reference:',
+          )}{' '}
           <a href="https://www.vishay.com/docs/49478/_dale_resistor_color_code_chart_vmn_ms0002_1612.pdf">
-            Vishay 電阻色碼圖表
+            {tr('Vishay 電阻色碼圖表', 'Vishay resistor color code chart')}
           </a>
-          。
+          {tr('。', '.')}
         </>
       }
       result={mode === 'forward' ? forwardResult : reverseResult}
     >
       <Choice
-        label="色環數"
+        label={tr('色環數', 'Band count')}
         value={String(count)}
         onChange={(v) => {
           const n = Number(v) as 4 | 5;
@@ -273,17 +306,17 @@ export default function ResistorColor() {
           );
         }}
         options={[
-          { value: '4', label: '四色環' },
-          { value: '5', label: '五色環' },
+          { value: '4', label: tr('四色環', 'Four bands') },
+          { value: '5', label: tr('五色環', 'Five bands') },
         ]}
       />
       <Choice
-        label="轉換方式"
+        label={tr('轉換方式', 'Conversion')}
         value={mode}
         onChange={setMode}
         options={[
-          { value: 'forward', label: '色環轉阻值' },
-          { value: 'reverse', label: '阻值轉色環' },
+          { value: 'forward', label: tr('色環轉阻值', 'Bands to resistance') },
+          { value: 'reverse', label: tr('阻值轉色環', 'Resistance to bands') },
         ]}
       />
       {mode === 'forward' ? (
@@ -291,20 +324,20 @@ export default function ResistorColor() {
           {Array.from({ length: digits }, (_, i) => (
             <Choice
               key={i}
-              label={`有效數字 ${i + 1}`}
+              label={`${tr('有效數字', 'Significant digit')} ${i + 1}`}
               value={bands[i] ?? 'black'}
               onChange={(v) => change(i, v)}
               options={i === 0 ? options.slice(1) : options}
             />
           ))}
           <Choice
-            label="倍率"
+            label={tr('倍率', 'Multiplier')}
             value={bands[digits] ?? 'red'}
             onChange={(v) => change(digits, v)}
             options={multiplierOptions}
           />
           <Choice
-            label="容差"
+            label={tr('容差', 'Tolerance')}
             value={bands[digits + 1] ?? 'gold'}
             onChange={(v) => change(digits + 1, v)}
             options={toleranceOptions}
@@ -313,14 +346,14 @@ export default function ResistorColor() {
       ) : (
         <div className="fields-grid">
           <QuantityField
-            label="阻值"
+            label={tr('阻值', 'Resistance')}
             value={value}
             onChange={setValue}
             kind="resistance"
             initialUnit="kΩ"
           />
           <Choice
-            label="容差色環"
+            label={tr('容差色環', 'Tolerance band')}
             value={tolerance}
             onChange={setTolerance}
             options={toleranceOptions}

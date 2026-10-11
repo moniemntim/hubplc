@@ -9,6 +9,7 @@ import {
   type QrMode,
 } from '@/lib/tools/encoding';
 import { attempt } from '@/lib/tools/core';
+import { useToolLanguage } from '@/components/tool-language';
 import {
   Choice,
   Notice,
@@ -29,18 +30,6 @@ const initialFields: QrFields = {
   email: '',
   website: '',
 };
-const modes = [
-  { value: 'text', label: '文字' },
-  { value: 'url', label: '網址' },
-  { value: 'wifi', label: 'Wi-Fi' },
-  { value: 'vcard', label: '聯絡人名片' },
-] as const;
-const levels = [
-  { value: 'L', label: 'L（約 7%）' },
-  { value: 'M', label: 'M（約 15%）' },
-  { value: 'Q', label: 'Q（約 25%）' },
-  { value: 'H', label: 'H（約 30%）' },
-] as const;
 
 function download(content: BlobPart, type: string, filename: string) {
   const url = URL.createObjectURL(new Blob([content], { type }));
@@ -54,6 +43,7 @@ function download(content: BlobPart, type: string, filename: string) {
 }
 
 export default function QrcodeCalculator() {
+  const { tr } = useToolLanguage();
   const [mode, setMode] = useState<QrMode>('url');
   const [fields, setFields] = useState<QrFields>(initialFields);
   const [level, setLevel] = useState('M');
@@ -103,10 +93,13 @@ export default function QrcodeCalculator() {
             key: generationKey,
             image: '',
             svg: '',
-            error: '無法產生 QR Code，請縮短內容後再試。',
+            error: tr(
+              '無法產生 QR Code，請縮短內容後再試。',
+              'Unable to generate the QR code. Try shortening the content.',
+            ),
           });
       });
-  }, [generationKey, level, payloadText]);
+  }, [generationKey, level, payloadText, tr]);
 
   const activeGeneration =
     generation.key === generationKey ? generation : undefined;
@@ -119,9 +112,17 @@ export default function QrcodeCalculator() {
       <div className="qr-preview">
         {/* QR data is generated locally and only exists as an in-memory data URL. */}
         {/* eslint-disable-next-line @next/next/no-img-element */}
-        <img src={activeGeneration.image} alt="可掃描的 QR Code" />
+        <img
+          src={activeGeneration.image}
+          alt={tr('可掃描的 QR Code', 'Scannable QR code')}
+        />
       </div>
-      <p>內容僅在此瀏覽器中處理。</p>
+      <p>
+        {tr(
+          '內容僅在此瀏覽器中處理。',
+          'Content is processed only in this browser.',
+        )}
+      </p>
       <div className="action-row">
         <button
           type="button"
@@ -134,7 +135,7 @@ export default function QrcodeCalculator() {
             )
           }
         >
-          下載 PNG
+          {tr('下載 PNG', 'Download PNG')}
         </button>
         <button
           type="button"
@@ -148,19 +149,19 @@ export default function QrcodeCalculator() {
           }
           disabled={!activeGeneration.svg}
         >
-          下載 SVG
+          {tr('下載 SVG', 'Download SVG')}
         </button>
       </div>
     </>
   ) : (
-    <Notice>正在產生 QR Code…</Notice>
+    <Notice>{tr('正在產生 QR Code…', 'Generating QR code…')}</Notice>
   );
 
   let fieldsUi: ReactNode;
   if (mode === 'text')
     fieldsUi = (
       <TextField
-        label="文字內容"
+        label={tr('文字內容', 'Text content')}
         value={fields.text}
         onChange={(value) => setField('text', value)}
         multiline
@@ -169,7 +170,7 @@ export default function QrcodeCalculator() {
   else if (mode === 'url')
     fieldsUi = (
       <TextField
-        label="網址"
+        label={tr('網址', 'URL')}
         value={fields.url}
         onChange={(value) => setField('url', value)}
         type="url"
@@ -179,18 +180,18 @@ export default function QrcodeCalculator() {
     fieldsUi = (
       <>
         <TextField
-          label="Wi-Fi 名稱（SSID）"
+          label={tr('Wi-Fi 名稱（SSID）', 'Wi-Fi name (SSID)')}
           value={fields.ssid}
           onChange={(value) => setField('ssid', value)}
         />
         <TextField
-          label="密碼"
+          label={tr('密碼', 'Password')}
           value={fields.password}
           onChange={(value) => setField('password', value)}
           type="password"
         />
         <Choice
-          label="安全性"
+          label={tr('安全性', 'Security')}
           value={fields.security}
           onChange={(value) =>
             setField('security', value as QrFields['security'])
@@ -198,16 +199,16 @@ export default function QrcodeCalculator() {
           options={[
             { value: 'WPA', label: 'WPA/WPA2' },
             { value: 'WEP', label: 'WEP' },
-            { value: 'nopass', label: '開放網路' },
+            { value: 'nopass', label: tr('開放網路', 'Open network') },
           ]}
         />
         <Choice
-          label="隱藏 SSID"
+          label={tr('隱藏 SSID', 'Hidden SSID')}
           value={String(fields.hidden)}
           onChange={(value) => setField('hidden', value === 'true')}
           options={[
-            { value: 'false', label: '否' },
-            { value: 'true', label: '是' },
+            { value: 'false', label: tr('否', 'No') },
+            { value: 'true', label: tr('是', 'Yes') },
           ]}
         />
       </>
@@ -216,17 +217,17 @@ export default function QrcodeCalculator() {
     fieldsUi = (
       <>
         <TextField
-          label="姓名"
+          label={tr('姓名', 'Name')}
           value={fields.name}
           onChange={(value) => setField('name', value)}
         />
         <TextField
-          label="公司"
+          label={tr('公司', 'Organization')}
           value={fields.organization}
           onChange={(value) => setField('organization', value)}
         />
         <TextField
-          label="電話"
+          label={tr('電話', 'Phone')}
           value={fields.phone}
           onChange={(value) => setField('phone', value)}
           type="tel"
@@ -238,7 +239,7 @@ export default function QrcodeCalculator() {
           type="email"
         />
         <TextField
-          label="網址"
+          label={tr('網址', 'URL')}
           value={fields.website}
           onChange={(value) => setField('website', value)}
           type="url"
@@ -251,23 +252,35 @@ export default function QrcodeCalculator() {
       result={result}
       notes={
         <Notice>
-          更正等級越高越耐損，但可容納的內容會較少。Wi-Fi
-          與名片格式依常見掃描器慣例產生。
+          {tr(
+            '更正等級越高越耐損，但可容納的內容會較少。Wi-Fi 與名片格式依常見掃描器慣例產生。',
+            'Higher correction levels are more resilient but hold less data. Wi-Fi and contact-card formats follow common scanner conventions.',
+          )}
         </Notice>
       }
     >
       <div className="fields-grid">
         <Choice
-          label="內容類型"
+          label={tr('內容類型', 'Content type')}
           value={mode}
           onChange={(value) => setMode(value as QrMode)}
-          options={modes}
+          options={[
+            { value: 'text', label: tr('文字', 'Text') },
+            { value: 'url', label: tr('網址', 'URL') },
+            { value: 'wifi', label: 'Wi-Fi' },
+            { value: 'vcard', label: tr('聯絡人名片', 'Contact card') },
+          ]}
         />
         <Choice
-          label="更正等級"
+          label={tr('更正等級', 'Correction level')}
           value={level}
           onChange={setLevel}
-          options={levels}
+          options={[
+            { value: 'L', label: tr('L（約 7%）', 'L (about 7%)') },
+            { value: 'M', label: tr('M（約 15%）', 'M (about 15%)') },
+            { value: 'Q', label: tr('Q（約 25%）', 'Q (about 25%)') },
+            { value: 'H', label: tr('H（約 30%）', 'H (about 30%)') },
+          ]}
         />
         {fieldsUi}
       </div>

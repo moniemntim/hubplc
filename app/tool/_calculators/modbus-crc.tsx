@@ -2,6 +2,7 @@
 import { useState } from 'react';
 import { attempt } from '@/lib/tools/core';
 import { modbusCrc } from '@/lib/tools/plc';
+import { useToolLanguage } from '@/components/tool-language';
 import {
   CopyButton,
   Notice,
@@ -10,14 +11,17 @@ import {
   ToolPanel,
 } from '@/app/tool/_components/controls';
 export default function ModbusCrc() {
+  const { tr } = useToolLanguage();
   const [raw, setRaw] = useState('01 03 00 00 00 0A');
   const result = attempt(() => modbusCrc(raw));
   return (
     <ToolPanel
       notes={
         <Notice>
-          CRC-16/Modbus 初始值為 FFFF。CRC
-          數值以高位元組在前顯示；實際封包以低位元組在前傳送。
+          {tr(
+            'CRC-16/Modbus 初始值為 FFFF。CRC 數值以高位元組在前顯示；實際封包以低位元組在前傳送。',
+            'CRC-16/Modbus starts at FFFF. The CRC value is displayed high byte first; the actual packet sends the low byte first.',
+          )}
         </Notice>
       }
       result={
@@ -27,19 +31,31 @@ export default function ModbusCrc() {
           <>
             <ResultRows
               rows={[
-                { label: 'CRC 數值', value: result.data!.crc },
-                { label: '封包傳送順序', value: result.data!.wire },
-                { label: '完整封包', value: result.data!.complete },
+                { label: tr('CRC 數值', 'CRC value'), value: result.data!.crc },
+                {
+                  label: tr('封包傳送順序', 'Packet byte order'),
+                  value: result.data!.wire,
+                },
+                {
+                  label: tr('完整封包', 'Complete packet'),
+                  value: result.data!.complete,
+                },
               ]}
             />
-            <CopyButton text={result.data!.complete} label="複製完整封包" />
+            <CopyButton
+              text={result.data!.complete}
+              label={tr('複製完整封包', 'Copy complete packet')}
+            />
           </>
         )
       }
     >
       {
         <TextField
-          label="HEX 位元組（空白或逗號分隔）"
+          label={tr(
+            'HEX 位元組（空白或逗號分隔）',
+            'HEX bytes (space or comma separated)',
+          )}
           value={raw}
           onChange={setRaw}
           multiline

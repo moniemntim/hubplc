@@ -7,6 +7,7 @@ import {
   electricalFormat,
 } from '@/lib/tools/electrical';
 import { attempt } from '@/lib/tools/core';
+import { useToolLanguage } from '@/components/tool-language';
 import {
   Choice,
   ToolPanel,
@@ -16,6 +17,7 @@ import {
   ToolActions,
 } from '@/app/tool/_components/controls';
 export default function VoltageDivider() {
+  const { tr } = useToolLanguage();
   const [mode, setMode] = useState('forward'),
     [vin, setVin] = useState('24'),
     [r1, setR1] = useState('10000'),
@@ -44,22 +46,22 @@ export default function VoltageDivider() {
         <ResultRows
           rows={[
             {
-              label: '輸出電壓',
+              label: tr('輸出電壓', 'Output voltage'),
               value: electricalFormat(forward.data.vout),
               unit: 'V',
             },
             {
-              label: '電流',
+              label: tr('電流', 'Current'),
               value: electricalFormat(forward.data.current),
               unit: 'A',
             },
             {
-              label: 'R1 功耗',
+              label: tr('R1 功耗', 'R1 power'),
               value: electricalFormat(forward.data.p1),
               unit: 'W',
             },
             {
-              label: 'R2 功耗',
+              label: tr('R2 功耗', 'R2 power'),
               value: electricalFormat(forward.data.p2),
               unit: 'W',
             },
@@ -72,7 +74,7 @@ export default function VoltageDivider() {
       <ResultRows
         rows={[
           {
-            label: '所需 R2',
+            label: tr('所需 R2', 'Required R2'),
             value: electricalFormat(inverse.data.r2),
             unit: 'Ω',
           },
@@ -86,9 +88,14 @@ export default function VoltageDivider() {
       diagram={
         <svg
           viewBox="0 0 360 220"
-          aria-label="Vin 經 R1、R2 串聯接地，Vout 為兩電阻中點且無負載"
+          aria-label={tr(
+            'Vin 經 R1、R2 串聯接地，Vout 為兩電阻中點且無負載',
+            'Vin feeds R1 and R2 in series to ground; Vout is their unloaded midpoint',
+          )}
         >
-          <title>無負載電阻分壓器</title>
+          <title>
+            {tr('無負載電阻分壓器', 'Unloaded resistor voltage divider')}
+          </title>
           <g fill="none" stroke="currentColor" strokeWidth="2">
             <path d="M120 20V40M120 75V120M120 155V190M105 190H135M110 196H130M115 202H125M120 95H250" />
           </g>
@@ -133,7 +140,7 @@ export default function VoltageDivider() {
             stroke="currentColor"
             strokeWidth="2"
           />
-          <DiagramPart field="目標 Vout">
+          <DiagramPart field={tr('目標 Vout', 'Target Vout')}>
             <text x="222" y="81">
               Vout{' '}
               {activeForward
@@ -144,7 +151,7 @@ export default function VoltageDivider() {
             </text>
           </DiagramPart>
           <text x="221" y="120">
-            無負載
+            {tr('無負載', 'Unloaded')}
           </text>
           <text x="145" y="202">
             GND (0 V)
@@ -153,19 +160,22 @@ export default function VoltageDivider() {
       }
       notes={
         <>
-          <b>公式</b> Vout = Vin × R2 ÷ (R1 +
-          R2)。結果假設輸出端無負載；接上負載後須把負載與 R2 並聯。
+          <b>{tr('公式', 'Formula')}</b> Vout = Vin × R2 ÷ (R1 + R2)。
+          {tr(
+            '結果假設輸出端無負載；接上負載後須把負載與 R2 並聯。',
+            'The result assumes an unloaded output; connect any load in parallel with R2.',
+          )}
         </>
       }
       result={result}
     >
       <Choice
-        label="計算方式"
+        label={tr('計算方式', 'Calculation')}
         value={mode}
         onChange={setMode}
         options={[
-          { value: 'forward', label: '正算輸出' },
-          { value: 'inverse', label: '反算 R2' },
+          { value: 'forward', label: tr('正算輸出', 'Calculate output') },
+          { value: 'inverse', label: tr('反算 R2', 'Calculate R2') },
         ]}
       />
       <div className="fields-grid">
@@ -193,7 +203,7 @@ export default function VoltageDivider() {
           />
         ) : (
           <QuantityField
-            label="目標 Vout"
+            label={tr('目標 Vout', 'Target Vout')}
             value={out}
             onChange={setOut}
             kind="voltage"

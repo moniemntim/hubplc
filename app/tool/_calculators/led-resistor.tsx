@@ -1,5 +1,6 @@
 'use client';
 import { useState } from 'react';
+import { useToolLanguage } from '@/components/tool-language';
 import { attempt, formatNumber } from '@/lib/tools/core';
 import { ledSeriesResistor, type PreferredSeries } from '@/lib/tools/preferred';
 import { QuantityField } from '@/app/tool/_components/quantity';
@@ -23,10 +24,22 @@ function LedDiagram({
   count: number;
   resistor: string;
 }) {
+  const { tr } = useToolLanguage();
   return (
-    <svg viewBox="0 0 360 130" aria-label="LED 串聯限流電阻電路">
-      <title>LED 串聯限流電阻電路</title>
-      <DiagramPart field="電源電壓">
+    <svg
+      viewBox="0 0 360 130"
+      aria-label={tr(
+        'LED 串聯限流電阻電路',
+        'LED series current-limiting resistor circuit',
+      )}
+    >
+      <title>
+        {tr(
+          'LED 串聯限流電阻電路',
+          'LED series current-limiting resistor circuit',
+        )}
+      </title>
+      <DiagramPart field={tr('電源電壓', 'Supply voltage')}>
         <path d="M25 30V53M16 53h18M20 68h10M25 68V100" stroke="currentColor" />
         <text x="5" y="122" fontSize="11">
           {supply} V
@@ -37,11 +50,11 @@ function LedDiagram({
         fill="none"
         stroke="currentColor"
       />
-      <DiagramPart field="目標電流">
+      <DiagramPart field={tr('目標電流', 'Target current')}>
         <path d="M35 30h10" stroke="#0a9f76" strokeWidth="3" />
         <path d="M45 30l-7-4v8z" fill="#0a9f76" />
       </DiagramPart>
-      <DiagramPart field="選用標準阻值">
+      <DiagramPart field={tr('選用標準阻值', 'Selected standard resistance')}>
         <path
           d="M50 30l8-10 10 20 10-20 10 20 10-20 12 10"
           fill="none"
@@ -51,7 +64,7 @@ function LedDiagram({
           R {resistor} Ω
         </text>
       </DiagramPart>
-      <DiagramPart field="LED 順向壓降">
+      <DiagramPart field={tr('LED 順向壓降', 'LED forward voltage')}>
         <path
           d="M145 18v24l20-12zM169 18v24"
           fill="none"
@@ -62,15 +75,16 @@ function LedDiagram({
           {forward} V
         </text>
       </DiagramPart>
-      <DiagramPart field="LED 數量">
+      <DiagramPart field={tr('LED 數量', 'LED count')}>
         <text x="200" y="78" fontSize="12">
-          × {count} 顆相同 LED
+          × {count} {tr('顆相同 LED', 'identical LEDs')}
         </text>
       </DiagramPart>
     </svg>
   );
 }
 export default function LedResistor() {
+  const { tr } = useToolLanguage();
   const [supply, setSupply] = useState('12');
   const [forward, setForward] = useState('3');
   const [count, setCount] = useState('3');
@@ -93,8 +107,14 @@ export default function LedResistor() {
       }
       notes={
         <>
-          R = (Vs − N × Vf) / I。工具會向上選取 E
-          系列標準阻值，因此實際電流不會高於目標值。功耗是理想直流條件，元件額定功率還須考慮環境溫度與散熱。
+          {tr(
+            'R = (Vs − N × Vf) / I。工具會向上選取 E',
+            'R = (Vs − N × Vf) / I. The tool rounds up to the E',
+          )}
+          {tr(
+            '系列標準阻值，因此實際電流不會高於目標值。功耗是理想直流條件，元件額定功率還須考慮環境溫度與散熱。',
+            'series standard resistance, so actual current will not exceed the target. Power dissipation assumes ideal DC conditions; component power ratings must also account for ambient temperature and heat dissipation.',
+          )}
         </>
       }
       result={
@@ -102,32 +122,32 @@ export default function LedResistor() {
           <ResultRows
             rows={[
               {
-                label: 'LED 總順向壓降',
+                label: tr('LED 總順向壓降', 'Total LED forward voltage'),
                 value: formatNumber(result.data.totalForward),
                 unit: 'V',
               },
               {
-                label: '理論限流電阻',
+                label: tr('理論限流電阻', 'Ideal current-limiting resistance'),
                 value: formatNumber(result.data.idealResistance),
                 unit: 'Ω',
               },
               {
-                label: '理論電阻功耗',
+                label: tr('理論電阻功耗', 'Ideal resistor dissipation'),
                 value: formatNumber(result.data.idealPower),
                 unit: 'W',
               },
               {
-                label: '選用標準阻值',
+                label: tr('選用標準阻值', 'Selected standard resistance'),
                 value: formatNumber(result.data.selectedResistance),
                 unit: 'Ω',
               },
               {
-                label: '實際電流',
+                label: tr('實際電流', 'Actual current'),
                 value: formatNumber(result.data.actualCurrent),
                 unit: 'A',
               },
               {
-                label: '選用電阻功耗',
+                label: tr('選用電阻功耗', 'Selected resistor dissipation'),
                 value: formatNumber(result.data.actualPower),
                 unit: 'W',
               },
@@ -155,27 +175,27 @@ export default function LedResistor() {
       />
       <div className="fields-grid">
         <QuantityField
-          label="電源電壓"
+          label={tr('電源電壓', 'Supply voltage')}
           value={supply}
           onChange={setSupply}
           kind="voltage"
           initialUnit="V"
         />
         <QuantityField
-          label="LED 順向壓降"
+          label={tr('LED 順向壓降', 'LED forward voltage')}
           value={forward}
           onChange={setForward}
           kind="voltage"
           initialUnit="V"
         />
         <NumberField
-          label="LED 數量"
+          label={tr('LED 數量', 'LED count')}
           value={count}
           onChange={setCount}
-          unit="顆"
+          unit={tr('顆', 'LEDs')}
         />
         <QuantityField
-          label="目標電流"
+          label={tr('目標電流', 'Target current')}
           value={current}
           onChange={setCurrent}
           kind="current"
@@ -183,7 +203,7 @@ export default function LedResistor() {
         />
       </div>
       <Choice
-        label="選用標準阻值"
+        label={tr('選用標準阻值', 'Selected standard resistance')}
         value={series}
         onChange={(v) => setSeries(v as PreferredSeries)}
         options={['E12', 'E24', 'E96'].map((value) => ({

@@ -1,6 +1,7 @@
 'use client';
 
 import { useState } from 'react';
+import { useToolLanguage } from '@/components/tool-language';
 import { attempt, formatNumber } from '@/lib/tools/core';
 import {
   capacitorDischarge,
@@ -23,6 +24,7 @@ function DischargeDiagram({
   result?: ReturnType<typeof capacitorDischarge>;
   mode: CapacitorDischargeMode;
 }) {
+  const { tr } = useToolLanguage();
   const spanInTau = result ? Math.max(5, result.time / result.tau) : 5;
   const point = (x: number) => {
     const y = Math.exp(-x * spanInTau);
@@ -33,14 +35,25 @@ function DischargeDiagram({
     result && spanInTau > 5 ? `t = ${formatNumber(result.time)} s` : '5τ';
   return (
     <>
-      <svg viewBox="0 0 360 175" aria-label="電容經固定電阻放電的理想 RC 電路">
-        <title>{'固定電阻的理想電容放電電路'}</title>
+      <svg
+        viewBox="0 0 360 175"
+        aria-label={tr(
+          '電容經固定電阻放電的理想 RC 電路',
+          'Ideal RC circuit with a capacitor discharging through a fixed resistor',
+        )}
+      >
+        <title>
+          {tr(
+            '固定電阻的理想電容放電電路',
+            'Ideal capacitor discharge circuit with a fixed resistor',
+          )}
+        </title>
         <g fill="none" stroke="currentColor" strokeWidth="2">
           <path d="M55 32H110M165 32H245V65M245 75V110H55V32" />
           <rect x="110" y="22" width="55" height="20" />
           <path d="M227 65h36m-36 10h36" />
         </g>
-        <DiagramPart field="放電電阻">
+        <DiagramPart field={tr('放電電阻', 'Discharge resistance')}>
           <text x="112" y="17" fontSize="13">
             R {result ? `${formatNumber(result.resistance)} Ω` : ''}
           </text>
@@ -50,26 +63,32 @@ function DischargeDiagram({
             C {result ? `${formatNumber(result.capacitance)} F` : ''}
           </text>
         </DiagramPart>
-        <DiagramPart field="初始電壓">
+        <DiagramPart field={tr('初始電壓', 'Initial voltage')}>
           <text x="25" y="140" fontSize="12">
             Vi {result ? `${formatNumber(result.initialVoltage)} V` : ''}
           </text>
         </DiagramPart>
-        <DiagramPart field="目標電壓">
+        <DiagramPart field={tr('目標電壓', 'Target voltage')}>
           <text x="335" y="140" textAnchor="end" fontSize="12">
             Vt {result ? `${formatNumber(result.targetVoltage)} V` : ''}
           </text>
         </DiagramPart>
         {mode === 'resistance' && (
-          <DiagramPart field="目標時間">
+          <DiagramPart field={tr('目標時間', 'Target time')}>
             <text x="335" y="160" textAnchor="end" fontSize="12">
               t {result ? `${formatNumber(result.time)} s` : ''}
             </text>
           </DiagramPart>
         )}
       </svg>
-      <svg viewBox="0 0 280 110" aria-label="電容電壓隨時間指數衰減的曲線">
-        <title>{'理想 RC 放電曲線'}</title>
+      <svg
+        viewBox="0 0 280 110"
+        aria-label={tr(
+          '電容電壓隨時間指數衰減的曲線',
+          'Capacitor voltage exponentially decaying over time',
+        )}
+      >
+        <title>{tr('理想 RC 放電曲線', 'Ideal RC discharge curve')}</title>
         <path d="M30 80V15m0 65h240" stroke="currentColor" fill="none" />
         <path
           d={Array.from(
@@ -105,6 +124,7 @@ function DischargeDiagram({
 }
 
 export default function CapacitorDischarge() {
+  const { tr } = useToolLanguage();
   const [mode, setMode] = useState<CapacitorDischargeMode>('time');
   const [capacitance, setCapacitance] = useState('.0001');
   const [initialVoltage, setInitialVoltage] = useState('24');
@@ -140,9 +160,12 @@ export default function CapacitorDischarge() {
       diagram={<DischargeDiagram result={result.data} mode={mode} />}
       notes={
         <>
-          公式：V(t) = Vi × e<sup>−t/RC</sup>；t = RC × ln(Vi ÷
-          Vt)。此工具假設理想固定電阻的 RC
-          放電，結果不表示實際電容、電阻或電路具備所需耐壓、額定功率或觸碰安全性。參考{' '}
+          {tr('公式：V(t) = Vi × e', 'Formula: V(t) = Vi × e')}
+          <sup>−t/RC</sup>
+          {tr(
+            '；t = RC × ln(Vi ÷ Vt)。此工具假設理想固定電阻的 RC 放電，結果不表示實際電容、電阻或電路具備所需耐壓、額定功率或觸碰安全性。參考',
+            '; t = RC × ln(Vi ÷ Vt). This tool assumes ideal RC discharge through a fixed resistor. Results do not establish that actual capacitors, resistors, or circuits meet required voltage ratings, power ratings, or touch-safety requirements. Reference:',
+          )}{' '}
           <a href="https://www.digikey.tw/en/resources/conversion-calculators/conversion-calculator-capacitor-safety-discharge">
             DigiKey Capacitor Safety Discharge Calculator
           </a>
@@ -154,42 +177,45 @@ export default function CapacitorDischarge() {
           <ResultRows
             rows={[
               {
-                label: '放電時間',
+                label: tr('放電時間', 'Discharge time'),
                 value: formatNumber(result.data.time),
                 unit: 's',
               },
               {
-                label: '放電電阻',
+                label: tr('放電電阻', 'Discharge resistance'),
                 value: formatNumber(result.data.resistance),
                 unit: 'Ω',
               },
               {
-                label: '時間常數 τ',
+                label: tr('時間常數 τ', 'Time constant τ'),
                 value: formatNumber(result.data.tau),
                 unit: 's',
               },
               {
-                label: '初始電流',
+                label: tr('初始電流', 'Initial current'),
                 value: formatNumber(result.data.initialCurrent),
                 unit: 'A',
               },
               {
-                label: '初始功率',
+                label: tr('初始功率', 'Initial power'),
                 value: formatNumber(result.data.initialPower),
                 unit: 'W',
               },
               {
-                label: '初始儲能',
+                label: tr('初始儲能', 'Initial stored energy'),
                 value: formatNumber(result.data.initialEnergy),
                 unit: 'J',
               },
               {
-                label: '目標電壓儲能',
+                label: tr('目標電壓儲能', 'Energy at target voltage'),
                 value: formatNumber(result.data.finalEnergy),
                 unit: 'J',
               },
               {
-                label: '至目標電壓已耗散',
+                label: tr(
+                  '至目標電壓已耗散',
+                  'Energy dissipated to target voltage',
+                ),
                 value: formatNumber(result.data.energyDissipated),
                 unit: 'J',
               },
@@ -201,12 +227,18 @@ export default function CapacitorDischarge() {
       }
     >
       <Choice
-        label="計算方式"
+        label={tr('計算方式', 'Calculation method')}
         value={mode}
         onChange={changeMode}
         options={[
-          { value: 'time', label: '由電阻算時間' },
-          { value: 'resistance', label: '由時間算電阻' },
+          {
+            value: 'time',
+            label: tr('由電阻算時間', 'Calculate time from resistance'),
+          },
+          {
+            value: 'resistance',
+            label: tr('由時間算電阻', 'Calculate resistance from time'),
+          },
         ]}
       />
       <div className="fields-grid">
@@ -218,14 +250,14 @@ export default function CapacitorDischarge() {
           initialUnit="µF"
         />
         <QuantityField
-          label="初始電壓"
+          label={tr('初始電壓', 'Initial voltage')}
           value={initialVoltage}
           onChange={setInitialVoltage}
           kind="voltage"
           initialUnit="V"
         />
         <QuantityField
-          label="目標電壓"
+          label={tr('目標電壓', 'Target voltage')}
           value={targetVoltage}
           onChange={setTargetVoltage}
           kind="voltage"
@@ -234,7 +266,7 @@ export default function CapacitorDischarge() {
         {mode === 'time' ? (
           <QuantityField
             key="resistance"
-            label="放電電阻"
+            label={tr('放電電阻', 'Discharge resistance')}
             value={known}
             onChange={setKnown}
             kind="resistance"
@@ -243,7 +275,7 @@ export default function CapacitorDischarge() {
         ) : (
           <QuantityField
             key="time"
-            label="目標時間"
+            label={tr('目標時間', 'Target time')}
             value={known}
             onChange={setKnown}
             kind="time"

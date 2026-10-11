@@ -1,6 +1,7 @@
 'use client';
 
 import { useEffect, useRef } from 'react';
+import { useToolLanguage } from './tool-language';
 
 declare global {
   interface Window {
@@ -9,6 +10,7 @@ declare global {
 }
 
 export default function AdSenseUnit() {
+  const { tr } = useToolLanguage();
   const requested = useRef(false);
   useEffect(() => {
     if (requested.current) return;
@@ -18,7 +20,7 @@ export default function AdSenseUnit() {
   }, []);
 
   return (
-    <div className="hubplc-ad-unit" aria-label="廣告">
+    <div className="hubplc-ad-unit" aria-label={tr('廣告', 'Advertisement')}>
       <ins
         className="adsbygoogle"
         style={{ display: 'block' }}

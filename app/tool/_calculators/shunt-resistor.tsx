@@ -1,5 +1,6 @@
 'use client';
 import { useState } from 'react';
+import { useToolLanguage } from '@/components/tool-language';
 import { attempt, formatNumber } from '@/lib/tools/core';
 import { shuntFromTwo, shuntMeasured } from '@/lib/tools/networks';
 import {
@@ -12,6 +13,7 @@ import {
 import { QuantityField } from '@/app/tool/_components/quantity';
 import { ShuntDiagram } from '@/app/tool/_components/network-components';
 export default function ShuntResistor() {
+  const { tr } = useToolLanguage();
   const [mode, setMode] = useState<'two' | 'measured'>('two'),
     [known, setKnown] = useState<'voltage' | 'current' | 'resistance'>(
       'voltage',
@@ -45,8 +47,11 @@ export default function ShuntResistor() {
       }
       notes={
         <>
-          Rshunt = Vshunt / I，P = Vshunt ×
-          I。功耗為理論值；實際選型還需確認容差、溫度係數與散熱。
+          Rshunt = Vshunt / I，P = Vshunt × I
+          {tr(
+            '。功耗為理論值；實際選型還需確認容差、溫度係數與散熱。',
+            '. Power dissipation is theoretical; actual selection must also verify tolerance, temperature coefficient, and heat dissipation.',
+          )}
         </>
       }
       result={
@@ -54,22 +59,22 @@ export default function ShuntResistor() {
           <ResultRows
             rows={[
               {
-                label: '分流電阻',
+                label: tr('分流電阻', 'Shunt resistance'),
                 value: formatNumber(result.data.resistance),
                 unit: 'Ω',
               },
               {
-                label: '壓降',
+                label: tr('壓降', 'Voltage drop'),
                 value: formatNumber(result.data.voltage),
                 unit: 'V',
               },
               {
-                label: '電流',
+                label: tr('電流', 'Current'),
                 value: formatNumber(result.data.current),
                 unit: 'A',
               },
               {
-                label: '功耗',
+                label: tr('功耗', 'Power dissipation'),
                 value: formatNumber(result.data.power),
                 unit: 'W',
               },
@@ -81,34 +86,52 @@ export default function ShuntResistor() {
       }
     >
       <Choice
-        label="計算方式"
+        label={tr('計算方式', 'Calculation method')}
         value={mode}
         onChange={(v) => setMode(v as typeof mode)}
         options={[
-          { value: 'two', label: '任選兩項求第三項' },
-          { value: 'measured', label: '額定值與實測壓降' },
+          {
+            value: 'two',
+            label: tr('任選兩項求第三項', 'Choose any two to solve the third'),
+          },
+          {
+            value: 'measured',
+            label: tr(
+              '額定值與實測壓降',
+              'Rated values and measured voltage drop',
+            ),
+          },
         ]}
       />
       {mode === 'two' ? (
         <>
           <Choice
-            label="第一個已知量"
+            label={tr('第一個已知量', 'First known quantity')}
             value={known}
             onChange={(v) => setKnown(v as typeof known)}
             options={[
-              { value: 'voltage', label: '壓降與電流' },
-              { value: 'current', label: '電流與電阻' },
-              { value: 'resistance', label: '電阻與壓降' },
+              {
+                value: 'voltage',
+                label: tr('壓降與電流', 'Voltage drop and current'),
+              },
+              {
+                value: 'current',
+                label: tr('電流與電阻', 'Current and resistance'),
+              },
+              {
+                value: 'resistance',
+                label: tr('電阻與壓降', 'Resistance and voltage drop'),
+              },
             ]}
           />
           <div className="fields-grid">
             <QuantityField
               label={
                 known === 'voltage'
-                  ? '壓降'
+                  ? tr('壓降', 'Voltage drop')
                   : known === 'current'
-                    ? '電流'
-                    : '電阻'
+                    ? tr('電流', 'Current')
+                    : tr('電阻', 'Resistance')
               }
               value={a}
               onChange={setA}
@@ -117,10 +140,10 @@ export default function ShuntResistor() {
             <QuantityField
               label={
                 known === 'voltage'
-                  ? '電流'
+                  ? tr('電流', 'Current')
                   : known === 'current'
-                    ? '電阻'
-                    : '壓降'
+                    ? tr('電阻', 'Resistance')
+                    : tr('壓降', 'Voltage drop')
               }
               value={b}
               onChange={setB}
@@ -131,20 +154,20 @@ export default function ShuntResistor() {
       ) : (
         <div className="fields-grid">
           <QuantityField
-            label="額定電流"
+            label={tr('額定電流', 'Rated current')}
             value={ratedI}
             onChange={setRatedI}
             kind="current"
           />
           <QuantityField
-            label="額定壓降"
+            label={tr('額定壓降', 'Rated voltage drop')}
             value={ratedV}
             onChange={setRatedV}
             kind="voltage"
             initialUnit="mV"
           />
           <QuantityField
-            label="實測壓降"
+            label={tr('實測壓降', 'Measured voltage drop')}
             value={measured}
             onChange={setMeasured}
             kind="voltage"

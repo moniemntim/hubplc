@@ -8,6 +8,7 @@ import {
   taipeiToday,
 } from '@/lib/tools/date-time';
 import { attempt, formatNumber } from '@/lib/tools/core';
+import { useToolLanguage } from '@/components/tool-language';
 import {
   Choice,
   CopyButton,
@@ -18,6 +19,7 @@ import {
 } from '../_components/controls';
 
 export default function DateCalculator() {
+  const { tr } = useToolLanguage();
   const [mode, setMode] = useState<'difference' | 'add-days'>('difference');
   const [start, setStart] = useState('2024-02-28');
   const [end, setEnd] = useState('2024-03-01');
@@ -39,8 +41,14 @@ export default function DateCalculator() {
   );
   const copyText = result.data
     ? result.data.kind === 'difference'
-      ? `${result.data.start} 到 ${result.data.end}\n相差 ${result.data.calendarDays} 天${inclusive ? `（含首尾 ${result.data.inclusiveDays} 天）` : ''}`
-      : `${result.data.baseDate} ${result.data.days >= 0 ? '+' : ''}${result.data.days} 天 = ${result.data.result}`
+      ? tr(
+          `${result.data.start} 到 ${result.data.end}\n相差 ${result.data.calendarDays} 天${inclusive ? `（含首尾 ${result.data.inclusiveDays} 天）` : ''}`,
+          `${result.data.start} to ${result.data.end}\nDifference: ${result.data.calendarDays} days${inclusive ? ` (including both dates: ${result.data.inclusiveDays} days)` : ''}`,
+        )
+      : tr(
+          `${result.data.baseDate} ${result.data.days >= 0 ? '+' : ''}${result.data.days} 天 = ${result.data.result}`,
+          `${result.data.baseDate} ${result.data.days >= 0 ? '+' : ''}${result.data.days} days = ${result.data.result}`,
+        )
     : '';
 
   return (
@@ -48,13 +56,16 @@ export default function DateCalculator() {
       notes={
         <>
           <p>
-            日期差以曆法日計算，固定使用 UTC
-            的日曆座標，因此不會受裝置時區或夏令時間影響。「含首尾」會在兩端都納入計數，例如同一天為
-            1 天。
+            {tr(
+              '日期差以曆法日計算，固定使用 UTC 的日曆座標，因此不會受裝置時區或夏令時間影響。「含首尾」會在兩端都納入計數，例如同一天為 1 天。',
+              'Date differences use calendar days in UTC, so device time zones and daylight saving time do not affect them. “Include both dates” counts both ends; the same day is 1 day.',
+            )}
           </p>
           <p>
-            日期加減只接受整數天數；輸入正數往後、負數往前。有效範圍為
-            1900-01-01～9999-12-31，並依格里曆處理閏年。
+            {tr(
+              '日期加減只接受整數天數；輸入正數往後、負數往前。有效範圍為 1900-01-01～9999-12-31，並依格里曆處理閏年。',
+              'Date arithmetic accepts integer days only: positive moves forward and negative moves backward. The valid range is 1900-01-01 to 9999-12-31, using Gregorian leap-year rules.',
+            )}
           </p>
         </>
       }
@@ -65,26 +76,26 @@ export default function DateCalculator() {
               <ResultRows
                 rows={[
                   {
-                    label: '結束 − 開始',
+                    label: tr('結束 − 開始', 'End − start'),
                     value: result.data.signedDays,
-                    unit: '天',
+                    unit: tr('天', 'days'),
                   },
                   {
-                    label: '相差曆法日',
+                    label: tr('相差曆法日', 'Calendar-day difference'),
                     value: result.data.calendarDays,
-                    unit: '天',
+                    unit: tr('天', 'days'),
                   },
                   {
-                    label: '相差週數',
+                    label: tr('相差週數', 'Whole-week difference'),
                     value: formatNumber(result.data.wholeWeeks),
-                    unit: '週',
+                    unit: tr('週', 'weeks'),
                   },
                   ...(inclusive
                     ? [
                         {
-                          label: '含首尾計數',
+                          label: tr('含首尾計數', 'Including both dates'),
                           value: result.data.inclusiveDays,
-                          unit: '天',
+                          unit: tr('天', 'days'),
                         },
                       ]
                     : []),
@@ -93,9 +104,19 @@ export default function DateCalculator() {
             ) : (
               <ResultRows
                 rows={[
-                  { label: '基準日期', value: result.data.baseDate },
-                  { label: '增減天數', value: result.data.days, unit: '天' },
-                  { label: '結果日期', value: result.data.result },
+                  {
+                    label: tr('基準日期', 'Base date'),
+                    value: result.data.baseDate,
+                  },
+                  {
+                    label: tr('增減天數', 'Days to add/subtract'),
+                    value: result.data.days,
+                    unit: tr('天', 'days'),
+                  },
+                  {
+                    label: tr('結果日期', 'Result date'),
+                    value: result.data.result,
+                  },
                 ]}
               />
             )}
@@ -107,19 +128,33 @@ export default function DateCalculator() {
       }
     >
       <Choice
-        label="計算方式"
+        label={tr('計算方式', 'Calculation')}
         value={mode}
         onChange={(value) => setMode(value as typeof mode)}
         options={[
-          { value: 'difference', label: '計算兩日期相差天數' },
-          { value: 'add-days', label: '日期加減天數' },
+          {
+            value: 'difference',
+            label: tr('計算兩日期相差天數', 'Difference between dates'),
+          },
+          {
+            value: 'add-days',
+            label: tr('日期加減天數', 'Add or subtract days'),
+          },
         ]}
       />
       {mode === 'difference' ? (
         <>
           <div className="fields-grid">
-            <TextField label="開始日期" value={start} onChange={setStart} />
-            <TextField label="結束日期" value={end} onChange={setEnd} />
+            <TextField
+              label={tr('開始日期', 'Start date')}
+              value={start}
+              onChange={setStart}
+            />
+            <TextField
+              label={tr('結束日期', 'End date')}
+              value={end}
+              onChange={setEnd}
+            />
           </div>
           <label className="check-row">
             <input
@@ -127,14 +162,21 @@ export default function DateCalculator() {
               checked={inclusive}
               onChange={(event) => setInclusive(event.target.checked)}
             />
-            含開始日與結束日
+            {tr('含開始日與結束日', 'Include start and end dates')}
           </label>
         </>
       ) : (
         <div className="fields-grid">
-          <TextField label="基準日期" value={baseDate} onChange={setBaseDate} />
           <TextField
-            label="增減天數（正／負整數）"
+            label={tr('基準日期', 'Base date')}
+            value={baseDate}
+            onChange={setBaseDate}
+          />
+          <TextField
+            label={tr(
+              '增減天數（正／負整數）',
+              'Days to add/subtract (positive or negative integer)',
+            )}
             value={days}
             onChange={setDays}
           />
@@ -152,7 +194,7 @@ export default function DateCalculator() {
             } else setBaseDate(today);
           }}
         >
-          帶入台北今日
+          {tr('帶入台北今日', 'Use today in Taipei')}
         </button>
         <button
           type="button"
@@ -166,7 +208,7 @@ export default function DateCalculator() {
             setDays('2');
           }}
         >
-          載入範例
+          {tr('載入範例', 'Load example')}
         </button>
         <button
           type="button"
@@ -178,7 +220,7 @@ export default function DateCalculator() {
             setDays('');
           }}
         >
-          清空
+          {tr('清空', 'Clear')}
         </button>
       </div>
     </ToolPanel>

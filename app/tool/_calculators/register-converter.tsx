@@ -2,6 +2,7 @@
 
 import { useState } from 'react';
 import { attempt } from '@/lib/tools/core';
+import { useToolLanguage } from '@/components/tool-language';
 import {
   registerFromValue,
   registerToValue,
@@ -32,6 +33,7 @@ const orders = [
 ] as const;
 
 export default function RegisterConverter() {
+  const { tr } = useToolLanguage();
   const [direction, setDirection] = useState('to-register');
   const [kind, setKind] = useState<RegisterKind>('float32');
   const [order, setOrder] = useState<ByteOrder>('ABCD');
@@ -57,8 +59,10 @@ export default function RegisterConverter() {
     <ToolPanel
       notes={
         <Notice>
-          16 位元資料只有一個暫存器。ABCD 是 32
-          位元資料的標準高位元組在前排列；請依設備手冊選擇其他排列。
+          {tr(
+            '16 位元資料只有一個暫存器。ABCD 是 32 位元資料的標準高位元組在前排列；請依設備手冊選擇其他排列。',
+            '16-bit data has one register. ABCD is the standard high-byte-first order for 32-bit data; choose another order according to the device manual.',
+          )}
         </Notice>
       }
       result={
@@ -69,8 +73,13 @@ export default function RegisterConverter() {
             <ResultRows
               rows={
                 direction === 'to-register'
-                  ? [{ label: '暫存器 HEX', value: registers }]
-                  : [{ label: '數值', value: display }]
+                  ? [
+                      {
+                        label: tr('暫存器 HEX', 'Register HEX'),
+                        value: registers,
+                      },
+                    ]
+                  : [{ label: tr('數值', 'Value'), value: display }]
               }
             />
             <CopyButton text={display} />
@@ -80,23 +89,29 @@ export default function RegisterConverter() {
     >
       <div className="fields-grid">
         <Choice
-          label="方向"
+          label={tr('方向', 'Direction')}
           value={direction}
           onChange={setDirection}
           options={[
-            { value: 'to-register', label: '數值 → 暫存器' },
-            { value: 'from-register', label: '暫存器 → 數值' },
+            {
+              value: 'to-register',
+              label: tr('數值 → 暫存器', 'Value → Registers'),
+            },
+            {
+              value: 'from-register',
+              label: tr('暫存器 → 數值', 'Registers → Value'),
+            },
           ]}
         />
         <Choice
-          label="資料型別"
+          label={tr('資料型別', 'Data type')}
           value={kind}
           onChange={(value) => setKind(value as RegisterKind)}
           options={kinds}
         />
         {kind.endsWith('32') && (
           <Choice
-            label="位元組排列"
+            label={tr('位元組排列', 'Byte order')}
             value={order}
             onChange={(value) => setOrder(value as ByteOrder)}
             options={orders}
@@ -105,7 +120,9 @@ export default function RegisterConverter() {
       </div>
       <TextField
         label={
-          direction === 'to-register' ? '數值' : '暫存器 HEX（以空白分隔）'
+          direction === 'to-register'
+            ? tr('數值', 'Value')
+            : tr('暫存器 HEX（以空白分隔）', 'Register HEX (space separated)')
         }
         value={raw}
         onChange={setRaw}

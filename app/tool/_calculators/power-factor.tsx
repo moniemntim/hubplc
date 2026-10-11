@@ -1,6 +1,7 @@
 'use client';
 import { useState } from 'react';
 import { attempt, formatNumber } from '@/lib/tools/core';
+import { useToolLanguage } from '@/components/tool-language';
 import {
   calculatePowerFactor,
   type PowerFactorMode,
@@ -14,6 +15,7 @@ import {
   ToolPanel,
 } from '../_components/controls';
 export default function PowerFactor() {
+  const { tr } = useToolLanguage();
   const [mode, setMode] = useState<PowerFactorMode>('active-apparent');
   const [active, setActive] = useState('8');
   const [activeUnit, setActiveUnit] = useState('kW');
@@ -37,8 +39,10 @@ export default function PowerFactor() {
     <ToolPanel
       notes={
         <>
-          功率因數 PF = P ÷ S；功率三角形為 S² = P² + Q²。Q 為正時顯示落後，Q
-          為負時顯示超前。這是正弦穩態的基波功率三角形；諧波明顯時應使用電力分析儀量得的真功率因數。參考{' '}
+          {tr(
+            '功率因數 PF = P ÷ S；功率三角形為 S² = P² + Q²。Q 為正時顯示落後，Q 為負時顯示超前。這是正弦穩態的基波功率三角形；諧波明顯時應使用電力分析儀量得的真功率因數。參考',
+            'Power factor PF = P ÷ S; the power triangle is S² = P² + Q². Positive Q is lagging and negative Q is leading. This is the fundamental-frequency power triangle in sinusoidal steady state; use true power factor measured by a power analyzer when harmonics are significant. Reference',
+          )}{' '}
           <a href="https://www.se.com/hk/en/faqs/FA402515/">
             Schneider Electric：PF = P ÷ S
           </a>
@@ -49,25 +53,28 @@ export default function PowerFactor() {
         result.data ? (
           <ResultRows
             rows={[
-              { label: '功率因數', value: formatNumber(result.data.pf) },
               {
-                label: '相位角',
+                label: tr('功率因數', 'Power factor'),
+                value: formatNumber(result.data.pf),
+              },
+              {
+                label: tr('相位角', 'Phase angle'),
                 value: formatNumber(result.data.angleDegrees),
                 unit: '°',
               },
-              { label: '狀態', value: result.data.direction },
+              { label: tr('狀態', 'Status'), value: result.data.direction },
               {
-                label: '實功率',
+                label: tr('實功率', 'Active power'),
                 value: formatNumber(result.data.watts / 1000),
                 unit: 'kW',
               },
               {
-                label: '虛功率',
+                label: tr('虛功率', 'Reactive power'),
                 value: formatNumber(result.data.vars / 1000),
                 unit: 'kvar',
               },
               {
-                label: '視在功率',
+                label: tr('視在功率', 'Apparent power'),
                 value: formatNumber(result.data.va / 1000),
                 unit: 'kVA',
               },
@@ -79,17 +86,29 @@ export default function PowerFactor() {
       }
     >
       <Choice
-        label="已知資料"
+        label={tr('已知資料', 'Known values')}
         value={mode}
         onChange={(v) => switchMode(v as PowerFactorMode)}
         options={[
-          { value: 'active-apparent', label: '實功率 P＋視在功率 S' },
-          { value: 'active-reactive', label: '實功率 P＋虛功率 Q' },
+          {
+            value: 'active-apparent',
+            label: tr(
+              '實功率 P＋視在功率 S',
+              'Active power P + apparent power S',
+            ),
+          },
+          {
+            value: 'active-reactive',
+            label: tr(
+              '實功率 P＋虛功率 Q',
+              'Active power P + reactive power Q',
+            ),
+          },
         ]}
       />
       <div className="fields-grid">
         <Choice
-          label="實功率單位"
+          label={tr('實功率單位', 'Active-power unit')}
           value={activeUnit}
           onChange={setActiveUnit}
           options={[
@@ -99,13 +118,17 @@ export default function PowerFactor() {
           ]}
         />
         <NumberField
-          label="實功率 P"
+          label={tr('實功率 P', 'Active power P')}
           value={active}
           onChange={setActive}
           unit={activeUnit}
         />
         <Choice
-          label={mode === 'active-apparent' ? '視在功率單位' : '虛功率單位'}
+          label={
+            mode === 'active-apparent'
+              ? tr('視在功率單位', 'Apparent-power unit')
+              : tr('虛功率單位', 'Reactive-power unit')
+          }
           value={secondUnit}
           onChange={setSecondUnit}
           options={
@@ -123,7 +146,11 @@ export default function PowerFactor() {
           }
         />
         <NumberField
-          label={mode === 'active-apparent' ? '視在功率 S' : '虛功率 Q'}
+          label={
+            mode === 'active-apparent'
+              ? tr('視在功率 S', 'Apparent power S')
+              : tr('虛功率 Q', 'Reactive power Q')
+          }
           value={second}
           onChange={setSecond}
           unit={secondUnit}

@@ -8,6 +8,7 @@ import {
   type TimestampUnit,
 } from '@/lib/tools/date-time';
 import { attempt } from '@/lib/tools/core';
+import { useToolLanguage } from '@/components/tool-language';
 import {
   Choice,
   CopyButton,
@@ -21,6 +22,7 @@ const exampleSeconds = '1709251200';
 const exampleDate = '2024-03-01 08:00:00';
 
 export default function TimestampConverter() {
+  const { tr } = useToolLanguage();
   const [direction, setDirection] = useState<
     'timestamp-to-taipei' | 'taipei-to-timestamp'
   >('timestamp-to-taipei');
@@ -49,7 +51,7 @@ export default function TimestampConverter() {
     [now],
   );
   const copyText = result.data
-    ? `台灣（Asia/Taipei） ${result.data.taipei}\nUnix 秒數：${result.data.seconds}\nUnix 毫秒：${result.data.milliseconds}`
+    ? `${tr('台灣（Asia/Taipei）', 'Taiwan (Asia/Taipei)')} ${result.data.taipei}\nUnix ${tr('秒數', 'seconds')}: ${result.data.seconds}\nUnix ${tr('毫秒', 'milliseconds')}: ${result.data.milliseconds}`
     : '';
 
   function loadCurrent() {
@@ -68,17 +70,26 @@ export default function TimestampConverter() {
       notes={
         <>
           <p>
-            Unix 時間戳以 UTC 為基準；台灣國家／地區採 IANA 時區{' '}
-            <code>Asia/Taipei</code>。 本工具支援 1900～9999
-            年的台北時間，格式化會依 IANA 時區資料處理。
+            {tr(
+              'Unix 時間戳以 UTC 為基準；台灣國家／地區採 IANA 時區',
+              'Unix timestamps use UTC; Taiwan uses the IANA time zone',
+            )}{' '}
+            <code>Asia/Taipei</code>
+            {tr(
+              '。本工具支援 1900～9999 年的台北時間，格式化會依 IANA 時區資料處理。',
+              '. This tool supports Taipei dates from 1900 to 9999 and formats them using IANA time-zone data.',
+            )}
           </p>
           <p>
-            秒數與毫秒都必須為整數。日期時間請輸入{' '}
+            {tr(
+              '秒數與毫秒都必須為整數。日期時間請輸入',
+              'Seconds and milliseconds must be integers. Enter date and time as',
+            )}{' '}
             <code>YYYY-MM-DD HH:mm:ss</code>
-            ，不含時區後綴；工具會把它視為台北當地時間後再換成 UTC Unix
-            時間戳。日期時間顯示精確到秒；毫秒輸入的剩餘位數保留在 Unix
-            毫秒結果。Unix
-            秒數由毫秒向下取整，因此負毫秒時間戳也會向較早的一秒取整。
+            {tr(
+              '，不含時區後綴；工具會把它視為台北當地時間後再換成 UTC Unix 時間戳。日期時間顯示精確到秒；毫秒輸入的剩餘位數保留在 Unix 毫秒結果。Unix 秒數由毫秒向下取整，因此負毫秒時間戳也會向較早的一秒取整。',
+              ', without a time-zone suffix; the tool treats it as Taipei local time and converts it to a UTC Unix timestamp. Date-time display is accurate to seconds; remaining digits of millisecond input are kept in the Unix-millisecond result. Unix seconds floor milliseconds, so negative millisecond timestamps also floor to the earlier second.',
+            )}
           </p>
         </>
       }
@@ -87,14 +98,20 @@ export default function TimestampConverter() {
           <>
             <ResultRows
               rows={[
-                { label: '台北日期時間（到秒）', value: result.data.taipei },
                 {
-                  label: 'Unix 秒數',
+                  label: tr(
+                    '台北日期時間（到秒）',
+                    'Taipei date and time (seconds)',
+                  ),
+                  value: result.data.taipei,
+                },
+                {
+                  label: tr('Unix 秒數', 'Unix seconds'),
                   value: String(result.data.seconds),
                   unit: 's',
                 },
                 {
-                  label: 'Unix 毫秒',
+                  label: tr('Unix 毫秒', 'Unix milliseconds'),
                   value: String(result.data.milliseconds),
                   unit: 'ms',
                 },
@@ -108,54 +125,74 @@ export default function TimestampConverter() {
       }
     >
       <p className="field-help">
-        目前台灣時間：<strong>{current?.taipei ?? '讀取中…'}</strong>
-        （Asia/Taipei）
+        {tr('目前台灣時間：', 'Current Taiwan time:')}
+        <strong>{current?.taipei ?? tr('讀取中…', 'Loading…')}</strong>
+        {tr('（Asia/Taipei）', ' (Asia/Taipei)')}
       </p>
       {current && (
         <div className="field-help">
-          Unix 秒數：{current.seconds}
-          <CopyButton text={String(current.seconds)} label="複製目前秒數" />
+          {tr('Unix 秒數：', 'Unix seconds:')}
+          {current.seconds}
+          <CopyButton
+            text={String(current.seconds)}
+            label={tr('複製目前秒數', 'Copy current seconds')}
+          />
         </div>
       )}
       <Choice
-        label="換算方向"
+        label={tr('換算方向', 'Conversion direction')}
         value={direction}
         onChange={(value) => setDirection(value as typeof direction)}
         options={[
-          { value: 'timestamp-to-taipei', label: 'Unix 時間戳 → 台北時間' },
-          { value: 'taipei-to-timestamp', label: '台北時間 → Unix 時間戳' },
+          {
+            value: 'timestamp-to-taipei',
+            label: tr('Unix 時間戳 → 台北時間', 'Unix timestamp → Taipei time'),
+          },
+          {
+            value: 'taipei-to-timestamp',
+            label: tr('台北時間 → Unix 時間戳', 'Taipei time → Unix timestamp'),
+          },
         ]}
       />
       {direction === 'timestamp-to-taipei' ? (
         <div className="fields-grid">
           <TextField
-            label="Unix 時間戳"
+            label={tr('Unix 時間戳', 'Unix timestamp')}
             value={timestamp}
             onChange={setTimestamp}
           />
           <Choice
-            label="時間戳單位"
+            label={tr('時間戳單位', 'Timestamp unit')}
             value={unit}
             onChange={(value) => setUnit(value as TimestampUnit)}
             options={[
-              { value: 'seconds', label: '秒（s）' },
-              { value: 'milliseconds', label: '毫秒（ms）' },
+              { value: 'seconds', label: tr('秒（s）', 'Seconds (s)') },
+              {
+                value: 'milliseconds',
+                label: tr('毫秒（ms）', 'Milliseconds (ms)'),
+              },
             ]}
           />
         </div>
       ) : (
-        <TextField label="台北日期時間" value={taipei} onChange={setTaipei} />
+        <TextField
+          label={tr('台北日期時間', 'Taipei date and time')}
+          value={taipei}
+          onChange={setTaipei}
+        />
       )}
       <div className="action-row">
         <button type="button" className="action" onClick={loadCurrent}>
-          帶入目前時間
+          {tr('帶入目前時間', 'Use current time')}
         </button>
         <button
           type="button"
           className="action secondary"
           onClick={() => setRunning((value) => !value)}
         >
-          {running ? '暫停目前時間' : '繼續目前時間'}
+          {running
+            ? tr('暫停目前時間', 'Pause current time')
+            : tr('繼續目前時間', 'Resume current time')}
         </button>
         <button
           type="button"
@@ -167,7 +204,7 @@ export default function TimestampConverter() {
             setTaipei(exampleDate);
           }}
         >
-          載入範例
+          {tr('載入範例', 'Load example')}
         </button>
         <button
           type="button"
@@ -177,7 +214,7 @@ export default function TimestampConverter() {
             setTaipei('');
           }}
         >
-          清空
+          {tr('清空', 'Clear')}
         </button>
       </div>
     </ToolPanel>

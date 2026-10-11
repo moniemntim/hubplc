@@ -1,5 +1,6 @@
 'use client';
 import { useState } from 'react';
+import { useToolLanguage } from '@/components/tool-language';
 import { attempt, formatNumber, numberInput } from '@/lib/tools/core';
 import { reactance, reactanceInverse } from '@/lib/tools/frequency';
 import {
@@ -15,6 +16,7 @@ import {
   ReactanceDiagram,
 } from '@/app/tool/_components/network-components';
 export default function Reactance() {
+  const { tr } = useToolLanguage();
   const [kind, setKind] = useState<'capacitor' | 'inductor'>('capacitor'),
     [mode, setMode] = useState('forward'),
     [f, setF] = useState('1000'),
@@ -43,13 +45,18 @@ export default function Reactance() {
           />
           {result.data && (
             <Curve
-              label="理想元件電抗的雙對數頻率曲線"
+              label={tr(
+                '理想元件電抗的雙對數頻率曲線',
+                'Log-log frequency curve of ideal component reactance',
+              )}
               yLabel={
-                '|X|（對數）中點 ' + formatNumber(result.data.magnitude) + ' Ω'
+                tr('|X|（對數）中點 ', '|X| (log) midpoint ') +
+                formatNumber(result.data.magnitude) +
+                ' Ω'
               }
               points={points}
               marker
-              field="頻率"
+              field={tr('頻率', 'Frequency')}
               lowLabel={formatNumber(result.data.frequency / 100)}
               midLabel={formatNumber(result.data.frequency)}
               highLabel={formatNumber(result.data.frequency * 100)}
@@ -60,10 +67,12 @@ export default function Reactance() {
       notes={
         <>
           {kind === 'capacitor'
-            ? 'Xc = 1/(2πfC)，阻抗 −jXc。'
-            : 'XL = 2πfL，阻抗 +jXL。'}
-          此為理想單一元件電抗，不含實際損耗；曲線兩軸使用對數刻度，範圍為指定頻率的
-          0.01 至 100 倍。
+            ? tr('Xc = 1/(2πfC)，阻抗 −jXc。', 'Xc = 1/(2πfC), impedance −jXc.')
+            : tr('XL = 2πfL，阻抗 +jXL。', 'XL = 2πfL, impedance +jXL.')}
+          {tr(
+            '此為理想單一元件電抗，不含實際損耗；曲線兩軸使用對數刻度，範圍為指定頻率的 0.01 至 100 倍。',
+            'This is ideal single-component reactance and excludes real losses. Both curve axes use logarithmic scales, covering 0.01 to 100 times the specified frequency.',
+          )}
         </>
       }
       result={
@@ -71,13 +80,20 @@ export default function Reactance() {
           <ResultRows
             rows={[
               {
-                label: kind === 'capacitor' ? '電容' : '電感',
+                label:
+                  kind === 'capacitor'
+                    ? tr('電容', 'Capacitor')
+                    : tr('電感', 'Inductor'),
                 value: result.data.component,
                 unit: kind === 'capacitor' ? 'F' : 'H',
               },
-              { label: '電抗大小', value: result.data.magnitude, unit: 'Ω' },
               {
-                label: '阻抗表示',
+                label: tr('電抗大小', 'Reactance magnitude'),
+                value: result.data.magnitude,
+                unit: 'Ω',
+              },
+              {
+                label: tr('阻抗表示', 'Impedance notation'),
                 value: `${kind === 'capacitor' ? '−j' : '+j'}${formatNumber(result.data.magnitude)} Ω`,
               },
             ]}
@@ -88,19 +104,25 @@ export default function Reactance() {
       }
     >
       <Choice
-        label="元件"
+        label={tr('元件', 'Component')}
         value={kind}
         onChange={(v) => {
           setKind(v as typeof kind);
           setValue(v === 'capacitor' ? '1e-7' : '.01');
         }}
         options={[
-          { value: 'capacitor', label: '電容（容抗）' },
-          { value: 'inductor', label: '電感（感抗）' },
+          {
+            value: 'capacitor',
+            label: tr('電容（容抗）', 'Capacitor (capacitive reactance)'),
+          },
+          {
+            value: 'inductor',
+            label: tr('電感（感抗）', 'Inductor (inductive reactance)'),
+          },
         ]}
       />
       <Choice
-        label="計算"
+        label={tr('計算', 'Calculation')}
         value={mode}
         onChange={(v) => {
           if (v === 'inverse' && result.data)
@@ -110,13 +132,19 @@ export default function Reactance() {
           setMode(v);
         }}
         options={[
-          { value: 'forward', label: '由元件值計算' },
-          { value: 'inverse', label: '反推元件值' },
+          {
+            value: 'forward',
+            label: tr('由元件值計算', 'Calculate from component value'),
+          },
+          {
+            value: 'inverse',
+            label: tr('反推元件值', 'Solve for component value'),
+          },
         ]}
       />
       <div className="fields-grid">
         <QuantityField
-          label="頻率"
+          label={tr('頻率', 'Frequency')}
           value={f}
           onChange={setF}
           kind="frequency"
@@ -131,7 +159,7 @@ export default function Reactance() {
           />
         ) : (
           <QuantityField
-            label="目標電抗"
+            label={tr('目標電抗', 'Target reactance')}
             value={target}
             onChange={setTarget}
             kind="resistance"

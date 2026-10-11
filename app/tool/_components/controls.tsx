@@ -15,6 +15,8 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/components/ui/select';
+import { useToolLanguage } from '@/components/tool-language';
+import { translateToolMessage } from '@/lib/tools/error-i18n';
 
 type FieldProps = {
   label: string;
@@ -163,13 +165,14 @@ export function ToolActions({
   onExample: () => void;
   onClear: () => void;
 }) {
+  const { tr } = useToolLanguage();
   return (
     <div className="action-row">
       <button type="button" className="action secondary" onClick={onExample}>
-        載入範例
+        {tr('載入範例', 'Load example')}
       </button>
       <button type="button" className="action secondary" onClick={onClear}>
-        清空
+        {tr('清空', 'Clear')}
       </button>
     </div>
   );
@@ -186,6 +189,7 @@ export function ToolPanel({
   notes: ReactNode;
   diagram?: ReactNode;
 }) {
+  const { tr } = useToolLanguage();
   const [focus, setFocus] = useState('');
   return (
     <DiagramFocus.Provider value={focus}>
@@ -197,7 +201,7 @@ export function ToolPanel({
         >
           <section
             className="calculator-inputs"
-            aria-label="輸入條件"
+            aria-label={tr('輸入條件', 'Input conditions')}
             onFocusCapture={(event) =>
               setFocus(
                 (event.target as HTMLElement).closest<HTMLElement>(
@@ -223,15 +227,17 @@ export function ToolPanel({
           {diagram && <div className="tool-diagram">{diagram}</div>}
           <section
             className="result tool-result"
-            aria-label="計算結果"
+            aria-label={tr('計算結果', 'Calculation results')}
             aria-live="polite"
           >
-            <p className="eyebrow">RESULT / 計算結果</p>
+            <p className="eyebrow">
+              RESULT / {tr('計算結果', 'CALCULATION RESULTS')}
+            </p>
             {result}
           </section>
         </div>
         <div className="tool-foot">
-          <span>公式與說明</span>
+          <span>{tr('公式與說明', 'Formula & notes')}</span>
           <div>{notes}</div>
         </div>
       </div>
@@ -246,8 +252,8 @@ export function ResultRows({
 }) {
   return (
     <dl className="output-rows">
-      {rows.map((row) => (
-        <div key={row.label}>
+      {rows.map((row, index) => (
+        <div key={`${row.label}-${row.unit ?? ''}-${index}`}>
           <dt>{row.label}</dt>
           <dd>
             {typeof row.value === 'number'
@@ -262,7 +268,14 @@ export function ResultRows({
 }
 
 export function Notice({ children }: { children: ReactNode }) {
-  return <output className="tool-notice">{children}</output>;
+  const { locale } = useToolLanguage();
+  return (
+    <output className="tool-notice">
+      {typeof children === 'string'
+        ? translateToolMessage(children, locale)
+        : children}
+    </output>
+  );
 }
 
 export function CopyButton({
@@ -274,6 +287,7 @@ export function CopyButton({
   label?: string;
   disabled?: boolean;
 }) {
+  const { tr } = useToolLanguage();
   const [copied, setCopied] = useState<string | null>(null);
   const [failed, setFailed] = useState(false);
   async function copy() {
@@ -293,9 +307,20 @@ export function CopyButton({
         onClick={copy}
         disabled={disabled || !text}
       >
-        {copied === text ? '已複製 ✓' : label}
+        {copied === text
+          ? tr('已複製 ✓', 'Copied ✓')
+          : label === '複製結果'
+            ? tr(label, 'Copy result')
+            : label}
       </button>
-      {failed && <output>無法存取剪貼簿，請選取結果後手動複製。</output>}
+      {failed && (
+        <output>
+          {tr(
+            '無法存取剪貼簿，請選取結果後手動複製。',
+            'Clipboard access failed. Select the result and copy it manually.',
+          )}
+        </output>
+      )}
     </div>
   );
 }

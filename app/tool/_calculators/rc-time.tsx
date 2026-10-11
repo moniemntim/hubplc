@@ -3,6 +3,7 @@ import { useState } from 'react';
 import { QuantityField } from '@/app/tool/_components/quantity';
 import { electricalFormat, rcTime } from '@/lib/tools/electrical';
 import { attempt } from '@/lib/tools/core';
+import { useToolLanguage } from '@/components/tool-language';
 import {
   Choice,
   ToolPanel,
@@ -16,15 +17,20 @@ function RcCircuit({
   c,
   supply,
   mode,
+  tr,
 }: {
   r?: number;
   c?: number;
   supply?: number;
   mode: 'charge' | 'discharge';
+  tr: (zh: string, en: string) => string;
 }) {
   return (
-    <svg viewBox="0 0 360 165" aria-label="RC 充放電標準電路">
-      <title>{`RC ${mode === 'charge' ? '充電' : '放電'}電路`}</title>
+    <svg
+      viewBox="0 0 360 165"
+      aria-label={tr('RC 充放電標準電路', 'RC charge/discharge circuit')}
+    >
+      <title>{`RC ${mode === 'charge' ? tr('充電', 'charge') : tr('放電', 'discharge')} ${tr('電路', 'circuit')}`}</title>
       <g fill="none" stroke="currentColor" strokeWidth="2">
         <path d="M55 25H115M165 25H225V62M225 72V105H55V80M55 25V50" />
         {mode === 'charge' ? (
@@ -38,9 +44,9 @@ function RcCircuit({
         <rect x="115" y="15" width="50" height="20" />
         <path d="M207 62h36m-36 10h36" />
       </g>
-      <DiagramPart field="輸入電壓">
+      <DiagramPart field={tr('輸入電壓', 'Input voltage')}>
         <text x="25" y="140" fontSize="14">
-          {mode === 'charge' ? 'Vin' : '初始電壓'}{' '}
+          {mode === 'charge' ? 'Vin' : tr('初始電壓', 'Initial voltage')}{' '}
           {supply ? `${electricalFormat(supply)} V` : ''}
         </text>
       </DiagramPart>
@@ -54,9 +60,10 @@ function RcCircuit({
           C {c ? `${electricalFormat(c)} F` : ''}
         </text>
       </DiagramPart>
-      <DiagramPart field="時間 t">
+      <DiagramPart field={tr('時間 t', 'Time t')}>
         <text x="210" y="140" fontSize="14">
-          {mode === 'charge' ? '充電' : '放電'}，t
+          {mode === 'charge' ? tr('充電', 'Charge') : tr('放電', 'Discharge')},
+          t
         </text>
       </DiagramPart>
     </svg>
@@ -66,10 +73,12 @@ function RcCurve({
   tau,
   time,
   mode,
+  tr,
 }: {
   tau: number;
   time: number;
   mode: 'charge' | 'discharge';
+  tr: (zh: string, en: string) => string;
 }) {
   const point = (x: number) => {
     const ratio = Math.exp(-x * 5);
@@ -80,9 +89,12 @@ function RcCurve({
   return (
     <svg
       viewBox="0 0 280 110"
-      aria-label="RC 充放電曲線，橫軸從零到五個時間常數"
+      aria-label={tr(
+        'RC 充放電曲線，橫軸從零到五個時間常數',
+        'RC charge/discharge curve, horizontal axis from zero to five time constants',
+      )}
     >
-      <title>RC 充放電曲線</title>
+      <title>{tr('RC 充放電曲線', 'RC charge/discharge curve')}</title>
       <path d="M30 80V15m0 65h240" stroke="currentColor" fill="none" />
       <path
         d={Array.from(
@@ -114,6 +126,7 @@ function RcCurve({
   );
 }
 export default function RcTime() {
+  const { tr } = useToolLanguage();
   const [r, setR] = useState('10000'),
     [c, setC] = useState('.0001'),
     [time, setTime] = useState('1'),
@@ -144,27 +157,37 @@ export default function RcTime() {
               c={Number(c)}
               supply={Number(supply)}
               mode={mode}
+              tr={tr}
             />
             <RcCurve
               tau={res.data.tau}
               time={Number.isFinite(numericTime) ? numericTime : 0}
               mode={mode}
+              tr={tr}
             />
           </>
         ) : (
-          <RcCircuit mode={mode} />
+          <RcCircuit mode={mode} tr={tr} />
         )
       }
       notes={
         mode === 'charge' ? (
           <>
-            充電：V(t) = Vin × (1 − e<sup>−t/RC</sup>)。標準初始電壓為 0 V；1μF
-            = 0.000001 F。
+            {tr('充電：V(t) = Vin × (1 − e', 'Charge: V(t) = Vin × (1 − e')}
+            <sup>−t/RC</sup>
+            {tr(
+              ')。標準初始電壓為 0 V；1μF = 0.000001 F。',
+              '). The standard initial voltage is 0 V; 1μF = 0.000001 F.',
+            )}
           </>
         ) : (
           <>
-            放電：V(t) = Vin × e<sup>−t/RC</sup>。標準初始電壓為 Vin；1μF =
-            0.000001 F。
+            {tr('放電：V(t) = Vin × e', 'Discharge: V(t) = Vin × e')}
+            <sup>−t/RC</sup>
+            {tr(
+              '。標準初始電壓為 Vin；1μF = 0.000001 F。',
+              '. The standard initial voltage is Vin; 1μF = 0.000001 F.',
+            )}
           </>
         )
       }
@@ -173,7 +196,7 @@ export default function RcTime() {
           <ResultRows
             rows={[
               {
-                label: '時間常數 τ',
+                label: tr('時間常數 τ', 'Time constant τ'),
                 value: electricalFormat(res.data.tau),
                 unit: 's',
               },
@@ -183,12 +206,12 @@ export default function RcTime() {
                 unit: 's',
               },
               {
-                label: `t = ${time} s 電壓`,
+                label: `t = ${time} s ${tr('電壓', 'voltage')}`,
                 value: electricalFormat(res.data.voltage),
                 unit: 'V',
               },
               {
-                label: '相對輸入電壓',
+                label: tr('相對輸入電壓', 'Relative input voltage'),
                 value: electricalFormat(res.data.percent),
                 unit: '%',
               },
@@ -200,12 +223,12 @@ export default function RcTime() {
       }
     >
       <Choice
-        label="狀態"
+        label={tr('狀態', 'State')}
         value={mode}
         onChange={(v) => setMode(v as 'charge' | 'discharge')}
         options={[
-          { value: 'charge', label: '充電' },
-          { value: 'discharge', label: '放電' },
+          { value: 'charge', label: tr('充電', 'Charge') },
+          { value: 'discharge', label: tr('放電', 'Discharge') },
         ]}
       />
       <div className="fields-grid">
@@ -224,14 +247,14 @@ export default function RcTime() {
           initialUnit="µF"
         />
         <QuantityField
-          label="時間 t"
+          label={tr('時間 t', 'Time t')}
           value={time}
           onChange={setTime}
           kind="time"
           initialUnit="s"
         />
         <QuantityField
-          label="輸入電壓"
+          label={tr('輸入電壓', 'Input voltage')}
           value={supply}
           onChange={setSupply}
           kind="voltage"

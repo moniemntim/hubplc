@@ -9,6 +9,7 @@ import {
   timer555MonoInverse,
 } from '@/lib/tools/electrical';
 import { attempt } from '@/lib/tools/core';
+import { useToolLanguage } from '@/components/tool-language';
 import {
   NumberField,
   Choice,
@@ -21,21 +22,33 @@ import {
 function Circuit({
   type,
   values,
+  tr,
 }: {
   type: string;
   values?: { ra?: number; rb?: number; c?: number };
+  tr: (zh: string, en: string) => string;
 }) {
   const mono = type === 'mono';
   return (
     <svg
       className="timer-schematic"
       viewBox="0 0 400 285"
-      aria-label={mono ? '555 單穩態標準電路' : '555 無穩態標準電路'}
+      aria-label={
+        mono
+          ? tr('555 單穩態標準電路', '555 monostable standard circuit')
+          : tr('555 無穩態標準電路', '555 astable standard circuit')
+      }
     >
       <title>
         {mono
-          ? '單穩態：R 接電源與 7、6 腳，C 接地，2 腳輸入負脈衝'
-          : '無穩態：RA 接電源與 7 腳，RB 接 7 與 6、2 腳，C 接地'}
+          ? tr(
+              '單穩態：R 接電源與 7、6 腳，C 接地，2 腳輸入負脈衝',
+              'Monostable: R connects supply to pins 7 and 6, C to ground, with a negative pulse at pin 2',
+            )
+          : tr(
+              '無穩態：RA 接電源與 7 腳，RB 接 7 與 6、2 腳，C 接地',
+              'Astable: RA connects supply to pin 7, RB connects pin 7 to pins 6 and 2, C to ground',
+            )}
       </title>
       <g fill="none" stroke="currentColor" strokeWidth="1.5">
         <rect x="160" y="65" width="140" height="165" rx="5" />
@@ -107,20 +120,28 @@ function Circuit({
         </text>
         {mono && (
           <text x="102" y="221">
-            負脈衝
+            {tr('負脈衝', 'Negative pulse')}
           </text>
         )}
         <text x="344" y="238">
           10 nF
         </text>
         <text x="270" y="278">
-          CONT 旁路電容
+          {tr('CONT 旁路電容', 'CONT bypass capacitor')}
         </text>
       </g>
     </svg>
   );
 }
-function Wave({ type, duty }: { type: string; duty?: number }) {
+function Wave({
+  type,
+  duty,
+  tr,
+}: {
+  type: string;
+  duty?: number;
+  tr: (zh: string, en: string) => string;
+}) {
   const h = Number(((150 * (duty ?? 50)) / 100).toFixed(4));
   const path =
     type === 'mono'
@@ -131,19 +152,28 @@ function Wave({ type, duty }: { type: string; duty?: number }) {
       viewBox="0 0 400 100"
       aria-label={
         type === 'mono'
-          ? '單次高電位輸出脈衝'
-          : '兩個週期的輸出波形，占空比依計算結果繪製'
+          ? tr('單次高電位輸出脈衝', 'Single high-level output pulse')
+          : tr(
+              '兩個週期的輸出波形，占空比依計算結果繪製',
+              'Two output cycles drawn from the calculated duty cycle',
+            )
       }
     >
-      <title>555 輸出波形</title>
-      <DiagramPart field={type === 'mono' ? '目標時間' : '目標頻率'}>
+      <title>{tr('555 輸出波形', '555 output waveform')}</title>
+      <DiagramPart
+        field={
+          type === 'mono'
+            ? tr('目標時間', 'Target time')
+            : tr('目標頻率', 'Target frequency')
+        }
+      >
         <path d={path} fill="none" stroke="currentColor" strokeWidth="2" />
       </DiagramPart>
       <text x="10" y="16">
         OUT
       </text>
       <text x="365" y="90">
-        時間 →
+        {tr('時間 →', 'Time →')}
       </text>
       {type === 'mono' ? (
         <text x="125" y="90">
@@ -151,7 +181,7 @@ function Wave({ type, duty }: { type: string; duty?: number }) {
         </text>
       ) : (
         <>
-          <DiagramPart field="目標占空比">
+          <DiagramPart field={tr('目標占空比', 'Target duty cycle')}>
             <text x={40 + h / 2} y="90">
               tH
             </text>
@@ -165,6 +195,7 @@ function Wave({ type, duty }: { type: string; duty?: number }) {
   );
 }
 export default function Timer555() {
+  const { tr } = useToolLanguage();
   const [type, setType] = useState('astable'),
     [inverse, setInverse] = useState('forward'),
     [ra, setRa] = useState('10000'),
@@ -210,7 +241,7 @@ export default function Timer555() {
           <ResultRows
             rows={[
               {
-                label: '脈衝時間',
+                label: tr('脈衝時間', 'Pulse time'),
                 value: electricalFormat(monoForward.data.time),
                 unit: 's',
               },
@@ -223,7 +254,7 @@ export default function Timer555() {
         <ResultRows
           rows={[
             {
-              label: '所需 R',
+              label: tr('所需 R', 'Required R'),
               value: electricalFormat(monoInverse.data.r),
               unit: 'Ω',
             },
@@ -237,27 +268,27 @@ export default function Timer555() {
         <ResultRows
           rows={[
             {
-              label: '頻率',
+              label: tr('頻率', 'Frequency'),
               value: electricalFormat(astableForward.data.frequency),
               unit: 'Hz',
             },
             {
-              label: '週期',
+              label: tr('週期', 'Period'),
               value: electricalFormat(astableForward.data.period),
               unit: 's',
             },
             {
-              label: '高電位時間',
+              label: tr('高電位時間', 'High time'),
               value: electricalFormat(astableForward.data.high),
               unit: 's',
             },
             {
-              label: '低電位時間',
+              label: tr('低電位時間', 'Low time'),
               value: electricalFormat(astableForward.data.low),
               unit: 's',
             },
             {
-              label: '占空比',
+              label: tr('占空比', 'Duty cycle'),
               value: electricalFormat(astableForward.data.duty),
               unit: '%',
             },
@@ -297,6 +328,7 @@ export default function Timer555() {
           <>
             <Circuit
               type={type}
+              tr={tr}
               values={
                 type === 'mono'
                   ? inverse === 'forward'
@@ -324,58 +356,73 @@ export default function Timer555() {
                       }
               }
             />
-            <Wave type={type} duty={waveDuty} />
+            <Wave type={type} duty={waveDuty} tr={tr} />
           </>
         ) : (
-          <Circuit type={type} values={{}} />
+          <Circuit type={type} values={{}} tr={tr} />
         )
       }
       notes={
         <>
           {' '}
           <p>
-            理論值不含元件容差與晶片誤差。電容以 F 輸入，例如 1 µF = 0.000001
-            F。RA／RB 對應 R1／R2。
+            {tr(
+              '理論值不含元件容差與晶片誤差。電容以 F 輸入，例如 1 µF = 0.000001 F。RA／RB 對應 R1／R2。',
+              'Theoretical values exclude component tolerance and IC error. Enter capacitance in F; for example, 1 µF = 0.000001 F. RA/RB correspond to R1/R2.',
+            )}
           </p>{' '}
           {type === 'mono' ? (
-            <>單穩態：t = ln(3)RC，輸出是一次高電位脈衝。</>
+            <>
+              {tr(
+                '單穩態：t = ln(3)RC，輸出是一次高電位脈衝。',
+                'Monostable: t = ln(3)RC, producing one high-level output pulse.',
+              )}
+            </>
           ) : (
             <>
-              無穩態：tH = ln(2)(RA + RB)C、tL = ln(2)RB C；標準電路占空比介於
-              50% 與 100%。
+              {tr(
+                '無穩態：tH = ln(2)(RA + RB)C、tL = ln(2)RB C；標準電路占空比介於 50% 與 100%。',
+                'Astable: tH = ln(2)(RA + RB)C and tL = ln(2)RB C; the standard circuit duty cycle is between 50% and 100%.',
+              )}
             </>
           )}
           <p>
-            電路與公式參考{' '}
+            {tr('電路與公式參考', 'Circuit and formula reference:')}{' '}
             <a
               href="https://www.ti.com/lit/ds/symlink/ne555.pdf"
               target="_blank"
               rel="noreferrer"
             >
-              TI NE555 資料表
+              {tr('TI NE555 資料表', 'TI NE555 datasheet')}
             </a>
-            。接線圖省略電源去耦；實作請依晶片規格配置。
+            {tr(
+              '。接線圖省略電源去耦；實作請依晶片規格配置。',
+              '. The diagram omits supply decoupling; implement it according to the IC specification.',
+            )}
           </p>
         </>
       }
       result={result}
     >
       <Choice
-        label="模式"
+        label={tr('模式', 'Mode')}
         value={type}
         onChange={setType}
         options={[
-          { value: 'astable', label: '無穩態振盪' },
-          { value: 'mono', label: '單穩態' },
+          { value: 'astable', label: tr('無穩態振盪', 'Astable oscillator') },
+          { value: 'mono', label: tr('單穩態', 'Monostable') },
         ]}
       />
       <Choice
-        label="計算"
+        label={tr('計算', 'Calculation')}
         value={inverse}
         onChange={setInverse}
         options={[
-          { value: 'forward', label: '由 R、C 計算' },
-          { value: 'inverse', label: '反算電阻' },
+          {
+            value: 'forward',
+            label: tr('由 R、C 計算', 'Calculate from R and C'),
+          },
+          { value: 'inverse', label: tr('反算電阻', 'Solve resistance') },
         ]}
       />
       <div className="fields-grid">
@@ -400,7 +447,7 @@ export default function Timer555() {
           </>
         ) : type === 'mono' ? (
           <QuantityField
-            label="目標時間"
+            label={tr('目標時間', 'Target time')}
             value={time}
             onChange={setTime}
             kind="time"
@@ -409,14 +456,14 @@ export default function Timer555() {
         ) : (
           <>
             <QuantityField
-              label="目標頻率"
+              label={tr('目標頻率', 'Target frequency')}
               value={freq}
               onChange={setFreq}
               kind="frequency"
               initialUnit="Hz"
             />
             <NumberField
-              label="目標占空比"
+              label={tr('目標占空比', 'Target duty cycle')}
               value={duty}
               onChange={setDuty}
               unit="%"

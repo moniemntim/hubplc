@@ -1,6 +1,7 @@
 'use client';
 
 import { useEffect, useState } from 'react';
+import { useToolLanguage } from '@/components/tool-language';
 import { worldZones } from '@/lib/tools/world-zones';
 import {
   clockParts,
@@ -39,6 +40,50 @@ function safeParts(now: number | null, zone: string) {
 }
 
 export default function WorldClock() {
+  const { tr } = useToolLanguage();
+  const english = tr('zh', 'en') === 'en';
+  const countryName = (code: string, fallback: string) => {
+    if (!english) return fallback;
+    if (code === 'UTC') return 'Coordinated Universal Time';
+    try {
+      return (
+        new Intl.DisplayNames(['en'], { type: 'region' }).of(code) ?? fallback
+      );
+    } catch {
+      return fallback;
+    }
+  };
+  const cityName = (zone: string, fallback: string) => {
+    if (!english) return fallback;
+    const parts = zone.split('/');
+    return parts.slice(1).join(' / ').replaceAll('_', ' ') || fallback;
+  };
+  const weekdayName = (zone: string, fallback: string) => {
+    if (!english || now === null) return fallback;
+    try {
+      return new Intl.DateTimeFormat('en', {
+        timeZone: zone,
+        weekday: 'long',
+      }).format(now);
+    } catch {
+      return fallback;
+    }
+  };
+  const differenceFromTaipei = (minutes: number) => {
+    if (!english) return taipeiDifference(minutes);
+    const difference = minutes - 480;
+    if (difference === 0) return 'Same as Taipei';
+    const absolute = Math.abs(difference);
+    const hours = Math.floor(absolute / 60);
+    const remainingMinutes = absolute % 60;
+    const parts = [
+      hours ? `${hours} ${hours === 1 ? 'hour' : 'hours'}` : '',
+      remainingMinutes
+        ? `${remainingMinutes} ${remainingMinutes === 1 ? 'minute' : 'minutes'}`
+        : '',
+    ].filter(Boolean);
+    return `${parts.join(' ')} ${difference > 0 ? 'ahead of' : 'behind'} Taipei`;
+  };
   const [now, setNow] = useState<number | null>(null);
   const [running, setRunning] = useState(true);
   const [selected, setSelected] = useState<string>(TAIPEI_ZONE);
@@ -60,7 +105,7 @@ export default function WorldClock() {
     (z) =>
       (!country || z.country === country) &&
       (!term ||
-        `${z.city} ${z.countryName} ${z.country} ${z.zone}`
+        `${z.city} ${z.countryName} ${cityName(z.zone, z.city)} ${countryName(z.country, z.countryName)} ${z.country} ${z.zone}`
           .toLocaleLowerCase()
           .includes(term)),
   );
@@ -80,37 +125,53 @@ export default function WorldClock() {
     if (!parts) return;
     try {
       await navigator.clipboard.writeText(
-        `${location.countryName}・${location.city} ${parts.date} ${parts.time} ${parts.offset} (${selected})`,
+        `${countryName(location.country, location.countryName)} · ${cityName(selected, location.city)} ${parts.date} ${parts.time} ${parts.offset} (${selected})`,
       );
-      setStatus('已複製目前顯示時間。');
+      setStatus(tr('已複製目前顯示時間。', 'Displayed time copied.'));
     } catch {
-      setStatus('無法複製，請選取顯示的時間手動複製。');
+      setStatus(
+        tr(
+          '無法複製，請選取顯示的時間手動複製。',
+          'Unable to copy; select the displayed time and copy it manually.',
+        ),
+      );
     }
   }
   return (
     <div className="world-clock">
-      <section className="world-hero" aria-label="選取城市時間">
+      <section
+        className="world-hero"
+        aria-label={tr('選取城市時間', 'Selected city time')}
+      >
         <div>
           <p className="eyebrow">
-            {location.countryName}・{location.city}
+            {countryName(location.country, location.countryName)}・
+            {cityName(selected, location.city)}
           </p>
-          <h2>{location.city}時間</h2>
+          <h2>
+            {cityName(selected, location.city)} {tr('時間', 'time')}
+          </h2>
           <p className="world-time" data-testid="world-time">
             {parts?.time ?? '—'}
           </p>
           <p>
             {parts
-              ? `${parts.date} ${parts.weekday}`
+              ? `${parts.date} ${weekdayName(selected, parts.weekday)}`
               : now === null
-                ? '正在讀取裝置時間…'
-                : '此瀏覽器尚未支援這個時區，請更新瀏覽器。'}
+                ? tr('正在讀取裝置時間…', 'Reading device time…')
+                : tr(
+                    '此瀏覽器尚未支援這個時區，請更新瀏覽器。',
+                    'This browser does not support this time zone. Update your browser.',
+                  )}
           </p>
           <p>
             {selected} · {parts?.offset ?? '—'}
           </p>
           <p>
-            {parts ? taipeiDifference(parts.offsetMinutes) : ''}{' '}
-            {running ? '・每秒更新' : '・已暫停顯示'}
+            {parts ? differenceFromTaipei(parts.offsetMinutes) : ''}{' '}
+            {running
+              ? tr('・每秒更新', ' · updates every second')
+              : tr('・已暫停顯示', ' · display paused')}
           </p>
         </div>
         <svg className="world-dial" viewBox="0 0 200 200" aria-hidden="true">
@@ -196,19 +257,23 @@ export default function WorldClock() {
             setStatus('');
           }}
         >
-          {running ? '暫停更新' : '繼續更新'}
+          {running
+            ? tr('暫停更新', 'Pause updates')
+            : tr('繼續更新', 'Resume updates')}
         </button>
         <button className="action secondary" onClick={copy} disabled={!parts}>
-          複製時間
+          {tr('複製時間', 'Copy time')}
         </button>
         <button className="action secondary" onClick={reset}>
-          回到台灣・台北
+          {tr('回到台灣・台北', 'Return to Taiwan · Taipei')}
         </button>
       </div>
       <output aria-live="polite">{status}</output>
       <div className="world-filters">
         <div className="tool-field">
-          <label htmlFor="world-search">搜尋城市、國家或時區</label>
+          <label htmlFor="world-search">
+            {tr('搜尋城市、國家或時區', 'Search city, country, or time zone')}
+          </label>
           <input
             id="world-search"
             value={query}
@@ -216,11 +281,16 @@ export default function WorldClock() {
               setQuery(e.target.value);
               setLimit(36);
             }}
-            placeholder="例如：台灣、東京、New York"
+            placeholder={tr(
+              '例如：台灣、東京、New York',
+              'For example: Taiwan, Tokyo, New York',
+            )}
           />
         </div>
         <div className="tool-field">
-          <label htmlFor="world-country">國家／地區</label>
+          <label htmlFor="world-country">
+            {tr('國家／地區', 'Country / region')}
+          </label>
           <select
             id="world-country"
             value={country}
@@ -229,10 +299,12 @@ export default function WorldClock() {
               setLimit(36);
             }}
           >
-            <option value="">全部國家／地區</option>
+            <option value="">
+              {tr('全部國家／地區', 'All countries / regions')}
+            </option>
             {countries.map(([code, name]) => (
               <option key={code} value={code}>
-                {name}
+                {countryName(code, name)}
               </option>
             ))}
           </select>
@@ -245,11 +317,16 @@ export default function WorldClock() {
             setLimit(36);
           }}
         >
-          清空篩選
+          {tr('清空篩選', 'Clear filters')}
         </button>
       </div>
       <h2>
-        {country || term ? `搜尋結果（${filtered.length} 個時區）` : '常用城市'}
+        {country || term
+          ? tr(
+              `搜尋結果（${filtered.length} 個時區）`,
+              `Search results (${filtered.length} time zones)`,
+            )
+          : tr('常用城市', 'Common cities')}
       </h2>
       <div className="world-grid">
         {rows.map((z) => {
@@ -265,19 +342,23 @@ export default function WorldClock() {
               }}
             >
               <strong>
-                {z.countryName}・{z.city}
+                {countryName(z.country, z.countryName)}・
+                {cityName(z.zone, z.city)}
               </strong>
               <span className="world-card-time">{value?.time ?? '—'}</span>
               <span>
                 {value
-                  ? `${value.date} ${value.weekday}`
+                  ? `${value.date} ${weekdayName(z.zone, value.weekday)}`
                   : now === null
-                    ? '讀取中'
-                    : '瀏覽器尚未支援此時區'}
+                    ? tr('讀取中', 'Loading')
+                    : tr(
+                        '瀏覽器尚未支援此時區',
+                        'Time zone unsupported by browser',
+                      )}
               </span>
               <span>
                 {value
-                  ? `${value.offset} · ${taipeiDifference(value.offsetMinutes)}`
+                  ? `${value.offset} · ${differenceFromTaipei(value.offsetMinutes)}`
                   : ''}
               </span>
               <small>{z.zone}</small>
@@ -286,32 +367,48 @@ export default function WorldClock() {
         })}
       </div>
       {(country || term) && filtered.length === 0 && (
-        <p>找不到符合條件的城市，請清空篩選後重試。</p>
+        <p>
+          {tr(
+            '找不到符合條件的城市，請清空篩選後重試。',
+            'No matching cities found. Clear filters and try again.',
+          )}
+        </p>
       )}
       {(country || term) && filtered.length > limit && (
         <button
           className="action secondary"
           onClick={() => setLimit((v) => v + 36)}
         >
-          顯示更多城市
+          {tr('顯示更多城市', 'Show more cities')}
         </button>
       )}
       <div className="tool-foot">
-        <span>時間與資料說明</span>
+        <span>{tr('時間與資料說明', 'Time and data notes')}</span>
         <div>
           <p>
-            預設國家為台灣，城市為台北，時區為
-            Asia/Taipei。世界時鐘以裝置系統時間為準，並非網路校時服務；裝置時間有誤時，顯示也會受影響。
+            {tr(
+              '預設國家為台灣，城市為台北，時區為 Asia/Taipei。世界時鐘以裝置系統時間為準，並非網路校時服務；裝置時間有誤時，顯示也會受影響。',
+              'The default is Taipei, Taiwan (Asia/Taipei). This clock uses your device time; it is not a network time-synchronization service, so an incorrect device clock produces an incorrect display.',
+            )}
           </p>
           <p>
-            國家／地區與時區對照採用{' '}
-            <a href="https://www.iana.org/time-zones">IANA 時區資料</a>
-            。同一國家可能有多個時區，請選擇實際城市。夏令時間與 UTC
-            偏移由瀏覽器時區資料按顯示日期計算；規則更新後，可能需要更新瀏覽器。
+            {tr(
+              '國家／地區與時區對照採用',
+              'Country and time-zone mappings use the',
+            )}{' '}
+            <a href="https://www.iana.org/time-zones">
+              {tr('IANA 時區資料', 'IANA time-zone database')}
+            </a>
+            {tr(
+              '。同一國家可能有多個時區，請選擇實際城市。夏令時間與 UTC 偏移由瀏覽器時區資料按顯示日期計算；規則更新後，可能需要更新瀏覽器。',
+              '. A country can have several time zones, so choose the actual city. Daylight-saving rules and UTC offsets come from the browser data for the displayed date; updating the browser may be necessary after rule changes.',
+            )}
           </p>
           <p>
-            搜尋可使用繁體中文常用城市名、國家名稱、國家代碼或英文 IANA
-            時區名稱。所有處理都在此瀏覽器內完成，不上傳或儲存選擇。
+            {tr(
+              '搜尋可使用繁體中文常用城市名、國家名稱、國家代碼或英文 IANA 時區名稱。所有處理都在此瀏覽器內完成，不上傳或儲存選擇。',
+              'Search by city, country, country code or IANA time-zone name. All processing stays in this browser; selections are neither uploaded nor stored.',
+            )}
           </p>
         </div>
       </div>

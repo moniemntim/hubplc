@@ -7,6 +7,7 @@ import {
   electricalFormat,
 } from '@/lib/tools/electrical';
 import { attempt } from '@/lib/tools/core';
+import { useToolLanguage } from '@/components/tool-language';
 import {
   NumberField,
   Choice,
@@ -31,6 +32,7 @@ function ElectricalDiagram({
   dcKeys,
   pf,
   data,
+  tr,
 }: {
   kind: string;
   phase: 'single' | 'three';
@@ -38,17 +40,28 @@ function ElectricalDiagram({
   dcKeys: [string, string];
   pf: string;
   data?: { v: number; i: number; r?: number; p: number; va?: number };
+  tr: (zh: string, en: string) => string;
 }) {
   const fieldFor = (key: string) =>
-    dcKeys[0] === key ? '數值 1' : dcKeys[1] === key ? '數值 2' : '';
+    dcKeys[0] === key
+      ? tr('數值 1', 'Value 1')
+      : dcKeys[1] === key
+        ? tr('數值 2', 'Value 2')
+        : '';
   if (kind === 'dc') {
     const label = (key: 'v' | 'i' | 'r' | 'p', unit: string) =>
       data
         ? `${displayElectrical(key === 'r' ? (data.r ?? NaN) : data[key])} ${unit}`
         : '';
     return (
-      <svg viewBox="0 0 360 190" aria-label="直流電源與理想電阻負載">
-        <title>直流理想電阻負載</title>
+      <svg
+        viewBox="0 0 360 190"
+        aria-label={tr(
+          '直流電源與理想電阻負載',
+          'DC supply and ideal resistive load',
+        )}
+      >
+        <title>{tr('直流理想電阻負載', 'Ideal DC resistive load')}</title>
         <g fill="none" stroke="currentColor" strokeWidth="2">
           <path d="M95 35H260V70M260 120V155H95M95 35V75M95 115V155" />
           <path d="M78 75H112M84 115H106" />
@@ -80,10 +93,22 @@ function ElectricalDiagram({
   return (
     <svg
       viewBox="0 0 360 190"
-      aria-label={phase === 'three' ? '平衡三相負載與線電壓' : '單相交流負載'}
+      aria-label={
+        phase === 'three'
+          ? tr(
+              '平衡三相負載與線電壓',
+              'Balanced three-phase load and line voltage',
+            )
+          : tr('單相交流負載', 'Single-phase AC load')
+      }
     >
       <title>
-        {phase === 'three' ? '平衡三相以線電壓與線電流計算' : '單相交流負載'}
+        {phase === 'three'
+          ? tr(
+              '平衡三相以線電壓與線電流計算',
+              'Balanced three-phase calculation using line voltage and current',
+            )
+          : tr('單相交流負載', 'Single-phase AC load')}
       </title>
       <g fill="none" stroke="currentColor" strokeWidth="2">
         {phase === 'three' ? (
@@ -139,6 +164,18 @@ function ElectricalDiagram({
   );
 }
 export default function Electrical() {
+  const { tr } = useToolLanguage();
+  const localizedDcOptions = dcOptions.map((option) => ({
+    ...option,
+    label:
+      option.value === 'v'
+        ? tr('電壓 V', 'Voltage V')
+        : option.value === 'i'
+          ? tr('電流 A', 'Current A')
+          : option.value === 'r'
+            ? tr('電阻 Ω', 'Resistance Ω')
+            : tr('功率 W', 'Power W'),
+  }));
   const [kind, setKind] = useState('dc'),
     [a, setA] = useState('v'),
     [av, setAv] = useState('24'),
@@ -181,10 +218,26 @@ export default function Electrical() {
   const dcResult = dc.data ? (
     <ResultRows
       rows={[
-        { label: '電壓', value: displayElectrical(dc.data.v), unit: 'V' },
-        { label: '電流', value: displayElectrical(dc.data.i), unit: 'A' },
-        { label: '電阻', value: displayElectrical(dc.data.r), unit: 'Ω' },
-        { label: '功率', value: displayElectrical(dc.data.p), unit: 'W' },
+        {
+          label: tr('電壓', 'Voltage'),
+          value: displayElectrical(dc.data.v),
+          unit: 'V',
+        },
+        {
+          label: tr('電流', 'Current'),
+          value: displayElectrical(dc.data.i),
+          unit: 'A',
+        },
+        {
+          label: tr('電阻', 'Resistance'),
+          value: displayElectrical(dc.data.r),
+          unit: 'Ω',
+        },
+        {
+          label: tr('功率', 'Power'),
+          value: displayElectrical(dc.data.p),
+          unit: 'W',
+        },
       ]}
     />
   ) : (
@@ -193,10 +246,21 @@ export default function Electrical() {
   const acResult = ac.data ? (
     <ResultRows
       rows={[
-        { label: '實功率', value: displayElectrical(ac.data.p), unit: 'W' },
-        { label: '視在功率', value: displayElectrical(ac.data.va), unit: 'VA' },
         {
-          label: phase === 'three' ? '線電流' : '電流',
+          label: tr('實功率', 'Real power'),
+          value: displayElectrical(ac.data.p),
+          unit: 'W',
+        },
+        {
+          label: tr('視在功率', 'Apparent power'),
+          value: displayElectrical(ac.data.va),
+          unit: 'VA',
+        },
+        {
+          label:
+            phase === 'three'
+              ? tr('線電流', 'Line current')
+              : tr('電流', 'Current'),
           value: displayElectrical(ac.data.i),
           unit: 'A',
         },
@@ -214,6 +278,7 @@ export default function Electrical() {
           known={known}
           dcKeys={[a, b]}
           pf={pf}
+          tr={tr}
           data={
             kind === 'dc'
               ? dc.data
@@ -225,40 +290,49 @@ export default function Electrical() {
       }
       notes={
         kind === 'dc' ? (
-          <>直流理想電阻負載：V = I × R；P = V × I。</>
+          <>
+            {tr(
+              '直流理想電阻負載：V = I × R；P = V × I。',
+              'Ideal DC resistive load: V = I × R; P = V × I.',
+            )}
+          </>
         ) : phase === 'single' ? (
           <>
-            單相交流使用 RMS 值：P = V<sub>RMS</sub> × I × PF；S = V
-            <sub>RMS</sub> × I = P ÷ PF。
+            {tr('單相交流使用 RMS 值：', 'Single-phase AC uses RMS values: ')}P
+            = V<sub>RMS</sub> × I × PF；S = V<sub>RMS</sub> × I = P ÷ PF。
           </>
         ) : (
           <>
-            平衡三相使用 RMS 線電壓與線電流：P = √3 × V<sub>L</sub> × I
-            <sub>L</sub> × PF；S = √3 × V<sub>L</sub> × I<sub>L</sub> = P ÷ PF。
+            {tr(
+              '平衡三相使用 RMS 線電壓與線電流：',
+              'Balanced three-phase uses RMS line voltage and line current: ',
+            )}
+            P = √3 × V<sub>L</sub> × I<sub>L</sub> × PF；S = √3 × V<sub>L</sub>{' '}
+            × I<sub>L</sub> = P ÷ PF。
           </>
         )
       }
       result={kind === 'dc' ? dcResult : acResult}
     >
       <Choice
-        label="電路類型"
+        label={tr('電路類型', 'Circuit type')}
         value={kind}
         onChange={setKind}
         options={[
-          { value: 'dc', label: '直流' },
-          { value: 'ac', label: '交流' },
+          { value: 'dc', label: tr('直流', 'DC') },
+          { value: 'ac', label: tr('交流', 'AC') },
         ]}
       />
       {kind === 'dc' ? (
         <div className="fields-grid">
           <Choice
-            label="已知量 1"
+            label={tr('已知量 1', 'Known value 1')}
             value={a}
             onChange={setA}
-            options={dcOptions}
+            options={localizedDcOptions}
           />
           <NumberField
-            label="數值 1"
+            label={tr('數值 1', 'Value 1')}
             value={av}
             onChange={setAv}
             unit={dcOptions
@@ -267,13 +341,13 @@ export default function Electrical() {
               .at(-1)}
           />
           <Choice
-            label="已知量 2"
+            label={tr('已知量 2', 'Known value 2')}
             value={b}
             onChange={setB}
-            options={dcOptions}
+            options={localizedDcOptions}
           />
           <NumberField
-            label="數值 2"
+            label={tr('數值 2', 'Value 2')}
             value={bv}
             onChange={setBv}
             unit={dcOptions
@@ -285,34 +359,42 @@ export default function Electrical() {
       ) : (
         <div className="fields-grid">
           <Choice
-            label="系統"
+            label={tr('系統', 'System')}
             value={phase}
             onChange={(v) => setPhase(v as 'single' | 'three')}
             options={[
-              { value: 'single', label: '單相' },
-              { value: 'three', label: '平衡三相' },
+              { value: 'single', label: tr('單相', 'Single phase') },
+              { value: 'three', label: tr('平衡三相', 'Balanced three phase') },
             ]}
           />
           <QuantityField
-            label={phase === 'three' ? '線電壓' : 'RMS 電壓'}
+            label={
+              phase === 'three'
+                ? tr('線電壓', 'Line voltage')
+                : tr('RMS 電壓', 'RMS voltage')
+            }
             value={voltage}
             onChange={setVoltage}
             kind="voltage"
             initialUnit="V"
           />
-          <NumberField label="功率因數" value={pf} onChange={setPf} />
+          <NumberField
+            label={tr('功率因數', 'Power factor')}
+            value={pf}
+            onChange={setPf}
+          />
           <Choice
-            label="已知量"
+            label={tr('已知量', 'Known value')}
             value={known}
             onChange={(v) => setKnown(v as 'power' | 'current')}
             options={[
-              { value: 'power', label: '實功率 W' },
-              { value: 'current', label: '電流 A' },
+              { value: 'power', label: tr('實功率 W', 'Real power W') },
+              { value: 'current', label: tr('電流 A', 'Current A') },
             ]}
           />
           {known === 'current' ? (
             <QuantityField
-              label="電流"
+              label={tr('電流', 'Current')}
               value={raw}
               onChange={setRaw}
               kind="current"
@@ -320,7 +402,7 @@ export default function Electrical() {
             />
           ) : (
             <NumberField
-              label="實功率"
+              label={tr('實功率', 'Real power')}
               value={raw}
               onChange={setRaw}
               unit="W"

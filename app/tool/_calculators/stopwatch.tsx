@@ -2,6 +2,7 @@
 
 import { useEffect, useRef, useState } from 'react';
 import { Button } from '@/components/ui/button';
+import { useToolLanguage } from '@/components/tool-language';
 import {
   Table,
   TableHeader,
@@ -23,6 +24,7 @@ import './stopwatch.css';
 
 const storageKey = 'hubplc-stopwatch-v1';
 export default function Stopwatch() {
+  const { tr } = useToolLanguage();
   const [state, setState] = useState<StopwatchState>(emptyStopwatch);
   const [ready, setReady] = useState(false);
   const [now, setNow] = useState(0);
@@ -48,8 +50,14 @@ export default function Stopwatch() {
         }
         setStatus(
           restored
-            ? '已載入分享時的狀態；之後的操作各自獨立。'
-            : '分享連結無效，已開啟新的碼錶。',
+            ? tr(
+                '已載入分享時的狀態；之後的操作各自獨立。',
+                'Shared state loaded; subsequent actions are independent.',
+              )
+            : tr(
+                '分享連結無效，已開啟新的碼錶。',
+                'The share link is invalid; a new stopwatch has been opened.',
+              ),
         );
         window.history.replaceState(
           null,
@@ -61,7 +69,12 @@ export default function Stopwatch() {
           const raw = localStorage.getItem(storageKey);
           if (raw) restored = parseStopwatch(raw, time);
         } catch {
-          setStatus('瀏覽器不允許儲存，關閉頁面後將無法自動恢復。');
+          setStatus(
+            tr(
+              '瀏覽器不允許儲存，關閉頁面後將無法自動恢復。',
+              'Browser storage is unavailable, so state cannot be restored after closing the page.',
+            ),
+          );
         }
       }
       if (restored) setState(restored);
@@ -69,7 +82,7 @@ export default function Stopwatch() {
       setReady(true);
     }, 0);
     return () => window.clearTimeout(timer);
-  }, []);
+  }, [tr]);
 
   useEffect(() => {
     if (!ready) return;
@@ -77,10 +90,15 @@ export default function Stopwatch() {
       localStorage.setItem(storageKey, JSON.stringify(state));
     } catch {
       queueMicrotask(() =>
-        setStatus('無法儲存碼錶，請使用分享連結保留目前狀態。'),
+        setStatus(
+          tr(
+            '無法儲存碼錶，請使用分享連結保留目前狀態。',
+            'The stopwatch could not be saved; use a share link to retain the current state.',
+          ),
+        ),
       );
     }
-  }, [state, ready]);
+  }, [state, ready, tr]);
 
   useEffect(() => {
     if (!running) return;
@@ -110,7 +128,7 @@ export default function Stopwatch() {
     setNow(Date.now());
     setEco(null);
     setShareUrl('');
-    setStatus('已重設碼錶與單圈紀錄。');
+    setStatus(tr('已重設碼錶與單圈紀錄。', 'Stopwatch and lap records reset.'));
   }
   async function toggleFullscreen() {
     try {
@@ -182,9 +200,14 @@ export default function Stopwatch() {
     setShareUrl(url.href);
     try {
       await navigator.clipboard.writeText(url.href);
-      setStatus('已複製分享連結。');
+      setStatus(tr('已複製分享連結。', 'Share link copied.'));
     } catch {
-      setStatus('請選取下方連結並手動複製。');
+      setStatus(
+        tr(
+          '請選取下方連結並手動複製。',
+          'Select the link below and copy it manually.',
+        ),
+      );
     }
   }
 
@@ -193,83 +216,97 @@ export default function Stopwatch() {
       ref={panel}
       className={`stopwatch${fullscreen ? ' stopwatch-fullscreen' : ''}`}
     >
-      <section className="stopwatch-face" aria-label="碼錶">
+      <section className="stopwatch-face" aria-label={tr('碼錶', 'Stopwatch')}>
         <p className="eyebrow">
-          {running ? '計時中' : total ? '已暫停' : '準備開始'}
+          {running
+            ? tr('計時中', 'Running')
+            : total
+              ? tr('已暫停', 'Paused')
+              : tr('準備開始', 'Ready')}
         </p>
         <div
           className="stopwatch-time"
           role="timer"
-          aria-label="累計時間"
+          aria-label={tr('累計時間', 'Elapsed time')}
           aria-live="off"
         >
           {formatStopwatch(total, lowPower)}
         </div>
         <p className="stopwatch-split">
-          目前單圈{' '}
+          {tr('目前單圈', 'Current lap')}{' '}
           <strong>
             {formatStopwatch(total - (state.laps.at(-1) ?? 0), lowPower)}
           </strong>
         </p>
         <div className="stopwatch-actions">
           <Button disabled={!ready} onClick={toggle}>
-            {running ? '暫停' : total ? '繼續' : '開始'}
+            {running
+              ? tr('暫停', 'Pause')
+              : total
+                ? tr('繼續', 'Resume')
+                : tr('開始', 'Start')}
           </Button>
           <Button
             variant="outline"
             disabled={!ready || !running || state.laps.length >= 1000}
             onClick={lap}
           >
-            單圈計時
+            {tr('單圈計時', 'Lap')}
           </Button>
           <Button
             variant="outline"
             disabled={!ready || running || total === 0}
             onClick={reset}
           >
-            重設
+            {tr('重設', 'Reset')}
           </Button>
         </div>
         <div className="stopwatch-actions stopwatch-options">
           <Button variant="outline" onClick={toggleFullscreen}>
-            {fullscreen ? '離開全螢幕' : '全螢幕'}
+            {fullscreen
+              ? tr('離開全螢幕', 'Exit fullscreen')
+              : tr('全螢幕', 'Fullscreen')}
           </Button>
           <Button
             variant="outline"
             aria-pressed={lowPower}
             onClick={() => setEco(!lowPower)}
           >
-            ECO {lowPower ? '開啟' : '關閉'}
+            ECO {lowPower ? tr('開啟', 'On') : tr('關閉', 'Off')}
           </Button>
           <Button variant="outline" disabled={!ready} onClick={share}>
-            複製分享連結
+            {tr('複製分享連結', 'Copy share link')}
           </Button>
         </div>
       </section>
       <output className="block my-3">{status}</output>
       {shareUrl && (
         <label className="stopwatch-share">
-          分享連結
+          {tr('分享連結', 'Share link')}
           <input readOnly value={shareUrl} onFocus={(e) => e.target.select()} />
         </label>
       )}
       <div className="stopwatch-records">
         <h2>
-          單圈紀錄 <span>（{state.laps.length} / 1000）</span>
+          {tr('單圈紀錄', 'Lap records')}{' '}
+          <span>({state.laps.length} / 1000)</span>
         </h2>
         <Table>
           <TableHeader>
             <TableRow>
-              <TableHead>圈次</TableHead>
-              <TableHead>單圈時間</TableHead>
-              <TableHead>累計時間</TableHead>
+              <TableHead>{tr('圈次', 'Lap')}</TableHead>
+              <TableHead>{tr('單圈時間', 'Lap time')}</TableHead>
+              <TableHead>{tr('累計時間', 'Elapsed time')}</TableHead>
             </TableRow>
           </TableHeader>
           <TableBody>
             {state.laps.length === 0 ? (
               <TableRow>
                 <TableCell colSpan={3}>
-                  開始計時後，按「單圈計時」記錄每一圈。
+                  {tr(
+                    '開始計時後，按「單圈計時」記錄每一圈。',
+                    'After starting, press “Lap” to record each lap.',
+                  )}
                 </TableCell>
               </TableRow>
             ) : (
@@ -290,15 +327,22 @@ export default function Stopwatch() {
       </div>
       <div className="stopwatch-help">
         <p>
-          快捷鍵：S 開始／暫停、L 單圈、F 全螢幕。← →
-          切換按鈕，空白鍵操作目前按鈕；未選取按鈕時可開始／暫停。暫停後可重設。
+          {tr(
+            '快捷鍵：S 開始／暫停、L 單圈、F 全螢幕。← → 切換按鈕，空白鍵操作目前按鈕；未選取按鈕時可開始／暫停。暫停後可重設。',
+            'Keyboard shortcuts: S start/pause, L lap, F fullscreen. Use ← → to switch buttons; Space operates the current button, and starts/pauses when no button is selected. Reset after pausing.',
+          )}
         </p>
         <p>
-          ECO 隱藏百分之一秒並降低更新頻率，累計 5
-          分鐘後自動開啟，也可手動切換。單圈紀錄仍保留百分之一秒。
+          {tr(
+            'ECO 隱藏百分之一秒並降低更新頻率，累計 5 分鐘後自動開啟，也可手動切換。單圈紀錄仍保留百分之一秒。',
+            'ECO hides hundredths and lowers the update rate. It activates automatically after 5 minutes and can also be toggled manually. Lap records retain hundredths.',
+          )}
         </p>
         <p>
-          碼錶自動保留在此瀏覽器，重新整理或關閉後仍可接續。分享連結包含分享當下的計時與單圈紀錄；收件者可接續計時，後續操作不會同步。時間依裝置時鐘計算，調整系統時間可能影響結果。
+          {tr(
+            '碼錶自動保留在此瀏覽器，重新整理或關閉後仍可接續。分享連結包含分享當下的計時與單圈紀錄；收件者可接續計時，後續操作不會同步。時間依裝置時鐘計算，調整系統時間可能影響結果。',
+            'The stopwatch is retained in this browser and can continue after refresh or closing. Share links include the time and laps at sharing; recipients can continue, but later actions are not synchronized. Time uses the device clock, so changing system time can affect results.',
+          )}
         </p>
       </div>
     </div>

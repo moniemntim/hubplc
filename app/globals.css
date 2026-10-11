@@ -125,6 +125,33 @@ summary:focus-visible {
   font-weight: 600;
   flex-shrink: 0;
 }
+.language-switcher {
+  display: inline-flex;
+  width: max-content;
+  padding: 3px;
+  border: 1px solid #b8c8c5;
+  border-radius: 999px;
+  background: #fff;
+  gap: 2px;
+}
+.language-switcher button {
+  min-width: 52px;
+  border: 0;
+  border-radius: 999px;
+  padding: 7px 12px;
+  background: transparent;
+  color: #516762;
+  font: 700 12px/1 monospace;
+  cursor: pointer;
+}
+.language-switcher button[aria-pressed='true'] {
+  background: #123a35;
+  color: #fff;
+}
+.tool-page > .language-switcher {
+  float: right;
+  margin: 0 0 12px 20px;
+}
 .shell {
   max-width: 1200px;
   margin: auto;

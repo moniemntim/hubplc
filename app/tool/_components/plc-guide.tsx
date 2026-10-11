@@ -1,5 +1,8 @@
+'use client';
+
 import Link from '@/components/site-link';
 import type { ToolSlug } from '@/lib/tools/registry';
+import { useToolLanguage } from '@/components/tool-language';
 import './plc-guide.css';
 
 function AnalogGuide() {
@@ -381,26 +384,218 @@ const guides = {
   'register-converter': RegisterGuide,
 };
 
+function EnglishGuide({ slug }: { slug: keyof typeof guides }) {
+  if (slug === 'analog')
+    return (
+      <>
+        <h3>Before you start: identify both ranges</h3>
+        <p>
+          The signal range is the transmitter output, such as 4–20 mA. The
+          engineering range is the pressure, temperature or level it represents,
+          such as 0–10 bar. Confirm the transmitter and PLC channel settings
+          first. If your value is a module raw count, use the{' '}
+          <Link href="/tool/plc-scaling">PLC Raw Value Scaling tool</Link>.
+        </p>
+        <h3>Worked case: what pressure does 12 mA represent?</h3>
+        <ol>
+          <li>Select 4–20 mA and Signal value.</li>
+          <li>Enter signal 12, engineering minimum 0 and maximum 10.</li>
+          <li>The result is 5 at 50%, which is 5 bar for this transmitter.</li>
+        </ol>
+        <p>
+          The range fraction is (12 − 4) ÷ (20 − 4) = 0.5, then 0 + 0.5 × (10 −
+          0) = 5 bar. Do not use 12 ÷ 20 because 4 mA is the live-zero starting
+          point.
+        </p>
+        <h3>If the result looks wrong</h3>
+        <ul>
+          <li>Check whether 4–20 mA was accidentally entered as 0–20 mA.</li>
+          <li>
+            Check engineering units and whether the PLC already scales the
+            value.
+          </li>
+          <li>
+            A value above range is mathematical extrapolation, not proof that
+            the sensor remains accurate.
+          </li>
+          <li>
+            The tool rejects a maximum that is not greater than the minimum;
+            consult the device manual for fault-current limits.
+          </li>
+        </ul>
+      </>
+    );
+  if (slug === 'modbus-address')
+    return (
+      <>
+        <h3>Separate reference numbers from protocol addresses</h3>
+        <p>
+          In the common convention, 40001 means the first Holding Register,
+          while the zero-based address placed in the request is 0. The leading 4
+          identifies the data area; it is neither the transmitted address nor
+          the function code.
+        </p>
+        <h3>Worked case: document reference 40010</h3>
+        <ol>
+          <li>
+            Select Holding Register (4x), five-digit references and Reference
+            number.
+          </li>
+          <li>Enter 40010.</li>
+          <li>
+            The result is zero-based address 9, one-based index 10, HEX 0009 and
+            read function 03.
+          </li>
+        </ol>
+        <p>
+          Some manuals already list zero-based addresses, and some master
+          software subtracts one automatically. Confirm both conventions before
+          entering a value.
+        </p>
+        <h3>When the device returns the wrong register</h3>
+        <ul>
+          <li>
+            An off-by-one result usually means the value was adjusted twice.
+          </li>
+          <li>
+            Input Registers use function 04; Holding Registers use function 03.
+          </li>
+          <li>
+            For 32-bit data, read two consecutive registers and decode them with
+            the{' '}
+            <Link href="/tool/register-converter">
+              Registers & Floating Point tool
+            </Link>
+            .
+          </li>
+          <li>
+            This tool converts notation only; it cannot verify a device register
+            map.
+          </li>
+        </ul>
+      </>
+    );
+  if (slug === 'modbus-crc')
+    return (
+      <>
+        <h3>Enter RTU bytes, without an existing CRC</h3>
+        <p>
+          Enter two-digit HEX bytes separated by spaces or commas, starting with
+          the slave address and including the function and data. Do not include
+          0x prefixes or the CRC already present in a captured frame.
+        </p>
+        <h3>Worked case: read 10 Holding Registers from address 0</h3>
+        <ol>
+          <li>
+            Enter <code>01 03 00 00 00 0A</code>.
+          </li>
+          <li>The CRC value is CDC5 and its wire order is C5 CD.</li>
+          <li>
+            The complete frame is <code>01 03 00 00 00 0A C5 CD</code>.
+          </li>
+        </ol>
+        <p>
+          Modbus RTU sends the low CRC byte first. This does not mean the
+          two-byte start address should also be reversed.
+        </p>
+        <h3>A matching CRC does not prove the request is valid</h3>
+        <ul>
+          <li>
+            Also verify slave ID, function, address, quantity, serial settings
+            and wiring.
+          </li>
+          <li>
+            Do not add a CRC manually when the master software already adds one.
+          </li>
+          <li>
+            This CRC applies to Modbus RTU, not Modbus ASCII or Modbus TCP.
+          </li>
+        </ul>
+      </>
+    );
+  return (
+    <>
+      <h3>Choose the data type before the byte order</h3>
+      <p>
+        One Modbus register is 16 bits. UInt16 and Int16 use one register;
+        UInt32, Int32 and Float32 use two. Select the type documented by the
+        device. A stored integer such as 125 may represent 12.5 °C after a
+        separate scale factor.
+      </p>
+      <h3>Worked case: encode Float32 value 12.5</h3>
+      <ol>
+        <li>Select Value → registers, Float32 (IEEE 754) and ABCD.</li>
+        <li>
+          Enter 12.5; the result is <code>4148 0000</code>.
+        </li>
+        <li>
+          Reverse the direction with the same type and order to recover 12.5.
+        </li>
+      </ol>
+      <p>
+        The same four bytes appear as 4841 0000 in BADC, 0000 4148 in CDAB and
+        0000 4841 in DCBA. Compare actual byte order rather than relying only on
+        software labels such as “big endian”.
+      </p>
+      <h3>Common interpretation errors</h3>
+      <ul>
+        <li>FFFF is −1 as Int16 but 65535 as UInt16.</li>
+        <li>
+          Implausible values usually indicate a type, order or address mismatch.
+        </li>
+        <li>
+          Float32 has limited precision, so decimal round trips can be
+          approximate.
+        </li>
+        <li>
+          This tool supports 16- and 32-bit values, not Float64, NaN or
+          Infinity.
+        </li>
+      </ul>
+    </>
+  );
+}
+
 export default function PlcGuide({ slug }: { slug: ToolSlug }) {
+  const { locale, tr } = useToolLanguage();
   if (!(slug in guides)) return null;
   const Guide = guides[slug as keyof typeof guides];
   return (
     <section className="plc-guide" aria-labelledby="plc-guide-title">
-      <p className="eyebrow">使用教學 / PLC 與通訊</p>
-      <h2 id="plc-guide-title">從輸入設定到結果判讀</h2>
-      <Guide />
+      <p className="eyebrow">
+        {tr('使用教學 / PLC 與通訊', 'GUIDE / PLC & COMMUNICATIONS')}
+      </p>
+      <h2 id="plc-guide-title">
+        {tr(
+          '從輸入設定到結果判讀',
+          'From input setup to result interpretation',
+        )}
+      </h2>
+      {locale === 'en' ? (
+        <EnglishGuide slug={slug as keyof typeof guides} />
+      ) : (
+        <Guide />
+      )}
       <footer className="plc-guide-footer">
         <p>
-          範例為離線計算與格式核對，未連接實際 PLC、傳送器或 RS485
-          設備驗證。設備量程、資料格式與通訊設定仍須依對應型號手冊確認。
+          {tr(
+            '範例為離線計算與格式核對，未連接實際 PLC、傳送器或 RS485 設備驗證。設備量程、資料格式與通訊設定仍須依對應型號手冊確認。',
+            'These examples are offline calculations and format checks; they were not validated against a physical PLC, transmitter or RS485 device. Confirm ranges, data formats and communication settings in the manual for your exact model.',
+          )}
         </p>
         {slug !== 'analog' && (
           <p>
-            規格參考：
+            {tr('規格參考：', 'Specification reference: ')}
             <a href="https://www.modbus.org/modbus-specifications">
-              Modbus Organization 官方規格入口
+              {tr(
+                'Modbus Organization 官方規格入口',
+                'Modbus Organization specifications',
+              )}
             </a>
-            （Application Protocol V1.1b3、Serial Line V1.02）。
+            {tr(
+              '（Application Protocol V1.1b3、Serial Line V1.02）。',
+              ' (Application Protocol V1.1b3 and Serial Line V1.02).',
+            )}
           </p>
         )}
       </footer>

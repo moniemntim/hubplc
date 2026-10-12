@@ -13,6 +13,23 @@ const lastPage = Math.ceil(articles.length / 12);
 const lastPageCount = articles.length - (lastPage - 1) * 12;
 const oldestDate = articles.map((article) => article.date).sort()[0];
 const exampleSlug = 'blackbox-observable';
+const workPathSlugs = [
+  'rs485-no-response-troubleshooting',
+  'modbus-function-code-01-04-read-list',
+  'boundary-ticket',
+  'blackbox-observable',
+  'plc-self-hold-set-reset-q-series',
+  'plc-fault-reset-single-acceptance',
+  'hmi-numeric-range-step-validation',
+  'hmi-setting-value-change-confirm-readback',
+  'sampling-and-aggregation-periods',
+  'resampling-original-imputed-flags',
+  '24vdc-sensor-power-voltage-drop',
+  '24v-input-reverse-polarity-tvs-surge-protection',
+  'sensor-zero-drift-check-standard-trend',
+  'sensor-replacement-compatibility-calibration-check',
+  '4-20ma-scaling-open-overrange-diagnostics',
+];
 const browser = await chromium.launch({
   headless: true,
   executablePath:
@@ -56,9 +73,22 @@ try {
   await expect(page.locator('.library-total strong')).toHaveText(
     String(articles.length),
   );
+  await expect(
+    page.getByRole('heading', { name: '依工作找教學' }),
+  ).toBeVisible();
+  await expect(page.locator('.library-work-path')).toHaveCount(8);
+  for (const slug of workPathSlugs) {
+    assert.ok(
+      articles.some((article) => article.slug === slug),
+      `work path must reference a published article: ${slug}`,
+    );
+    await expect(
+      page.locator(`.library-work-path a[href="/articles/${slug}"]`),
+    ).toBeVisible();
+  }
   assert.equal(indexRequests, 0);
   checks.push(
-    `${articles.length} published articles; first 12 rendered; fulltext not loaded initially`,
+    `${articles.length} published articles; 8 static work paths use only published article links; first 12 rendered; fulltext not loaded initially`,
   );
   await page.screenshot({
     path: `${output}/directory-desktop.png`,
@@ -256,6 +286,11 @@ try {
   assert.equal(
     await noJsPage.locator('.library-noscript a').count(),
     articles.length,
+  );
+  assert.equal(await noJsPage.locator('.library-work-path').count(), 8);
+  assert.equal(
+    await noJsPage.locator('.library-work-path a').count(),
+    workPathSlugs.length,
   );
   await noJs.close();
   checks.push('No-JavaScript page retains links to all published articles');

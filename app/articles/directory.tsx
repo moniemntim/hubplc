@@ -26,6 +26,75 @@ import {
 } from '@/lib/article-catalog';
 import './directory.css';
 
+const WORK_PATHS = [
+  {
+    title: '工業通訊',
+    description: 'RS-485 沒回應時，先分清請求停在主站、從站或回覆驗收哪一段。',
+    links: [
+      ['RS-485 無回應排查', 'rs485-no-response-troubleshooting'],
+      ['建立 Modbus 讀取清單', 'modbus-function-code-01-04-read-list'],
+    ],
+  },
+  {
+    title: '維護與交接',
+    description:
+      'PLC、閘道與 HMI 數字不一致時，留下可交接的觀察、證據與下一步。',
+    links: [
+      ['建立跨系統問題單', 'boundary-ticket'],
+      ['分開離線解碼與設備實測', 'blackbox-observable'],
+    ],
+  },
+  {
+    title: 'PLC 程式',
+    description: '先驗證啟動保持與停止優先，再確認故障解除後只接受一次復歸。',
+    links: [
+      ['自保持：啟動、停止與長按', 'plc-self-hold-set-reset-q-series'],
+      ['故障復歸的單次接受', 'plc-fault-reset-single-acceptance'],
+    ],
+  },
+  {
+    title: 'HMI 操作',
+    description: '設定值先檢查範圍和步距，再用讀回結果確認設備真的套用。',
+    links: [
+      ['數值輸入的範圍與步距', 'hmi-numeric-range-step-validation'],
+      ['設定值變更後的讀回確認', 'hmi-setting-value-change-confirm-readback'],
+    ],
+  },
+  {
+    title: '資料與報表',
+    description: '報表數字不一致時，先分開取樣週期、彙總週期與補點來源。',
+    links: [
+      ['取樣與彙總週期', 'sampling-and-aggregation-periods'],
+      ['重採樣的原始點與填補點', 'resampling-original-imputed-flags'],
+    ],
+  },
+  {
+    title: '電氣介面與配線',
+    description: '24 VDC 支路異常時，先量末端壓降，再核對入口反接與突波保護。',
+    links: [
+      ['感測器支路壓降', '24vdc-sensor-power-voltage-drop'],
+      ['24 V 入口保護', '24v-input-reverse-polarity-tvs-surge-protection'],
+    ],
+  },
+  {
+    title: '感測器與量測',
+    description: '零點慢慢飄移或要更換感測器時，用基準與相容性檢查定位風險。',
+    links: [
+      ['零點漂移的基準趨勢', 'sensor-zero-drift-check-standard-trend'],
+      [
+        '更換感測器的相容性檢查',
+        'sensor-replacement-compatibility-calibration-check',
+      ],
+    ],
+  },
+  {
+    title: '類比訊號',
+    description:
+      '4–20 mA 出現 0 mA 或超量程時，先分開數學換算、來源品質與斷線判讀。',
+    links: [['4–20 mA 異常判讀', '4-20ma-scaling-open-overrange-diagnostics']],
+  },
+] as const;
+
 export default function ArticleDirectory({
   articles,
 }: {
@@ -223,6 +292,30 @@ export default function ArticleDirectory({
           </li>
         </ol>
         <p>已有特定問題，可用下方搜尋找對應文章。</p>
+      </section>
+      <section
+        className="library-work-paths"
+        aria-labelledby="work-paths-heading"
+      >
+        <div className="library-work-paths-heading">
+          <h2 id="work-paths-heading">依工作找教學</h2>
+          <p>從現場正在處理的任務開始，依序進入可操作的判讀與驗證步驟。</p>
+        </div>
+        <div className="library-work-path-grid">
+          {WORK_PATHS.map((path) => (
+            <article className="library-work-path" key={path.title}>
+              <h3>{path.title}</h3>
+              <p>{path.description}</p>
+              <ul>
+                {path.links.map(([label, slug]) => (
+                  <li key={slug}>
+                    <Link href={`/articles/${slug}`}>{label}</Link>
+                  </li>
+                ))}
+              </ul>
+            </article>
+          ))}
+        </div>
       </section>
       <section className="library-search-area" aria-label="搜尋文章">
         <label className="library-search">

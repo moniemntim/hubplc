@@ -34,18 +34,19 @@ const powerIntentTools = [
   },
   {
     slug: 'volts-to-watts',
-    name: '伏特轉瓦特計算器',
+    name: '電壓與電流估算瓦特',
     category: '電路',
-    code: 'V → W',
-    description: '搭配電流與功率因數，由電壓計算瓦特。',
+    code: 'V, A, PF → W',
+    description:
+      '電壓不能單獨換算瓦特；輸入同一負載的電流與功率因數估算實功率。',
     keywords: '伏特轉瓦特 V W volts to watts 電壓 電流',
   },
   {
     slug: 'volts-to-amps',
-    name: '伏特轉安培計算器',
+    name: '電壓與功率估算安培',
     category: '電路',
-    code: 'V → A',
-    description: '搭配負載功率與功率因數，由電壓反推電流。',
+    code: 'P, V, PF → A',
+    description: '電壓不能單獨換算安培；輸入負載實功率與功率因數反推工作電流。',
     keywords: '伏特轉安培 V A volts to amps 電壓 電流',
   },
   {

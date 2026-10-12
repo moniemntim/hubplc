@@ -11,6 +11,30 @@ category: HMI 畫面與操作
 
 本篇是 Node.js 24.19+ 的離線讀圖契約，不是原生 HMI、historian、PLC 或事件平台。固定 raw 樣點是 1500ms=80、3000ms=62、6000ms=80。游標 3200ms 以兩個 Good 鄰點線性計算為 63.2，必須標為 `INTERPOLATED`；游標剛好在 3000ms 是 `RAW 62`。游標在外側不外推，任一鄰點 Bad 也不插值。
 
+## 頁面內手算：先判資料身分，再讀數值
+
+這是**離線教材**，不是對真實 HMI、PLC、historian 或量測鏈的驗證。你不必下載程式；用下表的固定資料完成一次游標判讀。輸入欄位的來源與量測點如下：
+
+| 欄位 | 本例輸入 | 來源與量測點 | 用途 |
+| --- | --- | --- | --- |
+| 游標時間 `cursorMs` | `3200 ms` | 操作者在本例趨勢時間軸選的位置；時間軸以案例共同的 `0 ms` 為基準 | 決定要找原始點或左右鄰點 |
+| 左原始樣點 | `3000 ms = 62`、`Good` | 固定 fixture 的趨勢樣點；量測點是該 tag 在 3000 ms 的已記錄值 | 內插左端 |
+| 右原始樣點 | `6000 ms = 80`、`Good` | 固定 fixture 的趨勢樣點；量測點是同一 tag 在 6000 ms 的已記錄值 | 內插右端 |
+| 樣點品質 | `Good` | 隨各樣點保存的品質欄位；不是游標位置另量到的品質 | 決定能否顯示 RAW 或內插值 |
+
+操作步驟：
+
+1. 先看 `3200` 是否剛好等於一個樣點時間。它不等於 1500、3000、6000，因此不是 `RAW`。
+2. 找到相鄰的 3000 ms 與 6000 ms；兩者都是 `Good`，才可在這一段內插。
+3. 代入 `62 + (80 − 62) × (3200 − 3000) / (6000 − 3000)`，得到 `63.2`。
+4. 結果應記為 `INTERPOLATED 63.2`，不可標成新量測或原始樣點。
+
+完整案例的結果是：游標 3200 ms 位於兩個 Good 原始點之間，所以顯示 `INTERPOLATED 63.2`。若將游標改為 3000 ms，量測點正好存在，結果是 `RAW 62`；改為 7000 ms 時已在最後一點外側，結果是 `OUTSIDE / null`，不可外推。若把 6000 ms 的品質改成 `Bad`，3200 ms 的結果改為 `UNAVAILABLE / null`，因為右鄰點不再可用。
+
+常見錯誤是把 `INTERPOLATED` 當作感測器的新讀值、在 7000 ms 仍延長直線，或只檢查游標附近而忽略左右任一點的品質。下一步應回查實際趨勢查詢的 tag、時間範圍、來源時鐘與每筆品質；本頁固定樣點不能替代那些現場證據。
+
+## 延伸：下載後重播固定案例
+
 下載 [model.mjs](/examples/trend-cursor/model.mjs)、[fixtures.mjs](/examples/trend-cursor/fixtures.mjs)、[demo.mjs](/examples/trend-cursor/demo.mjs)、[self-test.mjs](/examples/trend-cursor/self-test.mjs)、[practice.mjs](/examples/trend-cursor/practice.mjs)、[README.md](/examples/trend-cursor/README.md)，放在同一資料夾後執行：
 
 ```powershell
@@ -30,7 +54,7 @@ demo: PASS
 
 fixture 的 event source=3200ms、received=4000ms，且明確宣告 `sameClockDomain=true`，所以可算差 800ms。這只是來源與接收處理之間的教材差值，不叫 network latency。不同 clock domain 時，模型輸出 `comparable=false`、difference=null，不用畫面時間硬對齊。
 
-## 自己移動游標，觀察資料身分如何改變
+## 延伸練習：自己移動游標，觀察資料身分如何改變
 
 `practice.mjs` 只印出結果，請修改上方兩個參數並比對下表，不必改測試斷言。
 

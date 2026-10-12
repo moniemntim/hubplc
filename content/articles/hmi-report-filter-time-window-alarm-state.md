@@ -19,7 +19,28 @@ draft: false
 
 `start` 包含，`end` 排除。模型不讀資料庫、HMI 或 PLC，也不假定任何產品 API；它只投影已整理且固定的 occurrence snapshots。
 
-## 下載後重現固定快照
+## 頁面內判讀：06:00 截止前哪些項目仍未確認？
+
+這是**離線教材**，不是對真實 HMI、PLC、警報資料庫或交班報表的驗證。以下固定資料可直接在頁面完成一次判讀，不需要下載程式。每個輸入欄位都必須來自同一份歷史查詢，而不是由目前畫面補猜：
+
+| 欄位 | 本例輸入 | 來源與量測點 | 判讀用途 |
+| --- | --- | --- | --- |
+| `startUtc` / `endUtc` | `14:00:00.000Z` 到 `22:00:00.000Z` | 夜班查詢窗口；等同 +08:00 的 22:00 到隔日 06:00 | 判斷 Active 是否落在 `[start,end)`，以及 cutoff 是哪一刻 |
+| occurrence 的 `ACTIVE` / `ACK` 時間 | P02 Active=`21:59:00.000Z`，ACK=`22:00:00.000Z` | 同一 occurrence 的歷史轉移紀錄；量測點是來源事件的 canonical UTC 時間 | 判斷截止前是否已 Ack |
+| occurrence 前情 | P03 Active=`13:50:00.000Z` | 同一 occurrence 在窗口開始前的完整歷史 | 判斷 carry-in，不只看窗口內 Active |
+| history coverage | P05=`UNKNOWN_HISTORY` | 查詢回傳的 coverage／歷史完整性資訊 | 防止把沒有歷史誤判成已確認或未確認 |
+
+操作步驟：
+
+1. 先看 P02：它在截止前已 Active，但 ACK 的時間剛好是 `22:00:00.000Z`。因為 `end` 排除，這筆 ACK 不屬於 cutoff 前，P02 仍列入 `unackedAtCutoff`。
+2. 再看 P03：它的 Active 在窗口開始前，所以不屬於 `activeTransitions`；但它沒有 cutoff 前的 ACK，且前情完整，因此仍列入 `unackedAtCutoff`。
+3. 最後看 P05：資料明示為 `UNKNOWN_HISTORY`，不能因為沒有轉移列就把它列進已確認或未確認結果。
+
+完整案例的結果為：`activeTransitions` 是 P01、P02；`unackedAtCutoff` 是 P03、P02；`unknownHistory` 是 P05。反例是 P04：它在 `21:59:59.999Z` 已 ACK，仍在 cutoff 前，所以不列入未確認結果。
+
+常見錯誤是把 `end` 當成包含、只查窗口內 Active 而漏掉 P03、或把 P05 的空轉移清單當成「沒有警報」。下一步應取得實際報表的完整前情、資料來源版本、時間精度與 coverage；若 coverage 不完整，結果必須保留未知，而不是宣稱名單完整。
+
+## 延伸：下載後重現固定快照
 
 在同一個空資料夾下載 [model.mjs](/examples/alarm-report/model.mjs)、[fixtures.mjs](/examples/alarm-report/fixtures.mjs)、[demo.mjs](/examples/alarm-report/demo.mjs)、[self-test.mjs](/examples/alarm-report/self-test.mjs) 、[README.md](/examples/alarm-report/README.md) 和 [practice.mjs](/examples/alarm-report/practice.mjs)，然後執行：
 

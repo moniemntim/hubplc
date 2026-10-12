@@ -154,13 +154,15 @@ export const toolEnglish = {
       'Balanced three-phase 380 V, 20 A: apparent power is about 13.164 kVA.',
   },
   'volts-to-watts': {
-    name: 'Volts to Watts Calculator',
-    description: 'Calculate watts from voltage, current and power factor.',
+    name: 'Estimate Watts from Voltage and Current',
+    description:
+      'Voltage alone cannot determine watts; enter load current and power factor to estimate real power.',
     example: 'Single-phase 220 V, 10 A, PF 0.8: real power is 1760 W.',
   },
   'volts-to-amps': {
-    name: 'Volts to Amps Calculator',
-    description: 'Calculate current from voltage, load power and power factor.',
+    name: 'Estimate Amps from Voltage and Power',
+    description:
+      'Voltage alone cannot determine amps; enter load real power and power factor to estimate operating current.',
     example: 'Single-phase 1 kW, 220 V, PF 0.8: current is about 5.682 A.',
   },
   'watts-to-amps': {

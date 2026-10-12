@@ -1,6 +1,6 @@
 ---
 title: 登入逾時時未送出的設定值如何明確提示
-description: 用可下載的 Node.js 案例重現草稿保留、登入逾時拒絕寫入、重新核對版本及查詢已送出的操作，附固定輸出與修改練習。
+description: 在頁面判讀未送出草稿、登入逾時、版本衝突與已送操作查詢，再用可下載的 Node.js 離線案例重播。
 date: 2026-09-21
 author: 茂伯
 draft: false
@@ -15,7 +15,26 @@ category: HMI 畫面與操作
 
 授權及執行前再檢查沿用[操作權限案例](/articles/hmi-operation-permission-execution-authorization)，本篇只增加草稿投影與原操作查詢。不要在兩篇各維護一套權限規則。
 
-## 下載六個附件，執行固定情境
+## 頁面內判讀：95°C 是未送出、衝突，還是已套用？
+
+這是**記憶體中的離線教材**，不是現場 HMI、PLC、登入服務或設備讀值的驗證。用固定時間線完成判讀，不必下載程式：
+
+| 欄位 | 固定輸入 | 來源與量測點 |
+| --- | --- | --- |
+| S 的基準與草稿 | value `80`、revision `1`、draft `95°C` | fixture 的記憶體裝置狀態與 S 建立的草稿；不是設備端量測 |
+| session／草稿時間 | session 到期 `600000`，草稿到期 `890000` | 教材以單調毫秒注入的期限政策，不是登入服務量到的時間 |
+| T 的後續變更 | value `92`、revision `2` | 同一 fixture 中 T 明確提交並套用的合成結果；不是另一台 HMI 的實測 |
+| OP9 查詢結果 | value `95`、applied revision `3`、writes `2` | 教材 operation ledger 的查詢結果；writes 是模型計數，不是 PLC 寫入計數 |
+
+操作步驟：
+
+1. S 在 session 到期時持有 95°C 草稿，先判為 `REAUTH_REQUIRED_UNSENT`，且 writes=0；重新驗證不會自動寫入草稿。
+2. T 先把目前值改成 92@v2。S 再看原草稿，必須是 `VERSION_CHANGED base=80 current=92 draft=95`，不能沿用 version 1 送出。
+3. S 重新建立 v2 的意圖並明確提交 OP9。即使稍後 session 又到期，結果是 `SENT_RESULT_REQUIRED`；重新授權後只能查原 OP9，不另建 ID 重送。
+
+完整結果為：查到同一 OP9 時，才是 `APPLIED value=95 revision=3 writes=2`。常見錯誤是重新登入就自動寫 95、將查不到操作當作未執行，或把 T 的 92 覆蓋掉卻不重新比對版本。下一步應由現場系統提供可信登入、版本來源、持久化操作查詢與設備 readback；本例沒有這些能力。
+
+## 延伸：下載六個附件，執行固定情境
 
 安裝 Node.js 22.13 或以上。將以下六檔存進同一個新資料夾，保留檔名；不需要安裝 npm 套件。
 

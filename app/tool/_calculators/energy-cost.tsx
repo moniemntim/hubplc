@@ -19,6 +19,7 @@ export type EnergyPreset = {
   days?: string;
   rate?: string;
   fixedMode?: boolean;
+  showCost?: boolean;
 };
 export default function EnergyCost({
   preset = { mode: 'from-power' },
@@ -26,6 +27,7 @@ export default function EnergyCost({
   preset?: EnergyPreset;
 }) {
   const { tr } = useToolLanguage();
+  const showCost = preset.showCost !== false;
   const initialUnit =
     preset.unit ?? (preset.mode === 'from-power' ? 'kW' : 'kWh');
   const [mode, setMode] = useState<EnergyMode>(preset.mode);
@@ -49,10 +51,15 @@ export default function EnergyCost({
     <ToolPanel
       notes={
         <>
-          {tr(
-            '用電量 E = P × t；1 kWh = 1000 Wh = 3,600,000 J。電費是用電量乘以自行輸入的每度電價。實際帳單可能另含級距、契約容量、功率因數、需量、基本費與稅費。公式參考',
-            'Energy E = P × t; 1 kWh = 1000 Wh = 3,600,000 J. Cost is energy use multiplied by your entered price per kWh. Actual bills may also include tiers, contracted capacity, power factor, demand, base charges, and taxes. Formula reference:',
-          )}{' '}
+          {showCost
+            ? tr(
+                '用電量 E = P × t；1 kWh = 1000 Wh = 3,600,000 J。電費是用電量乘以自行輸入的每度電價。實際帳單可能另含級距、契約容量、功率因數、需量、基本費與稅費。公式參考',
+                'Energy E = P × t; 1 kWh = 1000 Wh = 3,600,000 J. Cost is energy use multiplied by your entered price per kWh. Actual bills may also include tiers, contracted capacity, power factor, demand, base charges, and taxes. Formula reference:',
+              )
+            : tr(
+                '用電量 E = P × t；1 kWh = 1000 Wh = 3,600,000 J。反推功率為區間平均值，不代表瞬時峰值。公式參考',
+                'Energy E = P × t; 1 kWh = 1000 Wh = 3,600,000 J. Reverse-calculated power is an interval average, not an instantaneous peak. Formula reference:',
+              )}{' '}
           <a href="https://www1.eere.energy.gov/education/pdfs/lesson301.pdf">
             {tr(
               '美國能源部 kWh 計算教材',
@@ -76,19 +83,35 @@ export default function EnergyCost({
                 value: formatNumber(result.data.joules),
                 unit: 'J',
               },
-              {
-                label:
-                  mode === 'from-power'
-                    ? tr('輸入功率', 'Input power')
-                    : tr('平均功率', 'Average power'),
-                value: formatNumber(result.data.watts / 1000),
-                unit: 'kW',
-              },
-              {
-                label: tr('估算電費', 'Estimated cost'),
-                value: formatNumber(result.data.cost),
-                unit: tr('元', 'currency units'),
-              },
+              ...(mode === 'from-power'
+                ? [
+                    {
+                      label: tr('輸入功率', 'Input power'),
+                      value: formatNumber(result.data.watts / 1000),
+                      unit: 'kW',
+                    },
+                  ]
+                : [
+                    {
+                      label: tr('平均功率', 'Average power'),
+                      value: formatNumber(result.data.watts),
+                      unit: 'W',
+                    },
+                    {
+                      label: tr('平均功率', 'Average power'),
+                      value: formatNumber(result.data.watts / 1000),
+                      unit: 'kW',
+                    },
+                  ]),
+              ...(showCost
+                ? [
+                    {
+                      label: tr('估算電費', 'Estimated cost'),
+                      value: formatNumber(result.data.cost),
+                      unit: tr('元', 'currency units'),
+                    },
+                  ]
+                : []),
             ]}
           />
         ) : (
@@ -171,12 +194,14 @@ export default function EnergyCost({
             unit={tr('天', 'days')}
           />
         )}
-        <NumberField
-          label={tr('每度電價', 'Price per kWh')}
-          value={rate}
-          onChange={setRate}
-          unit={tr('元/kWh', 'currency/kWh')}
-        />
+        {showCost && (
+          <NumberField
+            label={tr('每度電價', 'Price per kWh')}
+            value={rate}
+            onChange={setRate}
+            unit={tr('元/kWh', 'currency/kWh')}
+          />
+        )}
       </div>
       <ToolActions
         onExample={() => {

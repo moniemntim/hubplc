@@ -4,7 +4,7 @@ import { mockAdsense } from './adsense-mock.mjs';
 
 const base = process.env.TEST_BASE_URL ?? 'http://127.0.0.1:8787';
 const guidedPowerSlugs =
-  'amps-to-watts amps-to-kilowatts amps-to-va amps-to-kva watts-to-amps kw-to-amps kva-to-amps mva-to-amps watts-to-volts kw-to-volts va-to-watts kva-to-kw watts-to-va kw-to-kva va-to-kva kw-to-kwh watts-to-kwh kwh-to-kw kwh-to-watts energy-consumption electricity-cost'.split(
+  'amps-to-watts amps-to-kilowatts amps-to-va amps-to-kva watts-to-amps kw-to-amps kva-to-amps mva-to-amps watts-to-volts kw-to-volts va-to-watts kva-to-kw watts-to-va kw-to-kva va-to-kva kwh-to-kw energy-consumption electricity-cost'.split(
     ' ',
   );
 const guidedUnitSlugs =
@@ -42,7 +42,16 @@ const powerCases = [
     'S(VA) = P(W) ÷ PF',
     '效率與 PF 不同；只用 W 選 UPS 可能低估容量。',
   ],
-  ['watts-to-kwh', 'E(kWh) = P(W) × t(h) ÷ 1000', '分鐘需先換算成小時。'],
+  [
+    'energy-consumption',
+    'E(kWh) = P(kW) × t(h)；W 先÷1000',
+    '待機與啟動耗電未自動納入。',
+  ],
+  [
+    'kwh-to-kw',
+    'P(W) = E(kWh) × 1000 ÷ t(h)；P(kW) = E(kWh) ÷ t(h)',
+    '結果是平均值，不會顯示尖峰負載。',
+  ],
   [
     'electricity-cost',
     'cost(currency) = E(kWh) × rate(currency/kWh)',
@@ -100,6 +109,14 @@ try {
   await expect(page.getByTestId('task-guide')).toContainText('線電壓');
   await expect(page.getByRole('region', { name: '計算結果' })).toContainText(
     '18.9917851707',
+  );
+  await page.goto(`${base}/tool/kwh-to-kw`);
+  await expect(page.getByTestId('task-guide')).toContainText('平均 W 與 kW');
+  await expect(page.getByRole('region', { name: '計算結果' })).toContainText(
+    '2,000 W',
+  );
+  await expect(page.getByRole('region', { name: '計算結果' })).toContainText(
+    '2 kW',
   );
   await page.goto(`${base}/tool/pressure-converter`);
   await expect(page.getByTestId('task-guide')).toContainText('表壓與絕壓');

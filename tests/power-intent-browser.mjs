@@ -20,7 +20,8 @@ try {
     ['kVA轉安培', 'kVA轉安培計算器'],
     ['MVA轉安培', 'MVA轉安培計算器'],
     ['瓦特轉VA', '瓦特轉VA計算器'],
-    ['kWh轉kW', 'kWh轉kW計算器'],
+    ['瓦特轉kWh', '用電量計算器（W／kW轉kWh）'],
+    ['kWh轉瓦特', 'kWh轉平均功率計算器（W／kW）'],
     ['電費', '電費計算器'],
   ]) {
     await search.fill(query);
@@ -51,12 +52,17 @@ try {
   await expect(result).toContainText('52.4863881081');
   result = await open('va-to-kva');
   await expect(result).toContainText('1 kVA');
-  result = await open('kw-to-kwh');
-  await expect(result).toContainText('8 kWh');
+  result = await open('energy-consumption');
+  await expect(result).toContainText('240 kWh');
+  await expect(page.getByLabel('每度電價')).toHaveCount(0);
+  await expect(result).not.toContainText('估算電費');
   result = await open('kwh-to-kw');
+  await expect(result).toContainText('2,000 W');
   await expect(result).toContainText('2 kW');
+  await expect(page.getByLabel('每度電價')).toHaveCount(0);
   result = await open('electricity-cost');
   await expect(result).toContainText('720 元');
+  await expect(page.getByLabel('每度電價')).toHaveCount(1);
 
   const sitemap = await (await fetch(base + '/sitemap.xml')).text();
   const intents = [
@@ -75,14 +81,11 @@ try {
     'watts-to-va',
     'kw-to-kva',
     'va-to-kva',
-    'kw-to-kwh',
-    'watts-to-kwh',
     'kwh-to-kw',
-    'kwh-to-watts',
     'energy-consumption',
     'electricity-cost',
   ];
-  assert.equal(intents.length, 21);
+  assert.equal(intents.length, 18);
   for (const slug of intents) {
     assert.ok(sitemap.includes(`https://hubplc.com/tool/${slug}`));
     const response = await fetch(`${base}/tool/${slug}`);
@@ -96,7 +99,7 @@ try {
   }
   assert.deepEqual(errors, []);
   console.log(
-    'PASS: 21 distinct power intents searchable, preset, responsive and indexed',
+    'PASS: 18 distinct power intents searchable, preset, responsive and indexed',
   );
 } finally {
   await browser.close();

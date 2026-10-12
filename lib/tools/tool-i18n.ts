@@ -217,29 +217,14 @@ export const toolEnglish = {
     description: 'Convert apparent-power units between VA, kVA and MVA.',
     example: '1000 VA = 1 kVA = 0.001 MVA.',
   },
-  'kw-to-kwh': {
-    name: 'kW to kWh Calculator',
-    description:
-      'Calculate kWh energy from power, daily operating time and number of days.',
-    example: '1 kW used for 8 hours consumes 8 kWh.',
-  },
-  'watts-to-kwh': {
-    name: 'Watts to kWh Calculator',
-    description: 'Calculate kWh energy from watts and operating time.',
-    example: '1000 W used for 8 hours consumes 8 kWh.',
-  },
   'kwh-to-kw': {
-    name: 'kWh to kW Calculator',
-    description: 'Calculate average kW from kWh energy and total time.',
-    example: '10 kWh used over 5 hours is an average power of 2 kW.',
-  },
-  'kwh-to-watts': {
-    name: 'kWh to Watts Calculator',
-    description: 'Calculate average watts from kWh energy and total time.',
-    example: '1 kWh used over 2 hours is an average power of 500 W.',
+    name: 'kWh to Average Power Calculator (W/kW)',
+    description:
+      'Calculate average watts and kilowatts from kWh energy and total time.',
+    example: '10 kWh used over 5 hours is an average power of 2000 W = 2 kW.',
   },
   'energy-consumption': {
-    name: 'Energy Consumption Calculator',
+    name: 'Energy Consumption Calculator (W/kW to kWh)',
     description:
       'Calculate kWh, Wh and joules from W/kW/MW and operating time.',
     example: '1 kW used 8 hours a day for 30 days consumes 240 kWh.',

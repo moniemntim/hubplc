@@ -66,6 +66,14 @@ const routes = [
     'articles/hmi-batch-step-wait-failure-reason',
     'table:has(th:has-text("來源與量測點"))',
   ],
+  [
+    'articles/hmi-concurrent-edit-last-writer-version',
+    'h2:has-text("頁面內判讀：B 應保留草稿還是直接覆蓋？")',
+  ],
+  [
+    'articles/hmi-session-timeout-unsent-draft',
+    'h2:has-text("頁面內判讀：95°C 是未送出、衝突，還是已套用？")',
+  ],
   ['tool/kw-to-amps', '.task-guide'],
   ['tool/pressure-converter', '.task-guide'],
 ];

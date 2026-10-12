@@ -121,37 +121,16 @@ const powerGuides: Record<PowerIntent, Guide> = {
     pitfall: 'VA、kVA、MVA 相差千倍；單位換算不會得出 W 或電流。',
     next: '保留原始銘牌單位；需要實功率時再提供 PF。',
   },
-  'kw-to-kwh': {
-    scenario: '由功率與運轉時間估算耗電量。',
-    formula: 'E(kWh) = P(kW) × t(h)',
-    assumption: '功率在這段時間可視為固定或平均值。',
-    pitfall: 'kW 是瞬時功率，kWh 才是累積能量。',
-    next: '負載變動大時分段加總量測資料。',
-  },
-  'watts-to-kwh': {
-    scenario: '由瓦特與時間估算 kWh。',
-    formula: 'E(kWh) = P(W) × t(h) ÷ 1000',
-    assumption: '輸入的 W 為平均功率。',
-    pitfall: '分鐘需先換算成小時。',
-    next: '要估費用可填入自訂電價。',
-  },
   'kwh-to-kw': {
-    scenario: '由累積電量與時間反推平均 kW。',
-    formula: 'P(kW) = E(kWh) ÷ t(h)',
+    scenario: '由累積電量與時間同時反推平均 W 與 kW。',
+    formula: 'P(W) = E(kWh) × 1000 ÷ t(h)；P(kW) = E(kWh) ÷ t(h)',
     assumption: '時間範圍與電表累積範圍完全一致。',
     pitfall: '結果是平均值，不會顯示尖峰負載。',
     next: '尖峰問題要用需量或逐時資料判讀。',
   },
-  'kwh-to-watts': {
-    scenario: '由小用電量區間反推平均瓦特。',
-    formula: 'P(W) = E(kWh) × 1000 ÷ t(h)',
-    assumption: '累積量與時間使用同一區間。',
-    pitfall: '這不能表示設備每一秒的實際功率。',
-    next: '長時間平均適合趨勢比較，不適合保護選型。',
-  },
   'energy-consumption': {
-    scenario: '以功率、每日時數與天數估算用電量。',
-    formula: 'kWh = kW × h/day × days',
+    scenario: '以 W、kW 或 MW 與使用時間估算 kWh 用電量。',
+    formula: 'E(kWh) = P(kW) × t(h)；W 先÷1000',
     assumption: '運轉排程可用平均值描述。',
     pitfall: '待機與啟動耗電未自動納入。',
     next: '用電表期間讀值驗證估算。',
@@ -305,7 +284,7 @@ function englishPowerGuide(intent: PowerIntent, formula: string): Guide {
       pitfall: 'It does not calculate real power or current.',
       next: 'Keep the original nameplate unit in the record.',
     };
-  if (['kw-to-kwh', 'watts-to-kwh', 'energy-consumption'].includes(intent))
+  if (intent === 'energy-consumption')
     return {
       scenario: 'Estimate energy from average power and operating time.',
       formula,
@@ -313,7 +292,7 @@ function englishPowerGuide(intent: PowerIntent, formula: string): Guide {
       pitfall: 'kW is power; kWh is accumulated energy.',
       next: 'For varying loads, total interval measurements.',
     };
-  if (['kwh-to-kw', 'kwh-to-watts'].includes(intent))
+  if (intent === 'kwh-to-kw')
     return {
       scenario:
         'Calculate average power from energy and its matching interval.',

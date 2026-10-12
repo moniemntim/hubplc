@@ -13,6 +13,12 @@ const legacyToolRedirects: Readonly<Record<string, string>> = {
   '/tool/watts-to-kva/': '/tool/watts-to-va',
   '/tool/kva-to-va': '/tool/va-to-kva',
   '/tool/kva-to-va/': '/tool/va-to-kva',
+  '/tool/kw-to-kwh': '/tool/energy-consumption',
+  '/tool/kw-to-kwh/': '/tool/energy-consumption',
+  '/tool/watts-to-kwh': '/tool/energy-consumption',
+  '/tool/watts-to-kwh/': '/tool/energy-consumption',
+  '/tool/kwh-to-watts': '/tool/kwh-to-kw',
+  '/tool/kwh-to-watts/': '/tool/kwh-to-kw',
 };
 
 export default {

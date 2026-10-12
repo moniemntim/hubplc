@@ -11,6 +11,27 @@ category: HMI 畫面與操作
 
 本篇使用[雙來源仲裁](/articles/multi-source-cas-arbitration)的同一個 `store.mjs`，資料庫版本規則只維護一份。它是 **Node.js 24.19.0 的 CLI 編輯流程與真實本機 SQLite 實驗**，沒有建立瀏覽器畫面、正式登入、HMI SDK 或 PLC 連線。
 
+## 頁面內判讀：B 應保留草稿還是直接覆蓋？
+
+這是**本機 SQLite 離線教材**，不是現場 HMI、PLC 或設備套用的驗證。請用下列固定值完成一次衝突判讀，不必下載程式：
+
+| 欄位 | 固定輸入 | 來源與量測點 |
+| --- | --- | --- |
+| B 的原基準 | raw `500`、version `7`（50.0°C） | B 開啟編輯時，fixture 在本機 SQLite 讀到的設定快照；工程值為 raw÷10，非設備量測 |
+| A 成功後的目前值 | raw `550`、version `8`、last writer `A`（55.0°C） | 同一筆本機設定在 A 條件提交後重新讀取的權威列；不是 PLC readback |
+| B 的草稿 | raw `520`（52.0°C） | B 尚待確認的本機意圖；不是目前權威值 |
+| B 的提交條件 | expected version `7` | B 建立草稿時保存的版本，用來檢查是否有人先改值 |
+
+操作步驟：
+
+1. 以 B 的 version 7 提交 raw 520。因目前已是 A 的 550@v8，結果必須是 `conflict`；不能把 B 的草稿改成 550，也不能拿 v8 自動重送 520。
+2. 選擇重新核對時，把 B 的基準更新為 550@v8，但草稿保留 520；這是 `rebaseKeepingDraft()` 的意義。
+3. 只有讀者明確看過差異並以新 operation ID 提交，才會得到目前值 520@v9、last writer B。若選擇捨棄草稿，草稿才會改為目前的 550。
+
+完整結果為：`B=conflict base=500@v7 current=550@v8 draft=520 last_writer=A`，重新核對後是 `base=550@v8 draft=520`，明確新提交後才是 `current=520@v9`。常見錯誤是把 raw 550 顯示成 550°C、用最後寫入者或時間取代 version，或把本機 `COMMITTED` 當成 PLC 已套用。下一步應在實際系統以可信登入、條件更新與設備 readback 分別驗證；本例的設備狀態固定是 `NOT_CONNECTED`。
+
+## 延伸：下載重播 SQLite 案例
+
 下載 [store.mjs](/examples/cas-setting/store.mjs)、[editor.mjs](/examples/cas-setting/editor.mjs)、[hmi-demo.mjs](/examples/cas-setting/hmi-demo.mjs)、[self-test.mjs](/examples/cas-setting/self-test.mjs)、[practice-editor.mjs](/examples/cas-setting/practice-editor.mjs)、[README.md](/examples/cas-setting/README.md)，存在同一資料夾並執行：
 
 ```powershell

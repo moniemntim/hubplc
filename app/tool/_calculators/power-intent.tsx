@@ -133,24 +133,6 @@ export const powerIntentPresets = {
 } as const satisfies Record<string, AcPowerPreset>;
 
 export const energyIntentPresets = {
-  'kw-to-kwh': {
-    mode: 'from-power',
-    unit: 'kW',
-    value: '1',
-    hours: '8',
-    days: '1',
-    rate: '0',
-    fixedMode: true,
-  },
-  'watts-to-kwh': {
-    mode: 'from-power',
-    unit: 'W',
-    value: '1000',
-    hours: '8',
-    days: '1',
-    rate: '0',
-    fixedMode: true,
-  },
   'kwh-to-kw': {
     mode: 'from-energy',
     unit: 'kWh',
@@ -158,14 +140,7 @@ export const energyIntentPresets = {
     hours: '5',
     rate: '0',
     fixedMode: true,
-  },
-  'kwh-to-watts': {
-    mode: 'from-energy',
-    unit: 'kWh',
-    value: '1',
-    hours: '2',
-    rate: '0',
-    fixedMode: true,
+    showCost: false,
   },
   'energy-consumption': {
     mode: 'from-power',
@@ -175,6 +150,7 @@ export const energyIntentPresets = {
     days: '30',
     rate: '0',
     fixedMode: true,
+    showCost: false,
   },
   'electricity-cost': {
     mode: 'from-power',

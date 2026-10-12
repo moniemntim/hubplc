@@ -552,11 +552,11 @@
     },
     "hmi-concurrent-edit-last-writer-version": {
       "status": "reviewed-local",
-      "batch": 11,
-      "reviewDate": "2026-09-28",
-      "sha256": "5b29201a278f92bbe1ac31e844586e68f8baf4ba576231cde00fb90af216121c",
-      "change": "共用SQLite模型的CLI編輯流程；保留baseline/current/draft，explicit rebase，unknown查詢綁原完整內容，避免誤用同ID舊成功。",
-      "verification": "tests/cas-setting.test.mjs; standalone-batch11; documented practice edits; independent targeted re-review",
+      "batch": 37,
+      "reviewDate": "2026-10-12",
+      "sha256": "f05fb26b06cd38e543f5fd2e601628e20662d6f6c2677f08c75ec4be47499f8f",
+      "change": "下載步驟前補頁面內 B 版本衝突、保留草稿、明確新操作與 v9 結果；標明本機 SQLite 和設備未連線。",
+      "verification": "batch-37.md; public/examples/cas-setting/hmi-demo.mjs PASS; public/examples/cas-setting/self-test.mjs; tests/articles.test.mjs; tests/content-value-layout-browser.mjs",
       "hardwareVerified": false
     },
     "plc-exclusive-resource-scheduler": {
@@ -858,11 +858,11 @@
     },
     "hmi-session-timeout-unsent-draft": {
       "status": "reviewed-local",
-      "batch": 21,
-      "reviewDate": "2026-09-28",
-      "sha256": "5e6cc8525db4952ad4c37fa6b3749a3176eb394030d70db97bf749eab7b4bc74",
-      "change": "共用授權模型的草稿到期、同人重核對、版本衝突與已送出原ID查詢；六個獨立可下載附件與固定輸出。",
-      "verification": "tests/draft-session.test.mjs; tests/release-only-browser.mjs; standalone-batch21.mjs; 413 unit tests; local/production release evidence separately",
+      "batch": 37,
+      "reviewDate": "2026-10-12",
+      "sha256": "dbdf9a08326ce4f12d3493e5377575b56c1c7ac83369683b10ee2d294a4e5f2e",
+      "change": "下載步驟前補頁面內未送草稿、重新授權、版本衝突及已送 OP9 原 ID 查詢判讀；明示記憶體模型限制。",
+      "verification": "batch-37.md; public/examples/authorization/draft-demo.mjs PASS; public/examples/authorization/draft-self-test.mjs; tests/articles.test.mjs; tests/content-value-layout-browser.mjs",
       "hardwareVerified": false
     },
     "hmi-release-only-800ms-pointer-policy": {

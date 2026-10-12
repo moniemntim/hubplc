@@ -1,6 +1,6 @@
 ---
 title: HMI 重連案例：丟棄舊回覆，保留未知命令，放開再按才送出
-description: 下載 Node 離線重播，逐步檢查 generation、畫面 token、查詢 ID、unknown 命令與按鈕重新武裝；另以 EventEmitter 驗證十次掛載解除。
+description: 頁面內重播舊回覆、unknown 命令與放開再按的結果，再以 Node 離線模型核對 generation、查詢 ID 與十次掛載解除。
 date: 2026-09-21
 author: 茂伯
 draft: false
@@ -11,7 +11,30 @@ category: HMI 畫面與操作
 
 **驗證範圍：自訂 JavaScript 離線狀態模型，加上實際 Node EventEmitter 註冊／解除測試。** 沒有連接 HMI、PLC、瀏覽器或命令服務。日誌中的毫秒是輸入的事件處理時間，不是量測重連耗時；`commandSends` 是模型計數，沒有封包送往設備。
 
-## 下載與執行
+## 頁面內重播：舊回覆到達後，能不能再按一次？
+
+這是**離線教材**，不是對真實 HMI、PLC、命令服務或網路重連的驗證。請依下列固定事件完成一次判讀；不必下載程式。所有欄位的來源與量測點如下：
+
+| 欄位 | 本例輸入 | 來源與量測點 | 用途 |
+| --- | --- | --- | --- |
+| `nowMs` | 0 到 15 | `demo.mjs` 注入的事件順序時間；不是裝置、PLC 或網路量測 | 排定本例事件，不能拿來算重連耗時 |
+| `value` / `revision` | 初始 `7` / `4`；新讀值 `9` / `5` | 固定教材 snapshot 與固定 read-complete 事件 | 分辨哪一筆讀值可套用畫面 |
+| 舊 read | `99` / `9` | 在 generation 12 發出的舊查詢所帶回的固定回覆 | 驗證舊畫面回覆必須被丟棄 |
+| `generation`、`viewToken`、`queryId` | 初始 generation=12、viewToken=1；斷線後 generation=13 | 教材連線／畫面／查詢識別，不是設備版本或登入憑證 | 決定回覆是否屬於目前畫面 |
+| `operationId` / status / pressed | `OP1`、`accepted`、`not-found`、`applied`；按鈕 false/true | 固定命令結果和本頁模擬按鈕事件；不是設備輸出 | 決定未知命令何時解除及何時可建立 OP2 |
+
+操作步驟：
+
+1. 先以 false→true 建立 OP1；結果是 value=7、revision=4、`sends=1`。OP1 收到 `accepted` 後仍不是 `applied`。
+2. 在斷線事件後，把 generation 從 12 改為 13。OP1 變成 `unknown`，按鈕仍為 true 時 `sends` 必須保持 1。
+3. 重連後依序判讀兩筆 read：舊查詢帶回 99／revision 9 時，結果是 `stale-read-ignored`，畫面仍保留 7；目前查詢帶回 9／revision 5 時，才是 `read-applied`。
+4. OP1 查詢得到 `not-found` 時仍是 `unknown`；只有後續同一 OP1 得到 `applied` 才解除未知。此時按鈕若仍為 true 也不可建立 OP2；必須先 false 再 true。
+
+完整結果是：重連不會重送 OP1，舊 read 的 99 不會覆蓋畫面，新 read 才將值更新為 9；`not-found` 不是未執行的證據；最後在新的 false→true 邊沿才建立 OP2，`sends=2`，OP2 payload 為 value=9、revision=5。
+
+常見錯誤是用較大的 revision=9 接受舊查詢、將 `not-found` 當作安全重送條件，或在 unknown 解除後把持續按住的 true 當成新命令。下一步應由實際系統定義命令歷史查詢、重連期限、身分驗證及設備去重；這個案例不能證明它們已實作。
+
+## 延伸：下載與執行
 
 將以下兩檔存進同一個新資料夾，保留檔名。本機核對環境為 Node.js 24.19.0，不需安裝套件。
 

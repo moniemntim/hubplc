@@ -43,6 +43,8 @@
 - 第三十一批完成0–10 V負載、24 V高低側開關、入口保護與致動器端到端四篇；共用I/O路徑操作頁，累計116篇reviewed-local、334篇unreviewed、1篇draft。同期另一提交新增並發布XCA文章，本批不修改其內容，詳見batch-31.md。
 - 第三十二批完成既有 XCA ECU HTTPS 憑證指南的逐篇審查與台帳登錄；文章維持公開，累計117篇reviewed-local、333篇unreviewed、1篇draft，詳見batch-32.md。
 - 第三十三批再審19篇公開文章：TON／TOF／TP與HMI品質頁面直接操作、Modbus讀取清單附件、26處公開文章延伸閱讀入口修正，並補PLC縮放教學與相關教材導覽；公開數量維持117篇，詳見batch-33.md。
+- 第三十四批改善基礎教材在頁面直接操作的路徑，詳見batch-34.md；第三十五批再修四篇 PLC／HMI 教材，詳見batch-35.md。
+- 第三十六批重新審查四篇 HMI 教材，補頁面內完整案例與來源／量測點，詳見batch-36.md；累計仍為117篇reviewed-local、333篇unreviewed、1篇draft。
 
 ## 暫時下架政策（2026-09-28）
 

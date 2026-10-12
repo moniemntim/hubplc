@@ -4,7 +4,7 @@ import { mockAdsense } from './adsense-mock.mjs';
 
 const base = process.env.TEST_BASE_URL ?? 'http://127.0.0.1:8787';
 const guidedPowerSlugs =
-  'amps-to-watts amps-to-kilowatts amps-to-va amps-to-kva volts-to-watts volts-to-amps watts-to-amps kw-to-amps kva-to-amps mva-to-amps watts-to-volts kw-to-volts va-to-watts kva-to-kw watts-to-va watts-to-kva kw-to-kva va-to-kva kva-to-va kw-to-kwh watts-to-kwh kwh-to-kw kwh-to-watts energy-consumption electricity-cost'.split(
+  'amps-to-watts amps-to-kilowatts amps-to-va amps-to-kva watts-to-amps kw-to-amps kva-to-amps mva-to-amps watts-to-volts kw-to-volts va-to-watts kva-to-kw watts-to-va kw-to-kva va-to-kva kw-to-kwh watts-to-kwh kwh-to-kw kwh-to-watts energy-consumption electricity-cost'.split(
     ' ',
   );
 const guidedUnitSlugs =
@@ -13,9 +13,9 @@ const guidedUnitSlugs =
     .map((group) => `${group}-converter`);
 const powerCases = [
   [
-    'volts-to-amps',
-    'I(A) = P(kW) × 1000 ÷ [V(V) × PF]',
-    '馬達啟動電流不能用穩態 kW 反推。',
+    'watts-to-amps',
+    'I(A) = P(W) ÷ [V(V) × PF]',
+    '穩態 W 也不能預測馬達啟動電流。',
   ],
   [
     'kw-to-amps',
@@ -37,7 +37,11 @@ const powerCases = [
     'VL(V) = P(kW) × 1000 ÷ [√3 × I(A) × PF]',
     '量到單相支路時不應套用三相總功率。',
   ],
-  ['watts-to-kva', 'S(kVA) = P(W) ÷ PF ÷ 1000', '不要把效率當成功率因數。'],
+  [
+    'watts-to-va',
+    'S(VA) = P(W) ÷ PF',
+    '效率與 PF 不同；只用 W 選 UPS 可能低估容量。',
+  ],
   ['watts-to-kwh', 'E(kWh) = P(W) × t(h) ÷ 1000', '分鐘需先換算成小時。'],
   [
     'electricity-cost',

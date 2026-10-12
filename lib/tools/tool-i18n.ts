@@ -153,18 +153,6 @@ export const toolEnglish = {
     example:
       'Balanced three-phase 380 V, 20 A: apparent power is about 13.164 kVA.',
   },
-  'volts-to-watts': {
-    name: 'Estimate Watts from Voltage and Current',
-    description:
-      'Voltage alone cannot determine watts; enter load current and power factor to estimate real power.',
-    example: 'Single-phase 220 V, 10 A, PF 0.8: real power is 1760 W.',
-  },
-  'volts-to-amps': {
-    name: 'Estimate Amps from Voltage and Power',
-    description:
-      'Voltage alone cannot determine amps; enter load real power and power factor to estimate operating current.',
-    example: 'Single-phase 1 kW, 220 V, PF 0.8: current is about 5.682 A.',
-  },
   'watts-to-amps': {
     name: 'Watts to Amps Calculator',
     description:
@@ -219,11 +207,6 @@ export const toolEnglish = {
     description: 'Convert watts to VA apparent power using power factor.',
     example: '1000 W, PF 0.8: apparent power is 1250 VA.',
   },
-  'watts-to-kva': {
-    name: 'Watts to kVA Calculator',
-    description: 'Convert watts to kVA using power factor.',
-    example: '1000 W, PF 0.8: apparent power is 1.25 kVA.',
-  },
   'kw-to-kva': {
     name: 'kW to kVA Calculator',
     description: 'Convert kW real power to kVA using power factor.',
@@ -233,11 +216,6 @@ export const toolEnglish = {
     name: 'VA to kVA Calculator',
     description: 'Convert apparent-power units between VA, kVA and MVA.',
     example: '1000 VA = 1 kVA = 0.001 MVA.',
-  },
-  'kva-to-va': {
-    name: 'kVA to VA Calculator',
-    description: 'Convert apparent-power units between kVA, VA and MVA.',
-    example: '1 kVA = 1000 VA = 0.001 MVA.',
   },
   'kw-to-kwh': {
     name: 'kW to kWh Calculator',

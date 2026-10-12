@@ -39,24 +39,6 @@ export const powerIntentPresets = {
     pf: '0.8',
     fixedMode: true,
   },
-  'volts-to-watts': {
-    mode: 'current-to-power',
-    phase: 'single',
-    unit: 'A',
-    value: '10',
-    other: '220',
-    pf: '0.8',
-    fixedMode: true,
-  },
-  'volts-to-amps': {
-    mode: 'power-to-current',
-    phase: 'single',
-    unit: 'kW',
-    value: '1',
-    other: '220',
-    pf: '0.8',
-    fixedMode: true,
-  },
   'watts-to-amps': {
     mode: 'power-to-current',
     phase: 'single',
@@ -133,14 +115,6 @@ export const powerIntentPresets = {
     pf: '0.8',
     fixedMode: true,
   },
-  'watts-to-kva': {
-    mode: 'real-to-apparent',
-    phase: 'single',
-    unit: 'W',
-    value: '1000',
-    pf: '0.8',
-    fixedMode: true,
-  },
   'kw-to-kva': {
     mode: 'real-to-apparent',
     phase: 'single',
@@ -154,13 +128,6 @@ export const powerIntentPresets = {
     phase: 'single',
     unit: 'VA',
     value: '1000',
-    fixedMode: true,
-  },
-  'kva-to-va': {
-    mode: 'apparent-units',
-    phase: 'single',
-    unit: 'kVA',
-    value: '1',
     fixedMode: true,
   },
 } as const satisfies Record<string, AcPowerPreset>;

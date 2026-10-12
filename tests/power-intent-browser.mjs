@@ -19,7 +19,7 @@ try {
     ['安培轉千瓦', '安培轉千瓦計算器'],
     ['kVA轉安培', 'kVA轉安培計算器'],
     ['MVA轉安培', 'MVA轉安培計算器'],
-    ['瓦特轉kVA', '瓦特轉kVA計算器'],
+    ['瓦特轉VA', '瓦特轉VA計算器'],
     ['kWh轉kW', 'kWh轉kW計算器'],
     ['電費', '電費計算器'],
   ]) {
@@ -64,8 +64,6 @@ try {
     'amps-to-kilowatts',
     'amps-to-va',
     'amps-to-kva',
-    'volts-to-watts',
-    'volts-to-amps',
     'watts-to-amps',
     'kw-to-amps',
     'kva-to-amps',
@@ -75,10 +73,8 @@ try {
     'va-to-watts',
     'kva-to-kw',
     'watts-to-va',
-    'watts-to-kva',
     'kw-to-kva',
     'va-to-kva',
-    'kva-to-va',
     'kw-to-kwh',
     'watts-to-kwh',
     'kwh-to-kw',
@@ -86,7 +82,7 @@ try {
     'energy-consumption',
     'electricity-cost',
   ];
-  assert.equal(intents.length, 25);
+  assert.equal(intents.length, 21);
   for (const slug of intents) {
     assert.ok(sitemap.includes(`https://hubplc.com/tool/${slug}`));
     const response = await fetch(`${base}/tool/${slug}`);
@@ -100,7 +96,7 @@ try {
   }
   assert.deepEqual(errors, []);
   console.log(
-    'PASS: 25 split power intents searchable, preset, responsive and indexed',
+    'PASS: 21 distinct power intents searchable, preset, responsive and indexed',
   );
 } finally {
   await browser.close();

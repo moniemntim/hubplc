@@ -50,6 +50,22 @@ const routes = [
     'articles/rs485-no-response-troubleshooting',
     'a[href="/examples/rs485-transaction-log-template.csv"]',
   ],
+  [
+    'articles/hmi-trend-cursor-event-marker-time-alignment',
+    'table:has(th:has-text("來源與量測點"))',
+  ],
+  [
+    'articles/hmi-report-filter-time-window-alarm-state',
+    'table:has(th:has-text("來源與量測點"))',
+  ],
+  [
+    'articles/hmi-reconnect-stale-callback-unknown-write',
+    'table:has(th:has-text("來源與量測點"))',
+  ],
+  [
+    'articles/hmi-batch-step-wait-failure-reason',
+    'table:has(th:has-text("來源與量測點"))',
+  ],
   ['tool/kw-to-amps', '.task-guide'],
   ['tool/pressure-converter', '.task-guide'],
 ];

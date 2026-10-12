@@ -44,25 +44,11 @@ const powerGuides: Record<PowerIntent, Guide> = {
     pitfall: '不要以單相公式直接乘三。',
     next: '容量選型還要比較啟動電流與設備降額。',
   },
-  'volts-to-watts': {
-    scenario: '已知電壓與電流時估算單相實功率。',
-    formula: 'P(W) = V(V) × I(A) × PF',
-    assumption: '電流欄是負載的 RMS 電流。',
-    pitfall: '只知道電壓無法單獨算出瓦特。',
-    next: '若需求是回推電流，使用「伏特轉安培」。',
-  },
-  'volts-to-amps': {
-    scenario: '由功率與供電電壓回推單相工作電流。',
-    formula: 'I(A) = P(kW) × 1000 ÷ [V(V) × PF]',
-    assumption: 'P 是實功率，PF 屬於該運轉狀態。',
-    pitfall: '馬達啟動電流不能用穩態 kW 反推。',
-    next: '三相設備請改用「千瓦轉安培」。',
-  },
   'watts-to-amps': {
     scenario: '由單相實功率估算工作電流。',
     formula: 'I(A) = P(W) ÷ [V(V) × PF]',
     assumption: '供電方式為單相且 PF 已知。',
-    pitfall: 'PF 設為 1 會低估感性負載電流。',
+    pitfall: 'PF 設為 1 會低估感性負載；穩態 W 也不能預測馬達啟動電流。',
     next: '用量測值核對，再決定保護器件。',
   },
   'kw-to-amps': {
@@ -118,15 +104,8 @@ const powerGuides: Record<PowerIntent, Guide> = {
     scenario: '由實功率回推所需視在容量。',
     formula: 'S(VA) = P(W) ÷ PF',
     assumption: 'PF 不可為 0。',
-    pitfall: '只用 W 選 UPS 可能低估容量。',
+    pitfall: '效率與 PF 不同；只用 W 選 UPS 可能低估容量。',
     next: '將結果與 UPS 的 VA/W 雙額定一起比較。',
-  },
-  'watts-to-kva': {
-    scenario: '由實功率回推 kVA。',
-    formula: 'S(kVA) = P(W) ÷ PF ÷ 1000',
-    assumption: 'PF 來自設備資料或同工況量測。',
-    pitfall: '不要把效率當成功率因數。',
-    next: '若設備是三相，再用 kVA 回推線電流。',
   },
   'kw-to-kva': {
     scenario: '由 kW 與 PF 估算視在容量。',
@@ -139,15 +118,8 @@ const powerGuides: Record<PowerIntent, Guide> = {
     scenario: '將 VA 用較易讀的 kVA 顯示。',
     formula: 'kVA = VA ÷ 1000',
     assumption: '這是純單位換算。',
-    pitfall: '單位換算不會得出 W 或電流。',
-    next: '需要實功率時再提供 PF。',
-  },
-  'kva-to-va': {
-    scenario: '將設備 kVA 規格換成 VA。',
-    formula: 'VA = kVA × 1000',
-    assumption: '這是純單位換算。',
-    pitfall: 'MVA 與 kVA 相差一千倍。',
-    next: '保留原始銘牌單位，避免轉錄錯誤。',
+    pitfall: 'VA、kVA、MVA 相差千倍；單位換算不會得出 W 或電流。',
+    next: '保留原始銘牌單位；需要實功率時再提供 PF。',
   },
   'kw-to-kwh': {
     scenario: '由功率與運轉時間估算耗電量。',
@@ -281,7 +253,7 @@ const unitGuides: Record<string, Guide> = {
 };
 
 function englishPowerGuide(intent: PowerIntent, formula: string): Guide {
-  if (['amps-to-watts', 'volts-to-watts'].includes(intent))
+  if (intent === 'amps-to-watts')
     return {
       scenario: 'Estimate single-phase real power from voltage and current.',
       formula,
@@ -308,7 +280,7 @@ function englishPowerGuide(intent: PowerIntent, formula: string): Guide {
       pitfall: 'Apparent power does not state energy use or real power.',
       next: 'Confirm voltage and connection against the nameplate.',
     };
-  if (['volts-to-amps', 'watts-to-amps', 'watts-to-volts'].includes(intent))
+  if (['watts-to-amps', 'watts-to-volts'].includes(intent))
     return {
       scenario: 'Back-calculate a single-phase operating quantity.',
       formula,
@@ -317,15 +289,7 @@ function englishPowerGuide(intent: PowerIntent, formula: string): Guide {
       pitfall: 'Steady-state power cannot predict motor starting current.',
       next: 'Verify before selecting a protective device.',
     };
-  if (
-    [
-      'va-to-watts',
-      'kva-to-kw',
-      'watts-to-va',
-      'watts-to-kva',
-      'kw-to-kva',
-    ].includes(intent)
-  )
+  if (['va-to-watts', 'kva-to-kw', 'watts-to-va', 'kw-to-kva'].includes(intent))
     return {
       scenario: 'Translate real and apparent power using a confirmed PF.',
       formula,
@@ -333,7 +297,7 @@ function englishPowerGuide(intent: PowerIntent, formula: string): Guide {
       pitfall: 'Efficiency and PF are different quantities.',
       next: 'Compare both VA and W ratings of the supply equipment.',
     };
-  if (['va-to-kva', 'kva-to-va'].includes(intent))
+  if (intent === 'va-to-kva')
     return {
       scenario: 'Change the displayed apparent-power unit.',
       formula,

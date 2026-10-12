@@ -9,7 +9,17 @@
   "assets": {
     "directory": "../dist/client",
     "binding": "ASSETS",
-    "run_worker_first": ["/api/locale"],
+    "run_worker_first": [
+      "/api/locale",
+      "/tool/volts-to-watts",
+      "/tool/volts-to-watts/",
+      "/tool/volts-to-amps",
+      "/tool/volts-to-amps/",
+      "/tool/watts-to-kva",
+      "/tool/watts-to-kva/",
+      "/tool/kva-to-va",
+      "/tool/kva-to-va/",
+    ],
     "not_found_handling": "404-page",
   },
 }

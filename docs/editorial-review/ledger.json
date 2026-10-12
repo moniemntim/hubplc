@@ -453,11 +453,11 @@
     },
     "hmi-reconnect-stale-callback-unknown-write": {
       "status": "reviewed-local",
-      "batch": 8,
-      "reviewDate": "2026-09-28",
-      "sha256": "90f141a76c079c064f89edd375f0460c9a07c1527f4e2596054cf7495a154249",
-      "change": "離線世代/畫面/查詢識別、unknown命令結果與放開再按；Node EventEmitter十次掛載解除，未冒稱HMI實測。",
-      "verification": "tests/hmi-reconnect.test.mjs; standalone-batch8; independent read-only review; Node Events official documentation",
+      "batch": 36,
+      "reviewDate": "2026-10-12",
+      "sha256": "46b87a4397445133cf5a154028ee80a076f3e31a863a973e724e4f3d4f5007d0",
+      "change": "頁面內補 OP1 accepted/斷線/舊回覆/unknown/放開再按完整判讀，輸入來源與預期值明列；原 Node 模型保留進階核對。",
+      "verification": "batch-36.md; public/examples/hmi-reconnect/demo.mjs PASS; tests/articles.test.mjs; tests/content-value-layout-browser.mjs",
       "hardwareVerified": false
     },
     "recipe-schema-complete-error-list": {
@@ -786,29 +786,29 @@
     },
     "hmi-trend-cursor-event-marker-time-alignment": {
       "status": "reviewed-local",
-      "batch": 18,
-      "reviewDate": "2026-09-28",
-      "sha256": "85552145c9b96da5749e34391e050dce0f8f9813738c7869597b8fc6c9439c24",
-      "change": "固定樣點與游標讀值分RAW/INTERPOLATED/OUTSIDE/UNAVAILABLE；同時鐘假設明示，可改六組練習。",
-      "verification": "tests/trend-cursor.test.mjs; standalone/practice-batch18",
+      "batch": 36,
+      "reviewDate": "2026-10-12",
+      "sha256": "00435cc533adec34f52f656ae345fd4fc212949a0983cce8e57604d410354c71",
+      "change": "頁面內補 Good 鄰點 3200 ms 線性內插 63.2、RAW/OUTSIDE/Bad 反例與資料來源；保留原離線練習。",
+      "verification": "batch-36.md; public/examples/trend-cursor/demo.mjs PASS; tests/articles.test.mjs; tests/content-value-layout-browser.mjs",
       "hardwareVerified": false
     },
     "hmi-report-filter-time-window-alarm-state": {
       "status": "reviewed-local",
-      "batch": 18,
-      "reviewDate": "2026-09-28",
-      "sha256": "2dee6253858e29a15440065876477676857d09e7e92d8ffa2ebb59367af35007",
-      "change": "半開時間窗Active轉移與截止未Ack分開，包含carry-in/Cleared未Ack/歷史未知與filter coverage。",
-      "verification": "tests/alarm-report.test.mjs; standalone-batch18",
+      "batch": 36,
+      "reviewDate": "2026-10-12",
+      "sha256": "4840381a09cb48afa391ae93cc0682534f24510998354244eb02db94159d4d51",
+      "change": "頁面內補半開截止 P02/P04、跨窗 P03、缺歷史 P05 的逐步判讀與來源；保留原離線練習。",
+      "verification": "batch-36.md; public/examples/alarm-report/demo.mjs PASS; tests/articles.test.mjs; tests/content-value-layout-browser.mjs",
       "hardwareVerified": false
     },
     "hmi-batch-step-wait-failure-reason": {
       "status": "reviewed-local",
-      "batch": 18,
-      "reviewDate": "2026-09-28",
-      "sha256": "2fdd397b400e7760dc82ce10dd8f7cf29f9955dbefe735b327867b29c5efb044",
-      "change": "純讀来源完整snapshot，品質/等待/失敗/完成證據、來源重啟與HMI重開分清，拒絕矛盾與過期。",
-      "verification": "tests/batch-step-view.test.mjs; standalone-batch18",
+      "batch": 36,
+      "reviewDate": "2026-10-12",
+      "sha256": "eb50a09b997820c0a500f719f35955b4615f3766092bbfb8d6e44b7fe5c7f29a",
+      "change": "頁面內補 WAITING/Bad/Unknown/來源已報告 FAILED/PROVEN 的逐步判讀；區分取得時間與流程 timeout。",
+      "verification": "batch-36.md; public/examples/batch-step-view/demo.mjs PASS; tests/articles.test.mjs; tests/content-value-layout-browser.mjs",
       "hardwareVerified": false
     },
     "hmi-shift-handover-information": {

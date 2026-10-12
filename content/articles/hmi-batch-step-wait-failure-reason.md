@@ -1,6 +1,6 @@
 ---
 title: HMI 批次流程畫面如何呈現步驟 等待和失敗原因
-description: 用可下載的離線 snapshot 投影，呈現控制器權威的步驟、attempt、品質、等待、失敗與重開後重新讀取。
+description: 頁面內判讀權威 snapshot 的步驟、品質、等待、失敗與完成證據，再以可下載的離線模型核對重開後重新讀取。
 date: 2026-09-17
 author: 茂伯
 draft: false
@@ -10,7 +10,30 @@ draft: false
 
 以下是 Node.js 24.19+ 的純離線教材；所有時間、步驟與原因都是合成資料，沒有 PLC、設備、身份驗證、持久化或流程控制器。
 
-## 下載並重播固定 snapshot
+## 頁面內判讀：等待、失敗和完成分別要顯示什麼？
+
+這是**離線教材**，不是對真實 HMI、PLC、流程控制器或量測鏈的驗證。以下固定 snapshot 足以完成一次畫面判讀，不必下載程式。每個輸入欄位都必須由同一筆權威 snapshot 提供，不能由 HMI 本地計時或舊值補猜：
+
+| 欄位 | 本例輸入 | 來源與量測點 | 頁面應如何使用 |
+| --- | --- | --- | --- |
+| 批次／配方／步驟／attempt | `CIP-17`、`CIP-R7`、`Drain`、attempt 1 或 2 | 固定控制器 snapshot 的工作上下文；不是 HMI 自行遞增 | 顯示目前是哪一次工作 |
+| 液位與品質 | level `35%`、target `20%`、`GOOD`；或 `BAD`／`UNKNOWN` | `waiting-level`、品質等待案例的來源摘要與 quality 欄位 | 決定能否把等待原因顯示為製程條件 |
+| 完成證據 | `PROVEN`、`transitionAtMs=134900`、level ≤20% 與 valve feedback GOOD | `complete-with-source-evidence` 的來源 completion 欄位 | 只有全部存在時才能顯示 COMPLETE |
+| 失敗／復原 | `PROCESS_TIMEOUT`、`recoveryRequired=true` | `failed-timeout-as-reported` 的來源欄位 | 顯示 FAILED 與需要復原，不能自動 Retry／Resume |
+| 新鮮度 | `nowMs` 與 `acquiredAtMs` | 同一固定虛擬 clock；不是控制器實測時間 | 只判斷畫面讀取是否過期 |
+
+操作步驟：
+
+1. 讀取 `waiting-level`：來源說明 level 35% 仍高於 target 20%，品質為 Good。因此顯示 `WAITING`、完成 `NOT_PROVEN`，等待原因是 `LEVEL_ABOVE_TARGET`。
+2. 將品質改看 `waiting-quality-bad` 或 `waiting-quality-unknown`：即使頁面保有先前數字，也只能顯示 `WAITING` 與 `DATA_QUALITY_UNAVAILABLE`，不可把舊值當完成。
+3. 讀取 `failed-timeout-as-reported`：來源已明示 `PROCESS_TIMEOUT`，結果是 `FAILED`、完成仍 `NOT_PROVEN`、`RECOVERY_REQUIRED`。該筆 `acquiredAtMs=120000 ms` 是合成快照的讀取時刻，不是等待時長；本頁也沒有量測流程逾時。
+4. 讀取 `complete-with-source-evidence`：只有 state=COMPLETE、quality=GOOD、completion=PROVEN、證據與 transition 時間都齊全時，才顯示 `COMPLETE`。
+
+完整結果是：等待、資料品質不良、來源已報告失敗及有完成證據四種情況不能用同一個「完成」文字處理。新鮮度也必須分開：`nowMs - acquiredAtMs >= 5000`（等號包含）時顯示 `SOURCE_STALE` 與 `Unknown`，這只表示讀取過期，不代表流程已 timeout。
+
+常見錯誤是以畫面百分比或本地計時器推論完成、把 Bad／Unknown 當作舊 Good、由 120000 ms 推論控制器的 timeout 行為，或在 HMI 重開時自行加 attempt。下一步應以實際系統的 snapshot 介面、來源權威性、保留歷史與復原程序做驗證；本頁的固定資料不能替代它們。
+
+## 延伸：下載並重播固定 snapshot
 
 下載同一資料夾中的 [model.mjs](/examples/batch-step-view/model.mjs)、[fixtures.mjs](/examples/batch-step-view/fixtures.mjs)、[demo.mjs](/examples/batch-step-view/demo.mjs)、[self-test.mjs](/examples/batch-step-view/self-test.mjs) 、[README.md](/examples/batch-step-view/README.md) 與 [practice.mjs](/examples/batch-step-view/practice.mjs)。在該資料夾執行：
 
@@ -32,7 +55,7 @@ node practice.mjs
 | `hmi-reopen-reads-new-attempt`     | epoch 8 的新 revision、attempt 2                            | 新讀取的 `WAITING`；不是頁面自己把 attempt 加一                 |
 | `complete-with-source-evidence`    | Good、`PROVEN`、evidence、`transitionAtMs=134900`           | `COMPLETE`，畫面可顯示來源的完成條件與 transition 時間          |
 
-第三列的 120000 ms 只是來源 snapshot 的取得時間與已報告原因，**不是**這個 renderer 證明了 120 秒控制 timeout。若要檢查單一步驟 timeout 的優先順序、逾時 snapshot 與 reset，請另看 [PLC 步驟等待 timeout 的離線案例](/articles/plc-step-timeout-recovery)。
+失敗列的 120000 ms 是來源 snapshot 的取得時間，`PROCESS_TIMEOUT` 是來源已報告的原因；**不是**這個 renderer 證明了 120 秒控制 timeout。若要檢查單一步驟 timeout 的優先順序、逾時 snapshot 與 reset，請另看 [PLC 步驟等待 timeout 的離線案例](/articles/plc-step-timeout-recovery)。
 
 ## snapshot 契約與畫面欄位
 

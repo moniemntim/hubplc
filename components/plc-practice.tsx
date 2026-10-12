@@ -21,11 +21,16 @@ const labels: Record<keyof PracticeInputs, string> = {
 const fields: Record<PracticeMode, (keyof PracticeInputs)[]> = {
   latch: ['start', 'stop'],
   ton: ['input'],
+  tof: ['input'],
+  tp: ['input'],
   sequence: ['start', 'stop', 'done', 'ack', 'reset'],
 };
+const timerNames = { ton: 'TON 延時接通', tof: 'TOF 延時斷開', tp: 'TP 脈衝' };
+type TimerMode = keyof typeof timerNames;
 
 export default function PlcPractice({ mode }: { mode: PracticeMode }) {
   const [inputs, setInputs] = useState<PracticeInputs>({ ...emptyInputs });
+  const [timerMode, setTimerMode] = useState<TimerMode>('ton');
   const [session, setSession] = useState<{ state: PracticeState; rows: Row[] }>(
     { state: initialPractice(), rows: [] },
   );
@@ -34,7 +39,7 @@ export default function PlcPractice({ mode }: { mode: PracticeMode }) {
       let state = previous.state;
       const rows = [...previous.rows];
       for (let i = 0; i < count; i++) {
-        state = practiceScan(mode, state, inputs);
+        state = practiceScan(mode === 'ton' ? timerMode : mode, state, inputs);
         rows.push({ state, inputs: { ...inputs } });
       }
       return { state, rows: rows.slice(-100) };
@@ -52,9 +57,29 @@ export default function PlcPractice({ mode }: { mode: PracticeMode }) {
         掃描」才會更新。第一次掃描為 0 ms，之後每次前進 100
         ms；等待真實時間不會推進模型。
       </p>
+      {mode === 'ton' && (
+        <label>
+          計時器類型
+          <select
+            aria-label="計時器類型"
+            value={timerMode}
+            onChange={(event) => {
+              setTimerMode(event.target.value as TimerMode);
+              setInputs({ ...emptyInputs });
+              setSession({ state: initialPractice(), rows: [] });
+            }}
+          >
+            {Object.entries(timerNames).map(([value, label]) => (
+              <option key={value} value={value}>
+                {label}
+              </option>
+            ))}
+          </select>
+        </label>
+      )}
       <fieldset>
         <legend>本次掃描的輸入</legend>
-        {fields[mode].map((field) => (
+        {fields[mode === 'ton' ? timerMode : mode].map((field) => (
           <label key={field}>
             <input
               type="checkbox"
@@ -85,7 +110,8 @@ export default function PlcPractice({ mode }: { mode: PracticeMode }) {
         </button>
       </div>
       <output className="plc-practice-status">
-        已執行 {session.state.scan} 掃描 ·{' '}
+        {mode === 'ton' && `${timerNames[timerMode]} · `}已執行{' '}
+        {session.state.scan} 掃描 ·{' '}
         {mode === 'sequence'
           ? `State=${session.state.phase} · Busy`
           : mode === 'latch'
@@ -118,11 +144,12 @@ export default function PlcPractice({ mode }: { mode: PracticeMode }) {
                     {state.scan} / {(state.scan - 1) * 100} ms
                   </td>
                   <td>
-                    {fields[mode]
+                    {fields[mode === 'ton' ? timerMode : mode]
                       .map((key) => `${labels[key]}=${Number(sample[key])}`)
                       .join('、')}
                   </td>
                   <td>
+                    {mode === 'ton' && `${timerNames[timerMode]} / `}
                     {mode === 'sequence'
                       ? `${state.phase} / Busy`
                       : mode === 'latch'

@@ -49,6 +49,8 @@ draft: false
 
 從這張表建立的清單如下。不同模型即使都從位址 0 開始，也不能合成一筆；同一模型中若手冊說有保留洞、區段限制或較小的最大數量，也要拆開。
 
+可下載[四筆離線案例 CSV](/examples/modbus-read-list-offline-example.csv)逐欄對照，或用[空白讀取清單 CSV](/examples/modbus-read-list-blank.csv)開始記錄自己的設備。案例的 `source_map_version=SYNTHETIC-v1`，`observed_response_pdu` 留空、`observed_status=NOT_RUN`；它只包含本文假設資料，**沒有實際設備的回覆**。填自己的表時，先抄手冊版本與原始列、資料模型及位址表示法，再計算 PDU 位址與預期長度。文件缺少位址基準或型別就保留空欄並向設備供應商確認，不要先試數字再反推文件。
+
 | PDU 請求 | 本例讀取 | 預期回覆 byte count | 驗收重點 |
 | --- | --- | ---: | --- |
 | `01 00 00 00 01` | 1 coil | 1 | 只讀第一個資料 byte 的 bit 0 |
@@ -103,6 +105,6 @@ Application Protocol V1.1b3 §7 說明 exception response 的功能碼形式與 
 
 ## 延伸閱讀
 
-- [Modbus 寫入功能 05、06、0F、10 的選用與回讀](/articles/modbus-write-05-06-0f-10-readback)
-- [Modbus 有回應但數值不對的排查方法](/articles/modbus-response-wrong-value)
-- [RS485 A/B 標示不一致 用差動極性建立端子對照](/articles/rs485-ab-dplus-polarity-verification)
+- [Modbus 讀取驗收表：離線解碼與設備實測分開](/articles/blackbox-observable)
+- [Modbus TCP MBAP 欄位與交易編號判讀](/articles/modbus-tcp-mbap-header-transaction-unit-length)
+- [RS485 無回應時先找出封包停在哪一段](/articles/rs485-no-response-troubleshooting)

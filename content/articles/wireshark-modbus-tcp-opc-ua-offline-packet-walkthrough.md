@@ -118,5 +118,5 @@ Modbus TCP ADU 先有 7 bytes 的 MBAP Header，後面才是 Modbus PDU。以下
 
 - [Modbus 位址換算](/tool/modbus-address/)
 - [暫存器與 Float32 轉換](/tool/register-converter/)
-- [Modbus 有回應但數值不對的排查方法](/articles/modbus-response-wrong-value/)
-- [TCP 連線成功但沒有應用回覆怎麼排查](/articles/tcp-connect-no-application-response/)
+- [Modbus 讀取驗收表：離線解碼與設備實測分開](/articles/blackbox-observable/)
+- [Modbus TCP MBAP 欄位與交易編號判讀](/articles/modbus-tcp-mbap-header-transaction-unit-length/)

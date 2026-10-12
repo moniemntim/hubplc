@@ -82,6 +82,6 @@ category: 感測器與量測
 ## 延伸閱讀
 
 - [感測器更換：先判斷能不能裝，再分開驗證通道與整支量測鏈](/articles/sensor-replacement-compatibility-calibration-check)
-- [屏蔽接地變更後的 50 Hz 干擾比較](/articles/shield-grounding-change-50hz-interference-comparison)
+- [量測雜訊時如何選濾波與判讀代價](/articles/noise-spectrum-sampling-filter-selection)
 
 作者／編輯：茂伯。回報 [ceo@hubplc.com](mailto:ceo@hubplc.com)，附原始序列、端接與掃描設定。

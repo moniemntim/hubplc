@@ -71,5 +71,5 @@ ZIP 保留 `public/examples/batch-statistics/` 的 [計算模組](/examples/batc
 
 ## 延伸閱讀
 
-- [PLC 型別轉換的小數 截斷與超範圍處理](/articles/plc-type-conversion-truncation-range)
-- [不良品重測怎麼記錄 PLC 流程避免重算產量](/articles/plc-retest-yield-accounting)
+- [浮點特殊值進入控制前如何檢查品質與範圍](/articles/float-nan-inf-control-gate)
+- [PLC 浮點數的容差比較](/articles/plc-floating-point-tolerance)

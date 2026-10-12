@@ -89,4 +89,4 @@ CODESYS 文件只支援其列出的 REAL/LREAL 轉換與 IEC `TRUNC_INT` 行為�
 ## 延伸閱讀
 
 - [PLC 浮點數的容差比較](/articles/plc-floating-point-tolerance)
-- [PLC 整數運算的順序 精度與中間溢位](/articles/plc-integer-order-precision-overflow)
+- [浮點特殊值進入控制前如何檢查品質與範圍](/articles/float-nan-inf-control-gate)

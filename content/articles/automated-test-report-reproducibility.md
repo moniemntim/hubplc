@@ -58,5 +58,5 @@ Modbus Application Protocol 規定讀取保持暫存器的功能碼為 `03`，�
 
 ## 延伸閱讀
 
-- [不穩定測試如何用重跑統計判斷是否為環境問題](/articles/rerun-flaky-test-environment-evidence)
-- [測試環境與正式環境差異如何列入風險說明](/articles/test-production-environment-risk)
+- [驗收紀錄如何區分通過、未測與不適用](/articles/acceptance-pass-untested-not-applicable)
+- [PLC Trace 如何保存單掃描事件證據](/articles/plc-trace-single-scan-flag-sampling)

@@ -93,6 +93,53 @@ function AnalogGuide() {
   );
 }
 
+function PlcScalingGuide() {
+  return (
+    <>
+      <h3>先找出模組真正交給程式的原始量程</h3>
+      <p>
+        查目標 PLC
+        類比模組的型號、通道模式與手冊，記下所選模式在量程兩端對應的原始數值，再查傳送器或工程設定的單位與上下限。0–4095、0–27648、0–32000
+        只是可快速填入的範例；不知道模組規格時，選「自訂」並暫停判讀，不能猜一個看似合理的預設值。
+      </p>
+      <h3>操作案例：原始值 13824 對應多少壓力？</h3>
+      <p>
+        假設已確認某通道把 0–27648 對應 0–100
+        kPa。這是離線假設案例，不代表任何指定模組。
+      </p>
+      <ol>
+        <li>方向選「原始值 → 工程值」，原始下限填 0、上限填 27648。</li>
+        <li>工程下限填 0、上限填 100，原始值填 13824。</li>
+        <li>
+          結果應為工程值 50、百分比 50%、狀態「範圍內」；單位依本例設定解讀為 50
+          kPa。
+        </li>
+      </ol>
+      <p>
+        核算：(13824 − 0) ÷ (27648 − 0) = 0.5；0 + 0.5 × (100 − 0) = 50
+        kPa。切到「工程值 → 原始值」並在同一輸入欄填 75，應得到原始值
+        20736、百分比 75%。切換方向後要重新填入對應數值。
+      </p>
+      <h3>結果不對時下一步</h3>
+      <ul>
+        <li>
+          狀態「超出範圍」只是線性外推，不代表現場量測仍有效；先核對通道診斷、原始碼與傳送器狀態。
+        </li>
+        <li>
+          結果差固定倍數時，確認工程單位、傳送器設定及 PLC
+          是否已縮放一次，避免重複換算。
+        </li>
+        <li>
+          空值、非數字或上限不大於下限會被拒絕；先回到手冊確認範圍，不要修改數字只為讓工具通過。
+        </li>
+        <li>
+          此工具不判定斷線、超量程電流、品質旗標或實體設備誤差；帶著原始值、模組設定與量測點閱讀下方對應教學。
+        </li>
+      </ul>
+    </>
+  );
+}
+
 function AddressGuide() {
   return (
     <>
@@ -379,6 +426,7 @@ function RegisterGuide() {
 
 const guides = {
   analog: AnalogGuide,
+  'plc-scaling': PlcScalingGuide,
   'modbus-address': AddressGuide,
   'modbus-crc': CrcGuide,
   'register-converter': RegisterGuide,
@@ -421,6 +469,63 @@ function EnglishGuide({ slug }: { slug: keyof typeof guides }) {
           <li>
             The tool rejects a maximum that is not greater than the minimum;
             consult the device manual for fault-current limits.
+          </li>
+        </ul>
+      </>
+    );
+  if (slug === 'plc-scaling')
+    return (
+      <>
+        <h3>Get the raw range from your actual module</h3>
+        <p>
+          Identify the PLC analog module model, channel mode and manual. Record
+          the raw counts at both ends of that mode, then confirm the
+          transmitter&apos;s engineering unit and limits. The 0–4095, 0–27648
+          and 0–32000 presets are examples, not specifications for every PLC. If
+          the range is unknown, confirm it before interpreting a result.
+        </p>
+        <h3>Worked case: raw count 13824</h3>
+        <p>
+          Assume a documented channel maps 0–27648 to 0–100 kPa. This is an
+          offline example, not a claim about a specific module.
+        </p>
+        <ol>
+          <li>
+            Select Raw value → Engineering value. Enter raw low 0, raw high
+            27648, engineering low 0 and high 100.
+          </li>
+          <li>
+            Enter raw value 13824. The result is 50 at 50%, shown as In range.
+            For this example, that means 50 kPa.
+          </li>
+          <li>
+            For the reverse check, select Engineering value → Raw value and
+            replace the input with 75. The result is raw count 20736 at 75%.
+          </li>
+        </ol>
+        <p>
+          The forward fraction is (13824 − 0) ÷ (27648 − 0) = 0.5, giving 0 +
+          0.5 × 100 = 50 kPa.
+        </p>
+        <h3>When the result looks wrong</h3>
+        <ul>
+          <li>
+            Out of range means linear extrapolation only. Check channel
+            diagnostics, raw data and transmitter state before treating it as a
+            measurement.
+          </li>
+          <li>
+            For a fixed-factor error, compare engineering units, transmitter
+            setup and any scaling already applied in the PLC.
+          </li>
+          <li>
+            Blank or invalid numbers and a high limit no greater than the low
+            limit are rejected. Verify the manual rather than changing a value
+            merely to pass validation.
+          </li>
+          <li>
+            This calculator does not detect open circuits, overrange current,
+            bad quality or physical measurement error.
           </li>
         </ul>
       </>
@@ -583,7 +688,7 @@ export default function PlcGuide({ slug }: { slug: ToolSlug }) {
             'These examples are offline calculations and format checks; they were not validated against a physical PLC, transmitter or RS485 device. Confirm ranges, data formats and communication settings in the manual for your exact model.',
           )}
         </p>
-        {slug !== 'analog' && (
+        {slug !== 'analog' && slug !== 'plc-scaling' && (
           <p>
             {tr('規格參考：', 'Specification reference: ')}
             <a href="https://www.modbus.org/modbus-specifications">

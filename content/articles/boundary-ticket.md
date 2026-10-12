@@ -32,5 +32,5 @@ category: 維護與故障排查
 
 ## 延伸閱讀
 
-- [測試失敗時如何保存封包 畫面與控制器診斷證據](/articles/test-failure-evidence-packets-screens-diagnostics)
-- [故障樹如何從可觀察症狀往可驗證原因展開](/articles/fault-tree-observable-evidence)
+- [Modbus 讀取驗收表如何區分離線解碼與設備實測](/articles/blackbox-observable)
+- [自動化測試報告如何附上版本、輸入與結果摘要](/articles/automated-test-report-reproducibility)

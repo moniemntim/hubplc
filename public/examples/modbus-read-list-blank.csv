@@ -1,0 +1,2 @@
+case_id,source_map_version,source_row,source_model,address_convention,pdu_start_dec,function_code,quantity,decode_type,word_order,scale,expected_byte_count,expected_request_pdu,observed_response_pdu,observed_status
+,,,,,,,,,,,,,,NOT_RUN

@@ -9,13 +9,24 @@ category: HMI 畫面與操作
 
 ## 先核對本例的顯示契約
 
-本例是 Node.js 24.19+ 的 HMI 顯示投影，不是 PLC、OPC UA 客戶端、控制命令或 watchdog runtime。它保存原始自訂 `quality`、connection，以及最近一次 Good 的 value；Bad 不會覆寫 last Good，也不會塞入假零。合法的 `0` 仍是有效數值，未知或尚無 Good 則是 `null`。
+上方可直接操作的瀏覽器教材只涵蓋本文固定案例；下方下載版是 Node.js 24.19+ 的完整 HMI 顯示投影。兩者都不是 PLC、OPC UA 客戶端、控制命令或 watchdog runtime。下載版保存原始自訂 `quality`、connection，以及最近一次 Good 的 value；Bad 不會覆寫 last Good，也不會塞入假零。合法的 `0` 仍是有效數值，未知或尚無 Good 則是 `null`。
 
 同一虛擬單調 clock 下，sample 固定帶 `epoch`、`seq`、`value`、`quality`、`acquiredAt`、`receivedAt`、`sourceChangedAt`。`acquiredAt` 是來源成功取得資料的契約時間，不能因 HMI 收到快取就自行假設；它必須不晚於 `receivedAt`，而 receivedAt 不晚於現在。sourceChangedAt 必須是 null 或同一 clock 中不晚於 acquiredAt。seq 是本例的接受序列，不是通訊協定的丟包、重排或補送處理。
 
 畫面分別顯示：last Good acquisition、lastGoodAge、last source change、最後原始 received time 與 current time。fresh 只計算 `current - lastGoodAcquiredAt < 2000ms`。sourceChangedAt 僅是描述欄位；沒有可信 source clock 時，本例不宣稱 source age。
 
-## 下載與品質 demo
+## 先在頁面重播，再下載完整 demo
+
+文章標題下方的「直接重播」可立即查看四個固定時點：Good 0（t=0）、Bad（t=500）、新的 Good 0（t=2500）與剛好過期（t=4500）。它逐欄列出原始品質、last Good acquired／received、保留值、趨勢點、年齡與畫面決策。這是受限的瀏覽器教材，依同一套 freshness、sequence 和 acquisition 規則投影，沒有連線到 PLC、OPC UA 或實際 HMI。
+
+接著可用「自己輸入一筆」從固定的 t=0 Good 0 開始。依序載入「合法零值」「Bad」「stale」「序列拒絕」，再只修改一欄並套用。確認：
+
+- Good 的 `0` 是可接受的量測值，趨勢點仍是 `0`。
+- Bad 保存 last Good 作診斷，但 trend 是缺口、畫面狀態是 `BAD_LAST_GOOD`。
+- t=4500 對 t=2500 的 last Good，年齡恰為 2000 ms，嚴格 `< 2000` 不成立，因此為 `STALE`。
+- `seq=1` 不是下一筆預期序列（預期為 2），結果為 `sample_rejected_seq`，原本的 Good 0 不會被覆寫。
+
+## 下載與品質 demo（選用）
 
 下載同資料夾的 [model.mjs](/examples/hmi-quality/model.mjs)、[fixtures.mjs](/examples/hmi-quality/fixtures.mjs)、[quality-demo.mjs](/examples/hmi-quality/quality-demo.mjs)、[connection-demo.mjs](/examples/hmi-quality/connection-demo.mjs)、[self-test.mjs](/examples/hmi-quality/self-test.mjs)、[practice.mjs](/examples/hmi-quality/practice.mjs)，執行：
 
@@ -43,4 +54,4 @@ Bad 可保留 last Good 供診斷，但畫面必須標成 `BAD_LAST_GOOD`，不�
 
 最多保存 64 個事件與 64 個趨勢點。滿時進入 `history_capacity` fault 並標 `known=false`，保留既有資料、停止 mutation，不以無限拒絕日誌掩蓋容量問題。
 
-既有 [通訊停止與資料品質 watchdog](/articles/communication-stop-data-quality-watchdog/) 是不同的 offline watchdog/runtime 模型，不能直接與本投影合併或推導彼此狀態。延伸閱讀 [HMI 斷線與資料暫停的顯示及驗收](/articles/hmi-disconnected-data-paused-display/)。執行 `node practice.mjs`：第一筆是合法零值（seq=1、取得時間100），第二筆是新值7（seq=2、取得時間101），預期 decision=sample_good、value=7、dataState=FRESH。只把第二筆的 `seq: 2` 改成 `seq: 1` 再執行，預期 decision=sample_rejected_seq，value仍為0、lastGoodAcquiredAt仍為100；不要改第一筆或呼叫時的now。
+既有 [通訊停止與資料品質 watchdog](/articles/communication-stop-data-quality-watchdog/) 是不同的 offline watchdog/runtime 模型，不能直接與本投影合併或推導彼此狀態。延伸閱讀 [HMI 斷線與資料暫停的顯示及驗收](/articles/hmi-disconnected-data-paused-display/)。若需要完整可重現輸出，再執行 `node practice.mjs`：第一筆是合法零值（seq=1、取得時間100），第二筆是新值7（seq=2、取得時間101），預期 decision=sample_good、value=7、dataState=FRESH。只把第二筆的 `seq: 2` 改成 `seq: 1` 再執行，預期 decision=sample_rejected_seq，value仍為0、lastGoodAcquiredAt仍為100；不要改第一筆或呼叫時的now。

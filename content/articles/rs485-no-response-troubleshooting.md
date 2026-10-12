@@ -94,7 +94,6 @@ RTU 訊框以至少 3.5 個字元時間的靜默區隔；同一訊框中字元�
 
 ## 延伸閱讀
 
-- [RS485 A/B 標示不一致 用差動極性建立端子對照](/articles/rs485-ab-dplus-polarity-verification)
-- [RS485 終端電阻為什麼只放在兩端](/articles/rs485-termination-resistor-two-ends)
+- [Modbus 讀取驗收表如何記錄已知封包與硬體未測項目](/articles/blackbox-observable)
 - [Modbus 0x01、0x02、0x03、0x04 怎麼選](/articles/modbus-function-code-01-04-read-list)
-- [Modbus 例外 05、06、0A、0B 怎麼排查](/articles/modbus-exception-05-06-0a-0b-troubleshooting)
+- [Modbus TCP MBAP 欄位與交易編號判讀](/articles/modbus-tcp-mbap-header-transaction-unit-length)

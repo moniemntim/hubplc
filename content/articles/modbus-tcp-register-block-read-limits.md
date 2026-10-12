@@ -107,4 +107,4 @@ node block-plan-demo.mjs
 ## 延伸閱讀
 
 - [Modbus TCP MBAP Header Transaction ID Unit ID 與 Length 欄位判讀](/articles/modbus-tcp-mbap-header-transaction-unit-length)
-- [Modbus TCP資料品質 Fresh Stale Bad如何定義與驗收](/articles/modbus-tcp-data-quality-fresh-stale-bad)
+- [通訊停止後如何核對心跳、資料年齡與重啟世代](/articles/communication-stop-data-quality-watchdog)

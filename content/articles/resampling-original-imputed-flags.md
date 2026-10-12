@@ -69,7 +69,7 @@ category: 資料記錄與報表
 ## 延伸閱讀
 
 - [工業報表取樣週期與彙總週期的定義](/articles/sampling-and-aggregation-periods)
-- [長時間無資料如何顯示停機還是資料源中斷](/articles/no-data-stopped-or-source-outage)
+- [HMI 斷線與資料暫停的顯示及驗收](/articles/hmi-disconnected-data-paused-display)
 - [尖峰值被過濾時如何保留原始資料可追溯](/articles/filtered-peaks-raw-data-traceability)
 
 作者／編輯：茂伯。回報 [ceo@hubplc.com](mailto:ceo@hubplc.com)，附原始時間、品質與格點規則。

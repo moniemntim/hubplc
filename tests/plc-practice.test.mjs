@@ -49,6 +49,60 @@ void test('TON early release never produces delayed output', () => {
     assert.equal(s.elapsed, 0);
   }
 });
+void test('TOF turns on with input, delays only after the observed falling edge, and cancels delay on input', () => {
+  let s = practiceScan('tof', initialPractice(), input({ input: true }));
+  assert.equal(s.q, true);
+  assert.equal(s.elapsed, 0);
+  s = practiceScan('tof', s, input({ input: false }));
+  assert.equal(s.q, true);
+  assert.equal(s.elapsed, 0);
+  for (let i = 1; i < 20; i++) {
+    s = practiceScan('tof', s, input({ input: false }));
+    assert.equal(s.q, true);
+  }
+  assert.equal(s.elapsed, 1900);
+  s = practiceScan('tof', s, input({ input: false }));
+  assert.equal(s.q, false);
+  assert.equal(s.elapsed, 2000);
+  s = practiceScan('tof', s, input({ input: true }));
+  assert.equal(s.q, true);
+  assert.equal(s.elapsed, 0);
+  s = practiceScan('tof', s, input({ input: false }));
+  for (let i = 0; i < 5; i++)
+    s = practiceScan('tof', s, input({ input: false }));
+  s = practiceScan('tof', s, input({ input: true }));
+  assert.equal(s.q, true);
+  assert.equal(s.elapsed, 0);
+});
+void test('TP completes its pulse after input falls and requires a new observed rising edge after held input', () => {
+  let s = practiceScan('tp', initialPractice(), input({ input: true }));
+  assert.equal(s.q, true);
+  assert.equal(s.elapsed, 0);
+  s = practiceScan('tp', s, input({ input: false }));
+  assert.equal(s.q, true);
+  for (let i = 1; i < 19; i++)
+    s = practiceScan('tp', s, input({ input: false }));
+  assert.equal(s.q, true);
+  assert.equal(s.elapsed, 1900);
+  s = practiceScan('tp', s, input({ input: false }));
+  assert.equal(s.q, false);
+  assert.equal(s.elapsed, 2000);
+  s = practiceScan('tp', s, input({ input: false }));
+  assert.equal(s.elapsed, 2000);
+
+  s = practiceScan('tp', initialPractice(), input({ input: true }));
+  for (let i = 1; i <= 20; i++)
+    s = practiceScan('tp', s, input({ input: true }));
+  assert.equal(s.q, false);
+  assert.equal(s.elapsed, 2000);
+  s = practiceScan('tp', s, input({ input: true }));
+  assert.equal(s.q, false);
+  s = practiceScan('tp', s, input({ input: false }));
+  assert.equal(s.q, false);
+  s = practiceScan('tp', s, input({ input: true }));
+  assert.equal(s.q, true);
+  assert.equal(s.elapsed, 0);
+});
 void test('sequence follows documented trace and only one transition per scan', () => {
   let s = initialPractice();
   for (const [patch, phase, et] of [

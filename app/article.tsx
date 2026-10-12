@@ -9,6 +9,7 @@ import SensorLesson from '@/components/sensor-lesson';
 import AliasLesson from '@/components/alias-lesson';
 import PowerLesson from '@/components/power-lesson';
 import IoPathLesson from '@/components/io-path-lesson';
+import HmiQualityLesson from '@/components/hmi-quality-lesson';
 import { practiceModes } from '@/lib/plc-practice';
 import ArticleReadingNav, {
   ArticleDirectoryLink,
@@ -136,6 +137,9 @@ export default function Article({
         ) : null}
         {article.slug && ioPathLessonMode ? (
           <IoPathLesson key={article.slug} mode={ioPathLessonMode} />
+        ) : null}
+        {article.slug === 'hmi-bad-quality-stale-value' ? (
+          <HmiQualityLesson />
         ) : null}
         <div className="article-reader__layout">
           <ArticleReadingNav toc={article.toc} />

@@ -64,6 +64,47 @@ try {
   await set('IN', false);
   await step();
   await expect(status).toContainText('Q=0 · ET=0 ms');
+
+  await page.getByLabel('計時器類型').selectOption('tof');
+  await expect(status).toContainText('TOF 延時斷開 · 已執行 0 掃描');
+  await set('IN', true);
+  await step();
+  await expect(status).toContainText('Q=1 · ET=0 ms');
+  await set('IN', false);
+  await step();
+  await expect(status).toContainText('Q=1 · ET=0 ms');
+  await step(10);
+  await expect(status).toContainText('Q=1 · ET=1000 ms');
+  await step(10);
+  await expect(status).toContainText('Q=0 · ET=2000 ms');
+
+  await page.getByLabel('計時器類型').selectOption('tp');
+  await set('IN', true);
+  await step();
+  await expect(status).toContainText('TP 脈衝');
+  await expect(status).toContainText('Q=1 · ET=0 ms');
+  await set('IN', false);
+  await step();
+  await expect(status).toContainText('Q=1 · ET=100 ms');
+  await step(10);
+  for (let i = 0; i < 9; i++) await step();
+  await expect(status).toContainText('Q=0 · ET=2000 ms');
+
+  await page.getByLabel('計時器類型').selectOption('tp');
+  await set('IN', true);
+  await step();
+  await step(10);
+  await step(10);
+  await expect(status).toContainText('Q=0 · ET=2000 ms');
+  await step();
+  await expect(status).toContainText('Q=0');
+  await set('IN', false);
+  await step();
+  await set('IN', true);
+  await step();
+  await expect(status).toContainText('Q=1 · ET=0 ms');
+
+  await page.getByLabel('計時器類型').selectOption('ton');
   for (let i = 0; i < 10; i++) await step(10);
   await expect(page.locator('.plc-practice tbody tr')).toHaveCount(100);
   assert.ok(
@@ -105,7 +146,7 @@ try {
   );
   await noJs.close();
   console.log(
-    'PASS three interactive lessons: latch, TON, timeout priority/reset, history bound, mobile overflow, no-JS article.',
+    'PASS three interactive lessons: latch, TON/TOF/TP timer traces, timeout priority/reset, history bound, mobile overflow, no-JS article.',
   );
 } finally {
   await browser.close();

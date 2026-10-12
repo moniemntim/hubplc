@@ -1,0 +1,5 @@
+case_id,source_map_version,source_row,source_model,address_convention,pdu_start_dec,function_code,quantity,decode_type,word_order,scale,expected_byte_count,expected_request_pdu,observed_response_pdu,observed_status
+C01,SYNTHETIC-v1,output-enable,Coils,zero-based PDU,0,0x01,1,bit,NA,1,1,01 00 00 00 01,,NOT_RUN
+C02,SYNTHETIC-v1,run-and-alarm,Discrete Inputs,zero-based PDU,0,0x02,2,bit,NA,1,1,02 00 00 00 02,,NOT_RUN
+C03,SYNTHETIC-v1,temperature-and-pressure,Input Registers,zero-based PDU,0,0x04,3,INT16 plus UINT32,high word first,0.1 C plus 0.01 kPa,6,04 00 00 00 03,,NOT_RUN
+C04,SYNTHETIC-v1,speed-total-and-mode,Holding Registers,zero-based PDU,0,0x03,4,UINT16 plus UINT32 plus UINT16,high word first,per map,8,03 00 00 00 04,,NOT_RUN

@@ -101,5 +101,5 @@ candidate = fixture version v2
 
 ## 延伸閱讀
 
-- [HMI字型與圖片遺失的尋找與封裝](/articles/hmi-resource-packaging)
+- [HMI 載入時如何區分 partial、empty、error 與 cancel](/articles/hmi-loading-partial-empty-error-cancel)
 - [HMI設定值變更的確認與讀回](/articles/hmi-setting-value-change-confirm-readback)

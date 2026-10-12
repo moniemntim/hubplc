@@ -10,6 +10,35 @@ import {
   LocalizedText,
 } from '@/components/tool-language';
 import { categoryEnglish, toolEnglish } from '@/lib/tools/tool-i18n';
+const relatedLessons: Partial<
+  Record<ToolSlug, { slug: string; zh: string; en: string }>
+> = {
+  analog: {
+    slug: 'plc-analog-scaling-pressure-temperature-level',
+    zh: 'PLC 類比換算：從訊號、原始值到來源品質',
+    en: 'PLC analog scaling and source quality (Chinese article)',
+  },
+  'plc-scaling': {
+    slug: 'plc-analog-scaling-pressure-temperature-level',
+    zh: 'PLC 類比換算：原始值、工程量與異常判讀',
+    en: 'PLC raw-count scaling and diagnostics (Chinese article)',
+  },
+  'modbus-address': {
+    slug: 'modbus-function-code-01-04-read-list',
+    zh: '從設備資料表建立可驗收的 Modbus 讀取清單',
+    en: 'Build a Modbus read list from a device map (Chinese article)',
+  },
+  'modbus-crc': {
+    slug: 'rs485-no-response-troubleshooting',
+    zh: 'RS485 沒有回應時，先確認封包停在哪一段',
+    en: 'Trace an RS485 request with no response (Chinese article)',
+  },
+  'register-converter': {
+    slug: 'blackbox-observable',
+    zh: '用 FC03 離線驗收表核對位址與 Float32',
+    en: 'Check FC03 address and Float32 with an offline record (Chinese article)',
+  },
+};
 export function toolMetadata(slug: ToolSlug): Metadata {
   const tool = getTool(slug);
   return {
@@ -27,6 +56,7 @@ export default function ToolPage({
 }) {
   const tool = getTool(slug);
   const english = toolEnglish[slug];
+  const relatedLesson = relatedLessons[slug];
   return (
     <>
       <main className="shell tool-page">
@@ -133,6 +163,21 @@ export default function ToolPage({
           </p>
         </aside>
         <PlcGuide slug={slug} />
+        {relatedLesson ? (
+          <aside className="tool-example" aria-label="相關操作教學">
+            <strong>
+              <LocalizedText
+                zh="接著核對實際資料"
+                en="Continue with a worked lesson"
+              />
+            </strong>
+            <p>
+              <Link href={'/articles/' + relatedLesson.slug}>
+                <LocalizedText zh={relatedLesson.zh} en={relatedLesson.en} />
+              </Link>
+            </p>
+          </aside>
+        ) : null}
         {tool.category !== '編碼' && <AdSense />}
         <div className="tool-page-end">
           <Link href="/tool">

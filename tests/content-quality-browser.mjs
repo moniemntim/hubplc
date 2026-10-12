@@ -60,6 +60,11 @@ try {
   await choose('轉換到其他訊號', '0–10 V');
   await result('目標訊號', '5 V');
   await open('/tool/plc-scaling');
+  await result('工程值', '50');
+  await choose('方向', '工程值 → 原始值');
+  await page.getByLabel('工程值', { exact: true }).fill('75');
+  await result('原始值', '20,736');
+  await choose('方向', '原始值 → 工程值');
   await choose('原始值預設', '自訂');
   await page.getByLabel('原始上限', { exact: true }).fill('4000');
   await page.getByLabel('工程上限', { exact: true }).fill('10');
@@ -73,6 +78,14 @@ try {
     await page.getByLabel('原始值', { exact: true }).fill(input);
     await result('工程值', expected);
   }
+  await expect(page.locator('.plc-guide')).toContainText(
+    '先找出模組真正交給程式的原始量程',
+  );
+  await choose('方向', '工程值 → 原始值');
+  await page.getByLabel('工程值', { exact: true }).fill('5');
+  await result('原始值', '2,000');
+  await page.getByLabel('工程值', { exact: true }).fill('12');
+  await result('狀態', '超出範圍');
   await open('/tool/modbus-address');
   await page.getByLabel('參考編號', { exact: true }).fill('40010');
   await result('零起算位址', '9');
@@ -94,6 +107,19 @@ try {
     .getByLabel('暫存器 HEX（以空白分隔）', { exact: true })
     .fill('FFF6');
   await result('數值', '-10');
+  for (const [tool, article] of [
+    ['analog', 'plc-analog-scaling-pressure-temperature-level'],
+    ['plc-scaling', 'plc-analog-scaling-pressure-temperature-level'],
+    ['modbus-address', 'modbus-function-code-01-04-read-list'],
+    ['modbus-crc', 'rs485-no-response-troubleshooting'],
+    ['register-converter', 'blackbox-observable'],
+  ]) {
+    await open(`/tool/${tool}`);
+    await expect(page.locator('.plc-guide')).toBeVisible();
+    const href = `/articles/${article}`;
+    await expect(page.locator(`main a[href="${href}"]`)).toBeVisible();
+    assert.equal((await page.request.get(base + href)).status(), 200, href);
+  }
   await open('/about');
   await expect(page.locator('#report')).toBeVisible();
   const aboutArticleLinks = await page
@@ -110,7 +136,7 @@ try {
   assert.match(await template.text(), /預期結果及依據/);
   assert.deepEqual(errors, []);
   console.log(
-    'PASS home links, analog endpoints/overrange, Modbus address, Float32 byte order, report template; no page errors.',
+    'PASS home links, analog endpoints/overrange, PLC scaling guide/reverse/bounds, five related lessons, Modbus address, Float32 byte order, report template; no page errors.',
   );
 } finally {
   await browser.close();

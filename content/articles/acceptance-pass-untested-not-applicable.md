@@ -73,5 +73,5 @@ NASA 的 Requirements Verification Matrix 說明需求、驗證方式和結果�
 
 ## 延伸閱讀
 
-- [整合驗收未完成時如何清楚標示限制與後續證據](/articles/integration-acceptance-incomplete-evidence)
+- [跨系統問題單如何記錄缺失證據與下一步](/articles/boundary-ticket)
 - [自動化測試報告如何附上版本 輸入與結果摘要](/articles/automated-test-report-reproducibility)

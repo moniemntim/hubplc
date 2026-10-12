@@ -28,5 +28,5 @@ category: 資料記錄與報表
 
 ## 延伸閱讀
 
-- [工業 CSV 交付包如何用 manifest 與查詢快照保存可重現條件](/articles/industrial-csv-package-manifest)
+- [工業報表如何記錄取樣與彙總週期](/articles/sampling-and-aggregation-periods)
 - [HMI 報表篩選與時間窗如何避免重複或漏資料](/articles/hmi-report-filter-time-window-alarm-state)

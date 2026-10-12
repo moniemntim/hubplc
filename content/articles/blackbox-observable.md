@@ -30,5 +30,5 @@ category: 維護與故障排查
 
 ## 延伸閱讀
 
-- [設備倍率與 Float32 判讀](/articles/device-scaling-float32)
+- [Modbus 讀取清單如何確認功能碼、位址與資料長度](/articles/modbus-function-code-01-04-read-list)
 - [Modbus TCP 十六進位訊框怎麼手動拆解 MBAP FC03 與例外回覆](/articles/wireshark-modbus-tcp-opc-ua-offline-packet-walkthrough)

@@ -62,7 +62,7 @@ InfluxDB 的官方文件以獨立來源與目的儲存區、在時間窗內彙�
 ## 延伸閱讀
 
 - [等間隔重採樣如何標示原始點與填補點](/articles/resampling-original-imputed-flags)
-- [工業資料的單位欄位怎麼設計才能避免報表誤讀](/articles/industrial-data-unit-field-design)
-- [工業事件資料如何保留來源與處理狀態](/articles/industrial-event-lineage-processing-status)
+- [流量報表證據索引：用附件重算平均值](/articles/industrial-evidence-index)
+- [HMI 趨勢時間範圍、取樣與彙總怎麼避免誤讀](/articles/hmi-trend-time-range-sampling-aggregation)
 
 作者／編輯：茂伯。回報 [ceo@hubplc.com](mailto:ceo@hubplc.com)，附原始時間列、窗口規則與報表結果。

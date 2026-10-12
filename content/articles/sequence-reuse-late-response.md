@@ -69,5 +69,5 @@ node demo.mjs
 
 ## 延伸閱讀
 
-- [CRC驗證失敗時如何保存原始封包供追查](/articles/crc-failure-raw-frame-evidence)
+- [Modbus TCP MBAP 欄位與交易編號判讀](/articles/modbus-tcp-mbap-header-transaction-unit-length)
 - [非同步亂序回覆如何用待回覆表配對](/articles/async-out-of-order-pending-map)

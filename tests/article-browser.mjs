@@ -234,6 +234,7 @@ try {
       : route.continue(),
   );
   await errorPage.goto(base + '/articles');
+  await errorPage.waitForLoadState('networkidle');
   await errorPage.getByRole('searchbox').fill('Modbus');
   await expect(errorPage.locator('.library-search-notice')).toBeVisible();
   assert.ok((await errorPage.locator('.library-article').count()) > 0);

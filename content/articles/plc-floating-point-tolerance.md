@@ -90,4 +90,4 @@ close         = ABS(a - b) <= limit
 ## 延伸閱讀
 
 - [工程數值的四捨五入 負數邊界與顯示格式](/articles/plc-rounding-negative-display-fixed-point)
-- [遲滯判斷怎麼寫 讓門檻附近的狀態不要反覆切換](/articles/plc-hysteresis-two-threshold-control)
+- [壓力警報如何用整數門檻、連續樣本與鎖存復歸](/articles/repeated-alarm-clear-condition)

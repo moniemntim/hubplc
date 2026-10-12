@@ -1,4 +1,4 @@
-export type PracticeMode = 'latch' | 'ton' | 'sequence';
+export type PracticeMode = 'latch' | 'ton' | 'tof' | 'tp' | 'sequence';
 export type PracticeInputs = {
   start: boolean;
   stop: boolean;
@@ -11,6 +11,7 @@ export type PracticeState = {
   scan: number;
   q: boolean;
   previousStart: boolean;
+  previousInput: boolean;
   phase: 'WAIT' | 'RUN' | 'DONE' | 'FAULT';
   since: number | null;
   elapsed: number;
@@ -34,6 +35,7 @@ export function initialPractice(): PracticeState {
     scan: 0,
     q: false,
     previousStart: false,
+    previousInput: false,
     phase: 'WAIT',
     since: null,
     elapsed: 0,
@@ -49,7 +51,12 @@ export function practiceScan(
   input: PracticeInputs,
 ): PracticeState {
   const now = before.scan * 100;
-  const next = { ...before, scan: before.scan + 1, previousStart: input.start };
+  const next = {
+    ...before,
+    scan: before.scan + 1,
+    previousStart: input.start,
+    previousInput: input.input,
+  };
   if (mode === 'latch') {
     next.q = !input.stop && (input.start || before.q);
     next.reason = input.stop
@@ -68,6 +75,50 @@ export function practiceScan(
       : next.q
         ? '已連續成立 2000 ms'
         : '持續計時';
+  } else if (mode === 'tof') {
+    if (input.input) {
+      next.since = null;
+      next.elapsed = 0;
+      next.q = true;
+      next.reason = 'IN=1，Q 立即為 1';
+    } else if (before.previousInput) {
+      next.since = now;
+      next.elapsed = 0;
+      next.q = true;
+      next.reason = 'IN 下降，開始延時斷開';
+    } else if (before.since === null) {
+      next.elapsed = 0;
+      next.q = false;
+      next.reason = 'IN=0，等待下一次上升';
+    } else {
+      next.since = before.since;
+      next.elapsed = Math.min(2000, now - before.since);
+      next.q = next.elapsed < 2000;
+      next.reason = next.q ? '延時斷開中' : '延時已滿，Q 關閉';
+    }
+  } else if (mode === 'tp') {
+    const rising = input.input && !before.previousInput;
+    if (rising && !before.q) {
+      next.since = now;
+      next.elapsed = 0;
+      next.q = true;
+      next.reason = 'IN 上升緣，開始脈衝';
+    } else if (before.since === null) {
+      next.elapsed = 0;
+      next.q = false;
+      next.reason = input.input
+        ? 'IN 持續為 1，等待先回到 0'
+        : '等待下一次上升緣';
+    } else {
+      next.since = before.since;
+      next.elapsed = Math.min(2000, now - before.since);
+      next.q = next.elapsed < 2000;
+      next.reason = next.q
+        ? '脈衝進行中'
+        : input.input
+          ? '脈衝已滿；IN 須先回到 0 才能重觸發'
+          : '脈衝已滿';
+    }
   } else {
     const rising = input.start && !before.previousStart;
     next.reason = '維持狀態';

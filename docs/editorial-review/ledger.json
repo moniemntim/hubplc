@@ -219,11 +219,11 @@
     },
     "plc-rising-falling-edge-button-event": {
       "status": "reviewed-local",
-      "batch": 3,
-      "reviewDate": "2026-09-28",
-      "sha256": "4740ff08ea3abe3c763fc2373b43b18a0134b988b5a43d76e875239d5a3df573",
-      "change": "12+4掃描可執行邊沿案例；首次高電平與fault-reset先釋放政策分開。",
-      "verification": "tests/plc-edges.test.mjs：長按/釋放/重按/計數溢位；demo CSV核對",
+      "batch": 35,
+      "reviewDate": "2026-10-12",
+      "sha256": "989540bf8e0b5ecd1cd341c6d31d3a3de89c0a8264a0d71ffe1bc51b4effd780",
+      "change": "加上長按、放開與再按的頁內逐掃描邊沿及命令計數練習。",
+      "verification": "tests/plc-scan-edge-lesson.test.mjs; corresponding browser lesson and layout checks; downloadable model comparison; no hardware test",
       "hardwareVerified": false
     },
     "plc-state-entry-once": {
@@ -273,11 +273,11 @@
     },
     "plc-scan-cycle-io-refresh": {
       "status": "reviewed-local",
-      "batch": 4,
-      "reviewDate": "2026-09-28",
-      "sha256": "3d10e5cb2a6cabd29ece26b1eb5b1d3cb56d72f90234d2e6d6e4b6d94609cf5d",
-      "change": "五次掃描正向／交換順序及短脈衝可下載重播；刪除重複 FAQ，明分模型與 QCPU 文件背景。",
-      "verification": "tests/plc-scan.test.mjs; scan-demo; standalone-batch4; layout-batch4",
+      "batch": 35,
+      "reviewDate": "2026-10-12",
+      "sha256": "846deffacb7030a0e66f28a1df88398e8ad9369bc0b28bf7e50feb1c1fb8702e",
+      "change": "加上逐掃描賦值順序與短脈衝頁內重播，保留離線模型供進階核對。",
+      "verification": "tests/plc-scan-edge-lesson.test.mjs; corresponding browser lesson and layout checks; downloadable model comparison; no hardware test",
       "hardwareVerified": false
     },
     "plc-duplicate-coil-multiple-assignment-debug": {
@@ -534,11 +534,11 @@
     },
     "hmi-numeric-range-step-validation": {
       "status": "reviewed-local",
-      "batch": 11,
-      "reviewDate": "2026-09-28",
-      "sha256": "27822acb36fdbee8dd9bc2fa51affd1422419d1c6d2281ada63ab6da982388e7",
-      "change": "BigInt精確文字範圍/步距再轉wire；100.04範圍拒絕、25.35步距拒絕、raw四欄完整shape獨立驗證、失敗保留值。",
-      "verification": "tests/numeric-input.test.mjs; standalone-batch11; exact stdout; TC39 BigInt and Node test docs",
+      "batch": 35,
+      "reviewDate": "2026-10-12",
+      "sha256": "8382dee7299d85cd906b136d61576711ccab432fa076501f3c31e35d4b39419c",
+      "change": "加上範圍、步距、接受與 raw 字串分流的頁內檢查，保留完整離線契約。",
+      "verification": "tests/hmi-value-lessons.test.mjs; corresponding browser lesson and layout checks; downloadable model comparison; no hardware test",
       "hardwareVerified": false
     },
     "multi-source-cas-arbitration": {
@@ -732,11 +732,11 @@
     },
     "hmi-setting-value-change-confirm-readback": {
       "status": "reviewed-local",
-      "batch": 16,
-      "reviewDate": "2026-09-28",
-      "sha256": "f1a805abcb7a4c7ab9b16eca5c88c88825357e323dad7682232765b4a50a2992",
-      "change": "共用operation-log讀取器，關聯operation/target/revision的讀回與修改練習。",
-      "verification": "tests/setting-readback.test.mjs; standalone-batch16.json; practice-batch16.mjs",
+      "batch": 35,
+      "reviewDate": "2026-10-12",
+      "sha256": "cd98ef545d5c3d19696b713461c9f73fad387e8db2e74db9e94f76a3ae942d53",
+      "change": "加上 accepted、錯誤操作、版本衝突與完整讀回的頁內證據比較。",
+      "verification": "tests/hmi-value-lessons.test.mjs; corresponding browser lesson and layout checks; downloadable model comparison; no hardware test",
       "hardwareVerified": false
     },
     "hmi-operating-procedure-ack-clear": {

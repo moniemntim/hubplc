@@ -13,7 +13,11 @@ category: HMI 畫面與操作
 
 本篇輸入合成事件鏈並解讀其結果；它不發出設定值變更，也不宣稱任何輸入步距。數字文字、範圍與步距請使用既有的 [HMI 數值範圍與步距驗證](/articles/hmi-numeric-range-step-validation/)；多人編輯的版本比較請使用 [HMI 並行編輯與版本衝突](/articles/hmi-concurrent-edit-last-writer-version/)。
 
-## 下載與固定證據輸出
+## 先在頁面比對讀回證據
+
+標題下方可切換四個固定分支：只有 `accepted`、同為 55 但 `operationId=OP-OTHER`、明確版本衝突，以及完整讀回匹配。前兩者分別是 `accepted` 與 `unknown`，不能說已套用；`VERSION_CONFLICT observed=43 expected=42` 才是 rejected 的明確證據；只有 OP-884、EQ-A、TEMP_SP、55、42→43 全部匹配才是 `applied`。這是合成事件教材，不會送出設定值或連接任何設備。
+
+## 下載與固定證據輸出（進階選用）
 
 將以下檔案放在同一個資料夾，以 Node.js 24.19+ 執行：
 

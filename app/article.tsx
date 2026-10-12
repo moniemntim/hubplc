@@ -15,6 +15,14 @@ import HmiTrendWindowLesson from '@/components/hmi-trend-window-lesson';
 import PlcNumericLesson from '@/components/plc-numeric-lesson';
 import HmiControlLesson from '@/components/hmi-control-lesson';
 import AlarmLifecycleLesson from '@/components/alarm-lifecycle-lesson';
+import {
+  NumericRangeLesson,
+  SettingReadbackLesson,
+} from '@/components/hmi-value-lessons';
+import {
+  PlcEdgeLesson,
+  PlcScanLesson,
+} from '@/components/plc-scan-edge-lesson';
 import { practiceModes } from '@/lib/plc-practice';
 import ArticleReadingNav, {
   ArticleDirectoryLink,
@@ -178,6 +186,18 @@ export default function Article({
         ) : null}
         {article.slug === 'hmi-operating-procedure-ack-clear' ? (
           <AlarmLifecycleLesson mode="procedure" />
+        ) : null}
+        {article.slug === 'plc-scan-cycle-io-refresh' ? (
+          <PlcScanLesson />
+        ) : null}
+        {article.slug === 'plc-rising-falling-edge-button-event' ? (
+          <PlcEdgeLesson />
+        ) : null}
+        {article.slug === 'hmi-numeric-range-step-validation' ? (
+          <NumericRangeLesson />
+        ) : null}
+        {article.slug === 'hmi-setting-value-change-confirm-readback' ? (
+          <SettingReadbackLesson />
         ) : null}
         <div className="article-reader__layout">
           <ArticleReadingNav toc={article.toc} />

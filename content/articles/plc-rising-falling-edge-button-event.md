@@ -1,6 +1,6 @@
 ---
 title: PLC 上升緣與下降緣：用逐掃描模型確認長按只送一次命令
-description: 下載並執行離線邊沿模型，從明確初值看 12 次掃描的長按、放開與重新按下，分清一次命令和持續電平。
+description: 直接在頁面逐掃描取樣長按、放開與重新按下，分清一次命令和持續電平；進階可下載完整離線模型。
 date: 2026-09-28
 author: 茂伯
 draft: false
@@ -12,8 +12,9 @@ draft: false
 `CommandCount` 加一；按住時不能再加，放開只留下 `Fall` 記錄。它沒有馬達、
 HMI、實體輸入或 PLC 輸出，純粹把每次取樣後的記憶和結果列出來。
 
-把以下兩個檔案放在同一資料夾後，以 Node.js 22 以上執行。這是本站的 JavaScript
-**離線模型**，不是原廠 PLC 模擬器，也沒有在任何 PLC 或安全迴路上執行。
+先用標題下方的頁內練習載入 12 次掃描。它會顯示每次 Button、更新前 Previous、Rise、Fall 和 CommandCount；第 2 次上升緣讓計數變 1，持續按住不再增加，第 12 次放開只產生 Fall。接著按「本輪取樣 1」可重播下一次按下，計數應變 2；再按一次 1 不應增加，必須取樣 0 後再次按 1 才會變 3。也可從初值重設後自訂每輪 0／1。
+
+這是本站的 JavaScript **離線模型**，不是原廠 PLC 模擬器，也沒有在任何 PLC 或安全迴路上執行。需要完整 CSV 與修改程式時，再把以下兩個檔案放在同一資料夾，以 Node.js 22 以上執行：
 
 - [edge-model.mjs：逐掃描邊沿邏輯](/examples/plc-edges/edge-model.mjs)
 - [demo.mjs：12 次掃描的可重現案例](/examples/plc-edges/demo.mjs)

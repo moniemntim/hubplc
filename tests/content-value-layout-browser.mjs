@@ -4,6 +4,13 @@ import { mockAdsense } from './adsense-mock.mjs';
 
 const base = process.env.TEST_BASE_URL ?? 'http://127.0.0.1:4173';
 const routes = [
+  ['articles/plc-scan-cycle-io-refresh', '#plc-scan-practice'],
+  ['articles/plc-rising-falling-edge-button-event', '#plc-edge-practice'],
+  ['articles/hmi-numeric-range-step-validation', '#hmi-numeric-value-practice'],
+  [
+    'articles/hmi-setting-value-change-confirm-readback',
+    '#hmi-readback-proof-practice',
+  ],
   ['articles/hmi-disconnected-data-paused-display', '#hmi-connection-practice'],
   [
     'articles/hmi-trend-time-range-sampling-aggregation',

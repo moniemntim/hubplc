@@ -1,6 +1,6 @@
 ---
 title: HMI數值輸入：精確檢查範圍與步距，再轉成整數
-description: 下載 Node.js 範例，重播 0..100.0°C、0.1 步距、wire 0..1000 的文字與 raw envelope 雙入口驗證。
+description: 直接在頁面比較 100.04 範圍拒絕、25.35 步距拒絕、25.30 接受與 raw 字串拒絕，再下載完整離線模型。
 date: 2026-09-21
 author: 茂伯
 draft: false
@@ -17,7 +17,11 @@ category: HMI 畫面與操作
 
 raw envelope 是另一個入口，不能把文字結果當作它的驗證。它只能有 `schema`、`unit`、`scale`、`raw` 四個 **own enumerable** 欄位：array、缺欄位、extra 欄位、inherited 欄位或 non-enumerable 額外欄位都回 `RAW_ENVELOPE_REJECTED`。通過 shape 後，`raw` 還必須是 JavaScript `number` 的 safe integer，並逐項比對 schema、unit、scale 和 raw 範圍。實際 server 必須獨立重做同一組檢查；本下載程式只模擬這條 server boundary，沒有啟動 server。
 
-## 下載、執行與固定輸出
+## 先在頁面分開檢查 RANGE、STEP 與 raw 型別
+
+標題下方可直接載入 `100.04`、`25.35`、`25.30` 和 `7`。以工程文字檢查時，`100.04` 是 `RANGE_REJECTED`、`25.35` 是 `STEP_REJECTED`，而 `25.30` 接受並把 `lastWire` 從 250 更新為 253。再以 raw 字串送出 `7`，會是 `RAW_TYPE_REJECTED`，並保留 253；頁面不會把它當工程文字重新解析。這是合成瀏覽器教材，不含登入、授權、server 或設備寫入。
+
+## 下載、執行與固定輸出（進階選用）
 
 下載同一資料夾的[模型](/examples/numeric-input/numeric-input-model.mjs)、[fixture](/examples/numeric-input/fixture.json)、[demo](/examples/numeric-input/demo.mjs)、[獨立自測](/examples/numeric-input/self-test.mjs)和[README](/examples/numeric-input/README.md)。本機以 Node.js 24.19.0 核對；使用該版本或更新版本。
 

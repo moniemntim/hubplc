@@ -80,6 +80,10 @@ RTU 訊框以至少 3.5 個字元時間的靜默區隔；同一訊框中字元�
 
 ## 用一份紀錄完成交接與驗收
 
+可下載[空白交易紀錄 CSV](/examples/rs485-transaction-log-template.csv)，每次測試新增一列。`observation_source` 寫明是主站紀錄、串列擷取還是僅有燈號；看不到線上 bytes 時，`request_hex`／`response_hex` 留空，不要從軟體設定畫面猜填。`result` 先用 `NOT_RUN`，執行後才改成 `NO_TX`、`NO_REPLY`、`REPLY_REJECTED`、`EXCEPTION` 或 `VALID_REPLY`。這些代碼只是記錄分類，不會自動證明根因。
+
+例如主站設定顯示 FC03、位址 0，但現場只有 TX 燈閃而沒有原始封包擷取時，只能把 `observation_source` 寫為 `TX_LED_ONLY`，`request_hex` 留空，並把下一步寫成「擷取主站實際送出的 bytes」。不能把上面的合成請求直接當成這次觀察值。
+
 | 每次測試必留的資料                          | 為什麼需要                         |
 | ------------------------------------------- | ---------------------------------- |
 | 型號、port／通道、二線或四線模式、接線版本  | 別把另一通道或另一變型的設定混進來 |

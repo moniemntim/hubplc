@@ -12,6 +12,7 @@ import {
   Notice,
   CopyButton,
 } from '../_components/controls';
+import { UnitConversionGuide } from '../_components/task-guide';
 const dedicatedPages = [
   ['length', '長度'],
   ['temperature', '溫度'],
@@ -142,82 +143,52 @@ export default function UnitConverter({ fixedGroup }: { fixedGroup?: string }) {
       );
   }
   return (
-    <ToolPanel
-      notes={
-        <>
-          <p>
-            {tr(
-              '一般單位：先乘以來源單位的 SI 係數，再除以目標單位係數。溫度另外計算零點偏移。',
-              'For general units, multiply by the source unit SI factor, then divide by the target unit factor. Temperature offsets are calculated separately.',
-            )}
-          </p>
-          {group.note && (
-            <p>{tr(group.note, englishGroupNotes[group.id] ?? group.note)}</p>
-          )}
-        </>
-      }
-      result={
-        result.data !== undefined ? (
+    <>
+      <ToolPanel
+        notes={
           <>
-            <ResultRows
-              rows={[
-                {
-                  label: tr('換算結果', 'Conversion result'),
-                  value: formatNumber(result.data),
-                  unit: tr(target.label, englishUnitLabel(target.label)),
-                },
-              ]}
-            />
-            <CopyButton
-              text={`${formatNumber(result.data)} ${tr(target.label, englishUnitLabel(target.label))}`}
-            />
-          </>
-        ) : (
-          <Notice>{result.error}</Notice>
-        )
-      }
-    >
-      {!fixedGroup && (
-        <>
-          <Choice
-            label={tr('物理量分類', 'Physical quantity category')}
-            value={groupId}
-            onChange={changeGroup}
-            options={unitGroups.map((item) => ({
-              value: item.id,
-              label: tr(
-                item.label,
-                (
-                  {
-                    長度: 'Length',
-                    溫度: 'Temperature',
-                    質量: 'Mass',
-                    面積: 'Area',
-                    體積: 'Volume',
-                    壓力: 'Pressure',
-                    功率: 'Power',
-                    時間: 'Time',
-                    角度: 'Angle',
-                    電容量: 'Capacitance',
-                    速度: 'Speed',
-                    儲存容量: 'Storage capacity',
-                    流量: 'Flow',
-                  } as Record<string, string>
-                )[item.label] ?? item.label,
-              ),
-            }))}
-          />
-          <nav
-            className="crypto-related"
-            aria-label={tr(
-              '常用單位換算捷徑',
-              'Common unit-conversion shortcuts',
+            <p>
+              {tr(
+                '一般單位：先乘以來源單位的 SI 係數，再除以目標單位係數。溫度另外計算零點偏移。',
+                'For general units, multiply by the source unit SI factor, then divide by the target unit factor. Temperature offsets are calculated separately.',
+              )}
+            </p>
+            {group.note && (
+              <p>{tr(group.note, englishGroupNotes[group.id] ?? group.note)}</p>
             )}
-          >
-            {dedicatedPages.map(([id, label]) => (
-              <Link key={id} href={`/tool/${id}-converter`}>
-                {tr(
-                  label,
+          </>
+        }
+        result={
+          result.data !== undefined ? (
+            <>
+              <ResultRows
+                rows={[
+                  {
+                    label: tr('換算結果', 'Conversion result'),
+                    value: formatNumber(result.data),
+                    unit: tr(target.label, englishUnitLabel(target.label)),
+                  },
+                ]}
+              />
+              <CopyButton
+                text={`${formatNumber(result.data)} ${tr(target.label, englishUnitLabel(target.label))}`}
+              />
+            </>
+          ) : (
+            <Notice>{result.error}</Notice>
+          )
+        }
+      >
+        {!fixedGroup && (
+          <>
+            <Choice
+              label={tr('物理量分類', 'Physical quantity category')}
+              value={groupId}
+              onChange={changeGroup}
+              options={unitGroups.map((item) => ({
+                value: item.id,
+                label: tr(
+                  item.label,
                   (
                     {
                       長度: 'Length',
@@ -232,57 +203,90 @@ export default function UnitConverter({ fixedGroup }: { fixedGroup?: string }) {
                       電容量: 'Capacitance',
                       速度: 'Speed',
                       儲存容量: 'Storage capacity',
+                      流量: 'Flow',
                     } as Record<string, string>
-                  )[label],
-                )}
-              </Link>
-            ))}
-          </nav>
-        </>
-      )}
-      <NumberField
-        label={tr('輸入數值', 'Input value')}
-        value={raw}
-        onChange={setRaw}
-      />
-      <div className="fields-grid">
-        <Choice
-          label={tr('來源單位', 'Source unit')}
-          value={fromId}
-          onChange={changeFrom}
-          options={group.units.map((item) => ({
-            value: item.id,
-            label: tr(item.label, englishUnitLabel(item.label)),
-          }))}
+                  )[item.label] ?? item.label,
+                ),
+              }))}
+            />
+            <nav
+              className="crypto-related"
+              aria-label={tr(
+                '常用單位換算捷徑',
+                'Common unit-conversion shortcuts',
+              )}
+            >
+              {dedicatedPages.map(([id, label]) => (
+                <Link key={id} href={`/tool/${id}-converter`}>
+                  {tr(
+                    label,
+                    (
+                      {
+                        長度: 'Length',
+                        溫度: 'Temperature',
+                        質量: 'Mass',
+                        面積: 'Area',
+                        體積: 'Volume',
+                        壓力: 'Pressure',
+                        功率: 'Power',
+                        時間: 'Time',
+                        角度: 'Angle',
+                        電容量: 'Capacitance',
+                        速度: 'Speed',
+                        儲存容量: 'Storage capacity',
+                      } as Record<string, string>
+                    )[label],
+                  )}
+                </Link>
+              ))}
+            </nav>
+          </>
+        )}
+        <NumberField
+          label={tr('輸入數值', 'Input value')}
+          value={raw}
+          onChange={setRaw}
         />
-        <Choice
-          label={tr('目標單位', 'Target unit')}
-          value={toId}
-          onChange={setToId}
-          options={compatible.map((item) => ({
-            value: item.id,
-            label: tr(item.label, englishUnitLabel(item.label)),
-          }))}
-        />
-      </div>
-      <button
-        className="action secondary"
-        onClick={() => {
-          setFromId(target.id);
-          setToId(from.id);
-          if (result.data !== undefined) setRaw(String(result.data));
-        }}
-      >
-        ⇄ {tr('交換方向', 'Swap direction')}
-      </button>
-      <div className="action-row">
-        <button className="action secondary" onClick={() => setRaw('')}>
-          {tr('清空', 'Clear')}
+        <div className="fields-grid">
+          <Choice
+            label={tr('來源單位', 'Source unit')}
+            value={fromId}
+            onChange={changeFrom}
+            options={group.units.map((item) => ({
+              value: item.id,
+              label: tr(item.label, englishUnitLabel(item.label)),
+            }))}
+          />
+          <Choice
+            label={tr('目標單位', 'Target unit')}
+            value={toId}
+            onChange={setToId}
+            options={compatible.map((item) => ({
+              value: item.id,
+              label: tr(item.label, englishUnitLabel(item.label)),
+            }))}
+          />
+        </div>
+        <button
+          className="action secondary"
+          onClick={() => {
+            setFromId(target.id);
+            setToId(from.id);
+            if (result.data !== undefined) setRaw(String(result.data));
+          }}
+        >
+          ⇄ {tr('交換方向', 'Swap direction')}
         </button>
-        <button className="action secondary" onClick={loadExample}>
-          {tr('載入範例', 'Load example')}
-        </button>
-      </div>
-    </ToolPanel>
+        <div className="action-row">
+          <button className="action secondary" onClick={() => setRaw('')}>
+            {tr('清空', 'Clear')}
+          </button>
+          <button className="action secondary" onClick={loadExample}>
+            {tr('載入範例', 'Load example')}
+          </button>
+        </div>
+      </ToolPanel>
+      {fixedGroup && <UnitConversionGuide group={fixedGroup} />}
+    </>
   );
 }

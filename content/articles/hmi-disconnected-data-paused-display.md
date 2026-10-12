@@ -13,7 +13,13 @@ category: HMI 畫面與操作
 
 這是畫面資料契約，沒有 PLC 控制、重送命令、實際連線偵測或 watchdog。不同 offline 模型的 runtime 與失效規則不能直接拼接；特別是站內 [通訊停止與資料品質 watchdog](/articles/communication-stop-data-quality-watchdog/) 不是本頁的依賴。
 
-## 下載與連線時間線
+## 先在頁面重播連線時間線
+
+標題下方的「直接重播」不需下載 Node，即可按順序查看 t=100 新 Good、t=500 斷線、t=1000 重連 pending、兩種舊資料拒絕，以及 t=1003 的新取得資料。每個時點都列出 connection、epoch、pending、保留的 last Good、acquired／received、趨勢點與畫面狀態。
+
+接著用「自己檢查重連後的一筆資料」輸入 epoch 和 acquiredAt。固定前提是 t=1000 建立 epoch 2：epoch 仍是 1 會得到 `sample_rejected_epoch`；epoch=2 但 acquiredAt=1000 仍是舊 cache，得到 `sample_rejected_old_cache`；只有 acquiredAt 晚於 1000 才回到 `FRESH`。這是有限的瀏覽器教材，沒有連線到 PLC、OPC UA 或實際 HMI。
+
+## 下載與連線時間線（選用）
 
 下載 [model.mjs](/examples/hmi-quality/model.mjs)、[fixtures.mjs](/examples/hmi-quality/fixtures.mjs)、[connection-demo.mjs](/examples/hmi-quality/connection-demo.mjs)、[quality-demo.mjs](/examples/hmi-quality/quality-demo.mjs)、[self-test.mjs](/examples/hmi-quality/self-test.mjs)、[practice.mjs](/examples/hmi-quality/practice.mjs)，在 Node.js 24.19+ 執行：
 

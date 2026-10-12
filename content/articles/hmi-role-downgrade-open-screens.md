@@ -1,6 +1,6 @@
 ---
 title: 權限降級後的舊畫面與排隊命令：用版本 12→13→14 重播
-description: 使用共用離線授權模型，讓一個畫面更新、另一個保留舊權限，再檢查直接提交、排隊命令與恢復權限後的新操作。
+description: 在頁面重播降權後的舊畫面與排隊命令，檢查權限恢復前後為何仍不應自動執行舊請求。
 date: 2026-09-21
 author: 茂伯
 draft: false
@@ -11,15 +11,7 @@ category: HMI 畫面與操作
 
 這裡沿用[操作權限矩陣](/articles/hmi-operation-permission-execution-authorization)的模型，不再重複角色表與數值驗證。重點是：頁面開啟時可寫，不代表送出或執行時仍可寫；權限恢復也不代表人員仍想送出之前的草稿。
 
-Node.js 24.19+ 離線案例把「畫面」表示為兩份讀取快照，沒有真正瀏覽器分頁、身份平台或 PLC。S、T 是同一使用者的兩個固定測試工作階段；它們不是登入權杖。
-
-下載 [model.mjs](/examples/authorization/model.mjs)、[matrix-demo.mjs](/examples/authorization/matrix-demo.mjs)、[downgrade-demo.mjs](/examples/authorization/downgrade-demo.mjs)、[practice.mjs](/examples/authorization/practice.mjs)、[downgrade-practice.mjs](/examples/authorization/downgrade-practice.mjs)、[self-test.mjs](/examples/authorization/self-test.mjs)、[README.md](/examples/authorization/README.md)，放在同一資料夾：
-
-```powershell
-node downgrade-demo.mjs
-node self-test.mjs
-node downgrade-practice.mjs
-```
+先操作標題下方的頁內練習，切換「派送前恢復權限」，對照政策版本 13／14、舊畫面顯示、原佇列派送結果與寫入次數。這是合成快照，沒有真正的身份平台或 PLC；S、T 是同一使用者的固定測試工作階段，不是登入權杖。
 
 ## 按操作順序核對，別只看最後值
 
@@ -52,7 +44,15 @@ writes沒有歸零：降權之前的OP0已合法套用，不會因為後來降�
 
 `canSubmit` 只代表讀取時的角色可提交，不是設備許可或永遠有效的通行證。本例刻意讓T不刷新，仍由模擬執行端拒絕；沒有把按鈕變灰當成保護完成的證據。
 
-## 修改練習：降權後很快恢復，舊佇列可以復活嗎？
+## 進階：下載模型，修改恢復時間
+
+若要重播完整操作順序及稽核紀錄，下載 [model.mjs](/examples/authorization/model.mjs)、[matrix-demo.mjs](/examples/authorization/matrix-demo.mjs)、[downgrade-demo.mjs](/examples/authorization/downgrade-demo.mjs)、[practice.mjs](/examples/authorization/practice.mjs)、[downgrade-practice.mjs](/examples/authorization/downgrade-practice.mjs)、[self-test.mjs](/examples/authorization/self-test.mjs)、[README.md](/examples/authorization/README.md) 到同一資料夾，使用 Node.js 24.19+ 執行：
+
+```powershell
+node downgrade-demo.mjs
+node self-test.mjs
+node downgrade-practice.mjs
+```
 
 `downgrade-practice.mjs` 的 `restoreBeforeDispatch` 預設為 `false`，先執行一次：
 

@@ -111,11 +111,11 @@
     },
     "rs485-no-response-troubleshooting": {
       "status": "reviewed-local",
-      "batch": 33,
+      "batch": 34,
       "reviewDate": "2026-10-12",
-      "sha256": "3481e967340393985e9b150679766dc5a135da0586a38815fe0290ac05051128",
-      "change": "依 Modbus Serial Line V1.02 §2.5.1.1 更正字元間靜默間隔及不完整訊框處置。 本批將下架文章的延伸閱讀改為相關公開教材。",
-      "verification": "Modbus serial V1.02 文件核對；layout-browser; tests/article-public-links.test.mjs; tests/article-browser.mjs (117 public articles)",
+      "sha256": "2b90e6773c2ccd8be65ca5f3c8e6978518ebc7a87d1cb9d46512cfca6b830fc4",
+      "change": "新增空白交易紀錄 CSV，區分實際封包擷取與只有 TX 燈的觀察。",
+      "verification": "tests/numeric-lesson.test.mjs; tests/hmi-control-lesson.test.mjs; tests/plc-numeric-browser.mjs; tests/hmi-control-lesson-browser.mjs; tests/hmi-core-lessons-browser.mjs; tests/alarm-lifecycle-lesson-browser.mjs; tests/content-quality-browser.mjs",
       "hardwareVerified": false
     },
     "wireshark-modbus-tcp-opc-ua-offline-packet-walkthrough": {
@@ -237,20 +237,20 @@
     },
     "plc-floating-point-tolerance": {
       "status": "reviewed-local",
-      "batch": 33,
+      "batch": 34,
       "reviewDate": "2026-10-12",
-      "sha256": "454e05bbbf17788329bf7cc2b67856a941f1a14a7546871ceacacb8b69b38e9f",
-      "change": "加入可下載單檔及實際十進位邊界反例；工程窗口與相對誤差規則分開。 本批將下架文章的延伸閱讀改為相關公開教材。",
-      "verification": "tests/plc-numeric.test.mjs；Windows CLI JSON、25.05差值反例、等號與無效/溢位; tests/article-public-links.test.mjs; tests/article-browser.mjs (117 public articles)",
+      "sha256": "48cc3ab8d8c63fa75241e1ec19c396a20a165d5f0bc8e5787b1745b596309410",
+      "change": "新增絕對／相對容差頁內比較，涵蓋 binary64 邊界與錯誤輸入；Node 改進階。",
+      "verification": "tests/numeric-lesson.test.mjs; tests/hmi-control-lesson.test.mjs; tests/plc-numeric-browser.mjs; tests/hmi-control-lesson-browser.mjs; tests/hmi-core-lessons-browser.mjs; tests/alarm-lifecycle-lesson-browser.mjs; tests/content-quality-browser.mjs",
       "hardwareVerified": false
     },
     "plc-rounding-negative-display-fixed-point": {
       "status": "reviewed-local",
-      "batch": 33,
+      "batch": 34,
       "reviewDate": "2026-10-12",
-      "sha256": "b1d1a63f78235aeadb6be21fdc816bfe276881a5605995eae93a077793c378cf",
-      "change": "固定Raw100→Rounded10、中點遠離零，原值/取整/顯示分開。 本批將下架文章的延伸閱讀改為相關公開教材。",
-      "verification": "tests/plc-numeric.test.mjs；正負中點/範圍/負零/CLI；CODESYS文件限定引用; tests/article-public-links.test.mjs; tests/article-browser.mjs (117 public articles)",
+      "sha256": "dc488a71d40d2854af13f71b4f793bbca001c3b7b99eb5ef77d1d850461a6d62",
+      "change": "新增 Raw100 負數中點的頁內取整與拒絕練習；Node 改進階。",
+      "verification": "tests/numeric-lesson.test.mjs; tests/hmi-control-lesson.test.mjs; tests/plc-numeric-browser.mjs; tests/hmi-control-lesson-browser.mjs; tests/hmi-core-lessons-browser.mjs; tests/alarm-lifecycle-lesson-browser.mjs; tests/content-quality-browser.mjs",
       "hardwareVerified": false
     },
     "modbus-tcp-mbap-header-transaction-unit-length": {
@@ -606,20 +606,20 @@
     },
     "alarm-acknowledge-clear-occurrence": {
       "status": "reviewed-local",
-      "batch": 13,
-      "reviewDate": "2026-09-28",
-      "sha256": "f323d3fdc199ea7bdd99ce9844f1319e1671c8df3e6015fa2c6b05a407d14ca3",
-      "change": "共用有界lifecycle模型，四態、occurrence隔離、revision、內容綁定Ack重播及可追溯欄位。",
-      "verification": "tests/alarm-lifecycle.test.mjs; downloaded lifecycle demo/self-test/practice",
+      "batch": 34,
+      "reviewDate": "2026-10-12",
+      "sha256": "917556cb4fcac25cb3fbeaca7c7253f06e206f4d83005243bee4afe5e87c0b62",
+      "change": "新增來源 Active 與 Ack 分離的頁內生命週期練習；Clear 未 Ack 仍保留 occurrence。",
+      "verification": "tests/numeric-lesson.test.mjs; tests/hmi-control-lesson.test.mjs; tests/plc-numeric-browser.mjs; tests/hmi-control-lesson-browser.mjs; tests/hmi-core-lessons-browser.mjs; tests/alarm-lifecycle-lesson-browser.mjs; tests/content-quality-browser.mjs",
       "hardwareVerified": false
     },
     "hmi-alarm-ack-clear-reset-workflow": {
       "status": "reviewed-local",
-      "batch": 13,
-      "reviewDate": "2026-09-28",
-      "sha256": "d13b02b8f5ddbdc6dab3cab7e754a2b22adea032047450dad32ece0a839ce373",
-      "change": "沿用lifecycle，獨立示範Open/InProgress/Resolved、Clear/Ack/角色/證據/版本門檻；不含Reset。",
-      "verification": "tests/alarm-lifecycle.test.mjs; downloaded workflow-demo/workflow-practice; independent review",
+      "batch": 34,
+      "reviewDate": "2026-10-12",
+      "sha256": "34465292be4360c03c0d8d92bd9f86ca0c31dfdd41f5c38b81fd864bd49f359f",
+      "change": "新增結案條件頁內演練，核對 Ack、Clear、InProgress、版本、主管及證據。",
+      "verification": "tests/numeric-lesson.test.mjs; tests/hmi-control-lesson.test.mjs; tests/plc-numeric-browser.mjs; tests/hmi-control-lesson-browser.mjs; tests/hmi-core-lessons-browser.mjs; tests/alarm-lifecycle-lesson-browser.mjs; tests/content-quality-browser.mjs",
       "hardwareVerified": false
     },
     "repeated-alarm-clear-condition": {
@@ -705,11 +705,11 @@
     },
     "hmi-disconnected-data-paused-display": {
       "status": "reviewed-local",
-      "batch": 15,
-      "reviewDate": "2026-09-28",
-      "sha256": "19e57dc70d902b2ca21a5c42b2145e4e8c36610b8d392cfda6b7b8736efb7d9f",
-      "change": "同投影的epoch重連pending、新取得、拒絕無接受metadata副作用。",
-      "verification": "tests/hmi-quality.test.mjs; standalone-batch15.json",
+      "batch": 34,
+      "reviewDate": "2026-10-12",
+      "sha256": "1ef4f7878beb2fc9dc057d930c380f614a3544c37077947c14ae5622c934e159",
+      "change": "新增重連 epoch、pending、舊快取與新資料的頁內練習；Node 路徑改進階。",
+      "verification": "tests/numeric-lesson.test.mjs; tests/hmi-control-lesson.test.mjs; tests/plc-numeric-browser.mjs; tests/hmi-control-lesson-browser.mjs; tests/hmi-core-lessons-browser.mjs; tests/alarm-lifecycle-lesson-browser.mjs; tests/content-quality-browser.mjs",
       "hardwareVerified": false
     },
     "hmi-button-command-feedback": {
@@ -741,11 +741,11 @@
     },
     "hmi-operating-procedure-ack-clear": {
       "status": "reviewed-local",
-      "batch": 16,
-      "reviewDate": "2026-09-28",
-      "sha256": "82a17414c17c4146bb3eb94b1713a7ce26093561e8ad8a800f882e69fc556543",
-      "change": "共用alarm-lifecycle八步演練與未填人工紀錄表，失敗停留判定。",
-      "verification": "procedure-demo.mjs:8 assertions; standalone-batch16.json; practice-batch16.mjs",
+      "batch": 34,
+      "reviewDate": "2026-10-12",
+      "sha256": "f6bed39589e227ebec562e413515a43763d048fd7f1ad056718c01d0c7ba5981",
+      "change": "新增可操作的警報 SOP 步驟與拒絕判讀；下載紀錄表改選用。",
+      "verification": "tests/numeric-lesson.test.mjs; tests/hmi-control-lesson.test.mjs; tests/plc-numeric-browser.mjs; tests/hmi-control-lesson-browser.mjs; tests/hmi-core-lessons-browser.mjs; tests/alarm-lifecycle-lesson-browser.mjs; tests/content-quality-browser.mjs",
       "hardwareVerified": false
     },
     "hmi-loading-partial-empty-error-cancel": {
@@ -777,11 +777,11 @@
     },
     "hmi-trend-time-range-sampling-aggregation": {
       "status": "reviewed-local",
-      "batch": 17,
-      "reviewDate": "2026-09-28",
-      "sha256": "c72bec061cf50e03655a6ef1aee4f7631c1d67b8599e2bbf1accc604b53fdc6a",
-      "change": "半開分段duration加權、BigInt累積、缺資料coverage與已知平均分開，下載可改練習。",
-      "verification": "tests/trend-window.test.mjs:5; standalone-batch17.mjs; practice-batch17.mjs",
+      "batch": 34,
+      "reviewDate": "2026-10-12",
+      "sha256": "dd2396e3de35e76151dbcfc1d79ab0b2fecc3e65ad19da19254c95e591243f31",
+      "change": "新增 Good／Bad 時間覆蓋率與完整窗口平均的頁內練習；Node 路徑改進階。",
+      "verification": "tests/numeric-lesson.test.mjs; tests/hmi-control-lesson.test.mjs; tests/plc-numeric-browser.mjs; tests/hmi-control-lesson-browser.mjs; tests/hmi-core-lessons-browser.mjs; tests/alarm-lifecycle-lesson-browser.mjs; tests/content-quality-browser.mjs",
       "hardwareVerified": false
     },
     "hmi-trend-cursor-event-marker-time-alignment": {
@@ -822,38 +822,38 @@
     },
     "hmi-operation-permission-execution-authorization": {
       "status": "reviewed-local",
-      "batch": 19,
-      "reviewDate": "2026-09-28",
-      "sha256": "b90715464784dfdb581a70e4a78e1d5b4acc5205b04c4ecea66a6e7c07c6f700",
-      "change": "共用授權模型的角色/設備/範圍/版本/期限矩陣，明確受理與記憶體套用差異。",
-      "verification": "tests/authorization.test.mjs; standalone-batch19.mjs; 409 unit tests; local and production verification recorded separately",
+      "batch": 34,
+      "reviewDate": "2026-10-12",
+      "sha256": "b5720c9279e1f7e89da68fe1bdd7c92e8fdc9f6676d2e5db28edeffc80317c4e",
+      "change": "新增角色、數值、設備、版本與期限的頁內授權練習；完整 Node 模型改進階。",
+      "verification": "tests/numeric-lesson.test.mjs; tests/hmi-control-lesson.test.mjs; tests/plc-numeric-browser.mjs; tests/hmi-control-lesson-browser.mjs; tests/hmi-core-lessons-browser.mjs; tests/alarm-lifecycle-lesson-browser.mjs; tests/content-quality-browser.mjs",
       "hardwareVerified": false
     },
     "hmi-role-downgrade-open-screens": {
       "status": "reviewed-local",
-      "batch": 19,
-      "reviewDate": "2026-09-28",
-      "sha256": "0b1fc8c46616957dc7a23b252d4ecf857b280d7d38be2ac0c465d452c5896ff7",
-      "change": "兩份快照重播舊畫面、12→13→14政策、佇列再授權與禁止自動補送。",
-      "verification": "tests/authorization.test.mjs; standalone-batch19.mjs; 409 unit tests; local and production verification recorded separately",
+      "batch": 34,
+      "reviewDate": "2026-10-12",
+      "sha256": "e79fdfa1e631f7689fedde3ced51ecfd9a1aa7b50a6c9e11ada8b714471108d4",
+      "change": "新增降權與恢復後原佇列仍被拒絕的頁內練習；完整 Node 模型改進階。",
+      "verification": "tests/numeric-lesson.test.mjs; tests/hmi-control-lesson.test.mjs; tests/plc-numeric-browser.mjs; tests/hmi-control-lesson-browser.mjs; tests/hmi-core-lessons-browser.mjs; tests/alarm-lifecycle-lesson-browser.mjs; tests/content-quality-browser.mjs",
       "hardwareVerified": false
     },
     "hmi-manual-auto-mode-control-ownership": {
       "status": "reviewed-local",
-      "batch": 20,
-      "reviewDate": "2026-09-28",
-      "sha256": "69e966f8dc33c2f90253e4cde9cdbdc83b24cc0dad961516ffea6837937dee38",
-      "change": "共用離線模式狀態機：請求/確認/owner分離，停止與待命條件、原ID查詢、返回Auto與5秒邊界。",
-      "verification": "tests/mode-ownership.test.mjs; standalone-batch20.mjs; 410 unit tests; local/production release evidence separately",
+      "batch": 34,
+      "reviewDate": "2026-10-12",
+      "sha256": "497780fe5bd55302c08fccd71b680bea62adb32fce78999f1bdf68f05b2276bc",
+      "change": "新增 Manual 請求 5 秒邊界及互鎖拒絕的頁內練習；完整 Node 模型改進階。",
+      "verification": "tests/numeric-lesson.test.mjs; tests/hmi-control-lesson.test.mjs; tests/plc-numeric-browser.mjs; tests/hmi-control-lesson-browser.mjs; tests/hmi-core-lessons-browser.mjs; tests/alarm-lifecycle-lesson-browser.mjs; tests/content-quality-browser.mjs",
       "hardwareVerified": false
     },
     "hmi-maintenance-mode-screen-permissions": {
       "status": "reviewed-local",
-      "batch": 20,
-      "reviewDate": "2026-09-28",
-      "sha256": "b71d5aae52169dab337f605fb332d1b8b32240f422eacf1483dcdd97cc9cfc11",
-      "change": "共用模式模型的Maintenance進出，工作單未驗證狀態另列，測試停止/復原核對等待與退出Manual。",
-      "verification": "tests/mode-ownership.test.mjs; standalone-batch20.mjs; 410 unit tests; local/production release evidence separately",
+      "batch": 34,
+      "reviewDate": "2026-10-12",
+      "sha256": "b9c8672c27681f5db11f767f5d787c8d85faaa893062c2c86967ed0611d8561c",
+      "change": "新增退出 Maintenance 時測試停止及復原核對的頁內練習；完整 Node 模型改進階。",
+      "verification": "tests/numeric-lesson.test.mjs; tests/hmi-control-lesson.test.mjs; tests/plc-numeric-browser.mjs; tests/hmi-control-lesson-browser.mjs; tests/hmi-core-lessons-browser.mjs; tests/alarm-lifecycle-lesson-browser.mjs; tests/content-quality-browser.mjs",
       "hardwareVerified": false
     },
     "hmi-session-timeout-unsent-draft": {

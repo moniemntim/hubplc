@@ -1,22 +1,14 @@
 ---
 title: HMI 操作權限案例：同一筆 95°C 設定，誰可以提交？
-description: 下載離線授權案例，比對四種角色、設備範圍、數值上限、設定版本與工作階段到期，核對排隊、套用和讀回的差別。
+description: 直接在頁面比對角色、設備範圍、數值上限、版本與工作階段期限，再用進階離線模型檢查排隊與套用的差別。
 date: 2026-09-17
 author: 茂伯
 draft: false
 ---
 
-## 先跑同一入口的允許與拒絕案例
+## 先在頁面核對允許、拒絕與實際寫入
 
-本篇用 Node.js 24.19+ 的記憶體模型，讓四種角色提交相同的設定值，再核對結果與寫入次數。沒有網路、登入驗證或 PLC 連線；`S` 等工作階段代碼都是固定測試資料，不能作為正式授權系統。
-
-下載 [model.mjs](/examples/authorization/model.mjs)、[matrix-demo.mjs](/examples/authorization/matrix-demo.mjs)、[downgrade-demo.mjs](/examples/authorization/downgrade-demo.mjs)、[practice.mjs](/examples/authorization/practice.mjs)、[downgrade-practice.mjs](/examples/authorization/downgrade-practice.mjs)、[self-test.mjs](/examples/authorization/self-test.mjs)、[README.md](/examples/authorization/README.md)，放在同一資料夾。開啟該資料夾的終端機：
-
-```powershell
-node matrix-demo.mjs
-node self-test.mjs
-node practice.mjs
-```
+先操作標題下方的頁內練習：選 Operator 或 Supervisor，將同一筆 95°C 提交到 A，再把設定值改為 150、目標改為 B、版本改為 2，核對提交決定、模擬派送與 writes。這是固定條件的記憶體教材，沒有網路、登入驗證或 PLC 連線；`S` 等工作階段代碼只是測試資料，不能作為正式授權系統。
 
 ## 固定規則：角色不能取代數值與設備檢查
 
@@ -48,7 +40,15 @@ matrix: PASS
 
 Supervisor 提交150仍被範圍檢查拒絕；改用設備B被資源範圍檢查拒絕。設定已改為revision=2之後，仍帶舊revision=1的請求得到 `REVISION_CONFLICT`。工作階段有效期限為虛擬時間600000ms，在等於期限時就拒絕；這是絕對期限，讀取不會延長它。
 
-## 改四個參數，逐項驗證
+## 進階：下載完整授權模型，改四個參數
+
+若要核對操作 ID、佇列紀錄、政策異動與完整自動測試，下載 [model.mjs](/examples/authorization/model.mjs)、[matrix-demo.mjs](/examples/authorization/matrix-demo.mjs)、[downgrade-demo.mjs](/examples/authorization/downgrade-demo.mjs)、[practice.mjs](/examples/authorization/practice.mjs)、[downgrade-practice.mjs](/examples/authorization/downgrade-practice.mjs)、[self-test.mjs](/examples/authorization/self-test.mjs)、[README.md](/examples/authorization/README.md) 到同一資料夾，使用 Node.js 24.19+ 執行：
+
+```powershell
+node matrix-demo.mjs
+node self-test.mjs
+node practice.mjs
+```
 
 開啟 `practice.mjs`，修改頂端 `session`、`value`、`target`、`at`。每次執行都建立新模型，因此沒有跨次保留設定。
 

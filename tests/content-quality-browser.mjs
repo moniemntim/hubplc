@@ -107,6 +107,16 @@ try {
     .getByLabel('暫存器 HEX（以空白分隔）', { exact: true })
     .fill('FFF6');
   await result('數值', '-10');
+  await open('/tool/base-converter');
+  await choose('輸入進位', '十六進位');
+  await choose('位元數', '8 bit');
+  await page.getByLabel('數值（不含 0x／0b 前綴）').fill('FF');
+  await result('十進位', '255');
+  await choose('解讀方式', '有號二補數');
+  await result('十進位', '-1');
+  await expect(page.locator('.plc-guide')).toContainText(
+    '操作案例：8-bit 的 FF 是多少？',
+  );
   for (const [tool, article] of [
     ['analog', 'plc-analog-scaling-pressure-temperature-level'],
     ['plc-scaling', 'plc-analog-scaling-pressure-temperature-level'],
@@ -134,9 +144,18 @@ try {
   );
   assert.equal(template.status(), 200);
   assert.match(await template.text(), /預期結果及依據/);
+  await open('/articles/rs485-no-response-troubleshooting');
+  await expect(
+    page.locator('a[href="/examples/rs485-transaction-log-template.csv"]'),
+  ).toBeVisible();
+  const rs485Template = await page.request.get(
+    base + '/examples/rs485-transaction-log-template.csv',
+  );
+  assert.equal(rs485Template.status(), 200);
+  assert.match(await rs485Template.text(), /observation_source/);
   assert.deepEqual(errors, []);
   console.log(
-    'PASS home links, analog endpoints/overrange, PLC scaling guide/reverse/bounds, five related lessons, Modbus address, Float32 byte order, report template; no page errors.',
+    'PASS home links, analog endpoints/overrange, PLC scaling/base guide and results, five related lessons, Modbus address, Float32 byte order, RS485 and report templates; no page errors.',
   );
 } finally {
   await browser.close();

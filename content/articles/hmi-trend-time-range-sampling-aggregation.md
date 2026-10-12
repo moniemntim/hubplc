@@ -11,7 +11,9 @@ category: HMI 畫面與操作
 
 本篇是 Node.js 24.19+ 的自訂離線 trend contract。每筆 segment 是半開 `[startMs,endMs)`，有 `valueTenths` 和 Good/Bad quality；segments 必須嚴格排序、不可重疊。window 沒有任何 segment 覆蓋的時間是 missing，不會以 0、前一筆或有效資料平均補齊。
 
-下載 [model.mjs](/examples/trend-window/model.mjs)、[fixtures.mjs](/examples/trend-window/fixtures.mjs)、[demo.mjs](/examples/trend-window/demo.mjs)、[self-test.mjs](/examples/trend-window/self-test.mjs)、[practice.mjs](/examples/trend-window/practice.mjs)、[README.md](/examples/trend-window/README.md)，放在同一資料夾後執行：
+標題下方可直接調整 75°C 尖峰秒數與品質，算出 coverage、已知資料平均和完整窗口平均。載入「1 分鐘 Good 尖峰」時，10 分鐘平均應是 61.5°C 且 coverage=1；載入「30 秒 Bad 缺口」時，coverage=0.95、完整窗口平均必須顯示未提供，而已知資料平均為 60°C。這是固定合成資料的瀏覽器試算，沒有讀取 HMI、歷史資料庫或 PLC。
+
+若需要完整可重現的 Node 輸出，再下載 [model.mjs](/examples/trend-window/model.mjs)、[fixtures.mjs](/examples/trend-window/fixtures.mjs)、[demo.mjs](/examples/trend-window/demo.mjs)、[self-test.mjs](/examples/trend-window/self-test.mjs)、[practice.mjs](/examples/trend-window/practice.mjs)、[README.md](/examples/trend-window/README.md)，放在同一資料夾後執行：
 
 ```powershell
 node demo.mjs

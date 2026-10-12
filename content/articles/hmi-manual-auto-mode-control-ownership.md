@@ -1,6 +1,6 @@
 ---
 title: HMI 手自動切換案例：請求、確認模式與控制權分開看
-description: 下載固定模式狀態機，重播等待停止、回覆遺失、原ID查詢、控制權拒絕與返回Auto，核對5秒邊界及資料品質。
+description: 先在頁面操作 Manual 請求的 5 秒邊界與互鎖拒絕，再用進階離線模型重播回覆遺失、控制權與返回 Auto。
 date: 2026-09-17
 author: 茂伯
 draft: false
@@ -8,25 +8,7 @@ draft: false
 
 ## 開始前：本例沒有馬達或輸出點
 
-本篇用 Node.js 24.19+ 執行同步的離線狀態機。它只有模式、控制權、請求紀錄與合成回饋，不連 PLC、不發運動命令，也沒有真正登入。HMI-A、HMI-B 是固定來源名稱，不能當成身份驗證。
-
-下載以下七個檔案到同一資料夾：
-
-- [model.mjs](/examples/mode-ownership/model.mjs)
-- [mode-demo.mjs](/examples/mode-ownership/mode-demo.mjs)
-- [maintenance-demo.mjs](/examples/mode-ownership/maintenance-demo.mjs)
-- [practice.mjs](/examples/mode-ownership/practice.mjs)
-- [maintenance-practice.mjs](/examples/mode-ownership/maintenance-practice.mjs)
-- [self-test.mjs](/examples/mode-ownership/self-test.mjs)
-- [README.md](/examples/mode-ownership/README.md)
-
-在該資料夾開啟終端機，執行：
-
-```powershell
-node mode-demo.mjs
-node self-test.mjs
-node practice.mjs
-```
+先用標題下方的頁內練習重播 4999 ms、5000 ms 與互鎖拒絕，核對請求狀態、確認模式、控制權與 revision。它只處理固定合成條件，不連 PLC、不發運動命令，也沒有真正登入。HMI-A、HMI-B 是固定來源名稱，不能當成身份驗證。完整的請求紀錄與回覆遺失分支可在後面的進階離線模型檢查。
 
 ## 第一輪：要求 Manual，為什麼畫面仍是 Auto？
 
@@ -64,7 +46,7 @@ HMI-A提出A18後，範例依序注入manualIdle=false、sequenceReady=false，�
 
 ## 修改練習：4999ms和5000ms差在哪裡？
 
-`practice.mjs`頂端只有兩個要改的參數：`completeAt`與`interlock`。每次執行都從Auto、revision=1開始，並在completeAt注入一筆當時取得的Good回饋。
+先用頁內練習直接修改完成時間與互鎖條件；需要檢查完整資料品質與請求紀錄時，再下載下方的 `practice.mjs`。該檔頂端只有 `completeAt` 與 `interlock` 兩個要改的參數，每次執行都從 Auto、revision=1 開始，並在 completeAt 注入一筆當時取得的 Good 回饋。
 
 | completeAt | interlock | 預期請求狀態／reason       | 最後記錄模式 |
 | ---------- | --------- | -------------------------- | ------------ |
@@ -75,6 +57,26 @@ HMI-A提出A18後，範例依序注入manualIdle=false、sequenceReady=false，�
 輸出第一行是請求紀錄，第二行是當時畫面資料。找status、reason、modeConfirmed與controlOwner，比對上表。5秒是教材的等待期限，**等號包含，逾時優先於成功**。只有呼叫scan才推進判定；單純讀view不會偷偷完成切換或宣告逾時。
 
 這裡的TIMEOUT是模擬控制器明確拒絕的結果。若只是HMI自己的等待時間到了、卻沒有來源結果，就應像回覆遺失案例一樣保持Unknown，不能自行推定拒絕或成功。
+
+## 進階：下載完整離線狀態機
+
+若要重播回覆遺失、同 ID 查詢、控制權與資料品質，將下列七個檔案下載到同一資料夾。需要 Node.js 24.19+；頁內練習不需要安裝。
+
+- [model.mjs](/examples/mode-ownership/model.mjs)
+- [mode-demo.mjs](/examples/mode-ownership/mode-demo.mjs)
+- [maintenance-demo.mjs](/examples/mode-ownership/maintenance-demo.mjs)
+- [practice.mjs](/examples/mode-ownership/practice.mjs)
+- [maintenance-practice.mjs](/examples/mode-ownership/maintenance-practice.mjs)
+- [self-test.mjs](/examples/mode-ownership/self-test.mjs)
+- [README.md](/examples/mode-ownership/README.md)
+
+在該資料夾開啟終端機，執行：
+
+```powershell
+node mode-demo.mjs
+node self-test.mjs
+node practice.mjs
+```
 
 ## 看懂輸入與證據限制
 

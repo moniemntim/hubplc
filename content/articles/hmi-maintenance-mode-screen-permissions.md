@@ -1,6 +1,6 @@
 ---
 title: HMI 維護模式案例：退出請求不等於測試停止或復原完成
-description: 共用模式請求模型，重播進入Maintenance、等待測試停止、等待復原核對與確認回Manual；工作單與隔離證據另列。
+description: 先在頁面檢查 Maintenance 退出的停止與復原條件，再用進階模式模型重播完整請求；工作單與隔離證據另列。
 date: 2026-09-17
 author: 茂伯
 draft: false
@@ -8,15 +8,7 @@ draft: false
 
 ## 與手自動頁共用模式資料，工作紀錄另外保留
 
-本篇沿用[手自動切換案例](/articles/hmi-manual-auto-mode-control-ownership)，專門驗證維護退出時不能省略的顯示與確認。教材是Node.js 24.19+同步記憶體模型，沒有實機、輸出、測試動作或能源隔離功能。
-
-下載 [model.mjs](/examples/mode-ownership/model.mjs)、[mode-demo.mjs](/examples/mode-ownership/mode-demo.mjs)、[maintenance-demo.mjs](/examples/mode-ownership/maintenance-demo.mjs)、[practice.mjs](/examples/mode-ownership/practice.mjs)、[maintenance-practice.mjs](/examples/mode-ownership/maintenance-practice.mjs)、[self-test.mjs](/examples/mode-ownership/self-test.mjs)、[README.md](/examples/mode-ownership/README.md)，放在同一資料夾後執行：
-
-```powershell
-node maintenance-demo.mjs
-node self-test.mjs
-node maintenance-practice.mjs
-```
+本篇沿用[手自動切換案例](/articles/hmi-manual-auto-mode-control-ownership)，專門驗證維護退出時不能省略的顯示與確認。先操作標題下方的頁內練習：從「測試停止未確認」改成「停止已確認、復原未確認」，最後再確認復原。這只注入合成來源摘要，沒有實機、輸出、測試動作或能源隔離功能。
 
 ## 固定流程：Maintenance確認後，兩項退出條件仍分開
 
@@ -43,7 +35,15 @@ maintenance demo: PASS
 
 `testStopped`與`restoreReviewed`都由可信來源快照提供，不是按一下頁面勾選就自行產生。本例不檢查真實測試或設定還原；現場必須由設備與程序產生相應證據。模型的條件名稱只表達介面契約，不是安全隔離證明。
 
-## 改一次復原摘要，確認未完成不會被藏掉
+## 進階：用離線模型改一次復原摘要
+
+完整請求紀錄可下載 [model.mjs](/examples/mode-ownership/model.mjs)、[mode-demo.mjs](/examples/mode-ownership/mode-demo.mjs)、[maintenance-demo.mjs](/examples/mode-ownership/maintenance-demo.mjs)、[practice.mjs](/examples/mode-ownership/practice.mjs)、[maintenance-practice.mjs](/examples/mode-ownership/maintenance-practice.mjs)、[self-test.mjs](/examples/mode-ownership/self-test.mjs)、[README.md](/examples/mode-ownership/README.md)，放在同一資料夾；需 Node.js 24.19+。頁內練習不需要安裝。
+
+```powershell
+node maintenance-demo.mjs
+node self-test.mjs
+node maintenance-practice.mjs
+```
 
 開啟 `maintenance-practice.mjs`，預設 `restoreReviewed=false`。執行後查看輸出的modeConfirmed及pending：
 

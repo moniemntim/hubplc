@@ -22,7 +22,11 @@ Ack 是「有人確認收到」，Clear 是「來源條件目前不成立」。�
 
 來源由 `false -> true` 時才建立新 occurrence。Ack 只改 `acked`；Clear 只改 `active`。因此 Clear 時尚未 Ack 的項目必須留下，不能因畫面不再閃爍就消失。
 
-## 下載與固定生命週期輸出
+## 先在頁面重播生命週期
+
+標題下方的演練可直接按 Ack、來源 Clear、開始處置和結案，逐欄查看 Active、Acked、工作狀態、revision 與最後決策。先按來源 Clear 而不 Ack 時，會保留 `active=false, acked=false`；它仍不是已結案。若嘗試結案，畫面會拒絕並保留原狀態。這是單一 O1 的合成瀏覽器教材，沒有連接警報平台、PLC、帳號系統或設備 Reset。
+
+## 下載與固定生命週期輸出（選用）
 
 下載以下所有檔案，存進同一資料夾：
 

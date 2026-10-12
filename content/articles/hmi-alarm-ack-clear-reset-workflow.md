@@ -20,7 +20,11 @@ HMI 不能將「看過」「條件恢復」「工作結案」混成同一個狀�
 
 工作流是獨立的 `Open -> InProgress -> Resolved` 欄位。它讓 HMI 顯示人員處置證據，沒有設備控制、PLC 命令或真實身分驗證功能。
 
-## 下載與工作流 demo
+## 先在頁面演練結案條件
+
+標題下方的演練先從 O1 Active、未 Ack、Open 開始。要結案，必須依序使工作進入 InProgress、來源 Clear、已 Ack，並用目前 revision 的 Supervisor 和非空 evidence 送出。故意輸入舊 revision、Operator 或空 evidence，可看到 `workflow_revision_conflict`、`workflow_rejected_request` 或 `workflow_rejected_transition`，且原狀態不會被覆寫。這是合成的瀏覽器教材，不是登入、授權或設備控制。
+
+## 下載與工作流 demo（選用）
 
 將以下檔案一起下載到同一資料夾：
 

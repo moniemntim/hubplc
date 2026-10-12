@@ -140,6 +140,43 @@ function PlcScalingGuide() {
   );
 }
 
+function BaseGuide() {
+  return (
+    <>
+      <h3>先決定位元數與有號解讀方式</h3>
+      <p>
+        同一組位元的十進位結果會隨位元數與有號設定改變。先從設備資料表確認欄位是
+        8、16 或 32
+        bit，以及是否採有號整數。本工具換算整數的位元表示，不會交換位元組，也不會替資料套用工程倍率。
+      </p>
+      <h3>操作案例：8-bit 的 FF 是多少？</h3>
+      <ol>
+        <li>輸入進位選「十六進位」，位元數選「8 bit」，數值填 FF。</li>
+        <li>解讀方式選「無號整數」，十進位應為 255、二進位為 11111111。</li>
+        <li>
+          只把解讀方式改為「有號二補數」，十進位應變成 −1；十六進位仍是 FF。
+        </li>
+      </ol>
+      <p>
+        反向核對時選十進位、8 bit、有號二補數並輸入 −1，十六進位也應得到
+        FF。8-bit 的最高位為符號位，FF 的無號值 255 減去 256，就是有號值 −1。
+      </p>
+      <h3>結果不符時檢查</h3>
+      <ul>
+        <li>十六進位欄只填 FF，不加 0x；二進位也不加 0b。</li>
+        <li>
+          8-bit 無號最多 255、有號十進位範圍為 −128 至 127；超出時工具會拒絕。
+        </li>
+        <li>
+          若兩個 Modbus 暫存器組合成 32-bit 值，先依設備手冊確認字序，再用{' '}
+          <Link href="/tool/register-converter">暫存器資料解析工具</Link>
+          ；單純進位換算不能判定字序或 Float32。
+        </li>
+      </ul>
+    </>
+  );
+}
+
 function AddressGuide() {
   return (
     <>
@@ -427,6 +464,7 @@ function RegisterGuide() {
 const guides = {
   analog: AnalogGuide,
   'plc-scaling': PlcScalingGuide,
+  'base-converter': BaseGuide,
   'modbus-address': AddressGuide,
   'modbus-crc': CrcGuide,
   'register-converter': RegisterGuide,
@@ -526,6 +564,44 @@ function EnglishGuide({ slug }: { slug: keyof typeof guides }) {
           <li>
             This calculator does not detect open circuits, overrange current,
             bad quality or physical measurement error.
+          </li>
+        </ul>
+      </>
+    );
+  if (slug === 'base-converter')
+    return (
+      <>
+        <h3>Choose the bit width and signed interpretation first</h3>
+        <p>
+          The same bits have different decimal meanings depending on width and
+          signedness. Check the device map for 8, 16 or 32 bits and whether the
+          field is signed. This tool changes integer notation; it does not swap
+          bytes or apply an engineering scale factor.
+        </p>
+        <h3>Worked case: interpret 8-bit FF</h3>
+        <ol>
+          <li>Select hexadecimal input, 8 bit and enter FF.</li>
+          <li>Unsigned shows decimal 255 and binary 11111111.</li>
+          <li>Signed two&apos;s complement shows decimal −1; hex stays FF.</li>
+        </ol>
+        <p>
+          For a reverse check, select signed decimal, 8 bit and enter −1. The
+          hex result is FF. The signed value is 255 − 256 = −1.
+        </p>
+        <h3>If the result does not match the device</h3>
+        <ul>
+          <li>Enter FF without a 0x prefix, or binary without a 0b prefix.</li>
+          <li>
+            An 8-bit unsigned input ends at 255; signed decimal runs from −128
+            to 127. Out-of-range input is rejected.
+          </li>
+          <li>
+            For two Modbus registers, determine word order from the device
+            manual and use the{' '}
+            <Link href="/tool/register-converter">
+              Registers &amp; Floating Point tool
+            </Link>
+            . Base conversion alone cannot determine word order or Float32.
           </li>
         </ul>
       </>
@@ -688,7 +764,7 @@ export default function PlcGuide({ slug }: { slug: ToolSlug }) {
             'These examples are offline calculations and format checks; they were not validated against a physical PLC, transmitter or RS485 device. Confirm ranges, data formats and communication settings in the manual for your exact model.',
           )}
         </p>
-        {slug !== 'analog' && slug !== 'plc-scaling' && (
+        {!['analog', 'plc-scaling', 'base-converter'].includes(slug) && (
           <p>
             {tr('規格參考：', 'Specification reference: ')}
             <a href="https://www.modbus.org/modbus-specifications">

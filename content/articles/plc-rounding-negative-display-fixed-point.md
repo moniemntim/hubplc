@@ -6,6 +6,8 @@ author: 茂伯
 draft: false
 ---
 
+先用標題下方的頁內練習輸入 `Raw100=-1235`，核對商 123、餘數 5、`Rounded10=-124` 與顯示值 −12.4；再試正數中點、接近零和超出範圍。這是固定小數的瀏覽器模型，無須先下載檔案，也不是 PLC 實測。
+
 ## 先選一條資料路徑，再談「四捨五入」
 
 畫面顯示 `12.4` 不等於 PLC 中已把值改成 `12.4`。本篇把三個欄位分開：
@@ -20,7 +22,7 @@ draft: false
 
 若來源是 REAL/LREAL，先決定如何把它安全轉成這個整數契約；那一步本身就是一次轉換與可能的取整，不能藏在畫面格式裡。浮點工程值的比較規則另見[PLC 浮點數的容差比較](/articles/plc-floating-point-tolerance)。
 
-## 可下載並重跑的離線驗收程式
+## 進階：下載並重跑完整離線驗收程式
 
 下載 [plc-numeric-offline-example.mjs](/examples/plc-numeric/plc-numeric-offline-example.mjs) 到任一資料夾後，在該資料夾執行：
 

@@ -10,6 +10,11 @@ import AliasLesson from '@/components/alias-lesson';
 import PowerLesson from '@/components/power-lesson';
 import IoPathLesson from '@/components/io-path-lesson';
 import HmiQualityLesson from '@/components/hmi-quality-lesson';
+import HmiConnectionLesson from '@/components/hmi-connection-lesson';
+import HmiTrendWindowLesson from '@/components/hmi-trend-window-lesson';
+import PlcNumericLesson from '@/components/plc-numeric-lesson';
+import HmiControlLesson from '@/components/hmi-control-lesson';
+import AlarmLifecycleLesson from '@/components/alarm-lifecycle-lesson';
 import { practiceModes } from '@/lib/plc-practice';
 import ArticleReadingNav, {
   ArticleDirectoryLink,
@@ -140,6 +145,39 @@ export default function Article({
         ) : null}
         {article.slug === 'hmi-bad-quality-stale-value' ? (
           <HmiQualityLesson />
+        ) : null}
+        {article.slug === 'hmi-disconnected-data-paused-display' ? (
+          <HmiConnectionLesson />
+        ) : null}
+        {article.slug === 'hmi-trend-time-range-sampling-aggregation' ? (
+          <HmiTrendWindowLesson />
+        ) : null}
+        {article.slug === 'plc-floating-point-tolerance' ? (
+          <PlcNumericLesson mode="tolerance" />
+        ) : null}
+        {article.slug === 'plc-rounding-negative-display-fixed-point' ? (
+          <PlcNumericLesson mode="rounding" />
+        ) : null}
+        {article.slug === 'hmi-manual-auto-mode-control-ownership' ? (
+          <HmiControlLesson mode="manual" />
+        ) : null}
+        {article.slug === 'hmi-maintenance-mode-screen-permissions' ? (
+          <HmiControlLesson mode="maintenance" />
+        ) : null}
+        {article.slug === 'hmi-operation-permission-execution-authorization' ? (
+          <HmiControlLesson mode="authorization" />
+        ) : null}
+        {article.slug === 'hmi-role-downgrade-open-screens' ? (
+          <HmiControlLesson mode="downgrade" />
+        ) : null}
+        {article.slug === 'alarm-acknowledge-clear-occurrence' ? (
+          <AlarmLifecycleLesson mode="lifecycle" />
+        ) : null}
+        {article.slug === 'hmi-alarm-ack-clear-reset-workflow' ? (
+          <AlarmLifecycleLesson mode="workflow" />
+        ) : null}
+        {article.slug === 'hmi-operating-procedure-ack-clear' ? (
+          <AlarmLifecycleLesson mode="procedure" />
         ) : null}
         <div className="article-reader__layout">
           <ArticleReadingNav toc={article.toc} />

@@ -6,8 +6,11 @@ import { mockAdsense } from './adsense-mock.mjs';
 const base = process.env.TEST_BASE_URL ?? 'http://127.0.0.1:4173';
 const output = 'outputs/article-browser';
 await mkdir(output, { recursive: true });
-const articles = JSON.parse(
+const publishedArticles = JSON.parse(
   await readFile('lib/article-index.generated.json', 'utf8'),
+);
+const articles = publishedArticles.filter(
+  (article) => article.category !== 'Excel 公式教學',
 );
 const lastPage = Math.ceil(articles.length / 12);
 const lastPageCount = articles.length - (lastPage - 1) * 12;
@@ -76,6 +79,12 @@ try {
     String(articles.length),
   );
   await expect(
+    page.getByRole('button', { name: /^Excel 公式教學/ }),
+  ).toHaveCount(0);
+  await expect(
+    page.locator('.library-article-category').filter({ hasText: 'Excel' }),
+  ).toHaveCount(0);
+  await expect(
     page.getByRole('heading', { name: '依工作找教學' }),
   ).toBeVisible();
   await expect(page.locator('.library-work-path')).toHaveCount(8);
@@ -143,9 +152,9 @@ try {
   await search.fill('zzzz-no-such-article-999');
   await expect(cards).toHaveCount(0);
   await expect(
-    page.getByRole('button', { name: '顯示所有文章' }),
+    page.getByRole('button', { name: '顯示所有 PLC／工程文章' }),
   ).toBeVisible();
-  await page.getByRole('button', { name: '顯示所有文章' }).click();
+  await page.getByRole('button', { name: '顯示所有 PLC／工程文章' }).click();
   await page.getByRole('combobox', { name: '文章排序' }).selectOption('oldest');
   await expect(cards.first()).toContainText(oldestUpdatedDate);
   await page.getByRole('combobox', { name: '文章排序' }).selectOption('newest');

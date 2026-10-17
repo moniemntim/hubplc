@@ -49,7 +49,8 @@ function subscribeToDirectory() {
   return () => {};
 }
 
-export function ArticleDirectoryLink() {
+export function ArticleDirectoryLink({ category }: { category?: string }) {
+  const isExcelLesson = category === 'Excel 公式教學';
   const href = useSyncExternalStore(
     subscribeToDirectory,
     getDirectoryHref,
@@ -57,8 +58,11 @@ export function ArticleDirectoryLink() {
   );
 
   return (
-    <a className="article-reader__back-link" href={href}>
-      ← 所有文章
+    <a
+      className="article-reader__back-link"
+      href={isExcelLesson ? '/excel-formulas' : href}
+    >
+      {isExcelLesson ? '← Excel 公式課程' : '← PLC／工程文章'}
     </a>
   );
 }

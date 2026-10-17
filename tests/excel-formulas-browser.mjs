@@ -158,6 +158,10 @@ try {
       const courseNav = page.getByRole('navigation', {
         name: 'Excel 公式課程導覽',
       });
+      await expect(page.locator('.article-reader__back-link')).toHaveAttribute(
+        'href',
+        '/excel-formulas',
+      );
       await expect(
         courseNav.getByRole('link', { name: '返回課程首頁' }),
       ).toHaveAttribute('href', '/excel-formulas');
@@ -182,26 +186,16 @@ try {
 
   await page.setViewportSize({ width: 1440, height: 1000 });
   await open('/articles');
-  await page.getByRole('button', { name: /^Excel 公式教學/ }).click();
-  await expect(page.locator('#article-results-title')).toHaveText(
-    'Excel 公式教學',
-  );
-  await expect(page.locator('.library-results-toolbar p')).toContainText(
-    `共 ${excelFormulaLessons.length} 篇`,
-  );
-  await page
-    .getByRole('searchbox', { name: '搜尋文章標題、關鍵字或內文' })
-    .fill('XLOOKUP');
-  await expect(page.locator('.library-article')).toHaveCount(1);
-  await expect(page.locator('.library-article')).toContainText('XLOOKUP');
-  assert.equal(
-    new URL(page.url()).searchParams.get('category'),
-    'Excel 公式教學',
-  );
+  await expect(
+    page.getByRole('button', { name: /^Excel 公式教學/ }),
+  ).toHaveCount(0);
+  await expect(
+    page.locator('.library-article-category').filter({ hasText: 'Excel' }),
+  ).toHaveCount(0);
   assert.deepEqual(errors, []);
   await writeFile(`${output}/report.json`, JSON.stringify(results, null, 2));
   console.log(
-    `PASS course home, ${excelFormulaLessons.length} lessons at 3 widths, images, SEO, navigation, category and search (${results.length} article checks)`,
+    `PASS course home, ${excelFormulaLessons.length} lessons at 3 widths, images, SEO, navigation, and PLC directory separation (${results.length} article checks)`,
   );
 } finally {
   await context.close();

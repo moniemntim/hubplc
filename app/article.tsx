@@ -126,7 +126,7 @@ export default function Article({
       />
       <div className="article-reader__frame">
         <header className="article-reader__header">
-          <ArticleDirectoryLink />
+          <ArticleDirectoryLink category={article.category} />
           <p className="article-reader__eyebrow">FIELD NOTES / {category}</p>
           <h1>{article.title}</h1>
           <div className="article-reader__meta" aria-label="文章資訊">

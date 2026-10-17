@@ -35,6 +35,10 @@ export const CATEGORY_ORDER = [
   'Excel 公式教學',
   '維護與故障排查',
 ];
+export const EXCEL_ARTICLE_CATEGORY = 'Excel 公式教學';
+export function belongsInPlcArticleDirectory(article: ArticleSummary) {
+  return article.category !== EXCEL_ARTICLE_CATEGORY;
+}
 export function normalizeSearch(value: string) {
   return value
     .normalize('NFKC')

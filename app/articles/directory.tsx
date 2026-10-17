@@ -260,7 +260,7 @@ export default function ArticleDirectory({
         </div>
         <div className="library-total">
           <strong>{articles.length}</strong>
-          <span>篇技術文章</span>
+          <span>篇 PLC／工程文章</span>
         </div>
       </header>
 
@@ -352,7 +352,7 @@ export default function ArticleDirectory({
               aria-pressed={!filters.category}
               onClick={() => update({ category: '', page: 1 })}
             >
-              <span>所有文章</span>
+              <span>所有 PLC／工程文章</span>
               <span>{articles.length}</span>
             </button>
             {categories.map((category) => (
@@ -386,7 +386,8 @@ export default function ArticleDirectory({
           <div className="library-results-toolbar">
             <div>
               <h2 id="article-results-title" ref={resultsHeading} tabIndex={-1}>
-                {filters.category || (hasQuery ? '搜尋結果' : '所有文章')}
+                {filters.category ||
+                  (hasQuery ? '搜尋結果' : '所有 PLC／工程文章')}
               </h2>
               <p aria-live="polite">
                 {searchPending
@@ -501,12 +502,12 @@ export default function ArticleDirectory({
               </h3>
               <p>
                 {articles.length
-                  ? '試試較短的詞，或取消主題分類，搜尋所有文章。'
+                  ? '試試較短的詞，或取消主題分類，搜尋所有 PLC／工程文章。'
                   : '先到工具箱，使用免費工程換算工具。'}
               </p>
               {articles.length ? (
                 <button type="button" onClick={clear}>
-                  顯示所有文章
+                  顯示所有 PLC／工程文章
                 </button>
               ) : (
                 <Link href="/tool">前往工具箱 →</Link>
@@ -574,7 +575,9 @@ export default function ArticleDirectory({
       </div>
       <noscript>
         <div className="library-noscript">
-          <p>啟用 JavaScript 即可使用搜尋、分類與分頁。以下是所有文章：</p>
+          <p>
+            啟用 JavaScript 即可使用搜尋、分類與分頁。以下是所有 PLC／工程文章：
+          </p>
           <ul>
             {articles.map((article) => (
               <li key={article.slug}>

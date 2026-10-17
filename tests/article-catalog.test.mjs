@@ -3,6 +3,8 @@ import assert from 'node:assert/strict';
 import { articleMetadata, plainText } from '../scripts/article-metadata.mjs';
 import {
   DEFAULT_FILTERS,
+  EXCEL_ARTICLE_CATEGORY,
+  belongsInPlcArticleDirectory,
   filterArticles,
   filtersUrl,
   normalizeSearch,
@@ -27,6 +29,17 @@ const makeArticle = (
   author: '作者',
   tags: [],
   readingMinutes: 2,
+});
+
+void test('PLC article directory excludes Excel lessons', () => {
+  const articles = [
+    makeArticle('plc-timer', 'PLC 計時器'),
+    makeArticle('excel-if', 'IF 依條件顯示結果', EXCEL_ARTICLE_CATEGORY),
+  ];
+  assert.deepEqual(
+    articles.filter(belongsInPlcArticleDirectory).map(({ slug }) => slug),
+    ['plc-timer'],
+  );
 });
 
 void test('catalog searches fullwidth, hyphens and multiple words across metadata and body', () => {

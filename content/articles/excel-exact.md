@@ -245,4 +245,3 @@ B3、C3 都是 Abc01，大小寫與每個字元都一致。
 ## 官方參考
 
 [Microsoft Support：EXACT 函數](https://support.microsoft.com/en-us/excel/functions/exact-function)
-

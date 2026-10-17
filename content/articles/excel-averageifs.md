@@ -169,4 +169,3 @@ criteria1　必要。第一組判斷條件，本例文字"北店"；它只套用
 ## 官方參考
 
 [Microsoft Support：AVERAGEIFS 函數](https://support.microsoft.com/en-us/excel/functions/averageifs-function)
-

@@ -165,4 +165,3 @@ number　必要參數，指定要向下取整的實數，可直接填數字或�
 ## 官方參考
 
 [Microsoft Support：INT 函數](https://support.microsoft.com/en-us/excel/functions/int-function)
-

@@ -235,4 +235,3 @@ B5 是有效的 2024/02/29，日期位於閏年二月二十九日。
 ## 官方參考
 
 [Microsoft Support：DAY 函數](https://support.microsoft.com/en-us/excel/functions/day-function)
-

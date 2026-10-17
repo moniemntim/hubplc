@@ -241,4 +241,3 @@ B4 前方 3 個空格會被移除，Pencil 的字母維持不變。
 ## 官方參考
 
 [Microsoft Support：TRIM 函數](https://support.microsoft.com/en-us/excel/functions/trim-function)
-

@@ -167,4 +167,3 @@ criteria　必要。要套用的條件，本例是文字"北組"，必須用半�
 ## 官方參考
 
 [Microsoft Support：AVERAGEIF 函數](https://support.microsoft.com/en-us/excel/functions/averageif-function)
-

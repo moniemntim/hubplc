@@ -241,4 +241,3 @@ FALSE 表示比較列；TRUE 要求整個來源中剛好出現一次。
 ## 官方參考
 
 [Microsoft Support：UNIQUE 函數](https://support.microsoft.com/en-us/excel/functions/unique-function)
-

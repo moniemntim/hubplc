@@ -245,4 +245,3 @@ A2 與 A7 都是筆，分別位於範圍內位置 1、6。
 ## 官方參考
 
 [Microsoft Support：MATCH 函數](https://support.microsoft.com/en-us/excel/functions/match-function)
-

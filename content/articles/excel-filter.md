@@ -245,4 +245,3 @@ B2:B8&gt;=20　逐列比較庫存是否大於或等於 20；&gt;= 是比較運�
 ## 官方參考
 
 [Microsoft Support：FILTER 函數](https://support.microsoft.com/en-us/excel/functions/filter-function)
-

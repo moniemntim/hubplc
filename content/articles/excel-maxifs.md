@@ -169,4 +169,3 @@ criteria1　必要。第一個條件，本例是"北區"。文字及含比較符
 ## 官方參考
 
 [Microsoft Support：MAXIFS 函數](https://support.microsoft.com/en-us/excel/functions/maxifs-function)
-

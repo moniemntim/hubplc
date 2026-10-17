@@ -169,4 +169,3 @@ ref　必要。用來比較的完整數字清單，本例$B$2:$B$8。範圍內�
 ## 官方參考
 
 [Microsoft Support：RANK.EQ 函數](https://support.microsoft.com/en-us/excel/functions/rank-eq-function)
-

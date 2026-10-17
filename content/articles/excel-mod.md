@@ -167,4 +167,3 @@ divisor　必要參數，除數。本課填 C2，其值為 5；不得為零。�
 ## 官方參考
 
 [Microsoft Support：MOD 函數](https://support.microsoft.com/en-us/excel/functions/mod-function)
-

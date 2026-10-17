@@ -235,4 +235,3 @@ B4 是 2027/01/01，已進入 2027 年。
 ## 官方參考
 
 [Microsoft Support：YEAR 函數](https://support.microsoft.com/en-us/excel/functions/year-function)
-

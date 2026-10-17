@@ -163,4 +163,3 @@ range　必要，且本函數只有這一個參數。指定要檢查空白的範
 ## 官方參考
 
 [Microsoft Support：COUNTBLANK 函數](https://support.microsoft.com/en-us/excel/functions/countblank-function)
-

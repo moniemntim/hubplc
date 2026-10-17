@@ -165,4 +165,3 @@ number　必要參數，指定要求絕對值的實數。本課使用含負值�
 ## 官方參考
 
 [Microsoft Support：ABS 函數](https://support.microsoft.com/en-us/excel/functions/abs-function)
-

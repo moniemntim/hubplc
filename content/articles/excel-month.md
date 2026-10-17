@@ -235,4 +235,3 @@ B4 是 2027/01/01，月份顯示為 01。
 ## 官方參考
 
 [Microsoft Support：MONTH 函數](https://support.microsoft.com/en-us/excel/functions/month-function)
-

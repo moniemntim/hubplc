@@ -245,4 +245,3 @@ A2　只讀取 A 欄第 2 列的一個原始字串。
 ## 官方參考
 
 [Microsoft Support：SUBSTITUTE 函數](https://support.microsoft.com/en-us/excel/functions/substitute-function)
-

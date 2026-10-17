@@ -167,4 +167,3 @@ array1　必要。第一組要逐項運算的資料，本例B2:B8單價欄。一
 ## 官方參考
 
 [Microsoft Support：SUMPRODUCT 函數](https://support.microsoft.com/en-us/excel/functions/sumproduct-function)
-

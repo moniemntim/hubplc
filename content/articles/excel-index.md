@@ -245,4 +245,3 @@ A2:C8　冒號包括起點 A2 到終點 C8 的整個矩形，七列三欄。
 ## 官方參考
 
 [Microsoft Support：INDEX 函數](https://support.microsoft.com/en-us/excel/functions/index-function)
-

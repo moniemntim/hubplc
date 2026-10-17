@@ -167,4 +167,3 @@ num_digits　必要參數，指定保留位置。2 表示小數點後兩位，0 
 ## 官方參考
 
 [Microsoft Support：ROUNDUP 函數](https://support.microsoft.com/en-us/excel/functions/roundup-function)
-

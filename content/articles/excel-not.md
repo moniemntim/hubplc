@@ -239,4 +239,3 @@ B2 正是待處理，因此括號內相等判斷為 TRUE。
 ## 官方參考
 
 [Microsoft Support：NOT 函數](https://support.microsoft.com/en-us/excel/functions/not-function)
-

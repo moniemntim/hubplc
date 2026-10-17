@@ -165,4 +165,3 @@ k　必要。從大到小起算第幾個位置，本例3。初學時使用1到�
 ## 官方參考
 
 [Microsoft Support：LARGE 函數](https://support.microsoft.com/en-us/excel/functions/large-function)
-

@@ -247,4 +247,3 @@ FALSE 讓 A4、A7 也保留各自的位置，七個位置之間共有六個頓�
 ## 官方參考
 
 [Microsoft Support：TEXTJOIN 函數](https://support.microsoft.com/en-us/excel/functions/textjoin-function)
-

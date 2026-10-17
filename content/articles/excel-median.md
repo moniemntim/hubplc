@@ -165,4 +165,3 @@ number1　必要。第一組數字或數值範圍，本例B2:B8。函數會用�
 ## 官方參考
 
 [Microsoft Support：MEDIAN 函數](https://support.microsoft.com/en-us/excel/functions/median-function)
-

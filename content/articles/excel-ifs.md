@@ -245,4 +245,3 @@ TRUE,"待加強"　最後固定成立的條件及預設文字，只有前面都�
 ## 官方參考
 
 [Microsoft Support：IFS 函數](https://support.microsoft.com/en-us/excel/functions/ifs-function)
-

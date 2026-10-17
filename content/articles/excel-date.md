@@ -245,4 +245,3 @@ A5:C5 提供 2024、2、29；2024 年二月有二十九日。
 ## 官方參考
 
 [Microsoft Support：DATE 函數](https://support.microsoft.com/en-us/excel/functions/date-function)
-

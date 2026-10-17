@@ -1,0 +1,925 @@
+{
+  "purpose": "Truthful article dates from Git history or explicit release records. Publication dates must not be redistributed for appearance.",
+  "generatedAt": "2026-10-17T14:21:22.311Z",
+  "articles": {
+    "0-10v-analog-load-ground-response-open-circuit": {
+      "publishedDate": "2026-09-17",
+      "updatedDate": "2026-10-07",
+      "dateSource": "git-history",
+      "publishedCommit": "be0d26a2f74681e134667847cbc3bb64586dc02b",
+      "updatedCommit": "417405c4c8b7452ea1de25248f773a7bf422cd82"
+    },
+    "24v-high-low-side-bjt-mosfet-switching": {
+      "publishedDate": "2026-09-17",
+      "updatedDate": "2026-10-07",
+      "dateSource": "git-history",
+      "publishedCommit": "be0d26a2f74681e134667847cbc3bb64586dc02b",
+      "updatedCommit": "417405c4c8b7452ea1de25248f773a7bf422cd82"
+    },
+    "24v-input-reverse-polarity-tvs-surge-protection": {
+      "publishedDate": "2026-09-17",
+      "updatedDate": "2026-10-07",
+      "dateSource": "git-history",
+      "publishedCommit": "be0d26a2f74681e134667847cbc3bb64586dc02b",
+      "updatedCommit": "417405c4c8b7452ea1de25248f773a7bf422cd82"
+    },
+    "24vdc-field-box-pluggable-power-integrity-hot-swap": {
+      "publishedDate": "2026-09-17",
+      "updatedDate": "2026-10-07",
+      "dateSource": "git-history",
+      "publishedCommit": "be0d26a2f74681e134667847cbc3bb64586dc02b",
+      "updatedCommit": "e1295271fd440ff0e78a61926c257837cc931bd6"
+    },
+    "24vdc-oring-redundancy-capacity-overload": {
+      "publishedDate": "2026-09-17",
+      "updatedDate": "2026-10-07",
+      "dateSource": "git-history",
+      "publishedCommit": "be0d26a2f74681e134667847cbc3bb64586dc02b",
+      "updatedCommit": "e1295271fd440ff0e78a61926c257837cc931bd6"
+    },
+    "24vdc-sensor-power-voltage-drop": {
+      "publishedDate": "2026-09-17",
+      "updatedDate": "2026-10-07",
+      "dateSource": "git-history",
+      "publishedCommit": "be0d26a2f74681e134667847cbc3bb64586dc02b",
+      "updatedCommit": "e1295271fd440ff0e78a61926c257837cc931bd6"
+    },
+    "24vdc-ups-branch-event-correlation": {
+      "publishedDate": "2026-09-21",
+      "updatedDate": "2026-10-07",
+      "dateSource": "git-history",
+      "publishedCommit": "54a3cb4590a0ea5d15cd3104aec046acecbaf9b3",
+      "updatedCommit": "e1295271fd440ff0e78a61926c257837cc931bd6"
+    },
+    "4-20ma-scaling-open-overrange-diagnostics": {
+      "publishedDate": "2026-09-21",
+      "updatedDate": "2026-09-28",
+      "dateSource": "git-history",
+      "publishedCommit": "54a3cb4590a0ea5d15cd3104aec046acecbaf9b3",
+      "updatedCommit": "1a0f2d2ec21706af18aab636a84430ccdacccd13"
+    },
+    "4-20ma-zero-offset-span-errors": {
+      "publishedDate": "2026-09-17",
+      "updatedDate": "2026-09-28",
+      "dateSource": "git-history",
+      "publishedCommit": "0ea8fa6b234141d1aa3479a521be717c0b20b6ca",
+      "updatedCommit": "332b0a50eec3cf39820ba63ffaf242dda6805c01"
+    },
+    "acceptance-pass-untested-not-applicable": {
+      "publishedDate": "2026-09-21",
+      "updatedDate": "2026-10-12",
+      "dateSource": "git-history",
+      "publishedCommit": "54a3cb4590a0ea5d15cd3104aec046acecbaf9b3",
+      "updatedCommit": "a3cce87f2ed68bbc75d410cf2d3d63e6cf09ae8a"
+    },
+    "actuator-output-end-to-end": {
+      "publishedDate": "2026-09-21",
+      "updatedDate": "2026-10-07",
+      "dateSource": "git-history",
+      "publishedCommit": "54a3cb4590a0ea5d15cd3104aec046acecbaf9b3",
+      "updatedCommit": "417405c4c8b7452ea1de25248f773a7bf422cd82"
+    },
+    "alarm-acknowledge-clear-occurrence": {
+      "publishedDate": "2026-09-21",
+      "updatedDate": "2026-10-12",
+      "dateSource": "git-history",
+      "publishedCommit": "54a3cb4590a0ea5d15cd3104aec046acecbaf9b3",
+      "updatedCommit": "b8d5a22b44fb3a2558495e12fea535b576f518bd"
+    },
+    "alarm-color-migration-accessibility": {
+      "publishedDate": "2026-09-21",
+      "updatedDate": "2026-09-28",
+      "dateSource": "git-history",
+      "publishedCommit": "54a3cb4590a0ea5d15cd3104aec046acecbaf9b3",
+      "updatedCommit": "6fa6abb566d80f2e22bf6211ae5f68f2dd593bd2"
+    },
+    "alarm-severity-time-stable-order": {
+      "publishedDate": "2026-09-21",
+      "updatedDate": "2026-09-28",
+      "dateSource": "git-history",
+      "publishedCommit": "54a3cb4590a0ea5d15cd3104aec046acecbaf9b3",
+      "updatedCommit": "6fa6abb566d80f2e22bf6211ae5f68f2dd593bd2"
+    },
+    "alarm-suppression-shelving-outofservice": {
+      "publishedDate": "2026-09-21",
+      "updatedDate": "2026-09-28",
+      "dateSource": "git-history",
+      "publishedCommit": "54a3cb4590a0ea5d15cd3104aec046acecbaf9b3",
+      "updatedCommit": "6fa6abb566d80f2e22bf6211ae5f68f2dd593bd2"
+    },
+    "analog-input-channel-crosstalk-single-channel-excitation": {
+      "publishedDate": "2026-09-21",
+      "updatedDate": "2026-10-12",
+      "dateSource": "git-history",
+      "publishedCommit": "54a3cb4590a0ea5d15cd3104aec046acecbaf9b3",
+      "updatedCommit": "a3cce87f2ed68bbc75d410cf2d3d63e6cf09ae8a"
+    },
+    "analog-raw-quality-filter-overrange": {
+      "publishedDate": "2026-09-21",
+      "updatedDate": "2026-09-28",
+      "dateSource": "git-history",
+      "publishedCommit": "54a3cb4590a0ea5d15cd3104aec046acecbaf9b3",
+      "updatedCommit": "2d9c7c97173cb274f6f8270975ff05ffa1c4a321"
+    },
+    "analog-temperature-drift-thermal-baseline": {
+      "publishedDate": "2026-09-21",
+      "updatedDate": "2026-09-28",
+      "dateSource": "git-history",
+      "publishedCommit": "54a3cb4590a0ea5d15cd3104aec046acecbaf9b3",
+      "updatedCommit": "2d9c7c97173cb274f6f8270975ff05ffa1c4a321"
+    },
+    "async-out-of-order-pending-map": {
+      "publishedDate": "2026-09-21",
+      "updatedDate": "2026-09-28",
+      "dateSource": "git-history",
+      "publishedCommit": "54a3cb4590a0ea5d15cd3104aec046acecbaf9b3",
+      "updatedCommit": "6fa6abb566d80f2e22bf6211ae5f68f2dd593bd2"
+    },
+    "automated-test-report-reproducibility": {
+      "publishedDate": "2026-09-21",
+      "updatedDate": "2026-10-12",
+      "dateSource": "git-history",
+      "publishedCommit": "54a3cb4590a0ea5d15cd3104aec046acecbaf9b3",
+      "updatedCommit": "a3cce87f2ed68bbc75d410cf2d3d63e6cf09ae8a"
+    },
+    "batch-database-transaction": {
+      "publishedDate": "2026-09-21",
+      "updatedDate": "2026-09-28",
+      "dateSource": "git-history",
+      "publishedCommit": "54a3cb4590a0ea5d15cd3104aec046acecbaf9b3",
+      "updatedCommit": "6fa6abb566d80f2e22bf6211ae5f68f2dd593bd2"
+    },
+    "batch-statistics-empty-batch": {
+      "publishedDate": "2026-09-21",
+      "updatedDate": "2026-10-12",
+      "dateSource": "git-history",
+      "publishedCommit": "54a3cb4590a0ea5d15cd3104aec046acecbaf9b3",
+      "updatedCommit": "a3cce87f2ed68bbc75d410cf2d3d63e6cf09ae8a"
+    },
+    "blackbox-observable": {
+      "publishedDate": "2026-09-21",
+      "updatedDate": "2026-10-12",
+      "dateSource": "git-history",
+      "publishedCommit": "54a3cb4590a0ea5d15cd3104aec046acecbaf9b3",
+      "updatedCommit": "a3cce87f2ed68bbc75d410cf2d3d63e6cf09ae8a"
+    },
+    "boundary-ticket": {
+      "publishedDate": "2026-09-21",
+      "updatedDate": "2026-10-12",
+      "dateSource": "git-history",
+      "publishedCommit": "54a3cb4590a0ea5d15cd3104aec046acecbaf9b3",
+      "updatedCommit": "a3cce87f2ed68bbc75d410cf2d3d63e6cf09ae8a"
+    },
+    "communication-queue-backlog-diagnosis": {
+      "publishedDate": "2026-09-21",
+      "updatedDate": "2026-09-28",
+      "dateSource": "git-history",
+      "publishedCommit": "54a3cb4590a0ea5d15cd3104aec046acecbaf9b3",
+      "updatedCommit": "6fa6abb566d80f2e22bf6211ae5f68f2dd593bd2"
+    },
+    "communication-stop-data-quality-watchdog": {
+      "publishedDate": "2026-09-21",
+      "updatedDate": "2026-09-28",
+      "dateSource": "git-history",
+      "publishedCommit": "54a3cb4590a0ea5d15cd3104aec046acecbaf9b3",
+      "updatedCommit": "6fa6abb566d80f2e22bf6211ae5f68f2dd593bd2"
+    },
+    "excel-and": {
+      "publishedDate": "2026-10-17",
+      "updatedDate": "2026-10-17",
+      "dateSource": "release-record"
+    },
+    "excel-average": {
+      "publishedDate": "2026-10-17",
+      "updatedDate": "2026-10-17",
+      "dateSource": "release-record"
+    },
+    "excel-count": {
+      "publishedDate": "2026-10-17",
+      "updatedDate": "2026-10-17",
+      "dateSource": "release-record"
+    },
+    "excel-counta": {
+      "publishedDate": "2026-10-17",
+      "updatedDate": "2026-10-17",
+      "dateSource": "release-record"
+    },
+    "excel-countif": {
+      "publishedDate": "2026-10-17",
+      "updatedDate": "2026-10-17",
+      "dateSource": "release-record"
+    },
+    "excel-countifs": {
+      "publishedDate": "2026-10-17",
+      "updatedDate": "2026-10-17",
+      "dateSource": "release-record"
+    },
+    "excel-if": {
+      "publishedDate": "2026-10-17",
+      "updatedDate": "2026-10-17",
+      "dateSource": "release-record"
+    },
+    "excel-iferror": {
+      "publishedDate": "2026-10-17",
+      "updatedDate": "2026-10-17",
+      "dateSource": "release-record"
+    },
+    "excel-left": {
+      "publishedDate": "2026-10-17",
+      "updatedDate": "2026-10-17",
+      "dateSource": "release-record"
+    },
+    "excel-len": {
+      "publishedDate": "2026-10-17",
+      "updatedDate": "2026-10-17",
+      "dateSource": "release-record"
+    },
+    "excel-max": {
+      "publishedDate": "2026-10-17",
+      "updatedDate": "2026-10-17",
+      "dateSource": "release-record"
+    },
+    "excel-mid": {
+      "publishedDate": "2026-10-17",
+      "updatedDate": "2026-10-17",
+      "dateSource": "release-record"
+    },
+    "excel-min": {
+      "publishedDate": "2026-10-17",
+      "updatedDate": "2026-10-17",
+      "dateSource": "release-record"
+    },
+    "excel-or": {
+      "publishedDate": "2026-10-17",
+      "updatedDate": "2026-10-17",
+      "dateSource": "release-record"
+    },
+    "excel-right": {
+      "publishedDate": "2026-10-17",
+      "updatedDate": "2026-10-17",
+      "dateSource": "release-record"
+    },
+    "excel-round": {
+      "publishedDate": "2026-10-17",
+      "updatedDate": "2026-10-17",
+      "dateSource": "release-record"
+    },
+    "excel-sumif": {
+      "publishedDate": "2026-10-17",
+      "updatedDate": "2026-10-17",
+      "dateSource": "release-record"
+    },
+    "excel-sumifs": {
+      "publishedDate": "2026-10-17",
+      "updatedDate": "2026-10-17",
+      "dateSource": "release-record"
+    },
+    "excel-vlookup": {
+      "publishedDate": "2026-10-17",
+      "updatedDate": "2026-10-17",
+      "dateSource": "release-record"
+    },
+    "excel-xlookup": {
+      "publishedDate": "2026-10-17",
+      "updatedDate": "2026-10-17",
+      "dateSource": "release-record"
+    },
+    "filtered-peaks-raw-data-traceability": {
+      "publishedDate": "2026-09-21",
+      "updatedDate": "2026-09-28",
+      "dateSource": "git-history",
+      "publishedCommit": "54a3cb4590a0ea5d15cd3104aec046acecbaf9b3",
+      "updatedCommit": "2d9c7c97173cb274f6f8270975ff05ffa1c4a321"
+    },
+    "float-nan-inf-control-gate": {
+      "publishedDate": "2026-09-21",
+      "updatedDate": "2026-09-28",
+      "dateSource": "git-history",
+      "publishedCommit": "54a3cb4590a0ea5d15cd3104aec046acecbaf9b3",
+      "updatedCommit": "6fa6abb566d80f2e22bf6211ae5f68f2dd593bd2"
+    },
+    "force-list-clear": {
+      "publishedDate": "2026-09-21",
+      "updatedDate": "2026-09-28",
+      "dateSource": "git-history",
+      "publishedCommit": "54a3cb4590a0ea5d15cd3104aec046acecbaf9b3",
+      "updatedCommit": "6fa6abb566d80f2e22bf6211ae5f68f2dd593bd2"
+    },
+    "hmi-alarm-ack-clear-reset-workflow": {
+      "publishedDate": "2026-09-17",
+      "updatedDate": "2026-10-12",
+      "dateSource": "git-history",
+      "publishedCommit": "be0d26a2f74681e134667847cbc3bb64586dc02b",
+      "updatedCommit": "b8d5a22b44fb3a2558495e12fea535b576f518bd"
+    },
+    "hmi-alarm-flood-event-summary-followup": {
+      "publishedDate": "2026-09-17",
+      "updatedDate": "2026-09-28",
+      "dateSource": "git-history",
+      "publishedCommit": "be0d26a2f74681e134667847cbc3bb64586dc02b",
+      "updatedCommit": "6fa6abb566d80f2e22bf6211ae5f68f2dd593bd2"
+    },
+    "hmi-alarm-priority-display-rules": {
+      "publishedDate": "2026-09-17",
+      "updatedDate": "2026-09-28",
+      "dateSource": "git-history",
+      "publishedCommit": "be0d26a2f74681e134667847cbc3bb64586dc02b",
+      "updatedCommit": "6fa6abb566d80f2e22bf6211ae5f68f2dd593bd2"
+    },
+    "hmi-alert-dialog-focus-layering": {
+      "publishedDate": "2026-09-21",
+      "updatedDate": "2026-10-02",
+      "dateSource": "git-history",
+      "publishedCommit": "54a3cb4590a0ea5d15cd3104aec046acecbaf9b3",
+      "updatedCommit": "075ca60b743e1c5862b99ef6050f0704c948db19"
+    },
+    "hmi-bad-quality-stale-value": {
+      "publishedDate": "2026-09-21",
+      "updatedDate": "2026-10-12",
+      "dateSource": "git-history",
+      "publishedCommit": "54a3cb4590a0ea5d15cd3104aec046acecbaf9b3",
+      "updatedCommit": "a3cce87f2ed68bbc75d410cf2d3d63e6cf09ae8a"
+    },
+    "hmi-batch-step-wait-failure-reason": {
+      "publishedDate": "2026-09-17",
+      "updatedDate": "2026-10-12",
+      "dateSource": "git-history",
+      "publishedCommit": "be0d26a2f74681e134667847cbc3bb64586dc02b",
+      "updatedCommit": "f80cb79608617ea60078c03958ce9f34e5b7fffb"
+    },
+    "hmi-binding-animation-diagnosis": {
+      "publishedDate": "2026-09-17",
+      "updatedDate": "2026-09-28",
+      "dateSource": "git-history",
+      "publishedCommit": "be0d26a2f74681e134667847cbc3bb64586dc02b",
+      "updatedCommit": "6fa6abb566d80f2e22bf6211ae5f68f2dd593bd2"
+    },
+    "hmi-button-command-feedback": {
+      "publishedDate": "2026-09-17",
+      "updatedDate": "2026-09-28",
+      "dateSource": "git-history",
+      "publishedCommit": "be0d26a2f74681e134667847cbc3bb64586dc02b",
+      "updatedCommit": "6fa6abb566d80f2e22bf6211ae5f68f2dd593bd2"
+    },
+    "hmi-concurrent-edit-last-writer-version": {
+      "publishedDate": "2026-09-21",
+      "updatedDate": "2026-10-13",
+      "dateSource": "git-history",
+      "publishedCommit": "54a3cb4590a0ea5d15cd3104aec046acecbaf9b3",
+      "updatedCommit": "fddc9bd36034773093bd7536324f8df0e2f2fd00"
+    },
+    "hmi-dependency-matrix": {
+      "publishedDate": "2026-09-17",
+      "updatedDate": "2026-10-12",
+      "dateSource": "git-history",
+      "publishedCommit": "be0d26a2f74681e134667847cbc3bb64586dc02b",
+      "updatedCommit": "a3cce87f2ed68bbc75d410cf2d3d63e6cf09ae8a"
+    },
+    "hmi-disconnected-data-paused-display": {
+      "publishedDate": "2026-09-17",
+      "updatedDate": "2026-10-12",
+      "dateSource": "git-history",
+      "publishedCommit": "be0d26a2f74681e134667847cbc3bb64586dc02b",
+      "updatedCommit": "b8d5a22b44fb3a2558495e12fea535b576f518bd"
+    },
+    "hmi-event-timeline-alarm-operation-note": {
+      "publishedDate": "2026-09-17",
+      "updatedDate": "2026-09-28",
+      "dateSource": "git-history",
+      "publishedCommit": "be0d26a2f74681e134667847cbc3bb64586dc02b",
+      "updatedCommit": "6fa6abb566d80f2e22bf6211ae5f68f2dd593bd2"
+    },
+    "hmi-input-event-consistency": {
+      "publishedDate": "2026-09-21",
+      "updatedDate": "2026-09-28",
+      "dateSource": "git-history",
+      "publishedCommit": "54a3cb4590a0ea5d15cd3104aec046acecbaf9b3",
+      "updatedCommit": "6fa6abb566d80f2e22bf6211ae5f68f2dd593bd2"
+    },
+    "hmi-loading-partial-empty-error-cancel": {
+      "publishedDate": "2026-09-21",
+      "updatedDate": "2026-09-28",
+      "dateSource": "git-history",
+      "publishedCommit": "54a3cb4590a0ea5d15cd3104aec046acecbaf9b3",
+      "updatedCommit": "6fa6abb566d80f2e22bf6211ae5f68f2dd593bd2"
+    },
+    "hmi-maintenance-mode-screen-permissions": {
+      "publishedDate": "2026-09-17",
+      "updatedDate": "2026-10-12",
+      "dateSource": "git-history",
+      "publishedCommit": "be0d26a2f74681e134667847cbc3bb64586dc02b",
+      "updatedCommit": "b8d5a22b44fb3a2558495e12fea535b576f518bd"
+    },
+    "hmi-manual-auto-mode-control-ownership": {
+      "publishedDate": "2026-09-17",
+      "updatedDate": "2026-10-12",
+      "dateSource": "git-history",
+      "publishedCommit": "be0d26a2f74681e134667847cbc3bb64586dc02b",
+      "updatedCommit": "b8d5a22b44fb3a2558495e12fea535b576f518bd"
+    },
+    "hmi-numeric-overflow": {
+      "publishedDate": "2026-09-21",
+      "updatedDate": "2026-09-28",
+      "dateSource": "git-history",
+      "publishedCommit": "54a3cb4590a0ea5d15cd3104aec046acecbaf9b3",
+      "updatedCommit": "6fa6abb566d80f2e22bf6211ae5f68f2dd593bd2"
+    },
+    "hmi-numeric-range-step-validation": {
+      "publishedDate": "2026-09-21",
+      "updatedDate": "2026-10-12",
+      "dateSource": "git-history",
+      "publishedCommit": "54a3cb4590a0ea5d15cd3104aec046acecbaf9b3",
+      "updatedCommit": "fc9b5163dcb5decb908670db8c02a3eaf2f1f894"
+    },
+    "hmi-operating-procedure-ack-clear": {
+      "publishedDate": "2026-09-17",
+      "updatedDate": "2026-10-12",
+      "dateSource": "git-history",
+      "publishedCommit": "be0d26a2f74681e134667847cbc3bb64586dc02b",
+      "updatedCommit": "b8d5a22b44fb3a2558495e12fea535b576f518bd"
+    },
+    "hmi-operation-permission-execution-authorization": {
+      "publishedDate": "2026-09-17",
+      "updatedDate": "2026-10-12",
+      "dateSource": "git-history",
+      "publishedCommit": "be0d26a2f74681e134667847cbc3bb64586dc02b",
+      "updatedCommit": "b8d5a22b44fb3a2558495e12fea535b576f518bd"
+    },
+    "hmi-reconnect-stale-callback-unknown-write": {
+      "publishedDate": "2026-09-21",
+      "updatedDate": "2026-10-12",
+      "dateSource": "git-history",
+      "publishedCommit": "54a3cb4590a0ea5d15cd3104aec046acecbaf9b3",
+      "updatedCommit": "f80cb79608617ea60078c03958ce9f34e5b7fffb"
+    },
+    "hmi-release-only-800ms-pointer-policy": {
+      "publishedDate": "2026-09-21",
+      "updatedDate": "2026-09-28",
+      "dateSource": "git-history",
+      "publishedCommit": "54a3cb4590a0ea5d15cd3104aec046acecbaf9b3",
+      "updatedCommit": "e172857ec97219134bba80e74f00203aa142218b"
+    },
+    "hmi-report-filter-time-window-alarm-state": {
+      "publishedDate": "2026-09-17",
+      "updatedDate": "2026-10-12",
+      "dateSource": "git-history",
+      "publishedCommit": "be0d26a2f74681e134667847cbc3bb64586dc02b",
+      "updatedCommit": "daf019febe99216140c889715d829b5238a22645"
+    },
+    "hmi-role-downgrade-open-screens": {
+      "publishedDate": "2026-09-21",
+      "updatedDate": "2026-10-12",
+      "dateSource": "git-history",
+      "publishedCommit": "54a3cb4590a0ea5d15cd3104aec046acecbaf9b3",
+      "updatedCommit": "b8d5a22b44fb3a2558495e12fea535b576f518bd"
+    },
+    "hmi-session-timeout-unsent-draft": {
+      "publishedDate": "2026-09-21",
+      "updatedDate": "2026-10-13",
+      "dateSource": "git-history",
+      "publishedCommit": "54a3cb4590a0ea5d15cd3104aec046acecbaf9b3",
+      "updatedCommit": "fddc9bd36034773093bd7536324f8df0e2f2fd00"
+    },
+    "hmi-setting-value-change-confirm-readback": {
+      "publishedDate": "2026-09-17",
+      "updatedDate": "2026-10-12",
+      "dateSource": "git-history",
+      "publishedCommit": "be0d26a2f74681e134667847cbc3bb64586dc02b",
+      "updatedCommit": "fc9b5163dcb5decb908670db8c02a3eaf2f1f894"
+    },
+    "hmi-shift-handover-information": {
+      "publishedDate": "2026-09-17",
+      "updatedDate": "2026-09-28",
+      "dateSource": "git-history",
+      "publishedCommit": "be0d26a2f74681e134667847cbc3bb64586dc02b",
+      "updatedCommit": "6fa6abb566d80f2e22bf6211ae5f68f2dd593bd2"
+    },
+    "hmi-trend-cursor-event-marker-time-alignment": {
+      "publishedDate": "2026-09-17",
+      "updatedDate": "2026-10-12",
+      "dateSource": "git-history",
+      "publishedCommit": "be0d26a2f74681e134667847cbc3bb64586dc02b",
+      "updatedCommit": "daf019febe99216140c889715d829b5238a22645"
+    },
+    "hmi-trend-time-range-sampling-aggregation": {
+      "publishedDate": "2026-09-17",
+      "updatedDate": "2026-10-12",
+      "dateSource": "git-history",
+      "publishedCommit": "be0d26a2f74681e134667847cbc3bb64586dc02b",
+      "updatedCommit": "b8d5a22b44fb3a2558495e12fea535b576f518bd"
+    },
+    "idempotency-key-duplicate-write": {
+      "publishedDate": "2026-09-21",
+      "updatedDate": "2026-09-28",
+      "dateSource": "git-history",
+      "publishedCommit": "54a3cb4590a0ea5d15cd3104aec046acecbaf9b3",
+      "updatedCommit": "6fa6abb566d80f2e22bf6211ae5f68f2dd593bd2"
+    },
+    "industrial-data-retention-policy": {
+      "publishedDate": "2026-09-17",
+      "updatedDate": "2026-09-28",
+      "dateSource": "git-history",
+      "publishedCommit": "be0d26a2f74681e134667847cbc3bb64586dc02b",
+      "updatedCommit": "6fa6abb566d80f2e22bf6211ae5f68f2dd593bd2"
+    },
+    "industrial-evidence-index": {
+      "publishedDate": "2026-09-17",
+      "updatedDate": "2026-10-12",
+      "dateSource": "git-history",
+      "publishedCommit": "be0d26a2f74681e134667847cbc3bb64586dc02b",
+      "updatedCommit": "a3cce87f2ed68bbc75d410cf2d3d63e6cf09ae8a"
+    },
+    "latency-injection-timeout-retry": {
+      "publishedDate": "2026-09-21",
+      "updatedDate": "2026-09-28",
+      "dateSource": "git-history",
+      "publishedCommit": "54a3cb4590a0ea5d15cd3104aec046acecbaf9b3",
+      "updatedCommit": "6fa6abb566d80f2e22bf6211ae5f68f2dd593bd2"
+    },
+    "modbus-function-code-01-04-read-list": {
+      "publishedDate": "2026-09-17",
+      "updatedDate": "2026-10-12",
+      "dateSource": "git-history",
+      "publishedCommit": "be0d26a2f74681e134667847cbc3bb64586dc02b",
+      "updatedCommit": "a3cce87f2ed68bbc75d410cf2d3d63e6cf09ae8a"
+    },
+    "modbus-security-tls-certificates-roles": {
+      "publishedDate": "2026-09-17",
+      "updatedDate": "2026-09-28",
+      "dateSource": "git-history",
+      "publishedCommit": "be0d26a2f74681e134667847cbc3bb64586dc02b",
+      "updatedCommit": "6fa6abb566d80f2e22bf6211ae5f68f2dd593bd2"
+    },
+    "modbus-tcp-mbap-header-transaction-unit-length": {
+      "publishedDate": "2026-09-17",
+      "updatedDate": "2026-09-28",
+      "dateSource": "git-history",
+      "publishedCommit": "be0d26a2f74681e134667847cbc3bb64586dc02b",
+      "updatedCommit": "6fa6abb566d80f2e22bf6211ae5f68f2dd593bd2"
+    },
+    "modbus-tcp-register-block-read-limits": {
+      "publishedDate": "2026-09-17",
+      "updatedDate": "2026-10-12",
+      "dateSource": "git-history",
+      "publishedCommit": "be0d26a2f74681e134667847cbc3bb64586dc02b",
+      "updatedCommit": "a3cce87f2ed68bbc75d410cf2d3d63e6cf09ae8a"
+    },
+    "multi-source-cas-arbitration": {
+      "publishedDate": "2026-09-21",
+      "updatedDate": "2026-09-28",
+      "dateSource": "git-history",
+      "publishedCommit": "54a3cb4590a0ea5d15cd3104aec046acecbaf9b3",
+      "updatedCommit": "6fa6abb566d80f2e22bf6211ae5f68f2dd593bd2"
+    },
+    "multilingual-unit-decimal-format": {
+      "publishedDate": "2026-09-21",
+      "updatedDate": "2026-09-28",
+      "dateSource": "git-history",
+      "publishedCommit": "54a3cb4590a0ea5d15cd3104aec046acecbaf9b3",
+      "updatedCommit": "6fa6abb566d80f2e22bf6211ae5f68f2dd593bd2"
+    },
+    "noise-spectrum-sampling-filter-selection": {
+      "publishedDate": "2026-09-21",
+      "updatedDate": "2026-09-28",
+      "dateSource": "git-history",
+      "publishedCommit": "54a3cb4590a0ea5d15cd3104aec046acecbaf9b3",
+      "updatedCommit": "91f72981e5c3f15cba4f2e059feb070a28444d6a"
+    },
+    "offline-hmi-non-operable-controls": {
+      "publishedDate": "2026-09-21",
+      "updatedDate": "2026-09-28",
+      "dateSource": "git-history",
+      "publishedCommit": "54a3cb4590a0ea5d15cd3104aec046acecbaf9b3",
+      "updatedCommit": "6fa6abb566d80f2e22bf6211ae5f68f2dd593bd2"
+    },
+    "operation-log-accepted-applied-equipment-revision": {
+      "publishedDate": "2026-09-21",
+      "updatedDate": "2026-09-28",
+      "dateSource": "git-history",
+      "publishedCommit": "54a3cb4590a0ea5d15cd3104aec046acecbaf9b3",
+      "updatedCommit": "6fa6abb566d80f2e22bf6211ae5f68f2dd593bd2"
+    },
+    "plc-analog-scaling-pressure-temperature-level": {
+      "publishedDate": "2026-09-17",
+      "updatedDate": "2026-09-28",
+      "dateSource": "git-history",
+      "publishedCommit": "0ea8fa6b234141d1aa3479a521be717c0b20b6ca",
+      "updatedCommit": "1a0f2d2ec21706af18aab636a84430ccdacccd13"
+    },
+    "plc-angle-wrap-difference": {
+      "publishedDate": "2026-09-17",
+      "updatedDate": "2026-09-28",
+      "dateSource": "git-history",
+      "publishedCommit": "be0d26a2f74681e134667847cbc3bb64586dc02b",
+      "updatedCommit": "e1af99c62c5fa0c7e2bf8e4b680baa7efb7e081d"
+    },
+    "plc-duplicate-coil-multiple-assignment-debug": {
+      "publishedDate": "2026-09-17",
+      "updatedDate": "2026-09-28",
+      "dateSource": "git-history",
+      "publishedCommit": "be0d26a2f74681e134667847cbc3bb64586dc02b",
+      "updatedCommit": "6fa6abb566d80f2e22bf6211ae5f68f2dd593bd2"
+    },
+    "plc-exclusive-resource-scheduler": {
+      "publishedDate": "2026-09-17",
+      "updatedDate": "2026-09-28",
+      "dateSource": "git-history",
+      "publishedCommit": "be0d26a2f74681e134667847cbc3bb64586dc02b",
+      "updatedCommit": "6fa6abb566d80f2e22bf6211ae5f68f2dd593bd2"
+    },
+    "plc-fault-reset-single-acceptance": {
+      "publishedDate": "2026-09-17",
+      "updatedDate": "2026-10-02",
+      "dateSource": "git-history",
+      "publishedCommit": "be0d26a2f74681e134667847cbc3bb64586dc02b",
+      "updatedCommit": "075ca60b743e1c5862b99ef6050f0704c948db19"
+    },
+    "plc-fifo-product-tracking": {
+      "publishedDate": "2026-09-17",
+      "updatedDate": "2026-09-28",
+      "dateSource": "git-history",
+      "publishedCommit": "be0d26a2f74681e134667847cbc3bb64586dc02b",
+      "updatedCommit": "6fa6abb566d80f2e22bf6211ae5f68f2dd593bd2"
+    },
+    "plc-floating-point-tolerance": {
+      "publishedDate": "2026-09-17",
+      "updatedDate": "2026-10-12",
+      "dateSource": "git-history",
+      "publishedCommit": "be0d26a2f74681e134667847cbc3bb64586dc02b",
+      "updatedCommit": "b8d5a22b44fb3a2558495e12fea535b576f518bd"
+    },
+    "plc-forcing-vs-simulated-input": {
+      "publishedDate": "2026-09-17",
+      "updatedDate": "2026-09-28",
+      "dateSource": "git-history",
+      "publishedCommit": "be0d26a2f74681e134667847cbc3bb64586dc02b",
+      "updatedCommit": "6fa6abb566d80f2e22bf6211ae5f68f2dd593bd2"
+    },
+    "plc-minimal-reproduction-module-offset": {
+      "publishedDate": "2026-09-17",
+      "updatedDate": "2026-09-28",
+      "dateSource": "git-history",
+      "publishedCommit": "be0d26a2f74681e134667847cbc3bb64586dc02b",
+      "updatedCommit": "6fa6abb566d80f2e22bf6211ae5f68f2dd593bd2"
+    },
+    "plc-parameter-snapshot": {
+      "publishedDate": "2026-09-17",
+      "updatedDate": "2026-09-28",
+      "dateSource": "git-history",
+      "publishedCommit": "be0d26a2f74681e134667847cbc3bb64586dc02b",
+      "updatedCommit": "6fa6abb566d80f2e22bf6211ae5f68f2dd593bd2"
+    },
+    "plc-periodic-event-accumulated-timing-error": {
+      "publishedDate": "2026-09-17",
+      "updatedDate": "2026-09-28",
+      "dateSource": "git-history",
+      "publishedCommit": "be0d26a2f74681e134667847cbc3bb64586dc02b",
+      "updatedCommit": "61b465ba770cbb6f17737b8bb69c21c844083a71"
+    },
+    "plc-request-accept-result-handshake": {
+      "publishedDate": "2026-09-17",
+      "updatedDate": "2026-09-28",
+      "dateSource": "git-history",
+      "publishedCommit": "be0d26a2f74681e134667847cbc3bb64586dc02b",
+      "updatedCommit": "6fa6abb566d80f2e22bf6211ae5f68f2dd593bd2"
+    },
+    "plc-rising-falling-edge-button-event": {
+      "publishedDate": "2026-09-17",
+      "updatedDate": "2026-10-12",
+      "dateSource": "git-history",
+      "publishedCommit": "be0d26a2f74681e134667847cbc3bb64586dc02b",
+      "updatedCommit": "fc9b5163dcb5decb908670db8c02a3eaf2f1f894"
+    },
+    "plc-rounding-negative-display-fixed-point": {
+      "publishedDate": "2026-09-17",
+      "updatedDate": "2026-10-12",
+      "dateSource": "git-history",
+      "publishedCommit": "be0d26a2f74681e134667847cbc3bb64586dc02b",
+      "updatedCommit": "b8d5a22b44fb3a2558495e12fea535b576f518bd"
+    },
+    "plc-scan-cycle-io-refresh": {
+      "publishedDate": "2026-09-17",
+      "updatedDate": "2026-10-12",
+      "dateSource": "git-history",
+      "publishedCommit": "be0d26a2f74681e134667847cbc3bb64586dc02b",
+      "updatedCommit": "fc9b5163dcb5decb908670db8c02a3eaf2f1f894"
+    },
+    "plc-self-hold-set-reset-q-series": {
+      "publishedDate": "2026-09-17",
+      "updatedDate": "2026-09-28",
+      "dateSource": "git-history",
+      "publishedCommit": "be0d26a2f74681e134667847cbc3bb64586dc02b",
+      "updatedCommit": "6fa6abb566d80f2e22bf6211ae5f68f2dd593bd2"
+    },
+    "plc-simulation-abnormal-scenario-matrix": {
+      "publishedDate": "2026-09-17",
+      "updatedDate": "2026-09-28",
+      "dateSource": "git-history",
+      "publishedCommit": "be0d26a2f74681e134667847cbc3bb64586dc02b",
+      "updatedCommit": "6fa6abb566d80f2e22bf6211ae5f68f2dd593bd2"
+    },
+    "plc-state-entry-once": {
+      "publishedDate": "2026-09-17",
+      "updatedDate": "2026-09-28",
+      "dateSource": "git-history",
+      "publishedCommit": "be0d26a2f74681e134667847cbc3bb64586dc02b",
+      "updatedCommit": "6fa6abb566d80f2e22bf6211ae5f68f2dd593bd2"
+    },
+    "plc-state-machine-three-step-sequence": {
+      "publishedDate": "2026-09-17",
+      "updatedDate": "2026-09-28",
+      "dateSource": "git-history",
+      "publishedCommit": "be0d26a2f74681e134667847cbc3bb64586dc02b",
+      "updatedCommit": "6fa6abb566d80f2e22bf6211ae5f68f2dd593bd2"
+    },
+    "plc-step-timeout-recovery": {
+      "publishedDate": "2026-09-17",
+      "updatedDate": "2026-09-28",
+      "dateSource": "git-history",
+      "publishedCommit": "be0d26a2f74681e134667847cbc3bb64586dc02b",
+      "updatedCommit": "6fa6abb566d80f2e22bf6211ae5f68f2dd593bd2"
+    },
+    "plc-subprogram-call-frequency-edge-timer": {
+      "publishedDate": "2026-09-17",
+      "updatedDate": "2026-09-28",
+      "dateSource": "git-history",
+      "publishedCommit": "be0d26a2f74681e134667847cbc3bb64586dc02b",
+      "updatedCommit": "6fa6abb566d80f2e22bf6211ae5f68f2dd593bd2"
+    },
+    "plc-table-piecewise-linear-interpolation": {
+      "publishedDate": "2026-09-17",
+      "updatedDate": "2026-09-28",
+      "dateSource": "git-history",
+      "publishedCommit": "be0d26a2f74681e134667847cbc3bb64586dc02b",
+      "updatedCommit": "e1af99c62c5fa0c7e2bf8e4b680baa7efb7e081d"
+    },
+    "plc-task-timeout-reentry-backlog": {
+      "publishedDate": "2026-09-17",
+      "updatedDate": "2026-09-28",
+      "dateSource": "git-history",
+      "publishedCommit": "be0d26a2f74681e134667847cbc3bb64586dc02b",
+      "updatedCommit": "6fa6abb566d80f2e22bf6211ae5f68f2dd593bd2"
+    },
+    "plc-tick-wrap-elapsed-time": {
+      "publishedDate": "2026-09-17",
+      "updatedDate": "2026-09-28",
+      "dateSource": "git-history",
+      "publishedCommit": "be0d26a2f74681e134667847cbc3bb64586dc02b",
+      "updatedCommit": "61b465ba770cbb6f17737b8bb69c21c844083a71"
+    },
+    "plc-ton-tof-tp-timer-selection": {
+      "publishedDate": "2026-09-17",
+      "updatedDate": "2026-10-12",
+      "dateSource": "git-history",
+      "publishedCommit": "be0d26a2f74681e134667847cbc3bb64586dc02b",
+      "updatedCommit": "a3cce87f2ed68bbc75d410cf2d3d63e6cf09ae8a"
+    },
+    "plc-trace-single-scan-flag-sampling": {
+      "publishedDate": "2026-09-17",
+      "updatedDate": "2026-09-28",
+      "dateSource": "git-history",
+      "publishedCommit": "be0d26a2f74681e134667847cbc3bb64586dc02b",
+      "updatedCommit": "6fa6abb566d80f2e22bf6211ae5f68f2dd593bd2"
+    },
+    "plc-watchdog-timeout-diagnosis": {
+      "publishedDate": "2026-09-17",
+      "updatedDate": "2026-09-28",
+      "dateSource": "git-history",
+      "publishedCommit": "be0d26a2f74681e134667847cbc3bb64586dc02b",
+      "updatedCommit": "6fa6abb566d80f2e22bf6211ae5f68f2dd593bd2"
+    },
+    "receive-buffer-throughput-test": {
+      "publishedDate": "2026-09-21",
+      "updatedDate": "2026-09-28",
+      "dateSource": "git-history",
+      "publishedCommit": "54a3cb4590a0ea5d15cd3104aec046acecbaf9b3",
+      "updatedCommit": "6fa6abb566d80f2e22bf6211ae5f68f2dd593bd2"
+    },
+    "recipe-canonical-diff-confirmation-revision": {
+      "publishedDate": "2026-09-21",
+      "updatedDate": "2026-09-28",
+      "dateSource": "git-history",
+      "publishedCommit": "54a3cb4590a0ea5d15cd3104aec046acecbaf9b3",
+      "updatedCommit": "6fa6abb566d80f2e22bf6211ae5f68f2dd593bd2"
+    },
+    "recipe-schema-complete-error-list": {
+      "publishedDate": "2026-09-21",
+      "updatedDate": "2026-09-28",
+      "dateSource": "git-history",
+      "publishedCommit": "54a3cb4590a0ea5d15cd3104aec046acecbaf9b3",
+      "updatedCommit": "6fa6abb566d80f2e22bf6211ae5f68f2dd593bd2"
+    },
+    "recipe-select-verify-apply-device": {
+      "publishedDate": "2026-09-21",
+      "updatedDate": "2026-09-28",
+      "dateSource": "git-history",
+      "publishedCommit": "54a3cb4590a0ea5d15cd3104aec046acecbaf9b3",
+      "updatedCommit": "6fa6abb566d80f2e22bf6211ae5f68f2dd593bd2"
+    },
+    "repeated-alarm-clear-condition": {
+      "publishedDate": "2026-09-21",
+      "updatedDate": "2026-09-28",
+      "dateSource": "git-history",
+      "publishedCommit": "54a3cb4590a0ea5d15cd3104aec046acecbaf9b3",
+      "updatedCommit": "6fa6abb566d80f2e22bf6211ae5f68f2dd593bd2"
+    },
+    "resampling-original-imputed-flags": {
+      "publishedDate": "2026-09-21",
+      "updatedDate": "2026-10-12",
+      "dateSource": "git-history",
+      "publishedCommit": "54a3cb4590a0ea5d15cd3104aec046acecbaf9b3",
+      "updatedCommit": "a3cce87f2ed68bbc75d410cf2d3d63e6cf09ae8a"
+    },
+    "retry-backoff-jitter-circuit-breaker": {
+      "publishedDate": "2026-09-21",
+      "updatedDate": "2026-09-28",
+      "dateSource": "git-history",
+      "publishedCommit": "54a3cb4590a0ea5d15cd3104aec046acecbaf9b3",
+      "updatedCommit": "6fa6abb566d80f2e22bf6211ae5f68f2dd593bd2"
+    },
+    "rs485-no-response-troubleshooting": {
+      "publishedDate": "2026-09-17",
+      "updatedDate": "2026-10-12",
+      "dateSource": "git-history",
+      "publishedCommit": "0ea8fa6b234141d1aa3479a521be717c0b20b6ca",
+      "updatedCommit": "b8d5a22b44fb3a2558495e12fea535b576f518bd"
+    },
+    "sampling-aliasing-frequency-validation": {
+      "publishedDate": "2026-09-21",
+      "updatedDate": "2026-09-28",
+      "dateSource": "git-history",
+      "publishedCommit": "54a3cb4590a0ea5d15cd3104aec046acecbaf9b3",
+      "updatedCommit": "91f72981e5c3f15cba4f2e059feb070a28444d6a"
+    },
+    "sampling-and-aggregation-periods": {
+      "publishedDate": "2026-09-17",
+      "updatedDate": "2026-10-12",
+      "dateSource": "git-history",
+      "publishedCommit": "be0d26a2f74681e134667847cbc3bb64586dc02b",
+      "updatedCommit": "a3cce87f2ed68bbc75d410cf2d3d63e6cf09ae8a"
+    },
+    "sensor-polarity-reverse-range": {
+      "publishedDate": "2026-09-21",
+      "updatedDate": "2026-09-28",
+      "dateSource": "git-history",
+      "publishedCommit": "54a3cb4590a0ea5d15cd3104aec046acecbaf9b3",
+      "updatedCommit": "c0f94187212fcde18e8bded0bb7cedccd34b4794"
+    },
+    "sensor-replacement-compatibility-calibration-check": {
+      "publishedDate": "2026-09-21",
+      "updatedDate": "2026-09-28",
+      "dateSource": "git-history",
+      "publishedCommit": "54a3cb4590a0ea5d15cd3104aec046acecbaf9b3",
+      "updatedCommit": "c0f94187212fcde18e8bded0bb7cedccd34b4794"
+    },
+    "sensor-step-response-acceptance": {
+      "publishedDate": "2026-09-21",
+      "updatedDate": "2026-09-28",
+      "dateSource": "git-history",
+      "publishedCommit": "54a3cb4590a0ea5d15cd3104aec046acecbaf9b3",
+      "updatedCommit": "c0f94187212fcde18e8bded0bb7cedccd34b4794"
+    },
+    "sensor-zero-drift-check-standard-trend": {
+      "publishedDate": "2026-09-21",
+      "updatedDate": "2026-09-28",
+      "dateSource": "git-history",
+      "publishedCommit": "54a3cb4590a0ea5d15cd3104aec046acecbaf9b3",
+      "updatedCommit": "2d9c7c97173cb274f6f8270975ff05ffa1c4a321"
+    },
+    "sequence-reuse-late-response": {
+      "publishedDate": "2026-09-21",
+      "updatedDate": "2026-10-12",
+      "dateSource": "git-history",
+      "publishedCommit": "54a3cb4590a0ea5d15cd3104aec046acecbaf9b3",
+      "updatedCommit": "a3cce87f2ed68bbc75d410cf2d3d63e6cf09ae8a"
+    },
+    "serial-ascii-stx-length-etx-framing": {
+      "publishedDate": "2026-09-21",
+      "updatedDate": "2026-09-28",
+      "dateSource": "git-history",
+      "publishedCommit": "54a3cb4590a0ea5d15cd3104aec046acecbaf9b3",
+      "updatedCommit": "6fa6abb566d80f2e22bf6211ae5f68f2dd593bd2"
+    },
+    "simulation-real-input-io-sensor": {
+      "publishedDate": "2026-09-21",
+      "updatedDate": "2026-09-28",
+      "dateSource": "git-history",
+      "publishedCommit": "54a3cb4590a0ea5d15cd3104aec046acecbaf9b3",
+      "updatedCommit": "6fa6abb566d80f2e22bf6211ae5f68f2dd593bd2"
+    },
+    "wireshark-modbus-tcp-opc-ua-offline-packet-walkthrough": {
+      "publishedDate": "2026-09-17",
+      "updatedDate": "2026-10-12",
+      "dateSource": "git-history",
+      "publishedCommit": "be0d26a2f74681e134667847cbc3bb64586dc02b",
+      "updatedCommit": "a3cce87f2ed68bbc75d410cf2d3d63e6cf09ae8a"
+    },
+    "xca-ecu-https-certificate-setup": {
+      "publishedDate": "2026-10-07",
+      "updatedDate": "2026-10-07",
+      "dateSource": "git-history",
+      "publishedCommit": "3ec511fc3f2ba2e7b4f989846f6176ad5f285b8a",
+      "updatedCommit": "3ec511fc3f2ba2e7b4f989846f6176ad5f285b8a"
+    }
+  }
+}

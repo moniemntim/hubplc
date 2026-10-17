@@ -56,7 +56,7 @@ async function waitForWorker(base, worker, output) {
   );
 }
 
-test('legacy tool paths use one permanent redirect and preserve the query', async () => {
+void test('legacy tool paths use one permanent redirect and preserve the query', async () => {
   const port = await reservePort();
   const base = `http://127.0.0.1:${port}`;
   const worker = spawn(
@@ -129,7 +129,7 @@ test('legacy tool paths use one permanent redirect and preserve the query', asyn
   }
 });
 
-test('Worker-first routes include the legacy redirect sources', async () => {
+void test('Worker-first routes include the legacy redirect sources', async () => {
   const wrangler = await readFile('deployment/wrangler.jsonc', 'utf8');
   for (const [source] of redirects)
     assert.match(wrangler, new RegExp(`"${source}"`));

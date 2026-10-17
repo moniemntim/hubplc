@@ -45,6 +45,9 @@ export default function RootLayout({
               <Link href="/articles">
                 <LocalizedText zh="PLC 文章" en="PLC Articles" />
               </Link>
+              <Link href="/excel-formulas">
+                <LocalizedText zh="Excel 教學" en="Excel Guides" />
+              </Link>
             </LocalizedNav>
           </header>
           <div id="content">{children}</div>

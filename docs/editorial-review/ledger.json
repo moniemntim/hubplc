@@ -1,5 +1,7 @@
 {
   "scope": "全部發布文章；每篇需閱讀正文，機器掃描不等於完成",
+  "lastFullAuditDate": "2026-10-16",
+  "lastFullAuditScope": "117 篇 reviewed-local 公開文章；逐篇核對讀者任務、可重現步驟、來源、版本、截圖、執行紀錄與實體設備證據",
   "articles": {
     "0-10v-analog-load-ground-response-open-circuit": {
       "status": "reviewed-local",
@@ -1053,6 +1055,306 @@
       "change": "逐段審查既有 XCA、固定 IP SAN、Windows 根憑證匯入與瀏覽器驗證流程；不改動原文。19 張本機截圖皆存在且與圖號一一對應。",
       "verification": "全文、front matter 與 19/19 本機圖片路徑核對；XCA Step by Step、XCA Certificate Input Dialog、Chrome DevTools Security 三個引用網址於 2026-10-12 回應 HTTP 200；prepare-articles 產出117篇公開文章。來源與PNG原始位元組未見 PEM 私鑰標記或密碼/API key/secret/token 的指派格式；未執行OCR或實機ECU/Windows部署驗證。",
       "hardwareVerified": false
+    },
+    "excel-and": {
+      "status": "reviewed-local",
+      "batch": 39,
+      "reviewDate": "2026-10-17",
+      "sha256": "68314c213b3512967c61722fac814991cf2c1a6359c77bbbd3c0e3dd76d5d0f0",
+      "change": "依作者原創教材轉製為可讀HTML；核對範例資料、主公式、正確結果、練習答案、官方來源與一張對應截圖。",
+      "verification": "作者本人聲明已在 Windows 版 Microsoft 365 與 Excel 2021 實際操作驗證；網站轉製另完成公式重算、來源連結及來源PDF視覺核對。",
+      "verificationKind": "software",
+      "applicationVerified": true,
+      "verifiedApplications": [
+        "Windows 版 Microsoft 365",
+        "Excel 2021"
+      ],
+      "verificationSource": "author-attestation"
+    },
+    "excel-average": {
+      "status": "reviewed-local",
+      "batch": 39,
+      "reviewDate": "2026-10-17",
+      "sha256": "e269d8f67c81b53d0c9d49f2bc46b2ea512b6bf49962e88f6994d549b28f3d04",
+      "change": "依作者原創教材轉製為可讀HTML；核對範例資料、主公式、正確結果、練習答案、官方來源與一張對應截圖。",
+      "verification": "作者本人聲明已在 Windows 版 Microsoft 365 與 Excel 2021 實際操作驗證；網站轉製另完成公式重算、來源連結及來源PDF視覺核對。",
+      "verificationKind": "software",
+      "applicationVerified": true,
+      "verifiedApplications": [
+        "Windows 版 Microsoft 365",
+        "Excel 2021"
+      ],
+      "verificationSource": "author-attestation"
+    },
+    "excel-count": {
+      "status": "reviewed-local",
+      "batch": 39,
+      "reviewDate": "2026-10-17",
+      "sha256": "caecc258a376e23da945000940fcdf4d205c77aadada4fad203e42cfd4fcd784",
+      "change": "依作者原創教材轉製為可讀HTML；核對範例資料、主公式、正確結果、練習答案、官方來源與一張對應截圖。",
+      "verification": "作者本人聲明已在 Windows 版 Microsoft 365 與 Excel 2021 實際操作驗證；網站轉製另完成公式重算、來源連結及來源PDF視覺核對。",
+      "verificationKind": "software",
+      "applicationVerified": true,
+      "verifiedApplications": [
+        "Windows 版 Microsoft 365",
+        "Excel 2021"
+      ],
+      "verificationSource": "author-attestation"
+    },
+    "excel-counta": {
+      "status": "reviewed-local",
+      "batch": 39,
+      "reviewDate": "2026-10-17",
+      "sha256": "e807832945f3cd83e6f063cb0ccf253173cb89d0ea55c0f14e3dbc07031e3809",
+      "change": "依作者原創教材轉製為可讀HTML；核對範例資料、主公式、正確結果、練習答案、官方來源與一張對應截圖。",
+      "verification": "作者本人聲明已在 Windows 版 Microsoft 365 與 Excel 2021 實際操作驗證；網站轉製另完成公式重算、來源連結及來源PDF視覺核對。",
+      "verificationKind": "software",
+      "applicationVerified": true,
+      "verifiedApplications": [
+        "Windows 版 Microsoft 365",
+        "Excel 2021"
+      ],
+      "verificationSource": "author-attestation"
+    },
+    "excel-countif": {
+      "status": "reviewed-local",
+      "batch": 39,
+      "reviewDate": "2026-10-17",
+      "sha256": "31b390b1cf2d6aa08e0aadf889f5e3fd1485238de61b13e47f66c122721ea9a8",
+      "change": "依作者原創教材轉製為可讀HTML；核對範例資料、主公式、正確結果、練習答案、官方來源與一張對應截圖。",
+      "verification": "作者本人聲明已在 Windows 版 Microsoft 365 與 Excel 2021 實際操作驗證；網站轉製另完成公式重算、來源連結及來源PDF視覺核對。",
+      "verificationKind": "software",
+      "applicationVerified": true,
+      "verifiedApplications": [
+        "Windows 版 Microsoft 365",
+        "Excel 2021"
+      ],
+      "verificationSource": "author-attestation"
+    },
+    "excel-countifs": {
+      "status": "reviewed-local",
+      "batch": 39,
+      "reviewDate": "2026-10-17",
+      "sha256": "83c580fa06b58b6212ec36e56f5e9961595ccfb531ff01c19ce0c70a928e9f26",
+      "change": "依作者原創教材轉製為可讀HTML；核對範例資料、主公式、正確結果、練習答案、官方來源與一張對應截圖。",
+      "verification": "作者本人聲明已在 Windows 版 Microsoft 365 與 Excel 2021 實際操作驗證；網站轉製另完成公式重算、來源連結及來源PDF視覺核對。",
+      "verificationKind": "software",
+      "applicationVerified": true,
+      "verifiedApplications": [
+        "Windows 版 Microsoft 365",
+        "Excel 2021"
+      ],
+      "verificationSource": "author-attestation"
+    },
+    "excel-if": {
+      "status": "reviewed-local",
+      "batch": 39,
+      "reviewDate": "2026-10-17",
+      "sha256": "22584dfaf68a46278574cea41b82e41686a346766d99e3e6d32d9a2acaa3b1f9",
+      "change": "依作者原創教材轉製為可讀HTML；核對範例資料、主公式、正確結果、練習答案、官方來源與一張對應截圖。",
+      "verification": "作者本人聲明已在 Windows 版 Microsoft 365 與 Excel 2021 實際操作驗證；網站轉製另完成公式重算、來源連結及來源PDF視覺核對。",
+      "verificationKind": "software",
+      "applicationVerified": true,
+      "verifiedApplications": [
+        "Windows 版 Microsoft 365",
+        "Excel 2021"
+      ],
+      "verificationSource": "author-attestation"
+    },
+    "excel-iferror": {
+      "status": "reviewed-local",
+      "batch": 39,
+      "reviewDate": "2026-10-17",
+      "sha256": "492576891a3f260af8d9940a8b92bbf6c3730df714d943b62fe8a7f0a080a585",
+      "change": "依作者原創教材轉製為可讀HTML；核對範例資料、主公式、正確結果、練習答案、官方來源與一張對應截圖。",
+      "verification": "作者本人聲明已在 Windows 版 Microsoft 365 與 Excel 2021 實際操作驗證；網站轉製另完成公式重算、來源連結及來源PDF視覺核對。",
+      "verificationKind": "software",
+      "applicationVerified": true,
+      "verifiedApplications": [
+        "Windows 版 Microsoft 365",
+        "Excel 2021"
+      ],
+      "verificationSource": "author-attestation"
+    },
+    "excel-left": {
+      "status": "reviewed-local",
+      "batch": 39,
+      "reviewDate": "2026-10-17",
+      "sha256": "e9c2bfe2d501e9e4f049c6aef5e98e76e3d598086cce13b25805c194df1f2a5e",
+      "change": "依作者原創教材轉製為可讀HTML；核對範例資料、主公式、正確結果、練習答案、官方來源與一張對應截圖。",
+      "verification": "作者本人聲明已在 Windows 版 Microsoft 365 與 Excel 2021 實際操作驗證；網站轉製另完成公式重算、來源連結及來源PDF視覺核對。",
+      "verificationKind": "software",
+      "applicationVerified": true,
+      "verifiedApplications": [
+        "Windows 版 Microsoft 365",
+        "Excel 2021"
+      ],
+      "verificationSource": "author-attestation"
+    },
+    "excel-len": {
+      "status": "reviewed-local",
+      "batch": 39,
+      "reviewDate": "2026-10-17",
+      "sha256": "7fc82ac24ee8d89706ad73827f435299a898797a82a66b93c60685c6b432f6f3",
+      "change": "依作者原創教材轉製為可讀HTML；核對範例資料、主公式、正確結果、練習答案、官方來源與一張對應截圖。",
+      "verification": "作者本人聲明已在 Windows 版 Microsoft 365 與 Excel 2021 實際操作驗證；網站轉製另完成公式重算、來源連結及來源PDF視覺核對。",
+      "verificationKind": "software",
+      "applicationVerified": true,
+      "verifiedApplications": [
+        "Windows 版 Microsoft 365",
+        "Excel 2021"
+      ],
+      "verificationSource": "author-attestation"
+    },
+    "excel-max": {
+      "status": "reviewed-local",
+      "batch": 39,
+      "reviewDate": "2026-10-17",
+      "sha256": "2ebb9ef99f86d1620c2c40bec0e88bf8ba507f031abad6b825e618b7c15fe814",
+      "change": "依作者原創教材轉製為可讀HTML；核對範例資料、主公式、正確結果、練習答案、官方來源與一張對應截圖。",
+      "verification": "作者本人聲明已在 Windows 版 Microsoft 365 與 Excel 2021 實際操作驗證；網站轉製另完成公式重算、來源連結及來源PDF視覺核對。",
+      "verificationKind": "software",
+      "applicationVerified": true,
+      "verifiedApplications": [
+        "Windows 版 Microsoft 365",
+        "Excel 2021"
+      ],
+      "verificationSource": "author-attestation"
+    },
+    "excel-mid": {
+      "status": "reviewed-local",
+      "batch": 39,
+      "reviewDate": "2026-10-17",
+      "sha256": "8cc1695687bc6e9f3bcbb78075134de944255af21848fd5bc40a3e41379ba705",
+      "change": "依作者原創教材轉製為可讀HTML；核對範例資料、主公式、正確結果、練習答案、官方來源與一張對應截圖。",
+      "verification": "作者本人聲明已在 Windows 版 Microsoft 365 與 Excel 2021 實際操作驗證；網站轉製另完成公式重算、來源連結及來源PDF視覺核對。",
+      "verificationKind": "software",
+      "applicationVerified": true,
+      "verifiedApplications": [
+        "Windows 版 Microsoft 365",
+        "Excel 2021"
+      ],
+      "verificationSource": "author-attestation"
+    },
+    "excel-min": {
+      "status": "reviewed-local",
+      "batch": 39,
+      "reviewDate": "2026-10-17",
+      "sha256": "4c98f21421eed58f7ac30fe685832bd64445ca98b88a4257a855f37c4bb48703",
+      "change": "依作者原創教材轉製為可讀HTML；核對範例資料、主公式、正確結果、練習答案、官方來源與一張對應截圖。",
+      "verification": "作者本人聲明已在 Windows 版 Microsoft 365 與 Excel 2021 實際操作驗證；網站轉製另完成公式重算、來源連結及來源PDF視覺核對。",
+      "verificationKind": "software",
+      "applicationVerified": true,
+      "verifiedApplications": [
+        "Windows 版 Microsoft 365",
+        "Excel 2021"
+      ],
+      "verificationSource": "author-attestation"
+    },
+    "excel-or": {
+      "status": "reviewed-local",
+      "batch": 39,
+      "reviewDate": "2026-10-17",
+      "sha256": "a00f24f06752529ba3379db0bafef663a1ab168e648db7a7d7825272dc83cd3b",
+      "change": "依作者原創教材轉製為可讀HTML；核對範例資料、主公式、正確結果、練習答案、官方來源與一張對應截圖。",
+      "verification": "作者本人聲明已在 Windows 版 Microsoft 365 與 Excel 2021 實際操作驗證；網站轉製另完成公式重算、來源連結及來源PDF視覺核對。",
+      "verificationKind": "software",
+      "applicationVerified": true,
+      "verifiedApplications": [
+        "Windows 版 Microsoft 365",
+        "Excel 2021"
+      ],
+      "verificationSource": "author-attestation"
+    },
+    "excel-right": {
+      "status": "reviewed-local",
+      "batch": 39,
+      "reviewDate": "2026-10-17",
+      "sha256": "66eaafa7476e790064010ceb1c10d9fb2a8d837c2ff547895e48d9d87742272b",
+      "change": "依作者原創教材轉製為可讀HTML；核對範例資料、主公式、正確結果、練習答案、官方來源與一張對應截圖。",
+      "verification": "作者本人聲明已在 Windows 版 Microsoft 365 與 Excel 2021 實際操作驗證；網站轉製另完成公式重算、來源連結及來源PDF視覺核對。",
+      "verificationKind": "software",
+      "applicationVerified": true,
+      "verifiedApplications": [
+        "Windows 版 Microsoft 365",
+        "Excel 2021"
+      ],
+      "verificationSource": "author-attestation"
+    },
+    "excel-round": {
+      "status": "reviewed-local",
+      "batch": 39,
+      "reviewDate": "2026-10-17",
+      "sha256": "4e0f615f63751be39be79dc1201363749aa171136076df353d7bfcad1f7ee584",
+      "change": "依作者原創教材轉製為可讀HTML；核對範例資料、主公式、正確結果、練習答案、官方來源與一張對應截圖。",
+      "verification": "作者本人聲明已在 Windows 版 Microsoft 365 與 Excel 2021 實際操作驗證；網站轉製另完成公式重算、來源連結及來源PDF視覺核對。",
+      "verificationKind": "software",
+      "applicationVerified": true,
+      "verifiedApplications": [
+        "Windows 版 Microsoft 365",
+        "Excel 2021"
+      ],
+      "verificationSource": "author-attestation"
+    },
+    "excel-sumif": {
+      "status": "reviewed-local",
+      "batch": 39,
+      "reviewDate": "2026-10-17",
+      "sha256": "d8dbfdba7a24a8a53bc58cded395850c84a51de0c0cbf1c349907fd0dd8bfe98",
+      "change": "依作者原創教材轉製為可讀HTML；核對範例資料、主公式、正確結果、練習答案、官方來源與一張對應截圖。",
+      "verification": "作者本人聲明已在 Windows 版 Microsoft 365 與 Excel 2021 實際操作驗證；網站轉製另完成公式重算、來源連結及來源PDF視覺核對。",
+      "verificationKind": "software",
+      "applicationVerified": true,
+      "verifiedApplications": [
+        "Windows 版 Microsoft 365",
+        "Excel 2021"
+      ],
+      "verificationSource": "author-attestation"
+    },
+    "excel-sumifs": {
+      "status": "reviewed-local",
+      "batch": 39,
+      "reviewDate": "2026-10-17",
+      "sha256": "a0f748103057684e1106ef39b0de995d2aece90a695858fc8fa412406a09d941",
+      "change": "依作者原創教材轉製為可讀HTML；核對範例資料、主公式、正確結果、練習答案、官方來源與一張對應截圖。",
+      "verification": "作者本人聲明已在 Windows 版 Microsoft 365 與 Excel 2021 實際操作驗證；網站轉製另完成公式重算、來源連結及來源PDF視覺核對。",
+      "verificationKind": "software",
+      "applicationVerified": true,
+      "verifiedApplications": [
+        "Windows 版 Microsoft 365",
+        "Excel 2021"
+      ],
+      "verificationSource": "author-attestation"
+    },
+    "excel-vlookup": {
+      "status": "reviewed-local",
+      "batch": 39,
+      "reviewDate": "2026-10-17",
+      "sha256": "449f6ede22fac3f14d4cef84b01c8d342ba76faa1c4ed6b90cb97e28c89d0402",
+      "change": "依作者原創教材轉製為可讀HTML；核對範例資料、主公式、正確結果、練習答案、官方來源與一張對應截圖。",
+      "verification": "作者本人聲明已在 Windows 版 Microsoft 365 與 Excel 2021 實際操作驗證；網站轉製另完成公式重算、來源連結及來源PDF視覺核對。",
+      "verificationKind": "software",
+      "applicationVerified": true,
+      "verifiedApplications": [
+        "Windows 版 Microsoft 365",
+        "Excel 2021"
+      ],
+      "verificationSource": "author-attestation"
+    },
+    "excel-xlookup": {
+      "status": "reviewed-local",
+      "batch": 39,
+      "reviewDate": "2026-10-17",
+      "sha256": "5546187065005e6b615a2d6626d885978909a5e35e25604de79f1d24db3fab49",
+      "change": "依作者原創教材轉製為可讀HTML；核對範例資料、主公式、正確結果、練習答案、官方來源與一張對應截圖。",
+      "verification": "作者本人聲明已在 Windows 版 Microsoft 365 與 Excel 2021 實際操作驗證；網站轉製另完成公式重算、來源連結及來源PDF視覺核對。",
+      "verificationKind": "software",
+      "applicationVerified": true,
+      "verifiedApplications": [
+        "Windows 版 Microsoft 365",
+        "Excel 2021"
+      ],
+      "verificationSource": "author-attestation"
     }
   }
 }

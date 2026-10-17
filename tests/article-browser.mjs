@@ -11,7 +11,9 @@ const articles = JSON.parse(
 );
 const lastPage = Math.ceil(articles.length / 12);
 const lastPageCount = articles.length - (lastPage - 1) * 12;
-const oldestDate = articles.map((article) => article.date).sort()[0];
+const oldestUpdatedDate = articles
+  .map((article) => article.updatedDate)
+  .sort()[0];
 const exampleSlug = 'blackbox-observable';
 const workPathSlugs = [
   'rs485-no-response-troubleshooting',
@@ -145,7 +147,7 @@ try {
   ).toBeVisible();
   await page.getByRole('button', { name: '顯示所有文章' }).click();
   await page.getByRole('combobox', { name: '文章排序' }).selectOption('oldest');
-  await expect(cards.first()).toContainText(oldestDate);
+  await expect(cards.first()).toContainText(oldestUpdatedDate);
   await page.getByRole('combobox', { name: '文章排序' }).selectOption('newest');
   await page.getByRole('button', { name: '卡片顯示' }).click();
   await expect(page.locator('.library-articles-grid')).toBeVisible();

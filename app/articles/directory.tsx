@@ -478,7 +478,11 @@ export default function ArticleDirectory({
                 </p>
                 <div className="library-article-footer">
                   <span>
-                    <time dateTime={article.date}>{article.date}</time>
+                    <time dateTime={article.updatedDate}>
+                      {article.updatedDate > article.publishedDate
+                        ? `更新 ${article.updatedDate}`
+                        : `發布 ${article.publishedDate}`}
+                    </time>
                     <span aria-hidden="true"> · </span>約{' '}
                     {article.readingMinutes} 分鐘
                   </span>

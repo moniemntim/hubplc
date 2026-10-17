@@ -1,6 +1,6 @@
 {
   "totals": {
-    "reviewed-local": 117,
+    "reviewed-local": 137,
     "unreviewed": 333,
     "draft": 1
   },
@@ -300,6 +300,86 @@
     {
       "slug": "event-time-versus-receive-time",
       "status": "unreviewed"
+    },
+    {
+      "slug": "excel-and",
+      "status": "reviewed-local"
+    },
+    {
+      "slug": "excel-average",
+      "status": "reviewed-local"
+    },
+    {
+      "slug": "excel-count",
+      "status": "reviewed-local"
+    },
+    {
+      "slug": "excel-counta",
+      "status": "reviewed-local"
+    },
+    {
+      "slug": "excel-countif",
+      "status": "reviewed-local"
+    },
+    {
+      "slug": "excel-countifs",
+      "status": "reviewed-local"
+    },
+    {
+      "slug": "excel-if",
+      "status": "reviewed-local"
+    },
+    {
+      "slug": "excel-iferror",
+      "status": "reviewed-local"
+    },
+    {
+      "slug": "excel-left",
+      "status": "reviewed-local"
+    },
+    {
+      "slug": "excel-len",
+      "status": "reviewed-local"
+    },
+    {
+      "slug": "excel-max",
+      "status": "reviewed-local"
+    },
+    {
+      "slug": "excel-mid",
+      "status": "reviewed-local"
+    },
+    {
+      "slug": "excel-min",
+      "status": "reviewed-local"
+    },
+    {
+      "slug": "excel-or",
+      "status": "reviewed-local"
+    },
+    {
+      "slug": "excel-right",
+      "status": "reviewed-local"
+    },
+    {
+      "slug": "excel-round",
+      "status": "reviewed-local"
+    },
+    {
+      "slug": "excel-sumif",
+      "status": "reviewed-local"
+    },
+    {
+      "slug": "excel-sumifs",
+      "status": "reviewed-local"
+    },
+    {
+      "slug": "excel-vlookup",
+      "status": "reviewed-local"
+    },
+    {
+      "slug": "excel-xlookup",
+      "status": "reviewed-local"
     },
     {
       "slug": "export-failure-classification-atomic-publish",

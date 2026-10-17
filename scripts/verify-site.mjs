@@ -7,6 +7,7 @@ const paths = [
   '/',
   '/tool',
   '/articles',
+  '/excel-formulas',
   '/about',
   '/privacy',
   ...tools.map((t) => `/tool/${t.slug}`),

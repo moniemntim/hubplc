@@ -27,6 +27,7 @@ import { practiceModes } from '@/lib/plc-practice';
 import ArticleReadingNav, {
   ArticleDirectoryLink,
 } from '@/components/article-reading-nav';
+import ExcelCourseNav from '@/components/excel-course-nav';
 import './article-reader.css';
 
 type ArticleTocItem = {
@@ -35,17 +36,32 @@ type ArticleTocItem = {
   level: 2 | 3;
 };
 
+type ArticleVerification = {
+  kind: 'industrial' | 'software';
+  reviewDate: string;
+  evidence: string;
+  screenshotCount: number;
+  hardwareVerified?: boolean;
+  simulatorVerified?: boolean;
+  applicationVerified?: boolean;
+  verifiedApplications?: string[];
+  verificationSource?: 'author-attestation';
+};
+
 type ArticleData = {
   title: string;
   date: string;
   author: string;
   description: string;
+  publishedDate: string;
+  updatedDate: string;
   html: string;
   slug?: string;
   category?: string;
   tags?: string[];
   readingMinutes?: number;
   toc?: ArticleTocItem[];
+  verification: ArticleVerification;
 };
 
 type RelatedArticle = {
@@ -56,6 +72,8 @@ type RelatedArticle = {
   author: string;
   category: string;
   readingMinutes: number;
+  publishedDate: string;
+  updatedDate: string;
   tags?: string[];
 };
 
@@ -88,9 +106,24 @@ export default function Article({
   const ioPathLessonMode = article.slug
     ? ioPathLessonModes[article.slug as keyof typeof ioPathLessonModes]
     : undefined;
+  const articleUrl = `https://hubplc.com/articles/${article.slug}`;
+  const jsonLd = JSON.stringify({
+    '@context': 'https://schema.org',
+    '@type': 'TechArticle',
+    headline: article.title,
+    description: article.description,
+    datePublished: article.publishedDate,
+    dateModified: article.updatedDate,
+    author: { '@type': 'Person', name: article.author },
+    mainEntityOfPage: articleUrl,
+  }).replace(/</g, '\\u003c');
 
   return (
     <main className="article-reader">
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: jsonLd }}
+      />
       <div className="article-reader__frame">
         <header className="article-reader__header">
           <ArticleDirectoryLink />
@@ -98,7 +131,20 @@ export default function Article({
           <h1>{article.title}</h1>
           <div className="article-reader__meta" aria-label="文章資訊">
             <span className="article-reader__category">{category}</span>
-            <time dateTime={article.date}>{article.date}</time>
+            <span>
+              發布：
+              <time dateTime={article.publishedDate}>
+                {article.publishedDate}
+              </time>
+            </span>
+            {article.updatedDate > article.publishedDate ? (
+              <span>
+                更新：
+                <time dateTime={article.updatedDate}>
+                  {article.updatedDate}
+                </time>
+              </span>
+            ) : null}
             <span>作者：{article.author}</span>
             {article.readingMinutes ? (
               <span>預估 {article.readingMinutes} 分鐘閱讀</span>
@@ -106,6 +152,81 @@ export default function Article({
           </div>
           <p className="article-reader__description">{article.description}</p>
         </header>
+
+        <section
+          className="article-reader__verification"
+          aria-labelledby="article-verification-heading"
+        >
+          <div>
+            <p className="article-reader__eyebrow">EVIDENCE / LIMITS</p>
+            <h2 id="article-verification-heading">本頁證據與限制</h2>
+          </div>
+          <dl>
+            <div>
+              <dt>內容核對</dt>
+              <dd>{article.verification.reviewDate}</dd>
+            </div>
+            {article.verification.kind === 'software' ? (
+              <>
+                <div>
+                  <dt>作者實際操作</dt>
+                  <dd>
+                    {article.verification.applicationVerified
+                      ? '已驗證'
+                      : '未驗證'}
+                  </dd>
+                </div>
+                <div>
+                  <dt>驗證環境</dt>
+                  <dd>
+                    {article.verification.verifiedApplications?.join('、')}
+                  </dd>
+                </div>
+              </>
+            ) : (
+              <>
+                <div>
+                  <dt>實體設備</dt>
+                  <dd>
+                    {article.verification.hardwareVerified
+                      ? '已附實測紀錄'
+                      : '未實測'}
+                  </dd>
+                </div>
+                <div>
+                  <dt>原廠環境（如適用）</dt>
+                  <dd>
+                    {article.verification.simulatorVerified
+                      ? '已附版本與執行紀錄'
+                      : '未附模擬器／編譯器執行紀錄'}
+                  </dd>
+                </div>
+              </>
+            )}
+            <div>
+              <dt>頁內操作截圖</dt>
+              <dd>
+                {article.verification.screenshotCount
+                  ? `${article.verification.screenshotCount} 張`
+                  : '未附'}
+              </dd>
+            </div>
+          </dl>
+          <details>
+            <summary>查看目前核對項目</summary>
+            <p>{article.verification.evidence}</p>
+            {article.verification.kind === 'software' ? (
+              <p>
+                實測狀態依作者本人聲明；網站轉製另核對公式、結果、來源連結與版面。
+              </p>
+            ) : (
+              <p>
+                瀏覽器、Node.js 或離線模型通過，不等於
+                PLC／HMI／現場設備已實測。
+              </p>
+            )}
+          </details>
+        </section>
 
         {article.slug && practiceModes[article.slug] ? (
           <PlcPractice mode={practiceModes[article.slug]} />
@@ -206,6 +327,7 @@ export default function Article({
             dangerouslySetInnerHTML={{ __html: article.html }}
           />
         </div>
+        {article.slug ? <ExcelCourseNav currentSlug={article.slug} /> : null}
         <AdSense />
 
         <footer className="article-reader__footer">

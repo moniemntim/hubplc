@@ -3,14 +3,17 @@ import { tools } from '../lib/tools/registry.ts';
 const articles = JSON.parse(
   await fs.readFile('lib/articles.generated.json', 'utf8'),
 );
-const paths = [
-  '/',
-  '/tool',
-  '/articles',
-  '/about',
-  '/privacy',
-  ...tools.map((tool) => '/tool/' + tool.slug),
-  ...articles.map((article) => '/articles/' + article.slug),
+const entries = [
+  ...['/', '/tool', '/articles', '/excel-formulas', '/about', '/privacy'].map(
+    (path) => ({
+      path,
+    }),
+  ),
+  ...tools.map((tool) => ({ path: '/tool/' + tool.slug })),
+  ...articles.map((article) => ({
+    path: '/articles/' + article.slug,
+    lastmod: article.updatedDate,
+  })),
 ];
 const escape = (value) =>
   value
@@ -21,12 +24,16 @@ const escape = (value) =>
 await fs.writeFile(
   'public/sitemap.xml',
   '<?xml version="1.0" encoding="UTF-8"?>\n<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n' +
-    paths
+    entries
       .map(
-        (path) =>
-          '<url><loc>' + escape('https://hubplc.com' + path) + '</loc></url>',
+        ({ path, lastmod }) =>
+          '<url><loc>' +
+          escape('https://hubplc.com' + path) +
+          '</loc>' +
+          (lastmod ? '<lastmod>' + escape(lastmod) + '</lastmod>' : '') +
+          '</url>',
       )
       .join('\n') +
     '\n</urlset>\n',
 );
-console.log('Prepared sitemap with ' + paths.length + ' URLs.');
+console.log('Prepared sitemap with ' + entries.length + ' URLs.');

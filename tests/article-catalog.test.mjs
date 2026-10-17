@@ -22,6 +22,8 @@ const makeArticle = (
   description: '技術筆記',
   category,
   date,
+  publishedDate: date,
+  updatedDate: date,
   author: '作者',
   tags: [],
   readingMinutes: 2,
@@ -85,6 +87,26 @@ void test('catalog ranks title matches above body matches and sorts dates determ
       ({ article }) => article.slug,
     ),
     ['body', 'title', 'older'],
+  );
+});
+
+void test('catalog date sorting prefers truthful update dates without changing publication dates', () => {
+  const olderUpdated = {
+    ...makeArticle('older-updated', '較早更新'),
+    publishedDate: '2026-09-17',
+    updatedDate: '2026-09-28',
+  };
+  const newerUpdated = {
+    ...makeArticle('newer-updated', '較晚更新'),
+    publishedDate: '2026-09-17',
+    updatedDate: '2026-10-12',
+  };
+  assert.deepEqual(
+    filterArticles([olderUpdated, newerUpdated], {
+      ...DEFAULT_FILTERS,
+      sort: 'newest',
+    }).map(({ article }) => article.slug),
+    ['newer-updated', 'older-updated'],
   );
 });
 

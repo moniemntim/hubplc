@@ -3,6 +3,8 @@ export type ArticleSummary = {
   title: string;
   description: string;
   date: string;
+  publishedDate: string;
+  updatedDate: string;
   author: string;
   category: string;
   tags: string[];
@@ -30,6 +32,7 @@ export const CATEGORY_ORDER = [
   '電氣介面與配線',
   'HMI 畫面與操作',
   '資料記錄與報表',
+  'Excel 公式教學',
   '維護與故障排查',
 ];
 export function normalizeSearch(value: string) {
@@ -112,7 +115,9 @@ export function filterArticles(
         );
       if (filters.sort === 'relevance' && a.score !== b.score)
         return b.score - a.score;
-      const date = a.article.date.localeCompare(b.article.date);
+      const date = (a.article.updatedDate ?? a.article.date).localeCompare(
+        b.article.updatedDate ?? b.article.date,
+      );
       return (
         (filters.sort === 'oldest' ? date : -date) ||
         a.article.slug.localeCompare(b.article.slug)

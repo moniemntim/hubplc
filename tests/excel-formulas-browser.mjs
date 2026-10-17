@@ -103,8 +103,12 @@ try {
       await expect(lessonImage).toHaveCount(1);
       await lessonImage.scrollIntoViewIfNeeded();
       await expect
-        .poll(() => lessonImage.evaluate((image) => image.naturalWidth))
-        .toBeGreaterThan(0);
+        .poll(() =>
+          lessonImage.evaluate(
+            (image) => image.complete && image.naturalWidth > 0,
+          ),
+        )
+        .toBe(true);
       const imageState = await page
         .locator('.article-reader__content img')
         .evaluate((image) => ({

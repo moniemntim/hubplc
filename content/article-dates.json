@@ -1,6 +1,6 @@
 {
   "purpose": "Truthful article dates from Git history or explicit release records. Publication dates must not be redistributed for appearance.",
-  "generatedAt": "2026-10-17T14:21:22.311Z",
+  "generatedAt": "2026-10-17T21:21:25.161Z",
   "articles": {
     "0-10v-analog-load-ground-response-open-circuit": {
       "publishedDate": "2026-09-17",
@@ -184,6 +184,11 @@
       "publishedCommit": "54a3cb4590a0ea5d15cd3104aec046acecbaf9b3",
       "updatedCommit": "6fa6abb566d80f2e22bf6211ae5f68f2dd593bd2"
     },
+    "excel-abs": {
+      "publishedDate": "2026-10-18",
+      "updatedDate": "2026-10-18",
+      "dateSource": "release-record"
+    },
     "excel-and": {
       "publishedDate": "2026-10-17",
       "updatedDate": "2026-10-17",
@@ -192,6 +197,16 @@
     "excel-average": {
       "publishedDate": "2026-10-17",
       "updatedDate": "2026-10-17",
+      "dateSource": "release-record"
+    },
+    "excel-averageif": {
+      "publishedDate": "2026-10-18",
+      "updatedDate": "2026-10-18",
+      "dateSource": "release-record"
+    },
+    "excel-averageifs": {
+      "publishedDate": "2026-10-18",
+      "updatedDate": "2026-10-18",
       "dateSource": "release-record"
     },
     "excel-count": {
@@ -204,6 +219,11 @@
       "updatedDate": "2026-10-17",
       "dateSource": "release-record"
     },
+    "excel-countblank": {
+      "publishedDate": "2026-10-18",
+      "updatedDate": "2026-10-18",
+      "dateSource": "release-record"
+    },
     "excel-countif": {
       "publishedDate": "2026-10-17",
       "updatedDate": "2026-10-17",
@@ -212,6 +232,26 @@
     "excel-countifs": {
       "publishedDate": "2026-10-17",
       "updatedDate": "2026-10-17",
+      "dateSource": "release-record"
+    },
+    "excel-date": {
+      "publishedDate": "2026-10-18",
+      "updatedDate": "2026-10-18",
+      "dateSource": "release-record"
+    },
+    "excel-day": {
+      "publishedDate": "2026-10-18",
+      "updatedDate": "2026-10-18",
+      "dateSource": "release-record"
+    },
+    "excel-exact": {
+      "publishedDate": "2026-10-18",
+      "updatedDate": "2026-10-18",
+      "dateSource": "release-record"
+    },
+    "excel-filter": {
+      "publishedDate": "2026-10-18",
+      "updatedDate": "2026-10-18",
       "dateSource": "release-record"
     },
     "excel-if": {
@@ -224,6 +264,26 @@
       "updatedDate": "2026-10-17",
       "dateSource": "release-record"
     },
+    "excel-ifs": {
+      "publishedDate": "2026-10-18",
+      "updatedDate": "2026-10-18",
+      "dateSource": "release-record"
+    },
+    "excel-index": {
+      "publishedDate": "2026-10-18",
+      "updatedDate": "2026-10-18",
+      "dateSource": "release-record"
+    },
+    "excel-int": {
+      "publishedDate": "2026-10-18",
+      "updatedDate": "2026-10-18",
+      "dateSource": "release-record"
+    },
+    "excel-large": {
+      "publishedDate": "2026-10-18",
+      "updatedDate": "2026-10-18",
+      "dateSource": "release-record"
+    },
     "excel-left": {
       "publishedDate": "2026-10-17",
       "updatedDate": "2026-10-17",
@@ -234,9 +294,24 @@
       "updatedDate": "2026-10-17",
       "dateSource": "release-record"
     },
+    "excel-match": {
+      "publishedDate": "2026-10-18",
+      "updatedDate": "2026-10-18",
+      "dateSource": "release-record"
+    },
     "excel-max": {
       "publishedDate": "2026-10-17",
       "updatedDate": "2026-10-17",
+      "dateSource": "release-record"
+    },
+    "excel-maxifs": {
+      "publishedDate": "2026-10-18",
+      "updatedDate": "2026-10-18",
+      "dateSource": "release-record"
+    },
+    "excel-median": {
+      "publishedDate": "2026-10-18",
+      "updatedDate": "2026-10-18",
       "dateSource": "release-record"
     },
     "excel-mid": {
@@ -249,9 +324,34 @@
       "updatedDate": "2026-10-17",
       "dateSource": "release-record"
     },
+    "excel-minifs": {
+      "publishedDate": "2026-10-18",
+      "updatedDate": "2026-10-18",
+      "dateSource": "release-record"
+    },
+    "excel-mod": {
+      "publishedDate": "2026-10-18",
+      "updatedDate": "2026-10-18",
+      "dateSource": "release-record"
+    },
+    "excel-month": {
+      "publishedDate": "2026-10-18",
+      "updatedDate": "2026-10-18",
+      "dateSource": "release-record"
+    },
+    "excel-not": {
+      "publishedDate": "2026-10-18",
+      "updatedDate": "2026-10-18",
+      "dateSource": "release-record"
+    },
     "excel-or": {
       "publishedDate": "2026-10-17",
       "updatedDate": "2026-10-17",
+      "dateSource": "release-record"
+    },
+    "excel-rank-eq": {
+      "publishedDate": "2026-10-18",
+      "updatedDate": "2026-10-18",
       "dateSource": "release-record"
     },
     "excel-right": {
@@ -264,6 +364,26 @@
       "updatedDate": "2026-10-17",
       "dateSource": "release-record"
     },
+    "excel-rounddown": {
+      "publishedDate": "2026-10-18",
+      "updatedDate": "2026-10-18",
+      "dateSource": "release-record"
+    },
+    "excel-roundup": {
+      "publishedDate": "2026-10-18",
+      "updatedDate": "2026-10-18",
+      "dateSource": "release-record"
+    },
+    "excel-small": {
+      "publishedDate": "2026-10-18",
+      "updatedDate": "2026-10-18",
+      "dateSource": "release-record"
+    },
+    "excel-substitute": {
+      "publishedDate": "2026-10-18",
+      "updatedDate": "2026-10-18",
+      "dateSource": "release-record"
+    },
     "excel-sumif": {
       "publishedDate": "2026-10-17",
       "updatedDate": "2026-10-17",
@@ -274,6 +394,31 @@
       "updatedDate": "2026-10-17",
       "dateSource": "release-record"
     },
+    "excel-sumproduct": {
+      "publishedDate": "2026-10-18",
+      "updatedDate": "2026-10-18",
+      "dateSource": "release-record"
+    },
+    "excel-switch": {
+      "publishedDate": "2026-10-18",
+      "updatedDate": "2026-10-18",
+      "dateSource": "release-record"
+    },
+    "excel-textjoin": {
+      "publishedDate": "2026-10-18",
+      "updatedDate": "2026-10-18",
+      "dateSource": "release-record"
+    },
+    "excel-trim": {
+      "publishedDate": "2026-10-18",
+      "updatedDate": "2026-10-18",
+      "dateSource": "release-record"
+    },
+    "excel-unique": {
+      "publishedDate": "2026-10-18",
+      "updatedDate": "2026-10-18",
+      "dateSource": "release-record"
+    },
     "excel-vlookup": {
       "publishedDate": "2026-10-17",
       "updatedDate": "2026-10-17",
@@ -282,6 +427,11 @@
     "excel-xlookup": {
       "publishedDate": "2026-10-17",
       "updatedDate": "2026-10-17",
+      "dateSource": "release-record"
+    },
+    "excel-year": {
+      "publishedDate": "2026-10-18",
+      "updatedDate": "2026-10-18",
       "dateSource": "release-record"
     },
     "filtered-peaks-raw-data-traceability": {

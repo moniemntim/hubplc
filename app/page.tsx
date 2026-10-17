@@ -118,12 +118,12 @@ export default function Home() {
       </section>
       <section className="article-strip" aria-labelledby="excel-heading">
         <div>
-          <p className="eyebrow">EXCEL FORMULAS / 20 LESSONS</p>
+          <p className="eyebrow">EXCEL FORMULAS / 50 LESSONS</p>
           <h2 id="excel-heading">Excel 公式教學</h2>
-          <p>從基礎統計、條件判斷到查找與文字處理，跟著資料表與練習學習。</p>
+          <p>從基礎統計、條件判斷到日期與動態陣列，跟著資料表與練習學習。</p>
         </div>
         <Link className="text-link" href="/excel-formulas">
-          查看 20 課 →
+          查看 50 課 →
         </Link>
       </section>
       <section className="home-editorial" aria-labelledby="editorial-heading">

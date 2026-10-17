@@ -1,6 +1,6 @@
 {
   "totals": {
-    "reviewed-local": 137,
+    "reviewed-local": 167,
     "unreviewed": 333,
     "draft": 1
   },
@@ -302,11 +302,23 @@
       "status": "unreviewed"
     },
     {
+      "slug": "excel-abs",
+      "status": "reviewed-local"
+    },
+    {
       "slug": "excel-and",
       "status": "reviewed-local"
     },
     {
       "slug": "excel-average",
+      "status": "reviewed-local"
+    },
+    {
+      "slug": "excel-averageif",
+      "status": "reviewed-local"
+    },
+    {
+      "slug": "excel-averageifs",
       "status": "reviewed-local"
     },
     {
@@ -318,11 +330,31 @@
       "status": "reviewed-local"
     },
     {
+      "slug": "excel-countblank",
+      "status": "reviewed-local"
+    },
+    {
       "slug": "excel-countif",
       "status": "reviewed-local"
     },
     {
       "slug": "excel-countifs",
+      "status": "reviewed-local"
+    },
+    {
+      "slug": "excel-date",
+      "status": "reviewed-local"
+    },
+    {
+      "slug": "excel-day",
+      "status": "reviewed-local"
+    },
+    {
+      "slug": "excel-exact",
+      "status": "reviewed-local"
+    },
+    {
+      "slug": "excel-filter",
       "status": "reviewed-local"
     },
     {
@@ -334,6 +366,22 @@
       "status": "reviewed-local"
     },
     {
+      "slug": "excel-ifs",
+      "status": "reviewed-local"
+    },
+    {
+      "slug": "excel-index",
+      "status": "reviewed-local"
+    },
+    {
+      "slug": "excel-int",
+      "status": "reviewed-local"
+    },
+    {
+      "slug": "excel-large",
+      "status": "reviewed-local"
+    },
+    {
       "slug": "excel-left",
       "status": "reviewed-local"
     },
@@ -342,7 +390,19 @@
       "status": "reviewed-local"
     },
     {
+      "slug": "excel-match",
+      "status": "reviewed-local"
+    },
+    {
       "slug": "excel-max",
+      "status": "reviewed-local"
+    },
+    {
+      "slug": "excel-maxifs",
+      "status": "reviewed-local"
+    },
+    {
+      "slug": "excel-median",
       "status": "reviewed-local"
     },
     {
@@ -354,7 +414,27 @@
       "status": "reviewed-local"
     },
     {
+      "slug": "excel-minifs",
+      "status": "reviewed-local"
+    },
+    {
+      "slug": "excel-mod",
+      "status": "reviewed-local"
+    },
+    {
+      "slug": "excel-month",
+      "status": "reviewed-local"
+    },
+    {
+      "slug": "excel-not",
+      "status": "reviewed-local"
+    },
+    {
       "slug": "excel-or",
+      "status": "reviewed-local"
+    },
+    {
+      "slug": "excel-rank-eq",
       "status": "reviewed-local"
     },
     {
@@ -366,6 +446,22 @@
       "status": "reviewed-local"
     },
     {
+      "slug": "excel-rounddown",
+      "status": "reviewed-local"
+    },
+    {
+      "slug": "excel-roundup",
+      "status": "reviewed-local"
+    },
+    {
+      "slug": "excel-small",
+      "status": "reviewed-local"
+    },
+    {
+      "slug": "excel-substitute",
+      "status": "reviewed-local"
+    },
+    {
       "slug": "excel-sumif",
       "status": "reviewed-local"
     },
@@ -374,11 +470,35 @@
       "status": "reviewed-local"
     },
     {
+      "slug": "excel-sumproduct",
+      "status": "reviewed-local"
+    },
+    {
+      "slug": "excel-switch",
+      "status": "reviewed-local"
+    },
+    {
+      "slug": "excel-textjoin",
+      "status": "reviewed-local"
+    },
+    {
+      "slug": "excel-trim",
+      "status": "reviewed-local"
+    },
+    {
+      "slug": "excel-unique",
+      "status": "reviewed-local"
+    },
+    {
       "slug": "excel-vlookup",
       "status": "reviewed-local"
     },
     {
       "slug": "excel-xlookup",
+      "status": "reviewed-local"
+    },
+    {
+      "slug": "excel-year",
       "status": "reviewed-local"
     },
     {

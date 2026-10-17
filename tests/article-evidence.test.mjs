@@ -3,6 +3,7 @@ import assert from 'node:assert/strict';
 import { createHash } from 'node:crypto';
 import fs from 'node:fs/promises';
 import path from 'node:path';
+import { excelFormulaLessons } from '../lib/excel-formulas.ts';
 
 const root = path.resolve(import.meta.dirname, '..');
 
@@ -116,7 +117,12 @@ void test('all public articles have current review evidence and truthful dates',
   const excelSlugs = publicArticles
     .map(({ slug }) => slug)
     .filter((slug) => slug.startsWith('excel-'));
-  assert.equal(excelSlugs.length, 20);
+  assert.equal(excelFormulaLessons.length, 50);
+  assert.deepEqual(
+    excelSlugs.sort(),
+    excelFormulaLessons.map(({ slug }) => slug).sort(),
+    'public Excel lessons match the course registry',
+  );
   for (const slug of excelSlugs) {
     const source = await fs.readFile(
       path.join(root, 'content', 'articles', `${slug}.md`),

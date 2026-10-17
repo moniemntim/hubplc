@@ -1,5 +1,5 @@
 import assert from 'node:assert/strict';
-import { mkdir, writeFile } from 'node:fs/promises';
+import { mkdir, readFile, writeFile } from 'node:fs/promises';
 import { chromium, expect } from 'playwright/test';
 import { excelFormulaLessons } from '../lib/excel-formulas.ts';
 import { mockAdsense } from './adsense-mock.mjs';
@@ -7,16 +7,25 @@ import { mockAdsense } from './adsense-mock.mjs';
 const base = process.env.TEST_BASE_URL ?? 'http://127.0.0.1:4173';
 const output = 'outputs/excel-formulas-browser';
 await mkdir(output, { recursive: true });
+const dateRecords = JSON.parse(
+  await readFile(
+    new URL('../content/article-dates.json', import.meta.url),
+    'utf8',
+  ),
+).articles;
+assert.equal(excelFormulaLessons.length, 50, 'course lesson count');
 
 const sitemapResponse = await fetch(`${base}/sitemap.xml`);
 assert.equal(sitemapResponse.status, 200, 'sitemap');
 const sitemap = await sitemapResponse.text();
 assert.match(sitemap, /<loc>https:\/\/hubplc\.com\/excel-formulas<\/loc>/);
 for (const lesson of excelFormulaLessons) {
+  const dates = dateRecords[lesson.slug];
+  assert.ok(dates, `${lesson.function}: date record`);
   assert.match(
     sitemap,
     new RegExp(
-      `<loc>https://hubplc\\.com/articles/${lesson.slug}</loc><lastmod>2026-10-17</lastmod>`,
+      `<loc>https://hubplc\\.com/articles/${lesson.slug}</loc><lastmod>${dates.updatedDate}</lastmod>`,
     ),
     `${lesson.function}: sitemap`,
   );
@@ -64,7 +73,9 @@ try {
     await expect(
       page.getByRole('heading', { name: 'Excel 公式教學。' }),
     ).toBeVisible();
-    await expect(page.locator('.excel-course-card')).toHaveCount(20);
+    await expect(page.locator('.excel-course-card')).toHaveCount(
+      excelFormulaLessons.length,
+    );
     await expect(page.locator('.excel-course-evidence')).toContainText(
       'Windows 版 Microsoft 365 與 Excel 2021 實際操作驗證',
     );
@@ -84,7 +95,9 @@ try {
       await expect(
         page.getByRole('heading', {
           level: 1,
-          name: new RegExp(`^${lesson.function} `),
+          name: new RegExp(
+            `^${lesson.function.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')} `,
+          ),
         }),
       ).toBeVisible();
       await expect(page.locator('.article-reader__category')).toHaveText(
@@ -137,8 +150,11 @@ try {
       );
       assert.equal(jsonLd['@type'], 'TechArticle');
       assert.equal(jsonLd.author.name, '茂伯');
-      assert.equal(jsonLd.datePublished, '2026-10-17');
-      assert.equal(jsonLd.dateModified, '2026-10-17');
+      assert.equal(
+        jsonLd.datePublished,
+        dateRecords[lesson.slug].publishedDate,
+      );
+      assert.equal(jsonLd.dateModified, dateRecords[lesson.slug].updatedDate);
       const courseNav = page.getByRole('navigation', {
         name: 'Excel 公式課程導覽',
       });
@@ -171,7 +187,7 @@ try {
     'Excel 公式教學',
   );
   await expect(page.locator('.library-results-toolbar p')).toContainText(
-    '共 20 篇',
+    `共 ${excelFormulaLessons.length} 篇`,
   );
   await page
     .getByRole('searchbox', { name: '搜尋文章標題、關鍵字或內文' })
@@ -185,7 +201,7 @@ try {
   assert.deepEqual(errors, []);
   await writeFile(`${output}/report.json`, JSON.stringify(results, null, 2));
   console.log(
-    `PASS course home, 20 lessons at 3 widths, images, SEO, navigation, category and search (${results.length} article checks)`,
+    `PASS course home, ${excelFormulaLessons.length} lessons at 3 widths, images, SEO, navigation, category and search (${results.length} article checks)`,
   );
 } finally {
   await context.close();

@@ -10,6 +10,7 @@ import {
   LocalizedText,
 } from '@/components/tool-language';
 import { categoryEnglish, toolEnglish } from '@/lib/tools/tool-i18n';
+import articles from '@/lib/article-index.generated.json';
 const relatedLessons: Partial<
   Record<ToolSlug, { slug: string; zh: string; en: string }>
 > = {
@@ -56,7 +57,12 @@ export default function ToolPage({
 }) {
   const tool = getTool(slug);
   const english = toolEnglish[slug];
-  const relatedLesson = relatedLessons[slug];
+  const candidateLesson = relatedLessons[slug];
+  const relatedLesson =
+    candidateLesson &&
+    articles.some((article) => article.slug === candidateLesson.slug)
+      ? candidateLesson
+      : undefined;
   return (
     <>
       <main className="shell tool-page">

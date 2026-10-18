@@ -8,6 +8,10 @@ const articles = JSON.parse(
   await readFile('lib/articles.generated.json', 'utf8'),
 );
 const bySlug = new Map(articles.map((article) => [article.slug, article]));
+const heldSlugs = [
+  'xca-ecu-https-certificate-setup',
+  'latency-injection-timeout-retry',
+];
 const browser = await chromium.launch({
   headless: true,
   executablePath:
@@ -21,74 +25,66 @@ try {
   const errors = [];
   page.on('pageerror', (error) => errors.push(error.message));
 
+  const excel = bySlug.get('excel-average');
+  assert.ok(excel, 'excel-average remains published');
+
   for (const width of [320, 1440]) {
     await page.setViewportSize({ width, height: 1000 });
-    for (const slug of [
-      'xca-ecu-https-certificate-setup',
-      'latency-injection-timeout-retry',
-    ]) {
-      const article = bySlug.get(slug);
-      assert.ok(article, slug);
-      const response = await page.goto(`${base}/articles/${slug}`, {
-        waitUntil: 'load',
-      });
-      assert.equal(response.status(), 200, `${slug} at ${width}px`);
-      await expect(
-        page.getByRole('heading', { name: '本頁證據與限制' }),
-      ).toBeVisible();
-      await expect(page.locator('.article-reader__verification')).toContainText(
-        article.verification.reviewDate,
-      );
-      await expect(page.locator('.article-reader__verification')).toContainText(
-        '未實測',
-      );
+    const response = await page.goto(`${base}/articles/excel-average`, {
+      waitUntil: 'load',
+    });
+    assert.equal(response.status(), 200, `excel-average at ${width}px`);
+    await expect(
+      page.getByRole('heading', { name: '本頁證據與限制' }),
+    ).toBeVisible();
+    await expect(page.locator('.article-reader__verification')).toContainText(
+      excel.verification.reviewDate,
+    );
+    await expect(page.locator('.article-reader__verification')).toContainText(
+      '作者實際操作',
+    );
+    await expect(page.locator('.article-reader__verification')).toContainText(
+      'Windows 版 Microsoft 365、Excel 2021',
+    );
+    await expect(
+      page.locator('.article-reader__verification'),
+    ).not.toContainText('實體設備');
+    await expect(page.locator('.article-reader__meta')).toContainText(
+      `發布：${excel.publishedDate}`,
+    );
+    if (excel.updatedDate > excel.publishedDate)
       await expect(page.locator('.article-reader__meta')).toContainText(
-        `發布：${article.publishedDate}`,
+        `更新：${excel.updatedDate}`,
       );
-      if (article.updatedDate > article.publishedDate)
-        await expect(page.locator('.article-reader__meta')).toContainText(
-          `更新：${article.updatedDate}`,
-        );
-      const jsonLd = JSON.parse(
-        await page.locator('script[type="application/ld+json"]').textContent(),
-      );
-      assert.equal(jsonLd.datePublished, article.publishedDate);
-      assert.equal(jsonLd.dateModified, article.updatedDate);
-      assert.equal(
-        await page.evaluate(
-          () => document.documentElement.scrollWidth <= innerWidth + 1,
-        ),
-        true,
-        `${slug} horizontal overflow at ${width}px`,
-      );
-    }
+    const jsonLd = JSON.parse(
+      await page.locator('script[type="application/ld+json"]').textContent(),
+    );
+    assert.equal(jsonLd.datePublished, excel.publishedDate);
+    assert.equal(jsonLd.dateModified, excel.updatedDate);
+    assert.equal(
+      await page.evaluate(
+        () => document.documentElement.scrollWidth <= innerWidth + 1,
+      ),
+      true,
+      `excel-average horizontal overflow at ${width}px`,
+    );
   }
 
-  await page.goto(`${base}/articles/xca-ecu-https-certificate-setup`);
-  await expect(page.locator('.article-reader__verification')).toContainText(
-    '19 張',
-  );
-  await expect(page.locator('.article-reader__content img')).toHaveCount(19);
-  await page.goto(`${base}/articles/latency-injection-timeout-retry`);
-  await page.locator('.article-reader__verification summary').click();
-  await expect(
-    page.locator('.article-reader__verification details'),
-  ).toContainText('saved stdout matches article');
-  const excel = bySlug.get('excel-average');
-  assert.ok(excel, 'excel-average');
-  await page.goto(`${base}/articles/excel-average`);
-  await expect(page.locator('.article-reader__verification')).toContainText(
-    '作者實際操作',
-  );
-  await expect(page.locator('.article-reader__verification')).toContainText(
-    'Windows 版 Microsoft 365、Excel 2021',
-  );
-  await expect(page.locator('.article-reader__verification')).not.toContainText(
-    '實體設備',
-  );
+  for (const slug of heldSlugs) {
+    assert.equal(
+      bySlug.has(slug),
+      false,
+      `${slug} is absent from public index`,
+    );
+    const response = await page.goto(`${base}/articles/${slug}`, {
+      waitUntil: 'load',
+    });
+    assert.equal(response.status(), 404, `${slug} is not publicly routable`);
+  }
+
   assert.deepEqual(errors, []);
   console.log(
-    'PASS article dates, evidence status, JSON-LD and responsive layout',
+    'PASS published evidence metadata and responsive layout; verification-held routes return 404',
   );
 } finally {
   await browser.close();

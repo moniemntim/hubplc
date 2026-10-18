@@ -8,7 +8,7 @@ const cases = [
   ['/', true],
   ['/tool', false],
   ['/articles', false],
-  ['/articles/acceptance-pass-untested-not-applicable', true],
+  ['/articles/excel-average', true],
   ['/privacy', false],
   ['/about', false],
   ...tools.map((t) => [`/tool/${t.slug}`, t.category !== '編碼']),
@@ -121,7 +121,7 @@ try {
     true,
     'home ad follows featured tools, lessons and editorial content',
   );
-  await page.goto(base + '/articles/acceptance-pass-untested-not-applicable');
+  await page.goto(base + '/articles/excel-average');
   await expect(page.locator('ins.adsbygoogle')).toHaveCount(1);
   assert.equal(
     await page.locator('ins.adsbygoogle').evaluate((unit) => {

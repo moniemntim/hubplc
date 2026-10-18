@@ -1,10 +1,19 @@
 import Link from '@/components/site-link';
+import articles from '@/lib/article-index.generated.json';
 
 export const metadata = {
   title: '作者、編輯方式與問題回報',
   alternates: { canonical: 'https://hubplc.com/about' },
 };
 export default function About() {
+  const publishedSlugs = new Set(articles.map((article) => article.slug));
+  const examples = [
+    {
+      slug: 'plc-analog-scaling-pressure-temperature-level',
+      label: '類比訊號換算案例',
+    },
+    { slug: 'blackbox-observable', label: 'Modbus 離線讀取與驗收案例' },
+  ].filter((example) => publishedSlugs.has(example.slug));
   return (
     <main className="prose">
       <p className="eyebrow">ABOUT / HUBPLC</p>
@@ -68,18 +77,20 @@ export default function About() {
       <a className="text-link" href="/content-report-template.txt" download>
         下載問題回報範本（文字檔） →
       </a>
-      <h2>從可重現的案例開始</h2>
-      <p>
-        <Link href="/articles/plc-analog-scaling-pressure-temperature-level">
-          類比訊號換算案例
-        </Link>
-        與
-        <Link href="/articles/blackbox-observable">
-          {' '}
-          Modbus 離線讀取與驗收案例
-        </Link>
-        可搭配本站工具逐步核對。
-      </p>
+      {examples.length > 0 && (
+        <>
+          <h2>從可重現的案例開始</h2>
+          <p>
+            {examples.map((example, index) => (
+              <span key={example.slug}>
+                {index > 0 && '與'}
+                <Link href={`/articles/${example.slug}`}>{example.label}</Link>
+              </span>
+            ))}
+            可搭配本站工具逐步核對。
+          </p>
+        </>
+      )}
     </main>
   );
 }

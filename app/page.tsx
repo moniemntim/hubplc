@@ -1,6 +1,7 @@
 import Link from '@/components/site-link';
 import AdSense from '@/components/adsense';
 import { tools } from '@/lib/tools/registry';
+import articles from '@/lib/article-index.generated.json';
 
 export const metadata = { alternates: { canonical: 'https://hubplc.com/' } };
 const featuredTools = [
@@ -50,6 +51,10 @@ const lessons = [
   },
 ];
 export default function Home() {
+  const publishedSlugs = new Set(articles.map((article) => article.slug));
+  const publishedLessons = lessons.filter((lesson) =>
+    publishedSlugs.has(lesson.slug),
+  );
   return (
     <main className="shell home-page">
       <div className="intro">
@@ -91,31 +96,33 @@ export default function Home() {
           ))}
         </div>
       </section>
-      <section className="home-feature" aria-labelledby="lessons-heading">
-        <div className="home-feature-heading">
-          <h2 id="lessons-heading">跟著做的代表教學</h2>
-          <Link className="text-link" href="/articles">
-            瀏覽文章 →
-          </Link>
-        </div>
-        <p className="home-section-note">
-          以下為計算、離線解析或邏輯練習，未宣稱已在實體 PLC 上測試。
-        </p>
-        <div className="home-feature-grid home-lessons">
-          {lessons.map((lesson) => (
-            <Link
-              className="home-feature-card"
-              href={'/articles/' + lesson.slug}
-              key={lesson.slug}
-            >
-              <span className="eyebrow">{lesson.label}</span>
-              <h3>{lesson.title}</h3>
-              <p>{lesson.text}</p>
-              <span className="text-link">開始練習 →</span>
+      {publishedLessons.length > 0 && (
+        <section className="home-feature" aria-labelledby="lessons-heading">
+          <div className="home-feature-heading">
+            <h2 id="lessons-heading">跟著做的代表教學</h2>
+            <Link className="text-link" href="/articles">
+              瀏覽文章 →
             </Link>
-          ))}
-        </div>
-      </section>
+          </div>
+          <p className="home-section-note">
+            以下為計算、離線解析或邏輯練習，未宣稱已在實體 PLC 上測試。
+          </p>
+          <div className="home-feature-grid home-lessons">
+            {publishedLessons.map((lesson) => (
+              <Link
+                className="home-feature-card"
+                href={'/articles/' + lesson.slug}
+                key={lesson.slug}
+              >
+                <span className="eyebrow">{lesson.label}</span>
+                <h3>{lesson.title}</h3>
+                <p>{lesson.text}</p>
+                <span className="text-link">開始練習 →</span>
+              </Link>
+            ))}
+          </div>
+        </section>
+      )}
       <section className="article-strip" aria-labelledby="excel-heading">
         <div>
           <p className="eyebrow">EXCEL FORMULAS / 50 LESSONS</p>

@@ -1,8 +1,14 @@
 import assert from 'node:assert/strict';
+import { readFile } from 'node:fs/promises';
 import { chromium, expect } from 'playwright/test';
 import { mockAdsense } from './adsense-mock.mjs';
 
 const base = process.env.TEST_BASE_URL ?? 'http://127.0.0.1:8787';
+const published = new Set(
+  JSON.parse(await readFile('lib/article-index.generated.json', 'utf8')).map(
+    (article) => article.slug,
+  ),
+);
 const browser = await chromium.launch({
   headless: true,
   executablePath:
@@ -40,7 +46,15 @@ try {
   const links = await page
     .locator('.home-feature-card')
     .evaluateAll((cards) => cards.map((card) => card.getAttribute('href')));
-  assert.equal(links.length, 7);
+  assert.equal(
+    links.length,
+    4 +
+      [
+        'plc-fault-reset-single-acceptance',
+        'plc-analog-scaling-pressure-temperature-level',
+        'plc-self-hold-set-reset-q-series',
+      ].filter((slug) => published.has(slug)).length,
+  );
   for (const link of links) await open(link);
   await open('/tool/analog');
   await page.getByLabel('工程上限', { exact: true }).fill('10');
@@ -127,8 +141,11 @@ try {
     await open(`/tool/${tool}`);
     await expect(page.locator('.plc-guide')).toBeVisible();
     const href = `/articles/${article}`;
-    await expect(page.locator(`main a[href="${href}"]`)).toBeVisible();
-    assert.equal((await page.request.get(base + href)).status(), 200, href);
+    const link = page.locator(`main a[href="${href}"]`);
+    await expect(link).toHaveCount(published.has(article) ? 1 : 0);
+    if (published.has(article)) {
+      assert.equal((await page.request.get(base + href)).status(), 200, href);
+    }
   }
   await open('/about');
   await expect(page.locator('#report')).toBeVisible();
@@ -144,18 +161,20 @@ try {
   );
   assert.equal(template.status(), 200);
   assert.match(await template.text(), /預期結果及依據/);
-  await open('/articles/rs485-no-response-troubleshooting');
-  await expect(
-    page.locator('a[href="/examples/rs485-transaction-log-template.csv"]'),
-  ).toBeVisible();
-  const rs485Template = await page.request.get(
-    base + '/examples/rs485-transaction-log-template.csv',
-  );
-  assert.equal(rs485Template.status(), 200);
-  assert.match(await rs485Template.text(), /observation_source/);
+  if (published.has('rs485-no-response-troubleshooting')) {
+    await open('/articles/rs485-no-response-troubleshooting');
+    await expect(
+      page.locator('a[href="/examples/rs485-transaction-log-template.csv"]'),
+    ).toBeVisible();
+    const rs485Template = await page.request.get(
+      base + '/examples/rs485-transaction-log-template.csv',
+    );
+    assert.equal(rs485Template.status(), 200);
+    assert.match(await rs485Template.text(), /observation_source/);
+  }
   assert.deepEqual(errors, []);
   console.log(
-    'PASS home links, analog endpoints/overrange, PLC scaling/base guide and results, five related lessons, Modbus address, Float32 byte order, RS485 and report templates; no page errors.',
+    'PASS home links, analog endpoints/overrange, PLC scaling/base guide and results, published related lessons, Modbus address, Float32 byte order and report template; no page errors.',
   );
 } finally {
   await browser.close();

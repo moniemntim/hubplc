@@ -27,6 +27,14 @@ void test('article publishing excludes drafts and strips active HTML', async () 
       path.join(temp, 'content/hidden-articles.json'),
       '["hidden"]',
     );
+    await fs.writeFile(
+      path.join(temp, 'content/article-publication-policy.json'),
+      JSON.stringify({
+        requireVerification: false,
+        reason: 'fixture keeps reviewed articles visible',
+        effectiveDate: '2026-10-18',
+      }),
+    );
     const meta =
       '---\ntitle: 測試筆記\ndescription: 測試摘要\ndate: 2026-09-06\nauthor: 測試\ndraft: ';
     await fs.writeFile(
@@ -149,6 +157,59 @@ void test('article publishing excludes drafts and strips active HTML', async () 
       metadata.alternates.canonical,
       'https://hubplc.com/articles/published',
     );
+    await fs.writeFile(
+      path.join(temp, 'content/article-publication-policy.json'),
+      JSON.stringify({
+        requireVerification: true,
+        reason: 'fixture temporarily holds unverified articles',
+        effectiveDate: '2026-10-18',
+      }),
+    );
+    execFileSync(process.execPath, [script], { cwd: temp });
+    assert.deepEqual(
+      JSON.parse(
+        await fs.readFile(
+          path.join(temp, 'lib/articles.generated.json'),
+          'utf8',
+        ),
+      ),
+      [],
+    );
+    await assert.rejects(
+      fs.access(path.join(temp, 'app/articles/(posts)/published/page.tsx')),
+    );
+    assert.match(
+      await fs.readFile(
+        path.join(temp, 'content/articles/published.md'),
+        'utf8',
+      ),
+      /正文/,
+    );
+    await fs.writeFile(
+      path.join(temp, 'docs/editorial-review/ledger.json'),
+      JSON.stringify({
+        lastFullAuditDate: '2026-10-18',
+        articles: {
+          published: {
+            status: 'reviewed-local',
+            reviewDate: '2026-10-18',
+            sha256: createHash('sha256').update(publishedSource).digest('hex'),
+            verification: 'fixture application verified',
+            verificationKind: 'software',
+            applicationVerified: true,
+            verifiedApplications: ['Fixture App'],
+            verificationSource: 'author-attestation',
+          },
+        },
+      }),
+    );
+    execFileSync(process.execPath, [script], { cwd: temp });
+    const restored = JSON.parse(
+      await fs.readFile(path.join(temp, 'lib/articles.generated.json'), 'utf8'),
+    );
+    assert.equal(restored.length, 1);
+    assert.equal(restored[0].slug, 'published');
+    assert.equal(restored[0].verification.applicationVerified, true);
     await fs.writeFile(
       path.join(temp, 'content/articles/published.md'),
       meta + 'true\n---\n已撤回',

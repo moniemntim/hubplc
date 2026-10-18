@@ -4,6 +4,7 @@ import path from 'node:path';
 import { marked } from 'marked';
 import sanitizeHtml from 'sanitize-html';
 import { articleMetadata } from './article-metadata.mjs';
+import { publicationHolds } from './article-publication.mjs';
 
 const contentDir = path.resolve('content/articles');
 const target = path.resolve('app/articles/(posts)');
@@ -19,6 +20,9 @@ const articleDates = JSON.parse(
 const editorialLedger = JSON.parse(
   await fs.readFile('docs/editorial-review/ledger.json', 'utf8'),
 );
+const publicationPolicy = JSON.parse(
+  await fs.readFile('content/article-publication-policy.json', 'utf8'),
+);
 if (!/^\d{4}-\d{2}-\d{2}$/.test(editorialLedger.lastFullAuditDate ?? ''))
   throw new Error('Editorial ledger is missing lastFullAuditDate');
 // Temporary publication hold is separate from source review/draft status.
@@ -33,7 +37,11 @@ if (
   )
 )
   throw new Error('Invalid hidden article list');
-const hidden = new Set(hiddenSlugs);
+const hidden = publicationHolds(
+  hiddenSlugs,
+  publicationPolicy,
+  editorialLedger,
+);
 for (const file of (await fs.readdir(contentDir)).filter((file) =>
   file.endsWith('.md'),
 )) {

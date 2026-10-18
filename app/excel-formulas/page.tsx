@@ -1,11 +1,16 @@
 import Link from '@/components/site-link';
+import articles from '@/lib/article-index.generated.json';
 import { excelFormulaLessons } from '@/lib/excel-formulas';
 import './page.css';
 
+const publishedSlugs = new Set(articles.map((article) => article.slug));
+const publishedLessons = excelFormulaLessons.filter((lesson) =>
+  publishedSlugs.has(lesson.slug),
+);
+
 export const metadata = {
-  title: 'Excel 公式教學：50 個常用函數',
-  description:
-    '從基礎統計、邏輯判斷到日期與動態陣列，跟著 50 課 Excel 公式範例、操作步驟和練習學習。',
+  title: `Excel 公式教學：${publishedLessons.length} 個常用函數`,
+  description: `從基礎統計、邏輯判斷到日期與動態陣列，跟著 ${publishedLessons.length} 課 Excel 公式範例、操作步驟和練習學習。`,
   alternates: { canonical: 'https://hubplc.com/excel-formulas' },
 };
 
@@ -47,6 +52,7 @@ const stages = [
 ];
 
 export default function ExcelFormulas() {
+  const firstLesson = publishedLessons[0];
   return (
     <main className="shell excel-course">
       <div className="excel-course-intro">
@@ -55,16 +61,18 @@ export default function ExcelFormulas() {
           Excel 公式教學<span>。</span>
         </h1>
         <p className="lead">
-          透過 50
+          透過目前公開的 {publishedLessons.length}
           個常用函數，從實際資料表開始，學會輸入公式、判讀結果並完成練習。
         </p>
         <p className="excel-course-evidence">
           教材由茂伯編寫，並由作者本人在 Windows 版 Microsoft 365 與 Excel 2021
           實際操作驗證。
         </p>
-        <Link className="action" href="/articles/excel-average">
-          從第 1 課開始 →
-        </Link>
+        {firstLesson && (
+          <Link className="action" href={`/articles/${firstLesson.slug}`}>
+            從目前第 1 課開始 →
+          </Link>
+        )}
       </div>
 
       <section className="excel-course-section" aria-labelledby="course-path">
@@ -85,10 +93,14 @@ export default function ExcelFormulas() {
         className="excel-course-section"
         aria-labelledby="course-lessons"
       >
-        <h2 id="course-lessons">50 課公式教學</h2>
-        <p>每課都有資料表、公式、操作步驟、結果說明與練習。</p>
+        <h2 id="course-lessons">{publishedLessons.length} 課公式教學</h2>
+        <p>
+          {publishedLessons.length
+            ? '每課都有資料表、公式、操作步驟、結果說明與練習。'
+            : '未完成驗證的課程暫時下架，完成驗證後會重新公開。'}
+        </p>
         <ol className="excel-course-grid">
-          {excelFormulaLessons.map((lesson) => (
+          {publishedLessons.map((lesson) => (
             <li key={lesson.slug}>
               <Link
                 className="excel-course-card"

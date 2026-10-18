@@ -26,6 +26,19 @@ import {
 } from '@/lib/article-catalog';
 import './directory.css';
 
+const START_LINKS = [
+  ['自保持：啟動後保持，停止優先', 'plc-self-hold-set-reset-q-series'],
+  ['故障復歸：有效釋放後才接受一次', 'plc-fault-reset-single-acceptance'],
+  [
+    '順序控制：分清等待、執行、完成與故障',
+    'plc-state-machine-three-step-sequence',
+  ],
+  [
+    '類比換算：分清算式結果與可用量測值',
+    'plc-analog-scaling-pressure-temperature-level',
+  ],
+] as const;
+
 const WORK_PATHS = [
   {
     title: '工業通訊',
@@ -110,6 +123,15 @@ export default function ArticleDirectory({
   const indexLoaded = useRef(false);
   const restoredScroll = useRef(false);
   const resultsHeading = useRef<HTMLHeadingElement>(null);
+  const publishedSlugs = useMemo(
+    () => new Set(articles.map((article) => article.slug)),
+    [articles],
+  );
+  const startLinks = START_LINKS.filter(([, slug]) => publishedSlugs.has(slug));
+  const workPaths = WORK_PATHS.map((path) => ({
+    ...path,
+    links: path.links.filter(([, slug]) => publishedSlugs.has(slug)),
+  })).filter((path) => path.links.length > 0);
   const categories = useMemo(
     () =>
       [...new Set(articles.map((article) => article.category))].sort((a, b) => {
@@ -264,59 +286,48 @@ export default function ArticleDirectory({
         </div>
       </header>
 
-      <section className="library-start" aria-labelledby="start-heading">
-        <h2 id="start-heading">第一次來，先完成一個操作</h2>
-        <p>
-          以下教學可在頁面直接操作，無需安裝。範例為瀏覽器計算與邏輯練習，並非原廠模擬或實機測試。
-        </p>
-        <ol>
-          <li>
-            <Link href="/articles/plc-self-hold-set-reset-q-series">
-              自保持：啟動後保持，停止優先
-            </Link>
-          </li>
-          <li>
-            <Link href="/articles/plc-fault-reset-single-acceptance">
-              故障復歸：有效釋放後才接受一次
-            </Link>
-          </li>
-          <li>
-            <Link href="/articles/plc-state-machine-three-step-sequence">
-              順序控制：分清等待、執行、完成與故障
-            </Link>
-          </li>
-          <li>
-            <Link href="/articles/plc-analog-scaling-pressure-temperature-level">
-              類比換算：分清算式結果與可用量測值
-            </Link>
-          </li>
-        </ol>
-        <p>已有特定問題，可用下方搜尋找對應文章。</p>
-      </section>
-      <section
-        className="library-work-paths"
-        aria-labelledby="work-paths-heading"
-      >
-        <div className="library-work-paths-heading">
-          <h2 id="work-paths-heading">依工作找教學</h2>
-          <p>從現場正在處理的任務開始，依序進入可操作的判讀與驗證步驟。</p>
-        </div>
-        <div className="library-work-path-grid">
-          {WORK_PATHS.map((path) => (
-            <article className="library-work-path" key={path.title}>
-              <h3>{path.title}</h3>
-              <p>{path.description}</p>
-              <ul>
-                {path.links.map(([label, slug]) => (
-                  <li key={slug}>
-                    <Link href={`/articles/${slug}`}>{label}</Link>
-                  </li>
-                ))}
-              </ul>
-            </article>
-          ))}
-        </div>
-      </section>
+      {startLinks.length > 0 && (
+        <section className="library-start" aria-labelledby="start-heading">
+          <h2 id="start-heading">第一次來，先完成一個操作</h2>
+          <p>
+            以下教學可在頁面直接操作，無需安裝。範例為瀏覽器計算與邏輯練習，並非原廠模擬或實機測試。
+          </p>
+          <ol>
+            {startLinks.map(([label, slug]) => (
+              <li key={slug}>
+                <Link href={`/articles/${slug}`}>{label}</Link>
+              </li>
+            ))}
+          </ol>
+          <p>已有特定問題，可用下方搜尋找對應文章。</p>
+        </section>
+      )}
+      {workPaths.length > 0 && (
+        <section
+          className="library-work-paths"
+          aria-labelledby="work-paths-heading"
+        >
+          <div className="library-work-paths-heading">
+            <h2 id="work-paths-heading">依工作找教學</h2>
+            <p>從現場正在處理的任務開始，依序進入可操作的判讀與驗證步驟。</p>
+          </div>
+          <div className="library-work-path-grid">
+            {workPaths.map((path) => (
+              <article className="library-work-path" key={path.title}>
+                <h3>{path.title}</h3>
+                <p>{path.description}</p>
+                <ul>
+                  {path.links.map(([label, slug]) => (
+                    <li key={slug}>
+                      <Link href={`/articles/${slug}`}>{label}</Link>
+                    </li>
+                  ))}
+                </ul>
+              </article>
+            ))}
+          </div>
+        </section>
+      )}
       <section className="library-search-area" aria-label="搜尋文章">
         <label className="library-search">
           <Search size={22} aria-hidden="true" />
@@ -498,12 +509,12 @@ export default function ArticleDirectory({
               <h3>
                 {articles.length
                   ? '換個關鍵字，再找找看。'
-                  : '技術文章，準備中。'}
+                  : '未驗證的技術文章暫時下架。'}
               </h3>
               <p>
                 {articles.length
                   ? '試試較短的詞，或取消主題分類，搜尋所有 PLC／工程文章。'
-                  : '先到工具箱，使用免費工程換算工具。'}
+                  : '文章完成驗證後會重新公開。你可以先到工具箱使用免費工程換算工具。'}
               </p>
               {articles.length ? (
                 <button type="button" onClick={clear}>

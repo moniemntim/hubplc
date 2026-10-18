@@ -1,6 +1,6 @@
 {
   "purpose": "Truthful article dates from Git history or explicit release records. Publication dates must not be redistributed for appearance.",
-  "generatedAt": "2026-10-17T21:21:25.161Z",
+  "generatedAt": "2026-10-18T02:49:04.025Z",
   "articles": {
     "0-10v-analog-load-ground-response-open-circuit": {
       "publishedDate": "2026-09-17",
@@ -454,6 +454,16 @@
       "dateSource": "git-history",
       "publishedCommit": "54a3cb4590a0ea5d15cd3104aec046acecbaf9b3",
       "updatedCommit": "6fa6abb566d80f2e22bf6211ae5f68f2dd593bd2"
+    },
+    "fx5u-sd-bin-read-write": {
+      "publishedDate": "2026-09-08",
+      "updatedDate": "2026-10-18",
+      "dateSource": "release-record"
+    },
+    "fx5u-sd-csv-read-write": {
+      "publishedDate": "2026-09-08",
+      "updatedDate": "2026-10-18",
+      "dateSource": "release-record"
     },
     "hmi-alarm-ack-clear-reset-workflow": {
       "publishedDate": "2026-09-17",

@@ -1,10 +1,18 @@
 export function isArticleVerified(review) {
   const kind = review?.verificationKind ?? 'industrial';
   if (kind === 'software') return review?.applicationVerified === true;
-  if (kind === 'industrial')
-    return (
-      review?.hardwareVerified === true || review?.simulatorVerified === true
-    );
+  if (kind === 'industrial') {
+    const authorAttestedHardware =
+      review?.hardwareVerified === true &&
+      review?.verificationSource === 'author-attestation' &&
+      Array.isArray(review?.verifiedHardware) &&
+      review.verifiedHardware.length > 0 &&
+      review.verifiedHardware.every(
+        (item) => typeof item === 'string' && item.trim(),
+      ) &&
+      /^\d{4}-\d{2}-\d{2}$/.test(review?.verificationDate ?? '');
+    return authorAttestedHardware || review?.simulatorVerified === true;
+  }
   return false;
 }
 

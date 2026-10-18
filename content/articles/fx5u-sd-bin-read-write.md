@@ -112,7 +112,7 @@ M1 為上升沿接點，並串接 SM753 常閉接點。條件成立時，程式�
 
 實際呼叫順序為 SP.FWRITE U1 K2 D0 "1" D100 M100。U1 為虛擬指定，K2 為 SD 卡驅動器；D0 是控制資料，"1" 是檔名，D100 是寫入資料區起點，M100 是完成位。
 
-M100=ON 時，若 M101=OFF 就 SET M150；若 M101=ON 就 SET M151，並 RST M0。M150、M151 會保留舊結果；新一次測試前必須先清除，並以 D1、D2 再確認本次結果。
+M100=ON 時，若 M101=OFF 就 SET M150；若 M101=ON 就 SET M151。正常或異常完成後都會 RST M0，解除這一次執行保持。M150、M151 會保留舊結果；新一次測試前必須先清除，並以 D1、D2 再確認本次結果。
 
 ## 8 加入時鐘資料，理解週期觸發
 
@@ -234,7 +234,7 @@ MELSEC iQ-F FX5 Programming Manual (Instructions, Standard Functions/Function Bl
 
 [三菱電機 FX5 指令手冊 JY997D55801AB](https://dl.mitsubishielectric.com/dl/fa/document/manual/plcf/jy997d55801/jy997d55801ab.pdf)
 
-上機時請完成編譯與 CPU／SD 卡相容性確認，並依上述步驟驗證實際讀寫結果。本文未進行實機測試。
+作者本人於 2026-10-18 確認，已在 FX5U 與 SD 卡上實際完成 BIN 寫入及讀回；原始實測日期未另行提供。網站本輪只記錄作者實測聲明，沒有重新執行設備測試。套用到其他設備前，仍須核對 CPU 型號、GX Works3 版本、SD 卡相容性與現場安全程序。
 
 ## 延伸閱讀
 

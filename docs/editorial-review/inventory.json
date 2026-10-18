@@ -1,7 +1,7 @@
 {
   "totals": {
-    "reviewed-local": 167,
-    "unreviewed": 333,
+    "reviewed-local": 169,
+    "unreviewed": 331,
     "draft": 1
   },
   "articles": [
@@ -563,11 +563,11 @@
     },
     {
       "slug": "fx5u-sd-bin-read-write",
-      "status": "unreviewed"
+      "status": "reviewed-local"
     },
     {
       "slug": "fx5u-sd-csv-read-write",
-      "status": "unreviewed"
+      "status": "reviewed-local"
     },
     {
       "slug": "gateway-bidirectional-mapping-acceptance",

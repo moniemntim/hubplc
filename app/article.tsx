@@ -42,10 +42,12 @@ type ArticleVerification = {
   evidence: string;
   screenshotCount: number;
   hardwareVerified?: boolean;
+  verifiedHardware?: string[];
   simulatorVerified?: boolean;
   applicationVerified?: boolean;
   verifiedApplications?: string[];
   verificationSource?: 'author-attestation';
+  verificationDate?: string;
 };
 
 type ArticleData = {

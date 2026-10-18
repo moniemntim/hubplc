@@ -8,9 +8,23 @@ const articles = JSON.parse(
   await readFile('lib/articles.generated.json', 'utf8'),
 );
 const bySlug = new Map(articles.map((article) => [article.slug, article]));
-const heldSlugs = [
-  'xca-ecu-https-certificate-setup',
-  'latency-injection-timeout-retry',
+const heldSlugs = ['latency-injection-timeout-retry'];
+const verifiedHardwareArticles = [
+  {
+    slug: 'xca-ecu-https-certificate-setup',
+    title: 'XCA 建立 ECU HTTPS 憑證完整教學',
+    imageCount: 19,
+  },
+  {
+    slug: 'fx5u-sd-bin-read-write',
+    title: 'FX5U BIN 讀寫教學',
+    imageCount: 9,
+  },
+  {
+    slug: 'fx5u-sd-csv-read-write',
+    title: 'FX5U CSV 讀寫教學',
+    imageCount: 7,
+  },
 ];
 const browser = await chromium.launch({
   headless: true,
@@ -27,6 +41,8 @@ try {
 
   const excel = bySlug.get('excel-average');
   assert.ok(excel, 'excel-average remains published');
+  for (const article of verifiedHardwareArticles)
+    assert.ok(bySlug.has(article.slug), `${article.slug} is published`);
 
   for (const width of [320, 1440]) {
     await page.setViewportSize({ width, height: 1000 });
@@ -59,6 +75,29 @@ try {
     );
   }
 
+  for (const article of verifiedHardwareArticles) {
+    for (const width of [320, 1440]) {
+      await page.setViewportSize({ width, height: 1000 });
+      const response = await page.goto(`${base}/articles/${article.slug}`, {
+        waitUntil: 'load',
+      });
+      assert.equal(response.status(), 200, `${article.slug} at ${width}px`);
+      await expect(
+        page.getByRole('heading', { level: 1, name: article.title }),
+      ).toBeVisible();
+      await expect(page.locator('.article-reader img')).toHaveCount(
+        article.imageCount,
+      );
+      assert.equal(
+        await page.evaluate(
+          () => document.documentElement.scrollWidth <= innerWidth + 1,
+        ),
+        true,
+        `${article.slug} horizontal overflow at ${width}px`,
+      );
+    }
+  }
+
   for (const slug of heldSlugs) {
     assert.equal(
       bySlug.has(slug),
@@ -73,7 +112,7 @@ try {
 
   assert.deepEqual(errors, []);
   console.log(
-    'PASS public article metadata and responsive layout without the evidence panel; verification-held routes return 404',
+    'PASS public Excel and verified hardware articles render responsively; verification-held routes return 404',
   );
 } finally {
   await browser.close();

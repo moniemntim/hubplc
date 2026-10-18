@@ -58,8 +58,6 @@
   "five-whys-verifiable-actions",
   "fixed-point-precision-negative-rounding",
   "frequency-duty-cycle-counter-input-compatibility",
-  "fx5u-sd-bin-read-write",
-  "fx5u-sd-csv-read-write",
   "gateway-bidirectional-mapping-acceptance",
   "gateway-firmware-upgrade-modbus-mqtt-regression",
   "gateway-session-polling-capacity-budget",

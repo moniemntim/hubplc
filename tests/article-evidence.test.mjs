@@ -45,6 +45,19 @@ void test('all public articles have current review evidence and truthful dates',
     .sort((left, right) => left.slug.localeCompare(right.slug));
 
   assert.match(ledger.lastFullAuditDate, /^\d{4}-\d{2}-\d{2}$/);
+  for (const slug of [
+    'xca-ecu-https-certificate-setup',
+    'fx5u-sd-bin-read-write',
+    'fx5u-sd-csv-read-write',
+  ]) {
+    const attestation = ledger.authorAttestations?.[slug];
+    assert.equal(attestation?.verificationKind, 'industrial');
+    assert.equal(attestation?.hardwareVerified, true);
+    assert.equal(attestation?.verificationSource, 'author-attestation');
+    assert.match(attestation?.verificationDate, /^\d{4}-\d{2}-\d{2}$/);
+    assert.ok(attestation?.verifiedHardware.length > 0);
+    assert.ok(attestation?.verifiedActions.length > 0);
+  }
   assert.equal(
     Object.keys(dateRecords.articles).length,
     reviewedArticles.length,
@@ -80,9 +93,18 @@ void test('all public articles have current review evidence and truthful dates',
       verificationKind === 'industrial' || verificationKind === 'software',
       `${slug}: verification kind`,
     );
-    if (verificationKind === 'industrial')
+    if (verificationKind === 'industrial') {
       assert.equal(typeof review.hardwareVerified, 'boolean');
-    else {
+      if (review.hardwareVerified) {
+        assert.equal(review.verificationSource, 'author-attestation');
+        assert.ok(review.verifiedHardware.length > 0);
+        assert.match(review.verificationDate, /^\d{4}-\d{2}-\d{2}$/);
+        assert.deepEqual(
+          review.verifiedHardware,
+          ledger.authorAttestations[slug].verifiedHardware,
+        );
+      }
+    } else {
       assert.equal(typeof review.applicationVerified, 'boolean');
       if (review.applicationVerified) {
         assert.equal(review.verificationSource, 'author-attestation');

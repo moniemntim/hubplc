@@ -103,6 +103,18 @@ for (const file of (await fs.readdir(contentDir)).filter((file) =>
   )
     throw new Error(file + ': 缺少硬體驗證狀態');
   if (
+    verificationKind === 'industrial' &&
+    review.hardwareVerified === true &&
+    (review.verificationSource !== 'author-attestation' ||
+      !Array.isArray(review.verifiedHardware) ||
+      !review.verifiedHardware.length ||
+      review.verifiedHardware.some(
+        (item) => typeof item !== 'string' || !item.trim(),
+      ) ||
+      !/^\d{4}-\d{2}-\d{2}$/.test(review.verificationDate ?? ''))
+  )
+    throw new Error(file + ': 缺少硬體實測聲明來源');
+  if (
     verificationKind === 'software' &&
     (typeof review.applicationVerified !== 'boolean' ||
       !Array.isArray(review.verifiedApplications) ||
@@ -145,6 +157,13 @@ for (const file of (await fs.readdir(contentDir)).filter((file) =>
       : {
           hardwareVerified: review.hardwareVerified,
           simulatorVerified: review.simulatorVerified === true,
+          ...(review.hardwareVerified
+            ? {
+                verifiedHardware: review.verifiedHardware,
+                verificationSource: review.verificationSource,
+                verificationDate: review.verificationDate,
+              }
+            : {}),
         }),
   };
   articles.push({

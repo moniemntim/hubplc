@@ -234,8 +234,6 @@ MELSEC iQ-F FX5 Programming Manual (Instructions, Standard Functions/Function Bl
 
 [三菱電機 FX5 指令手冊 JY997D55801AB](https://dl.mitsubishielectric.com/dl/fa/document/manual/plcf/jy997d55801/jy997d55801ab.pdf)
 
-作者本人於 2026-10-18 確認，已在 FX5U 與 SD 卡上實際完成 BIN 寫入及讀回；原始實測日期未另行提供。網站本輪只記錄作者實測聲明，沒有重新執行設備測試。套用到其他設備前，仍須核對 CPU 型號、GX Works3 版本、SD 卡相容性與現場安全程序。
-
 ## 延伸閱讀
 
 [FX5U CSV 讀寫教學](/articles/fx5u-sd-csv-read-write/)

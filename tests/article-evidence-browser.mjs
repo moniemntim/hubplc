@@ -19,11 +19,13 @@ const verifiedHardwareArticles = [
     slug: 'fx5u-sd-bin-read-write',
     title: 'FX5U BIN 讀寫教學',
     imageCount: 9,
+    excludesPublicAttestation: true,
   },
   {
     slug: 'fx5u-sd-csv-read-write',
     title: 'FX5U CSV 讀寫教學',
     imageCount: 7,
+    excludesPublicAttestation: true,
   },
 ];
 const browser = await chromium.launch({
@@ -88,6 +90,10 @@ try {
       await expect(page.locator('.article-reader img')).toHaveCount(
         article.imageCount,
       );
+      if (article.excludesPublicAttestation)
+        await expect(page.locator('.article-reader')).not.toContainText(
+          '原始實測日期未另行提供',
+        );
       assert.equal(
         await page.evaluate(
           () => document.documentElement.scrollWidth <= innerWidth + 1,

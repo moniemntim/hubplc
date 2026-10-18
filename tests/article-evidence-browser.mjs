@@ -34,21 +34,10 @@ try {
       waitUntil: 'load',
     });
     assert.equal(response.status(), 200, `excel-average at ${width}px`);
+    await expect(page.locator('.article-reader__verification')).toHaveCount(0);
     await expect(
       page.getByRole('heading', { name: '本頁證據與限制' }),
-    ).toBeVisible();
-    await expect(page.locator('.article-reader__verification')).toContainText(
-      excel.verification.reviewDate,
-    );
-    await expect(page.locator('.article-reader__verification')).toContainText(
-      '作者實際操作',
-    );
-    await expect(page.locator('.article-reader__verification')).toContainText(
-      'Windows 版 Microsoft 365、Excel 2021',
-    );
-    await expect(
-      page.locator('.article-reader__verification'),
-    ).not.toContainText('實體設備');
+    ).toHaveCount(0);
     await expect(page.locator('.article-reader__meta')).toContainText(
       `發布：${excel.publishedDate}`,
     );
@@ -84,7 +73,7 @@ try {
 
   assert.deepEqual(errors, []);
   console.log(
-    'PASS published evidence metadata and responsive layout; verification-held routes return 404',
+    'PASS public article metadata and responsive layout without the evidence panel; verification-held routes return 404',
   );
 } finally {
   await browser.close();

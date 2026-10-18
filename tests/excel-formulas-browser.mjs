@@ -103,15 +103,9 @@ try {
       await expect(page.locator('.article-reader__category')).toHaveText(
         'Excel 公式教學',
       );
-      await expect(page.locator('.article-reader__verification')).toContainText(
-        '作者實際操作',
+      await expect(page.locator('.article-reader__verification')).toHaveCount(
+        0,
       );
-      await expect(page.locator('.article-reader__verification')).toContainText(
-        'Windows 版 Microsoft 365、Excel 2021',
-      );
-      await expect(
-        page.locator('.article-reader__verification'),
-      ).not.toContainText('實體設備');
       const lessonImage = page.locator('.article-reader__content img');
       await expect(lessonImage).toHaveCount(1);
       await lessonImage.scrollIntoViewIfNeeded();

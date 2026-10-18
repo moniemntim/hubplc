@@ -84,64 +84,6 @@
   overflow-wrap: anywhere;
 }
 
-.article-reader__verification {
-  max-width: 780px;
-  margin: -8px 0 32px;
-  border: 1px solid #b9d4cc;
-  border-radius: 10px;
-  background: #f3f9f6;
-  padding: 20px 22px;
-}
-
-.article-reader__verification h2 {
-  margin: 0;
-  color: #244b43;
-  font-size: 21px;
-  line-height: 1.4;
-}
-
-.article-reader__verification dl {
-  display: grid;
-  grid-template-columns: repeat(2, minmax(0, 1fr));
-  gap: 10px 20px;
-  margin: 18px 0 0;
-}
-
-.article-reader__verification dl > div {
-  min-width: 0;
-}
-
-.article-reader__verification dt {
-  color: #59706f;
-  font-size: 13px;
-}
-
-.article-reader__verification dd {
-  margin: 4px 0 0;
-  color: #243f39;
-  font-weight: 700;
-  overflow-wrap: anywhere;
-}
-
-.article-reader__verification details {
-  margin-top: 16px;
-  border-top: 1px solid #d2e2dd;
-  padding-top: 14px;
-}
-
-.article-reader__verification summary {
-  color: #08796b;
-  font-weight: 700;
-  cursor: pointer;
-}
-
-.article-reader__verification details p {
-  margin: 12px 0 0;
-  color: #506761;
-  line-height: 1.7;
-  overflow-wrap: anywhere;
-}
-
 .article-reader__layout {
   display: grid;
   grid-template-columns: minmax(0, 780px) minmax(0, 230px);
@@ -385,15 +327,6 @@
 
   .article-reader__description {
     font-size: 16px;
-  }
-
-  .article-reader__verification {
-    margin-bottom: 26px;
-    padding: 18px;
-  }
-
-  .article-reader__verification dl {
-    grid-template-columns: 1fr;
   }
 
   .article-reader__related-grid {

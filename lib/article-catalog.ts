@@ -128,6 +128,24 @@ export function filterArticles(
       );
     });
 }
+export function articleSearchSuggestions(articles: ArticleSummary[]) {
+  return [
+    'FX5U',
+    'BIN',
+    'CSV',
+    'XCA',
+    '憑證',
+    'RS485',
+    'Modbus',
+    'HMI',
+    '計時器',
+  ]
+    .filter(
+      (query) =>
+        filterArticles(articles, { ...DEFAULT_FILTERS, query }).length > 0,
+    )
+    .slice(0, 5);
+}
 export function paginate<T>(
   entries: T[],
   requestedPage: number,

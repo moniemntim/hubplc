@@ -50,6 +50,8 @@
 - 第三十九批新增20篇 Excel 公式課程；逐課核對來源 Word、主範例、練習答案、公式、官方來源與對應截圖，並依作者本人提供的實測聲明記錄 Windows 版 Microsoft 365 與 Excel 2021 軟體驗證。累計137篇reviewed-local、333篇unreviewed、1篇draft，詳見batch-39.md。
 - 第四十批新增 Excel 公式課程第21至50課共30篇；逐課核對來源 Word、主範例、三題練習、版本、官方來源與網頁版截圖，並延續作者本人提供的 Windows 版 Microsoft 365 與 Excel 2021 實測聲明。累計167篇reviewed-local、333篇unreviewed、1篇draft，詳見batch-40.md。
 - 第四十一批完成兩篇 FX5U SD 卡教材審查：作者確認 BIN 與 CSV 寫入／讀回均已在 FX5U 與 SD 卡實際操作；網站另逐段核對控制資料、單次往返判準、圖片與官方來源，修正 CSV 讀取副本會覆寫結果等實作風險。累計169篇reviewed-local、331篇unreviewed、1篇draft，詳見batch-41.md。
+- 第四十二批檢查目前公開內容與入口，修正搜尋建議、課程數量／首課標示及16篇Excel課文的資料位置與章節指引；審查與公開數量不變，詳見batch-42.md。
+- 第四十三批改善首頁、文章目錄、Excel課程、閱讀頁與共用導覽的視覺層次，修正英文窄螢幕導覽溢位；文章數量與驗證紀錄不變，詳見batch-43.md。
 
 ## 暫時下架政策（2026-09-28）
 

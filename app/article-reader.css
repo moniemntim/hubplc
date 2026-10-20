@@ -11,6 +11,8 @@
 .article-reader__header {
   max-width: 780px;
   margin-bottom: 38px;
+  padding-bottom: 30px;
+  border-bottom: 1px solid #d9e1e5;
 }
 
 .article-reader__back-link {
@@ -47,6 +49,7 @@
   text-wrap: balance;
   line-height: 1.28;
   letter-spacing: -1.5px;
+  color: #123a35;
 }
 
 .article-reader__meta {
@@ -55,8 +58,9 @@
   align-items: center;
   gap: 8px 14px;
   margin-top: 18px;
-  color: #61727b;
+  color: #52666c;
   font-size: 14px;
+  line-height: 1.6;
 }
 
 .article-reader__category {
@@ -99,6 +103,26 @@
   max-width: 780px;
   margin: 0;
   padding: 0;
+  color: #263e3d;
+  font-size: 16px;
+  line-height: 1.85;
+}
+
+.article-reader__content.prose > h2 {
+  margin: 48px 0 18px;
+  border-bottom: 1px solid #d9e1e5;
+  padding: 0 0 12px;
+  color: #123a35;
+  font-size: clamp(23px, 2.2vw, 28px);
+}
+
+.article-reader__content.prose > h3 {
+  margin: 30px 0 12px;
+  color: #164d43;
+  font-size: 20px;
+}
+.article-reader__content.prose > :first-child {
+  margin-top: 0;
 }
 
 .article-reader__content :where(h2, h3) {
@@ -115,6 +139,8 @@
 .article-reader__content pre {
   max-width: 100%;
   overflow-x: auto;
+  border: 1px solid #31584d;
+  line-height: 1.65;
 }
 
 .article-reader__content :not(pre) > code {
@@ -124,6 +150,16 @@
 .article-reader__content table {
   max-width: 100%;
   overflow-x: auto;
+  margin: 24px 0;
+}
+
+.article-reader__content td {
+  background: #fff;
+}
+
+.article-reader__content.prose img {
+  border: 1px solid #d9e1e5;
+  border-radius: 6px;
 }
 
 .article-reader__toc-desktop {
@@ -133,7 +169,7 @@
   grid-row: 1;
   max-height: calc(100vh - 48px);
   overflow-y: auto;
-  border-left: 1px solid #d9e1e5;
+  border-left: 2px solid #c5d9d2;
   padding: 3px 0 12px 18px;
 }
 
@@ -168,6 +204,7 @@
 
 .article-reader__toc-item a:hover {
   color: #08796b;
+  text-decoration: underline;
 }
 
 .article-reader__toc-item--sub {
@@ -217,6 +254,10 @@
 .article-reader__related-card:hover {
   border-color: #91b8ae;
   color: inherit;
+}
+
+.article-reader__related-card:focus-visible {
+  border-color: #08796b;
 }
 
 .article-reader__related-meta {
@@ -273,7 +314,7 @@
     margin: 0 0 28px;
     border: 1px solid #d9e1e5;
     border-radius: 7px;
-    background: #fff;
+    background: #f7faf8;
     padding: 0 16px;
   }
 
@@ -319,6 +360,7 @@
 
   .article-reader__header {
     margin-bottom: 28px;
+    padding-bottom: 24px;
   }
 
   .article-reader__back-link {

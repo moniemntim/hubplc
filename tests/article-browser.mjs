@@ -120,6 +120,24 @@ try {
     await expect(page.locator('.library-total strong')).toHaveText(
       String(articles.length),
     );
+    const suggestionButtons = page.locator('.library-suggestions button');
+    const suggestionCount = await suggestionButtons.count();
+    for (let index = 0; index < suggestionCount; index++) {
+      await suggestionButtons.nth(index).click();
+      await expect(page.locator('.library-articles')).toHaveAttribute(
+        'aria-busy',
+        'false',
+      );
+      await expect.poll(() => cards.count()).toBeGreaterThan(0);
+    }
+    await search.fill('zzzz-no-such-article-999');
+    await expect(page.locator('.library-articles')).toHaveAttribute(
+      'aria-busy',
+      'false',
+    );
+    await expect(cards).toHaveCount(0);
+    await page.getByRole('button', { name: '顯示所有 PLC／工程文章' }).click();
+    await expect(cards).toHaveCount(Math.min(12, articles.length));
     const linkedSlugs = await page
       .locator('main a[href^="/articles/"]')
       .evaluateAll((links) =>

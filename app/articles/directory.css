@@ -16,9 +16,11 @@
   line-height: 1.35;
   letter-spacing: -0.03em;
   margin: 10px 0 15px;
+  color: #123a35;
+  text-wrap: balance;
 }
 .library-heading h1 span {
-  color: #d8743f;
+  color: #b95b2b;
 }
 .library-heading p:not(.eyebrow) {
   color: #596a74;
@@ -44,6 +46,10 @@
 }
 .library-search-area {
   margin-bottom: 36px;
+  padding: 20px;
+  border: 1px solid #d4e2de;
+  border-radius: 12px;
+  background: #edf4f1;
 }
 .library-search {
   display: flex;
@@ -84,10 +90,11 @@
 }
 .library-suggestions button {
   color: #355b55;
-  padding: 4px 9px;
-  background: #e7eeec;
-  border: 1px solid transparent;
-  border-radius: 4px;
+  min-height: 36px;
+  padding: 6px 11px;
+  background: white;
+  border: 1px solid #cbded7;
+  border-radius: 6px;
 }
 .library-suggestions button:hover {
   border-color: #9ebeb6;
@@ -129,6 +136,7 @@
   border-radius: 6px;
   font-size: 14px;
   line-height: 1.5;
+  min-height: 44px;
 }
 .library-category-options button span:last-child {
   font-size: 12px;
@@ -139,8 +147,8 @@
   background: #e8efec;
 }
 .library-category-options button[aria-pressed='true'] {
-  background: #e0eee9;
-  color: #076b5e;
+  background: #d8ebe4;
+  color: #075c50;
   font-weight: 700;
   border-color: #c1ddd3;
 }
@@ -175,6 +183,8 @@
   align-items: center;
   gap: 14px;
   margin-bottom: 18px;
+  padding-bottom: 15px;
+  border-bottom: 1px solid #d6e2df;
 }
 .library-results-toolbar h2 {
   font-size: 21px;
@@ -200,6 +210,7 @@
   padding: 9px;
   border-radius: 5px;
   color: #31434e;
+  min-height: 44px;
 }
 .article-library select:focus-visible,
 .article-library summary:focus-visible {
@@ -216,6 +227,8 @@
 }
 .library-view-toggle button {
   padding: 7px;
+  min-width: 40px;
+  min-height: 40px;
   border-radius: 3px;
   display: grid;
   place-items: center;
@@ -272,7 +285,7 @@
   display: flex;
   flex-direction: column;
   min-width: 0;
-  padding: 20px 24px;
+  padding: 22px 24px;
   border: 1px solid #d8e2e3;
   border-radius: 8px;
   background: white;
@@ -328,8 +341,10 @@
   align-items: center;
   gap: 12px;
   margin-top: auto;
-  color: #73818a;
+  color: #596a74;
   font-size: 12px;
+  padding-top: 13px;
+  border-top: 1px solid #edf1f0;
 }
 .library-article-footer svg {
   color: #08796b;
@@ -348,13 +363,15 @@
 .library-page-buttons {
   display: flex;
   align-items: center;
+  justify-content: center;
+  flex-wrap: wrap;
   gap: 4px;
 }
 .library-page-buttons button {
   display: grid;
   place-items: center;
-  min-width: 36px;
-  height: 38px;
+  min-width: 44px;
+  height: 44px;
   padding: 0 8px;
   border: 1px solid #d2dedb;
   border-radius: 5px;
@@ -455,7 +472,7 @@
     padding: 25px 18px 50px;
   }
   .library-heading h1 {
-    font-size: 28px;
+    font-size: 26px;
   }
   .library-heading p:not(.eyebrow) {
     font-size: 14px;
@@ -463,6 +480,9 @@
   .library-search {
     padding: 0 12px;
     gap: 9px;
+  }
+  .library-search-area {
+    padding: 14px;
   }
   .library-search input {
     font-size: 16px;
@@ -478,7 +498,7 @@
     font-size: 20px;
   }
   .library-display-controls {
-    margin-left: auto;
+    flex-wrap: wrap;
   }
   .library-articles-grid {
     grid-template-columns: minmax(0, 1fr);
@@ -493,7 +513,7 @@
     justify-content: center;
   }
   .library-page-buttons button {
-    min-width: 32px;
+    min-width: 40px;
     padding: 0 6px;
   }
 }

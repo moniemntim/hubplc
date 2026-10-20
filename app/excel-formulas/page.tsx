@@ -70,7 +70,7 @@ export default function ExcelFormulas() {
         </p>
         {firstLesson && (
           <Link className="action" href={`/articles/${firstLesson.slug}`}>
-            從目前第 1 課開始 →
+            從第 {firstLesson.order} 課開始 →
           </Link>
         )}
       </div>

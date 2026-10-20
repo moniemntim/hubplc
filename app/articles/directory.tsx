@@ -15,6 +15,7 @@ import {
   CATEGORY_ORDER,
   DEFAULT_FILTERS,
   PAGE_SIZE,
+  articleSearchSuggestions,
   filterArticles,
   filtersUrl,
   normalizeSearch,
@@ -128,6 +129,10 @@ export default function ArticleDirectory({
     [articles],
   );
   const startLinks = START_LINKS.filter(([, slug]) => publishedSlugs.has(slug));
+  const suggestions = useMemo(
+    () => articleSearchSuggestions(articles),
+    [articles],
+  );
   const workPaths = WORK_PATHS.map((path) => ({
     ...path,
     links: path.links.filter(([, slug]) => publishedSlugs.has(slug)),
@@ -337,21 +342,27 @@ export default function ArticleDirectory({
             maxLength={160}
             value={filters.query}
             onChange={(event) => update({ query: event.target.value, page: 1 })}
-            placeholder="搜尋標題、關鍵字或內文，例如 RS485、計時器…"
+            placeholder={
+              suggestions.length
+                ? `搜尋標題、關鍵字或內文，例如 ${suggestions.slice(0, 2).join('、')}…`
+                : '搜尋標題、關鍵字或內文'
+            }
           />
         </label>
-        <div className="library-suggestions">
-          <span>常用主題</span>
-          {['RS485', 'Modbus', 'HMI', 'CSV', '計時器'].map((word) => (
-            <button
-              type="button"
-              key={word}
-              onClick={() => update({ query: word, category: '', page: 1 })}
-            >
-              {word}
-            </button>
-          ))}
-        </div>
+        {suggestions.length > 0 && (
+          <div className="library-suggestions">
+            <span>常用主題</span>
+            {suggestions.map((word) => (
+              <button
+                type="button"
+                key={word}
+                onClick={() => update({ query: word, category: '', page: 1 })}
+              >
+                {word}
+              </button>
+            ))}
+          </div>
+        )}
       </section>
 
       <div className="library-layout">

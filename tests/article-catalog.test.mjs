@@ -4,6 +4,7 @@ import { articleMetadata, plainText } from '../scripts/article-metadata.mjs';
 import {
   DEFAULT_FILTERS,
   EXCEL_ARTICLE_CATEGORY,
+  articleSearchSuggestions,
   belongsInPlcArticleDirectory,
   filterArticles,
   filtersUrl,
@@ -29,6 +30,27 @@ const makeArticle = (
   author: '作者',
   tags: [],
   readingMinutes: 2,
+});
+
+void test('suggested searches match the currently available article metadata', () => {
+  const partial = [
+    makeArticle('fx5u-bin', 'FX5U BIN 讀寫教學'),
+    makeArticle('fx5u-csv', 'FX5U CSV 讀寫教學'),
+    makeArticle('xca', 'XCA 建立 HTTPS 憑證'),
+  ];
+  const suggestions = articleSearchSuggestions(partial);
+  assert.deepEqual(suggestions, ['FX5U', 'BIN', 'CSV', 'XCA', '憑證']);
+  for (const query of suggestions)
+    assert.ok(
+      filterArticles(partial, { ...DEFAULT_FILTERS, query }).length > 0,
+    );
+  assert.deepEqual(articleSearchSuggestions([]), []);
+  assert.deepEqual(
+    articleSearchSuggestions([makeArticle('other', '其他')]),
+    [],
+  );
+  assert.ok(!suggestions.includes('RS485'));
+  assert.ok(!suggestions.includes('計時器'));
 });
 
 void test('PLC article directory excludes Excel lessons', () => {

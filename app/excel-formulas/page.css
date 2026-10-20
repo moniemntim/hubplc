@@ -1,8 +1,11 @@
 .excel-course-intro {
   max-width: 820px;
+  padding-bottom: 30px;
+  border-bottom: 1px solid #d9e1e5;
 }
 .excel-course-intro .lead {
   font-size: 18px;
+  line-height: 1.8;
 }
 .excel-course-evidence {
   margin: 20px 0;
@@ -17,6 +20,7 @@
 .excel-course-section h2 {
   margin: 0;
   font-size: 25px;
+  color: #123a35;
 }
 .excel-course-section > p {
   color: var(--muted-foreground);
@@ -35,7 +39,9 @@
 }
 .excel-course-stages li {
   padding: 16px;
-  background: #eaf2ef;
+  background: #f4f8f6;
+  border: 1px solid #d6e6df;
+  border-top: 3px solid #8cb9a9;
   border-radius: 8px;
   min-width: 0;
 }
@@ -48,6 +54,7 @@
 .excel-course-stages strong {
   display: block;
   margin: 4px 0;
+  color: #123a35;
 }
 .excel-course-stages p {
   color: #526a60;
@@ -65,14 +72,22 @@
   background: #fff;
   border: 1px solid var(--border);
   border-radius: 9px;
+  color: inherit;
 }
-.excel-course-card:hover {
-  border-color: var(--primary);
+.excel-course-card:hover,
+.excel-course-card:focus-visible {
+  border-color: #08796b;
+  background: #f9fcfa;
+}
+.excel-course-card:focus-visible {
+  outline: 3px solid #13ac95;
+  outline-offset: 3px;
 }
 .excel-course-card h3 {
   font-size: 19px;
   line-height: 1.5;
   margin: 8px 0;
+  color: #123a35;
 }
 .excel-course-card h3 span {
   display: block;
@@ -86,6 +101,7 @@
 .excel-course-open {
   color: #17654f;
   font-size: 14px;
+  font-weight: 700;
   margin-top: auto;
 }
 @media (max-width: 850px) {

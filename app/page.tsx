@@ -217,22 +217,6 @@ export default function Home() {
           </Link>
         </section>
       )}
-      <section className="home-editorial" aria-labelledby="editorial-heading">
-        <h2 id="editorial-heading">誰在整理這些內容？</h2>
-        <p>
-          本站由茂伯整理與維護。本次內容整理使用 AI
-          協助編修，工具計算檢查與實體設備實測分開記錄；沒有設備紀錄的範例不標為實測。
-        </p>
-        <Link className="text-link" href="/about">
-          作者說明、編輯方式與問題回報 →
-        </Link>
-        <p>
-          內容勘誤與工具問題：{' '}
-          <a className="text-link" href="mailto:ceo@hubplc.com">
-            ceo@hubplc.com
-          </a>
-        </p>
-      </section>
       <AdSense />
     </main>
   );

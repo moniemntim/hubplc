@@ -225,8 +225,7 @@
   gap: 10px 24px;
   margin-bottom: 20px;
 }
-.home-feature-heading h2,
-.home-editorial h2 {
+.home-feature-heading h2 {
   margin: 0;
   color: #123a35;
   font-size: 25px;
@@ -305,16 +304,6 @@
   border: 1px solid #d1e1d8;
   border-radius: 12px;
   background: #eaf2ed;
-}
-.home-editorial {
-  margin-top: 40px;
-  padding: 30px 0 12px;
-  border-top: 1px solid var(--border);
-}
-.home-editorial p {
-  max-width: 780px;
-  color: var(--muted-foreground);
-  font-size: 14px;
 }
 @media (max-width: 900px) {
   .home-hero {

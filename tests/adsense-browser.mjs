@@ -108,18 +108,29 @@ try {
     );
   }
   await page.goto(base + '/');
+  await expect(
+    page.getByRole('heading', { name: '誰在整理這些內容？' }),
+  ).toHaveCount(0);
+  await expect(page.locator('.home-page')).not.toContainText(
+    '本站由茂伯整理與維護',
+  );
   await expect(page.locator('ins.adsbygoogle')).toHaveCount(1);
   assert.equal(
     await page.locator('ins.adsbygoogle').evaluate((unit) => {
-      const editorial = document.querySelector('.home-editorial');
-      return Boolean(
-        editorial &&
-        editorial.compareDocumentPosition(unit) &
-          Node.DOCUMENT_POSITION_FOLLOWING,
+      const sections = [...document.querySelectorAll('.home-page > section')];
+      return (
+        sections.length > 0 &&
+        sections.every((section) =>
+          Boolean(
+            !section.contains(unit) &&
+            section.compareDocumentPosition(unit) &
+              Node.DOCUMENT_POSITION_FOLLOWING,
+          ),
+        )
       );
     }),
     true,
-    'home ad follows featured tools, lessons and editorial content',
+    'home ad follows all homepage content sections',
   );
   await page.goto(base + '/articles/excel-average');
   await expect(page.locator('ins.adsbygoogle')).toHaveCount(1);

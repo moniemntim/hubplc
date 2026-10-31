@@ -42,6 +42,21 @@ const START_LINKS = [
 
 const WORK_PATHS = [
   {
+    title: 'SD 卡資料保存',
+    description:
+      '先完成一次 BIN 寫入／讀回比對，再確認 CSV 的追加、列欄與指定列讀取。',
+    links: [
+      ['FX5U：16 字 BIN 往返比對', 'fx5u-sd-bin-read-write'],
+      ['FX5U：CSV 記錄與指定列讀回', 'fx5u-sd-csv-read-write'],
+    ],
+  },
+  {
+    title: '內網設備 HTTPS',
+    description:
+      '將 CA、設備憑證與私鑰分開管理，對齊固定 IP SAN，再核對 Windows 信任與設備實際憑證。',
+    links: [['XCA 與 ECU HTTPS 完整流程', 'xca-ecu-https-certificate-setup']],
+  },
+  {
     title: '工業通訊',
     description: 'RS-485 沒回應時，先分清請求停在主站、從站或回覆驗收哪一段。',
     links: [

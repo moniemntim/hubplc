@@ -176,14 +176,15 @@ export const categories = [
 ] as const;
 export const tools = [
   ...conversionTools,
-  ...powerIntentTools,
   {
     slug: 'ac-power-converter',
     name: '交流功率換算計算器',
     category: '電路',
     code: 'W ↔ A',
-    description: '整合安培、電壓、W／kW／MW、VA／kVA／MVA與功率因數換算。',
-    keywords: '安培 kW 瓦特 電壓 VA kVA MVA 單相 三相 功率換算',
+    description:
+      '依供電方式與功率因數換算電流、電壓、W／kW 與 VA／kVA／MVA，附單相、三相與 UPS 案例。',
+    keywords:
+      '安培轉瓦特 安培轉千瓦 安培轉VA 安培轉kVA 瓦特轉安培 千瓦轉安培 kVA轉安培 MVA轉安培 瓦特轉電壓 千瓦轉電壓 VA轉瓦特 kVA轉kW 瓦特轉VA kW轉kVA VA轉kVA amps watts kilowatts kva mva voltage power factor 單相 三相 功率換算',
   },
   {
     slug: 'power-factor',
@@ -198,8 +199,10 @@ export const tools = [
     name: '能耗與電費計算器',
     category: '電路',
     code: 'kW × h',
-    description: '計算kWh、焦耳、平均功率與依自訂每度電價估算的電費。',
-    keywords: '電費 用電量 能耗 kWh 度數 焦耳 J 千瓦時 平均功率',
+    description:
+      '依功率或累積電量與時間計算用電量、平均功率與自訂費率成本，並提供帶入案例。',
+    keywords:
+      'kWh轉W kWh轉kW kWh轉瓦特 用電量 能耗 W轉kWh kW轉kWh 瓦特轉kWh 千瓦轉kWh 電費 energy consumption electricity cost average power 每度電價 度數 焦耳 J 千瓦時 平均功率',
   },
   {
     slug: 'va-to-amps',
@@ -488,9 +491,11 @@ export const tools = [
     keywords: 'E6 E12 E24 E48 E96 優選 標準電阻',
   },
 ] as const;
-export type ToolSlug = (typeof tools)[number]['slug'];
+export type ToolSlug =
+  | (typeof tools)[number]['slug']
+  | (typeof powerIntentTools)[number]['slug'];
 export function getTool(slug: ToolSlug) {
-  return tools.find((tool) => tool.slug === slug)!;
+  return [...tools, ...powerIntentTools].find((tool) => tool.slug === slug)!;
 }
 
 export const toolExamples: Record<ToolSlug, string> = {

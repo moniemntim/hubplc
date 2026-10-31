@@ -32,7 +32,9 @@ npx wrangler deploy --config deployment/wrangler.jsonc --dry-run
 
 ## 工具架構
 
-`/tool` 提供搜尋和分類，15 個獨立頁面位於 `/tool/<slug>`。工具登錄表在 `lib/tools/registry.ts`；公式在 `lib/tools`；各頁面僅引用自己的計算器。`lib/calculators.ts` 保留原函式介面，類比頁保留 4–20 mA WebMCP 行為。
+`/tool` 提供搜尋和分類，目前有 57 個獨立工具頁面，位於 `/tool/<slug>`。工具登錄表在 `lib/tools/registry.ts`；公式在 `lib/tools`；各頁面僅引用自己的計算器。`lib/calculators.ts` 保留原函式介面，類比頁保留 4–20 mA WebMCP 行為。
+
+18 個僅切換預設值的電力／用電量頁面已整併至 `/tool/ac-power-converter` 與 `/tool/energy-cost`。`lib/tools/legacy-tool-redirects.ts` 定義舊網址的單次 308 轉址；`?task=` 只接受既有預設，canonical 與 sitemap 使用不含參數的主工具網址。`lib/tools/worked-power-cases.ts` 保存五個中英文教學案例，包含輸入來源、操作、結果解讀及可帶入工具的數值。三相相對中性線換算仍由 `/tool/va-to-amps` 提供。
 
 工具包含類比、PLC 縮放、進位、Modbus 位址與 CRC、暫存器、分壓、電力、555、色碼、串並聯、RC、QR、Big5 及九类單位換算。所有輸入在瀏覽器內處理，不呼叫外部轉換 API。一般換算輸入不寫入網址或儲存；線上碼錶 `/tool/stopwatch` 使用 localStorage 保留計時與單圈紀錄，分享按鈕將狀態放入網址 fragment，開啟分享後各自獨立操作。QR 使用 `qrcode`，Big5 僅載入 `@kayahr/text-encoding` 的 Big5 編碼表；套件將 `big5-hkscs` 視為 Big5 別名。
 

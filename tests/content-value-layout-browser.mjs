@@ -74,7 +74,7 @@ const routes = [
     'articles/hmi-session-timeout-unsent-draft',
     'h2:has-text("頁面內判讀：95°C 是未送出、衝突，還是已套用？")',
   ],
-  ['tool/kw-to-amps', '.task-guide'],
+  ['tool/ac-power-converter', '.worked-cases'],
   ['tool/pressure-converter', '.task-guide'],
 ];
 const browser = await chromium.launch({

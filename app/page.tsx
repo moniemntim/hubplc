@@ -38,22 +38,41 @@ const featuredTools = [
 ];
 const lessons = [
   {
-    slug: 'plc-fault-reset-single-acceptance',
-    title: '故障解除後，為什麼還要重新按復歸？',
-    label: '頁面直接操作 · 逐掃描練習',
-    text: '切換按鈕、故障與來源品質，觀察一次接受、長按拒絕與故障保持。',
+    slug: 'fx5u-sd-bin-read-write',
+    title: 'SD 卡寫入後，怎麼確認真的存對？',
+    label: 'FX5U · BIN 資料保存',
+    text: '將 D101～D116 的 16 字資料寫進 SD 卡，從同一位置讀回，逐項核對。',
+    steps: [
+      '設定資料區與 32 位元檔案位置',
+      '單次執行 SP.FWRITE 與 SP.FREAD',
+      '核對狀態、實際數量與固定辨識值',
+    ],
+    result: '寫入 D2=16、讀取 D100=16；後九字須與設定的 108～116 相同。',
   },
   {
-    slug: 'plc-analog-scaling-pressure-temperature-level',
-    title: '類比輸入換算與來源品質',
-    label: '頁面直接試算 · 數值判讀',
-    text: '切換 mA、原始值與來源品質，區分算得出的數字與可使用的工程值。',
+    slug: 'fx5u-sd-csv-read-write',
+    title: '連續記錄時，怎麼保留舊列並讀回？',
+    label: 'FX5U · CSV 記錄與讀回',
+    text: '先確認一次追加形成 16 欄一列，再用指定列與欄數讀回資料，排除舊值與覆寫。',
+    steps: [
+      '設定檔尾追加並指定後九字資料',
+      '連續做兩次單次寫入並檢查原始 CSV',
+      '停用寫入與時鐘覆寫，再指定列讀取',
+    ],
+    result: '新建測試檔保留兩列、每列 16 欄；讀回數量與 108～116 辨識值一致。',
   },
   {
-    slug: 'plc-self-hold-set-reset-q-series',
-    title: '自保持與 SET／RST',
-    label: '邏輯推演與模擬練習',
-    text: '用虛擬風扇逐掃描檢查啟動、保持、停止與同時命令。',
+    slug: 'xca-ecu-https-certificate-setup',
+    title: '內網設備 HTTPS，怎麼建立正確信任？',
+    label: 'XCA · ECU-1051 · Windows',
+    text: '由自己的 CA 簽發含固定 IP SAN 的設備憑證，部署到 ECU，再設定 Windows 信任。',
+    steps: [
+      '分開建立 CA 與設備專用私鑰',
+      '將實際連線 IP 寫入設備憑證 SAN',
+      '核對設備送出的憑證、信任鏈與資源',
+    ],
+    result:
+      '連線 IP 與 SAN 相符；Windows 信任 CA，設備提供正確憑證且資源通過 HTTPS。',
   },
 ];
 export default function Home() {
@@ -78,7 +97,8 @@ export default function Home() {
             再看懂 PLC 訊號<span>。</span>
           </h1>
           <p className="lead">
-            從類比換算、Modbus 判讀到程式邏輯，帶著輸入資料開始。
+            從 SD 卡資料保存、設備 HTTPS，到 PLC
+            訊號與工程換算，跟著案例完成核對。
           </p>
           <div className="home-hero-actions">
             <Link className="home-button" href="/tool">
@@ -151,6 +171,42 @@ export default function Home() {
           </Link>
         </figure>
       </section>
+      {publishedLessons.length > 0 && (
+        <section className="home-feature" aria-labelledby="lessons-heading">
+          <div className="home-feature-heading">
+            <h2 id="lessons-heading">從一個工程問題開始</h2>
+            <Link className="text-link" href="/articles">
+              瀏覽文章 →
+            </Link>
+          </div>
+          <p className="home-section-note">
+            先看要解決的問題與完成判準，再進入完整步驟、裝置設定與操作截圖。
+          </p>
+          <div className="home-feature-grid home-lessons">
+            {publishedLessons.map((lesson) => (
+              <Link
+                className="home-feature-card"
+                href={'/articles/' + lesson.slug}
+                key={lesson.slug}
+              >
+                <span className="eyebrow">{lesson.label}</span>
+                <h3>{lesson.title}</h3>
+                <p>{lesson.text}</p>
+                <ol className="home-case-steps">
+                  {lesson.steps.map((step) => (
+                    <li key={step}>{step}</li>
+                  ))}
+                </ol>
+                <span className="home-case-result">
+                  <strong>完成判準</strong>
+                  {lesson.result}
+                </span>
+                <span className="text-link">查看完整案例 →</span>
+              </Link>
+            ))}
+          </div>
+        </section>
+      )}
       <section
         id="tools"
         className="home-feature"
@@ -178,33 +234,6 @@ export default function Home() {
           ))}
         </div>
       </section>
-      {publishedLessons.length > 0 && (
-        <section className="home-feature" aria-labelledby="lessons-heading">
-          <div className="home-feature-heading">
-            <h2 id="lessons-heading">跟著做的代表教學</h2>
-            <Link className="text-link" href="/articles">
-              瀏覽文章 →
-            </Link>
-          </div>
-          <p className="home-section-note">
-            以下為計算、離線解析或邏輯練習，未宣稱已在實體 PLC 上測試。
-          </p>
-          <div className="home-feature-grid home-lessons">
-            {publishedLessons.map((lesson) => (
-              <Link
-                className="home-feature-card"
-                href={'/articles/' + lesson.slug}
-                key={lesson.slug}
-              >
-                <span className="eyebrow">{lesson.label}</span>
-                <h3>{lesson.title}</h3>
-                <p>{lesson.text}</p>
-                <span className="text-link">開始練習 →</span>
-              </Link>
-            ))}
-          </div>
-        </section>
-      )}
       {excelCount > 0 && (
         <section className="article-strip" aria-labelledby="excel-heading">
           <div>

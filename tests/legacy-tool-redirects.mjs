@@ -1,27 +1,14 @@
 import assert from 'node:assert/strict';
+import { spawn } from 'node:child_process';
 import { once } from 'node:events';
 import { readFile } from 'node:fs/promises';
 import { createServer } from 'node:net';
 import path from 'node:path';
-import { spawn } from 'node:child_process';
 import test from 'node:test';
+import { legacyToolRedirects } from '../lib/tools/legacy-tool-redirects.ts';
+import { tools } from '../lib/tools/registry.ts';
 
-const redirects = [
-  ['/tool/volts-to-watts', '/tool/amps-to-watts'],
-  ['/tool/volts-to-watts/', '/tool/amps-to-watts'],
-  ['/tool/volts-to-amps', '/tool/watts-to-amps'],
-  ['/tool/volts-to-amps/', '/tool/watts-to-amps'],
-  ['/tool/watts-to-kva', '/tool/watts-to-va'],
-  ['/tool/watts-to-kva/', '/tool/watts-to-va'],
-  ['/tool/kva-to-va', '/tool/va-to-kva'],
-  ['/tool/kva-to-va/', '/tool/va-to-kva'],
-  ['/tool/kw-to-kwh', '/tool/energy-consumption'],
-  ['/tool/kw-to-kwh/', '/tool/energy-consumption'],
-  ['/tool/watts-to-kwh', '/tool/energy-consumption'],
-  ['/tool/watts-to-kwh/', '/tool/energy-consumption'],
-  ['/tool/kwh-to-watts', '/tool/kwh-to-kw'],
-  ['/tool/kwh-to-watts/', '/tool/kwh-to-kw'],
-];
+const redirects = Object.entries(legacyToolRedirects);
 
 async function reservePort() {
   const server = createServer();
@@ -56,7 +43,8 @@ async function waitForWorker(base, worker, output) {
   );
 }
 
-void test('legacy tool paths use one permanent redirect and preserve the query', async () => {
+void test('legacy calculator URLs redirect once with their required preset', async () => {
+  assert.equal(redirects.length, 25, 'all retired calculator paths are listed');
   const port = await reservePort();
   const base = `http://127.0.0.1:${port}`;
   const worker = spawn(
@@ -84,24 +72,45 @@ void test('legacy tool paths use one permanent redirect and preserve the query',
   try {
     await waitForWorker(base, worker, () => output);
     for (const [source, target] of redirects) {
-      const redirect = await fetch(`${base}${source}?campaign=legacy`, {
-        redirect: 'manual',
-      });
-      assert.equal(redirect.status, 308, `${source} uses a permanent redirect`);
-      assert.equal(
-        redirect.headers.get('location'),
-        `${base}${target}?campaign=legacy`,
-        `${source} has its exact target and query`,
-      );
+      for (const trailingSlash of ['', '/']) {
+        const redirect = await fetch(
+          `${base}${source}${trailingSlash}?campaign=legacy&campaign=repeat&task=untrusted&task=second`,
+          { redirect: 'manual' },
+        );
+        assert.equal(
+          redirect.status,
+          308,
+          `${source}${trailingSlash} is permanent`,
+        );
 
-      const followed = await fetch(redirect.headers.get('location'), {
-        redirect: 'manual',
-      });
-      assert.equal(
-        followed.status,
-        200,
-        `${source} reaches an asset after one redirect`,
-      );
+        const destination = new URL(redirect.headers.get('location'));
+        const expected = new URL(target, base);
+        assert.equal(
+          destination.pathname,
+          expected.pathname,
+          `${source} target`,
+        );
+        assert.deepEqual(destination.searchParams.getAll('task'), [
+          expected.searchParams.get('task'),
+        ]);
+        assert.deepEqual(destination.searchParams.getAll('campaign'), [
+          'legacy',
+          'repeat',
+        ]);
+        assert.notEqual(
+          destination.pathname,
+          source,
+          `${source} has no redirect chain`,
+        );
+
+        const followed = await fetch(destination, { redirect: 'manual' });
+        assert.equal(
+          followed.status,
+          200,
+          `${source} reaches a canonical asset`,
+        );
+        assert.notEqual(followed.status, 308, `${source} finishes in one hop`);
+      }
     }
 
     const locale = await fetch(`${base}/api/locale`, {
@@ -129,8 +138,39 @@ void test('legacy tool paths use one permanent redirect and preserve the query',
   }
 });
 
-void test('Worker-first routes include the legacy redirect sources', async () => {
+void test('public tools and worker-first routes cover the consolidation', async () => {
+  assert.equal(tools.length, 57, 'retired presets are not public tool cards');
+  const sitemap = await readFile('public/sitemap.xml', 'utf8');
   const wrangler = await readFile('deployment/wrangler.jsonc', 'utf8');
-  for (const [source] of redirects)
-    assert.match(wrangler, new RegExp(`"${source}"`));
+
+  for (const tool of tools)
+    assert.match(
+      sitemap,
+      new RegExp(`/tool/${tool.slug}(?:</loc>|/)`),
+      `${tool.slug} is indexed`,
+    );
+
+  for (const [source] of redirects) {
+    assert.equal(
+      tools.some((tool) => source === `/tool/${tool.slug}`),
+      false,
+      `${source} is not public`,
+    );
+    assert.doesNotMatch(
+      sitemap,
+      new RegExp(
+        `${source.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')}(?:</loc>|/)`,
+      ),
+    );
+    assert.match(
+      wrangler,
+      new RegExp(`"${source}"`),
+      `${source} reaches Worker`,
+    );
+    assert.match(
+      wrangler,
+      new RegExp(`"${source}/"`),
+      `${source}/ reaches Worker`,
+    );
+  }
 });

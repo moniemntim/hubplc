@@ -1,33 +1,15 @@
 import { localeFromCountry } from '../lib/locale';
+import { resolveLegacyToolUrl } from '../lib/tools/legacy-tool-redirects';
 
 interface Env {
   ASSETS: Fetcher;
 }
 
-const legacyToolRedirects: Readonly<Record<string, string>> = {
-  '/tool/volts-to-watts': '/tool/amps-to-watts',
-  '/tool/volts-to-watts/': '/tool/amps-to-watts',
-  '/tool/volts-to-amps': '/tool/watts-to-amps',
-  '/tool/volts-to-amps/': '/tool/watts-to-amps',
-  '/tool/watts-to-kva': '/tool/watts-to-va',
-  '/tool/watts-to-kva/': '/tool/watts-to-va',
-  '/tool/kva-to-va': '/tool/va-to-kva',
-  '/tool/kva-to-va/': '/tool/va-to-kva',
-  '/tool/kw-to-kwh': '/tool/energy-consumption',
-  '/tool/kw-to-kwh/': '/tool/energy-consumption',
-  '/tool/watts-to-kwh': '/tool/energy-consumption',
-  '/tool/watts-to-kwh/': '/tool/energy-consumption',
-  '/tool/kwh-to-watts': '/tool/kwh-to-kw',
-  '/tool/kwh-to-watts/': '/tool/kwh-to-kw',
-};
-
 export default {
   async fetch(request, env): Promise<Response> {
     const url = new URL(request.url);
-    const redirectPath = legacyToolRedirects[url.pathname];
-    if (redirectPath) {
-      const destination = new URL(redirectPath, url);
-      destination.search = url.search;
+    const destination = resolveLegacyToolUrl(url);
+    if (destination) {
       return new Response(null, {
         status: 308,
         headers: { Location: destination.toString() },

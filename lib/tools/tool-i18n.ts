@@ -239,7 +239,7 @@ export const toolEnglish = {
   'ac-power-converter': {
     name: 'AC Power Converter',
     description:
-      'Convert among amps, voltage, W/kW/MW, VA/kVA/MVA and power factor.',
+      'Use supply type and power factor to convert current, voltage, W/kW and VA/kVA/MVA, with single-phase, three-phase and UPS worked cases.',
     example:
       'Balanced three-phase 10 kW, 380 V, PF 0.8 gives about 18.99 A line current.',
   },

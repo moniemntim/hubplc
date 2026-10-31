@@ -299,6 +299,27 @@
   margin: 0 0 16px;
   color: var(--muted-foreground);
 }
+.home-case-steps {
+  margin: 4px 0;
+  padding-left: 20px;
+  list-style: decimal;
+  color: #36564e;
+  font-size: 14px;
+  line-height: 1.8;
+}
+.home-case-result {
+  padding: 12px;
+  background: #f0f6f2;
+  border-left: 2px solid #a4c8b7;
+  color: #315b4b;
+  font-size: 13px;
+  line-height: 1.8;
+}
+.home-case-result strong {
+  display: block;
+  color: #123a35;
+  margin-bottom: 4px;
+}
 .home-page .article-strip {
   padding: 28px;
   border: 1px solid #d1e1d8;

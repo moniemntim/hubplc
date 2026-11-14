@@ -12,7 +12,8 @@ export const metadata: Metadata = {
   metadataBase: new URL(SITE_ORIGIN),
   icons: { icon: '/favicon.svg' },
   title: { default: 'HubPLC｜免費線上工具箱', template: '%s｜HubPLC' },
-  description: '免費線上計算、PLC 與電路、文字編碼、工程單位換算及時間工具。',
+  description:
+    '免費線上抽籤分組、資料整理、PLC 與電路計算、文字編碼、單位及時間工具。',
 };
 export default function RootLayout({
   children,

@@ -5,7 +5,7 @@ import {
   energyIntentPresets,
   powerIntentPresets,
 } from '../lib/tools/power-presets.ts';
-import { tools } from '../lib/tools/registry.ts';
+import { categories, tools } from '../lib/tools/registry.ts';
 
 const base = process.env.TEST_BASE_URL ?? 'http://127.0.0.1:8787';
 const powerAliases = Object.keys(powerIntentPresets);
@@ -43,7 +43,22 @@ for (const canonical of ['/tool/ac-power-converter', '/tool/energy-cost']) {
 }
 
 const sitemap = await (await fetch(base + '/sitemap.xml')).text();
-assert.equal(tools.length, 57, 'retired presets are not public tool cards');
+assert.equal(
+  tools.length,
+  categories
+    .filter((category) => category !== '全部')
+    .reduce(
+      (total, category) =>
+        total + tools.filter((tool) => tool.category === category).length,
+      0,
+    ),
+  'every published tool remains in a visible category',
+);
+assert.equal(
+  tools.filter((tool) => tool.category === '日常工具').length,
+  9,
+  'daily tools do not replace power routes',
+);
 for (const slug of aliases) {
   assert.equal(
     tools.some((tool) => tool.slug === slug),

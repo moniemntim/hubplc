@@ -11,6 +11,8 @@
     "binding": "ASSETS",
     "run_worker_first": [
       "/api/locale",
+      "/api/network-info",
+      "/api/network-info/",
       "/tool",
       "/tool/",
       "/tool/amps-to-watts",

@@ -1,0 +1,34 @@
+.email-result-scroll {
+  max-width: 100%;
+  max-height: 440px;
+  overflow: auto;
+  margin: 14px 0;
+}
+.calculator-grid:has(.email-result-scroll) {
+  grid-template-columns: minmax(0, 1fr);
+}
+.table-scroll-hint {
+  font-size: 13px;
+  color: #c9e3d7;
+  line-height: 1.7;
+}
+.email-result-table {
+  width: 100%;
+  min-width: 38rem;
+  border-collapse: collapse;
+  color: #edf8f2;
+  font-size: 13px;
+}
+.email-result-table th,
+.email-result-table td {
+  max-width: 16rem;
+  padding: 10px 8px;
+  border-bottom: 1px solid #ffffff2e;
+  text-align: left;
+  vertical-align: top;
+  overflow-wrap: anywhere;
+}
+.email-result-table thead {
+  background: #294f42;
+  color: #edf8f2;
+}

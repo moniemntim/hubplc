@@ -6,7 +6,7 @@ import { createServer } from 'node:net';
 import path from 'node:path';
 import test from 'node:test';
 import { legacyToolRedirects } from '../lib/tools/legacy-tool-redirects.ts';
-import { tools } from '../lib/tools/registry.ts';
+import { categories, tools } from '../lib/tools/registry.ts';
 
 const redirects = Object.entries(legacyToolRedirects);
 
@@ -159,7 +159,19 @@ void test('legacy calculator URLs redirect once with their required preset', asy
 });
 
 void test('public tools and worker-first routes cover the consolidation', async () => {
-  assert.equal(tools.length, 57, 'retired presets are not public tool cards');
+  const publicCount = categories
+    .filter((category) => category !== '全部')
+    .reduce(
+      (total, category) =>
+        total + tools.filter((tool) => tool.category === category).length,
+      0,
+    );
+  assert.equal(tools.length, publicCount, 'every registry tool has a category');
+  assert.equal(
+    tools.filter((tool) => tool.category === '日常工具').length,
+    9,
+    'daily tools are public without replacing retired redirects',
+  );
   const sitemap = await readFile('public/sitemap.xml', 'utf8');
   const wrangler = await readFile('deployment/wrangler.jsonc', 'utf8');
   assert.match(wrangler, /"\/tool"/);

@@ -1,0 +1,211 @@
+[
+  {
+    "slug": "stopwatch",
+    "before": "操作與分享限制只在元件說明，缺少可比較的單圈使用案例。",
+    "action": "新增兩循環單圈案例，說明本機時鐘與分享狀態界線。",
+    "overlap": "保留碼錶；不與日期或世界時鐘重複。",
+    "verification": {
+      "status": "PASS",
+      "fixture": "tests/tool-audit/units-time.mjs",
+      "report": "outputs/tool-audit-2026-11-15/local/report.json"
+    }
+  },
+  {
+    "slug": "world-clock",
+    "before": "時區與夏令時間的操作價值未以跨日案例呈現。",
+    "action": "新增固定 UTC 下台北／紐約冬季比較與 DST 界線。",
+    "overlap": "跨地區民用時間；不與 Unix 時間戳或持續時間換算重複。",
+    "verification": {
+      "status": "PASS",
+      "fixture": "tests/tool-audit/units-time.mjs",
+      "report": "outputs/tool-audit-2026-11-15/local/report.json"
+    }
+  },
+  {
+    "slug": "timestamp-converter",
+    "before": "秒、毫秒與台北本地時間的解讀容易混淆。",
+    "action": "新增 1709251200 秒轉 2024-03-01 08:00:00 的日誌案例與無效日期界線。",
+    "overlap": "UTC 時間戳轉台北時間；不取代日期差計算。",
+    "verification": {
+      "status": "PASS",
+      "fixture": "tests/tool-audit/units-time.mjs",
+      "report": "outputs/tool-audit-2026-11-15/local/report.json"
+    }
+  },
+  {
+    "slug": "date-calculator",
+    "before": "日期差與含首尾計數沒有清楚區分。",
+    "action": "新增跨 2024 閏日案例，說明 2 天差與 3 天含首尾。",
+    "overlap": "曆法日；不以 24 小時持續時間或時區換算取代。",
+    "verification": {
+      "status": "PASS",
+      "fixture": "tests/tool-audit/units-time.mjs",
+      "report": "outputs/tool-audit-2026-11-15/local/report.json"
+    }
+  },
+  {
+    "slug": "length-converter",
+    "before": "單位頁只有通用換算介面，沒有工程精度案例。",
+    "action": "新增 1 m 到 3.28084 ft 與圖面取捨說明。",
+    "overlap": "只處理長度；不與面積倍率重複。",
+    "verification": {
+      "status": "PASS",
+      "fixture": "tests/tool-audit/units-time.mjs",
+      "report": "outputs/tool-audit-2026-11-15/local/report.json"
+    }
+  },
+  {
+    "slug": "temperature-converter",
+    "before": "溫標零點偏移與絕對零度限制未以案例強調。",
+    "action": "新增 25 °C 到 77 °F，明示非純倍率及 -274 °C 錯誤。",
+    "overlap": "只處理溫標；不與功率或能量計算重複。",
+    "verification": {
+      "status": "PASS",
+      "fixture": "tests/tool-audit/units-time.mjs",
+      "report": "outputs/tool-audit-2026-11-15/local/report.json"
+    }
+  },
+  {
+    "slug": "mass-converter",
+    "before": "重量／質量頁容易讓使用者將 kg 誤用為力。",
+    "action": "新增 10 kg 到 22.0462 lb，明示質量與載荷分界。",
+    "overlap": "只處理質量；不將 kg 換成力。",
+    "verification": {
+      "status": "PASS",
+      "fixture": "tests/tool-audit/units-time.mjs",
+      "report": "outputs/tool-audit-2026-11-15/local/report.json"
+    }
+  },
+  {
+    "slug": "area-converter",
+    "before": "缺少平方倍率造成常見線性倍率誤用。",
+    "action": "新增 1 m² 到 10.7639 ft² 與平方說明。",
+    "overlap": "平面面積；不與長度頁重複。",
+    "verification": {
+      "status": "PASS",
+      "fixture": "tests/tool-audit/units-time.mjs",
+      "report": "outputs/tool-audit-2026-11-15/local/report.json"
+    }
+  },
+  {
+    "slug": "volume-converter",
+    "before": "gallon 定義與體積轉質量界線不明。",
+    "action": "新增 10 L 到 2.64172 美制 gallon，區分 US／英制。",
+    "overlap": "容積；不以密度假設轉質量。",
+    "verification": {
+      "status": "PASS",
+      "fixture": "tests/tool-audit/units-time.mjs",
+      "report": "outputs/tool-audit-2026-11-15/local/report.json"
+    }
+  },
+  {
+    "slug": "pressure-converter",
+    "before": "表壓與絕對壓不能互換的限制需要可讀案例。",
+    "action": "新增 1 bar 到 100 kPa，明示先確認 barg／bara。",
+    "overlap": "相同壓力基準下的單位轉換；不處理基準修正。",
+    "verification": {
+      "status": "PASS",
+      "fixture": "tests/tool-audit/units-time.mjs",
+      "report": "outputs/tool-audit-2026-11-15/local/report.json"
+    }
+  },
+  {
+    "slug": "power-converter",
+    "before": "馬力定義差異未以數值示範。",
+    "action": "新增 1 hp 與 1 PS 分別約 745.700 W、735.499 W。",
+    "overlap": "功率；不把 kW 誤作 kWh。",
+    "verification": {
+      "status": "PASS",
+      "fixture": "tests/tool-audit/units-time.mjs",
+      "report": "outputs/tool-audit-2026-11-15/local/report.json"
+    }
+  },
+  {
+    "slug": "time-converter",
+    "before": "固定持續時間與日期／時區工具界線未清楚。",
+    "action": "新增 90 min 到 1.5 h，明示 day 固定為 24 h。",
+    "overlap": "持續時間；不與日期差或世界時鐘重複。",
+    "verification": {
+      "status": "PASS",
+      "fixture": "tests/tool-audit/units-time.mjs",
+      "report": "outputs/tool-audit-2026-11-15/local/report.json"
+    }
+  },
+  {
+    "slug": "angle-converter",
+    "before": "控制器常見度／弧度差異沒有實際案例。",
+    "action": "新增 180° 到 π rad，並區分角分與時間分鐘。",
+    "overlap": "平面角；不驗證三角函數或斜率。",
+    "verification": {
+      "status": "PASS",
+      "fixture": "tests/tool-audit/units-time.mjs",
+      "report": "outputs/tool-audit-2026-11-15/local/report.json"
+    }
+  },
+  {
+    "slug": "capacitance-converter",
+    "before": "SI 前綴誤讀的風險沒有可核對數字。",
+    "action": "新增 1 μF 到 1,000 nF，提醒額定值以外的選料條件。",
+    "overlap": "額定電容量；不推導容抗或耐壓。",
+    "verification": {
+      "status": "PASS",
+      "fixture": "tests/tool-audit/units-time.mjs",
+      "report": "outputs/tool-audit-2026-11-15/local/report.json"
+    }
+  },
+  {
+    "slug": "speed-converter",
+    "before": "Mach 被誤視為固定現場倍率的風險未說明。",
+    "action": "新增 36 km/h 到 10 m/s，註明 Mach 僅用 343 m/s 參考。",
+    "overlap": "線速度；不替代依溫度、介質計算的音速。",
+    "verification": {
+      "status": "PASS",
+      "fixture": "tests/tool-audit/units-time.mjs",
+      "report": "outputs/tool-audit-2026-11-15/local/report.json"
+    }
+  },
+  {
+    "slug": "storage-converter",
+    "before": "GB／GiB 與 B／b 的基數差異缺少案例。",
+    "action": "新增 1 GB 到約 0.931323 GiB，解釋不是資料遺失。",
+    "overlap": "資料容量；不處理傳輸時間。",
+    "verification": {
+      "status": "PASS",
+      "fixture": "tests/tool-audit/units-time.mjs",
+      "report": "outputs/tool-audit-2026-11-15/local/report.json"
+    }
+  },
+  {
+    "slug": "currency-converter",
+    "before": "範例匯率與線上資料的性質不夠明確。",
+    "action": "新增手動 100 USD × 32 = 3,200 TWD，說明非即時可成交價。",
+    "overlap": "金額試算；不與單位倍率或付款報價混同。",
+    "verification": {
+      "status": "PASS",
+      "fixture": "tests/tool-audit/units-time.mjs",
+      "report": "outputs/tool-audit-2026-11-15/local/report.json"
+    }
+  },
+  {
+    "slug": "dbm-watts",
+    "before": "dBm 的 1 mW 參考與線性功率關係缺少案例。",
+    "action": "新增 30 dBm = 1 W = 1,000 mW = 0 dBW，區分 dBV／dBu。",
+    "overlap": "功率對數表示；不處理電壓或阻抗換算。",
+    "verification": {
+      "status": "PASS",
+      "fixture": "tests/tool-audit/units-time.mjs",
+      "report": "outputs/tool-audit-2026-11-15/local/report.json"
+    }
+  },
+  {
+    "slug": "unit-converter",
+    "before": "通用頁與 12 個專頁功能重複，且流量未被凸顯、未提供批次處理。",
+    "action": "改為「流量與批次單位換算」入口，預設單筆 1 L/min → 0.06 m³/h；批次案例為 1、10、12 L/min 到 0.06、0.6、0.72 m³/h。批次最多 200 筆非空白列，錯誤列保留且全數有效才可複製或交換。",
+    "overlap": "單筆模式僅處理流量；批次模式共用 13 類單位並保留逐列錯誤。12 個單筆專頁保留各自案例與限制。",
+    "verification": {
+      "status": "PASS",
+      "fixture": "tests/tool-audit/unit-batch.mjs",
+      "report": "outputs/tool-audit-2026-11-15/local/report.json"
+    }
+  }
+]

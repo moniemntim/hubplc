@@ -1,0 +1,32 @@
+.sample-data-scroll {
+  overflow-x: auto;
+  margin: 1rem 0;
+}
+.calculator-grid:has(.sample-data-scroll) {
+  grid-template-columns: minmax(0, 1fr);
+}
+.table-scroll-hint {
+  font-size: 13px;
+  color: #c9e3d7;
+  line-height: 1.7;
+}
+
+.sample-data-scroll table {
+  width: 100%;
+  border-collapse: collapse;
+  min-width: 34rem;
+}
+
+.sample-data-scroll th,
+.sample-data-scroll td {
+  padding: 0.65rem;
+  border-bottom: 1px solid var(--border, #d7dde5);
+  text-align: left;
+  vertical-align: top;
+  overflow-wrap: anywhere;
+}
+
+.sample-data-scroll thead {
+  background: #294f42;
+  color: #edf8f2;
+}

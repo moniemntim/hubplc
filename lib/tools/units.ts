@@ -209,11 +209,17 @@ export function convertUnit(raw: string, fromId: string, toId: string): number {
   if (from.dimension !== to.dimension)
     throw new Error('這兩個單位的物理量不同，不能直接換算。');
   const value = numberInput(raw);
-  const base = (value + (from.offset ?? 0)) * from.factor;
-  if (!Number.isFinite(base)) throw new Error('結果超出可表示範圍。');
-  if (from.dimension === 'temperature' && base < 0)
-    throw new Error('溫度不能低於絕對零度（0 K）。');
-  const output = base / to.factor - (to.offset ?? 0);
+  let output: number;
+  if (from.dimension === 'temperature') {
+    const base = (value + (from.offset ?? 0)) * from.factor;
+    if (!Number.isFinite(base)) throw new Error('結果超出可表示範圍。');
+    if (base < 0) throw new Error('溫度不能低於絕對零度（0 K）。');
+    output = from.id === to.id ? value : base / to.factor - (to.offset ?? 0);
+  } else {
+    output = value * (from.factor / to.factor);
+    if (value !== 0 && output === 0)
+      throw new Error('結果過小，超出可表示範圍。');
+  }
   if (!Number.isFinite(output)) throw new Error('結果超出可表示範圍。');
   return Object.is(output, -0) ? 0 : output;
 }

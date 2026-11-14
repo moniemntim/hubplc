@@ -35,11 +35,15 @@ try {
     await expect(page.locator('.tool-category-section')).toHaveCount(
       categories.length - 1,
     );
-    await expect(
-      page.locator('.tool-category-section').first().locator('.tool-card'),
-    ).toHaveCount(
-      tools.filter((tool) => tool.category === 'PLC 與通訊').length,
-    );
+    for (const category of categories.filter((value) => value !== '全部')) {
+      const heading = category === '單位' ? '單位與時間工具' : category;
+      await expect(
+        page
+          .locator('.tool-category-section')
+          .filter({ has: page.getByRole('heading', { name: heading }) })
+          .locator('.tool-card'),
+      ).toHaveCount(tools.filter((tool) => tool.category === category).length);
+    }
     await expect(page.locator('h1')).toContainText('常用工具');
     await expect(
       page.locator(
@@ -100,7 +104,7 @@ try {
     .getByRole('link', { name: 'About the tools', exact: true })
     .click();
   await expect(page.locator('h1')).toContainText(
-    'Keep engineering calculations',
+    'Practical tools for everyday tasks',
   );
   await expect(page.locator('html')).toHaveAttribute('lang', 'en');
   await page.goto(base + '/privacy');

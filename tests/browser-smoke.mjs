@@ -83,29 +83,31 @@ try {
       );
       await page.reload();
       await page.waitForLoadState('networkidle');
-      const newCircuit = ![
-        'analog',
-        'plc-scaling',
-        'base-converter',
-        'modbus-address',
-        'modbus-crc',
-        'register-converter',
-        'qrcode',
-        'big5',
-        'text-repair',
-        'password-generator',
-        'crypto',
-        'hash',
-        'key-derivation',
-        'byte-encoding',
-        'rmb-uppercase',
-        'text-case',
-        'world-clock', // Live clock/search interactions have a dedicated browser test.
-        'stopwatch', // Stopwatch has no calculator input/result form.
-        'unit-converter',
-        'resistor-color',
-      ].includes(tool.slug);
-      if (fields[tool.slug] || newCircuit) {
+      const genericCalculator =
+        tool.category !== '日常工具' &&
+        ![
+          'analog',
+          'plc-scaling',
+          'base-converter',
+          'modbus-address',
+          'modbus-crc',
+          'register-converter',
+          'qrcode',
+          'big5',
+          'text-repair',
+          'password-generator',
+          'crypto',
+          'hash',
+          'key-derivation',
+          'byte-encoding',
+          'rmb-uppercase',
+          'text-case',
+          'world-clock', // Live clock/search interactions have a dedicated browser test.
+          'stopwatch', // Stopwatch has no calculator input/result form.
+          'unit-converter',
+          'resistor-color',
+        ].includes(tool.slug);
+      if (fields[tool.slug] || genericCalculator) {
         const input = fields[tool.slug]
           ? page.getByRole('textbox', { name: fields[tool.slug], exact: true })
           : page
@@ -121,7 +123,7 @@ try {
           0,
           `stale result ${tool.slug}`,
         );
-        if (newCircuit) {
+        if (genericCalculator) {
           await page
             .getByRole('button', { name: '載入範例', exact: true })
             .click();

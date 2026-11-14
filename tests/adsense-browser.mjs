@@ -11,7 +11,10 @@ const cases = [
   ['/articles/excel-average', true],
   ['/privacy', false],
   ['/about', false],
-  ...tools.map((t) => [`/tool/${t.slug}`, t.category !== '編碼']),
+  ...tools.map((t) => [
+    `/tool/${t.slug}`,
+    !['編碼', '日常工具'].includes(t.category),
+  ]),
 ];
 for (const [path, allowed] of cases) {
   const response = await fetch(base + path);

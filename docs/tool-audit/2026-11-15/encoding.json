@@ -1,0 +1,112 @@
+[
+  {
+    "slug": "rmb-uppercase",
+    "before": "只有欄位說明與單筆範例，沒有說明零角零分的可核對結果。",
+    "action": "新增 1001.05 的付款申請案例與超過兩位小數的拒絕檢查。",
+    "overlap": "金額寫法工具；不與匯率、稅額或法定憑證格式混用。",
+    "verification": {
+      "status": "PASS",
+      "fixture": "tests/tool-audit/encoding.mjs",
+      "report": "outputs/tool-audit-2026-11-15/local/report.json"
+    }
+  },
+  {
+    "slug": "text-case",
+    "before": "功能說明未明確指出英文標題式會改寫 PLC 這類縮寫。",
+    "action": "新增中英混合告警標題案例，明確呈現 Plc 與中文保留行為。",
+    "overlap": "大小寫規則工具；不取代文法校對或文字修復。",
+    "verification": {
+      "status": "PASS",
+      "fixture": "tests/tool-audit/encoding.mjs",
+      "report": "outputs/tool-audit-2026-11-15/local/report.json"
+    }
+  },
+  {
+    "slug": "key-derivation",
+    "before": "已有參數與警告，但缺少可逐項重現的公開測試向量。",
+    "action": "新增 password/salt/PBKDF2-SHA-256/1/256-bit 固定案例及輸出。",
+    "overlap": "派生固定長度密鑰；不是加解密、摘要或密碼產生。",
+    "verification": {
+      "status": "PASS",
+      "fixture": "tests/tool-audit/encoding.mjs",
+      "report": "outputs/tool-audit-2026-11-15/local/report.json"
+    }
+  },
+  {
+    "slug": "byte-encoding",
+    "before": "格式限制完整，但使用者容易把 UTF-16 文字表示與 UTF-8 位元組檢視混為一談。",
+    "action": "新增 中文 → UTF-16BE HEX 4e2d6587 的案例與 Base64 錯誤輸入檢查。",
+    "overlap": "位元組表示法轉換；不是加密或 Big5 檔案轉碼。",
+    "verification": {
+      "status": "PASS",
+      "fixture": "tests/tool-audit/encoding.mjs",
+      "report": "outputs/tool-audit-2026-11-15/local/report.json"
+    }
+  },
+  {
+    "slug": "crypto",
+    "before": "演算法說明完整，但缺少讓使用者理解隨機 salt/IV 導致密文不同的操作案例。",
+    "action": "新增 AES-GCM 往返案例，要求 HPLC1. 結構與解密還原，不以固定密文誤判。",
+    "overlap": "可逆加解密；不是雜湊、HMAC 或 KDF。",
+    "verification": {
+      "status": "PASS",
+      "fixture": "tests/tool-audit/encoding.mjs",
+      "report": "outputs/tool-audit-2026-11-15/local/report.json"
+    }
+  },
+  {
+    "slug": "hash",
+    "before": "摘要與 HMAC 的差異已有短說明，但缺少可自行核對的 SHA-256 值。",
+    "action": "新增 abc 的 SHA-256 已知結果與 HMAC 使用邊界。",
+    "overlap": "單向摘要／帶金鑰驗證碼；不是加密或 KDF。",
+    "verification": {
+      "status": "PASS",
+      "fixture": "tests/tool-audit/encoding.mjs",
+      "report": "outputs/tool-audit-2026-11-15/local/report.json"
+    }
+  },
+  {
+    "slug": "password-generator",
+    "before": "設定說明完整，但沒有結構性驗證範例可區分亂數結果與固定輸出。",
+    "action": "新增六位數 PIN 案例，檢查只含數字、長度與前導零規則。",
+    "overlap": "產生新亂數密碼；不儲存、雜湊或加密既有密碼。",
+    "verification": {
+      "status": "PASS",
+      "fixture": "tests/tool-audit/encoding.mjs",
+      "report": "outputs/tool-audit-2026-11-15/local/report.json"
+    }
+  },
+  {
+    "slug": "text-repair",
+    "before": "候選修復流程已有，但缺少一個指定誤讀與原始編碼的可重現案例。",
+    "action": "新增 ä¸­æ–‡ 以 Windows-1252 誤讀 UTF-8 還原為 中文 的案例。",
+    "overlap": "重新解讀文字位元組；不是一般大小寫整理或 Big5 逐字檢視。",
+    "verification": {
+      "status": "PASS",
+      "fixture": "tests/tool-audit/encoding.mjs",
+      "report": "outputs/tool-audit-2026-11-15/local/report.json"
+    }
+  },
+  {
+    "slug": "qrcode",
+    "before": "只說明更正等級與內容類型，缺少發佈前實際掃描核對的工作案例。",
+    "action": "新增 HTTPS 文件網址 QR Code 案例，要求掃描內容與原網址完全一致。",
+    "overlap": "將內容載入 QR 符號；不驗證目標網站或保護 Wi-Fi 密碼。",
+    "verification": {
+      "status": "PASS",
+      "fixture": "tests/tool-audit/encoding.mjs",
+      "report": "outputs/tool-audit-2026-11-15/local/report.json"
+    }
+  },
+  {
+    "slug": "big5",
+    "before": "逐字結果與不支援提示已有，但缺少可核對的傳統設備短字串案例。",
+    "action": "新增 你好 → A741 A66E／A7 41 A6 6E 與 emoji 不可編碼檢查。",
+    "overlap": "Big5 位元組檢視；不是完整檔案轉碼或文字修復。",
+    "verification": {
+      "status": "PASS",
+      "fixture": "tests/tool-audit/encoding.mjs",
+      "report": "outputs/tool-audit-2026-11-15/local/report.json"
+    }
+  }
+]

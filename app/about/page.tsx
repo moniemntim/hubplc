@@ -6,7 +6,7 @@ import {
 
 export const metadata = {
   title: '關於 HubPLC',
-  description: 'HubPLC 的瀏覽器工程工具、使用方式與問題回報。',
+  description: 'HubPLC 的日常與工程工具、使用方式與問題回報。',
   alternates: { canonical: 'https://hubplc.com/about' },
 };
 export default function About() {
@@ -15,21 +15,21 @@ export default function About() {
       <LocalizedDocumentMetadata
         titleZh="關於 HubPLC"
         titleEn="About HubPLC"
-        descriptionZh="HubPLC 的瀏覽器工程工具、使用方式與問題回報。"
-        descriptionEn="Browser-based engineering tools, usage notes, and issue reports for HubPLC."
+        descriptionZh="HubPLC 的日常與工程工具、使用方式與問題回報。"
+        descriptionEn="Everyday and engineering tools, usage notes, and issue reports for HubPLC."
       />
       <LanguageSwitcher />
-      <p className="eyebrow">HUBPLC / ENGINEERING TOOLS</p>
+      <p className="eyebrow">HUBPLC / ONLINE TOOLS</p>
       <h1>
         <LocalizedText
-          zh="把工程計算留在瀏覽器裡"
-          en="Keep engineering calculations in your browser"
+          zh="把常用工作變成順手的工具"
+          en="Practical tools for everyday tasks"
         />
       </h1>
       <p>
         <LocalizedText
-          zh="HubPLC 集中提供 PLC、電路、資料編碼與工程單位工具。輸入數值後先核對單位、訊號基準與設備資料，再把結果帶回現場或文件。"
-          en="HubPLC brings together PLC, electrical, data-encoding, and engineering-unit tools. Check units, signal references, and equipment data before using a result in the field or in documentation."
+          zh="HubPLC 集中提供抽籤分組、測試資料、文字整理、PLC、電路與單位換算工具。每頁列出用途、輸入來源、操作案例與結果解讀；工程計算請先核對單位、訊號基準與設備資料。"
+          en="HubPLC brings together draws, grouping, test data, text preparation, PLC, electrical, and unit-conversion tools. Each page explains its purpose, input sources, worked cases and results. For engineering calculations, confirm units, signal references and equipment data."
         />
       </p>
       <h2>

@@ -151,6 +151,9 @@ function parseRmbAmount(input: string | bigint): {
     }
     return { yuan: input, jiao: 0, fen: 0 };
   }
+  if (/^\d+\.\d{3,}$/.test(input)) {
+    throw new TypeError('小數最多兩位，請勿四捨五入或截斷輸入金額。');
+  }
   if (input.length > 128 || !/^\d+(?:\.\d{1,2})?$/.test(input)) {
     throw new TypeError(
       '請輸入 0 到 999999999999.99 的十進位金額；不可使用逗號、負數或指數記法。',

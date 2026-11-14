@@ -49,8 +49,8 @@ export default function Directory() {
       <LocalizedDocumentMetadata
         titleZh="免費線上工具箱"
         titleEn="Free Online Tools"
-        descriptionZh={`${tools.length} 個免費線上工具：PLC 與電路計算、文字編碼、單位換算及時間工具，免註冊直接使用。`}
-        descriptionEn={`${tools.length} free online tools for PLC and electrical calculations, encoding, unit conversion, and time. No registration required.`}
+        descriptionZh={`${tools.length} 個免費線上工具：抽籤分組、資料整理、PLC 與電路計算、文字編碼、單位及時間換算，免註冊直接使用。`}
+        descriptionEn={`${tools.length} free online tools for draws, groups, data preparation, PLC and electrical calculations, encoding, units, and time. No registration required.`}
       />
       <div className="tool-home-topline">
         <p className="eyebrow">HUBPLC / ONLINE TOOLS</p>
@@ -66,8 +66,8 @@ export default function Directory() {
           </h1>
           <p className="lead">
             {tr(
-              'PLC 與電路計算、文字編碼、單位換算及時間工具。選一個工具直接開始，免費使用，無須註冊。',
-              'PLC and electrical calculations, encoding, unit conversion, and time tools. Choose a tool and get started for free, with no registration.',
+              '抽籤分組、資料整理、PLC 與電路計算、文字編碼、單位及時間工具。選一個工具直接開始，免費使用，無須註冊。',
+              'Draws, groups, data preparation, PLC and electrical calculations, encoding, units, and time tools. Choose a tool and get started for free, with no registration.',
             )}
           </p>
         </div>

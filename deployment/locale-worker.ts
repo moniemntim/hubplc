@@ -1,5 +1,6 @@
 import { localeFromCountry } from '../lib/locale';
 import { resolveLegacyToolUrl } from '../lib/tools/legacy-tool-redirects';
+import { networkInfoResponse } from '../lib/tools/network-info';
 
 interface Env {
   ASSETS: Fetcher;
@@ -8,6 +9,11 @@ interface Env {
 export default {
   async fetch(request, env): Promise<Response> {
     const url = new URL(request.url);
+    if (
+      url.pathname === '/api/network-info' ||
+      url.pathname === '/api/network-info/'
+    )
+      return networkInfoResponse(request);
     if (url.pathname === '/tool' || url.pathname === '/tool/') {
       const destination = new URL(url);
       destination.pathname = '/';

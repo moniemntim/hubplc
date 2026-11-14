@@ -5,7 +5,7 @@ import './tool-home.css';
 
 export const metadata = {
   title: '免費線上工具箱',
-  description: `${tools.length} 個免費線上工具：PLC 與電路計算、文字編碼、單位換算及時間工具，免註冊直接使用。`,
+  description: `${tools.length} 個免費線上工具：抽籤分組、資料整理、PLC 與電路計算、文字編碼、單位及時間換算，免註冊直接使用。`,
   alternates: { canonical: `${SITE_ORIGIN}/` },
 };
 

@@ -18,24 +18,24 @@ const guidedUnitSlugs = [
   'storage-converter',
 ];
 const unitCases = [
-  ['pressure-converter', '表壓與絕壓不能只靠單位換算互換。'],
-  ['temperature-converter', '攝氏與華氏的溫差換算沒有相同零點偏移。'],
-  ['storage-converter', 'GB 採 1000，GiB 採 1024。'],
+  ['pressure-converter', '不把表壓與絕對壓互換'],
+  ['temperature-converter', '溫度不是單純倍率'],
+  ['storage-converter', 'GB 為 10^9 B，GiB 為 2^30 B'],
 ];
 
 for (const [slug, pitfall] of unitCases) {
   const response = await fetch(`${base}/tool/${slug}`);
   assert.equal(response.status, 200, slug);
   const html = await response.text();
-  assert.ok(html.includes('任務指引'), `${slug}: task guide`);
+  assert.match(html, /class="tool-guide/, `${slug}: specific guide`);
   assert.ok(html.includes(pitfall), `${slug}: group limitation`);
 }
 for (const slug of guidedUnitSlugs) {
   const response = await fetch(`${base}/tool/${slug}`);
   assert.equal(response.status, 200, `${slug}: HTTP`);
   const html = await response.text();
-  assert.ok(html.includes('任務指引'), `${slug}: guide missing`);
-  assert.ok(html.includes('預設範例'), `${slug}: worked example missing`);
+  assert.match(html, /class="tool-guide/, `${slug}: guide missing`);
+  assert.ok(html.includes('案例'), `${slug}: worked example missing`);
 }
 
 const pressureHtml = await (
@@ -44,6 +44,21 @@ const pressureHtml = await (
 assert.ok(
   !pressureHtml.includes('/articles/gauge-absolute-pressure-4-20ma'),
   'pressure guide must not link to a non-public article',
+);
+const flowBatchHtml = await (await fetch(`${base}/tool/unit-converter`)).text();
+assert.match(
+  flowBatchHtml,
+  /class="tool-guide/,
+  'unit converter: specific guide',
+);
+assert.ok(
+  flowBatchHtml.includes('L/min 批次轉 m³/h'),
+  'unit converter: batch case',
+);
+assert.equal(
+  flowBatchHtml.includes('任務指引'),
+  false,
+  'unit converter: old generic guide removed',
 );
 
 /** @type {Array<[string, string[]]>} */
@@ -99,7 +114,7 @@ try {
   await expect(energyCases.nth(1)).toContainText('平均值');
 
   await page.goto(`${base}/tool/pressure-converter`);
-  await expect(page.getByTestId('task-guide')).toContainText('表壓與絕壓');
+  await expect(page.locator('.tool-guide')).toContainText('表壓與絕對壓');
   await page.getByRole('textbox', { name: '輸入數值', exact: true }).fill('1');
   await expect(
     page.getByRole('combobox', { name: '來源單位', exact: true }),

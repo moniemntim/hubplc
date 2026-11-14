@@ -1,0 +1,33 @@
+.unit-batch-scroll {
+  max-height: 440px;
+  overflow: auto;
+  margin: 10px 0 18px;
+}
+.unit-batch-table {
+  width: 100%;
+  table-layout: fixed;
+  border-collapse: collapse;
+  font-size: 13px;
+  color: #edf8f2;
+  overflow-wrap: anywhere;
+}
+.unit-batch-table th,
+.unit-batch-table td {
+  padding: 10px 6px;
+  text-align: left;
+  vertical-align: top;
+  border-bottom: 1px solid #ffffff2e;
+}
+.unit-batch-table thead th {
+  font-weight: 600;
+  color: #b7d6c7;
+}
+.unit-batch-table thead th:first-child {
+  width: 13%;
+}
+.unit-batch-table thead th:nth-child(2) {
+  width: 27%;
+}
+.unit-batch-error {
+  color: #ffe0a3;
+}

@@ -29,19 +29,12 @@ await test('converts RMB values exactly with official simplified financial chara
 });
 
 await test('rejects malformed, negative, overly precise, and out-of-range RMB amounts', () => {
-  for (const value of [
-    '',
-    '-1',
-    '+1',
-    '1,000',
-    '1e3',
-    '.5',
-    '1.',
-    '1.234',
-    ' 1',
-  ]) {
+  for (const value of ['', '-1', '+1', '1,000', '1e3', '.5', '1.', ' 1']) {
     assert.throws(() => convertRmbUppercase(value), /十進位|金額/);
   }
+  assert.throws(() => convertRmbUppercase('1.001'), /小數最多兩位/);
+  assert.throws(() => convertRmbUppercase('1.234'), /小數最多兩位/);
+  assert.throws(() => convertTwdUppercase('1.001'), /小數最多兩位/);
   assert.throws(() => convertRmbUppercase('1000000000000'), /金額/);
   assert.throws(() => convertRmbUppercase('0'.repeat(129)), /金額/);
   assert.throws(() => convertRmbUppercase('1', { style: 'invalid' }), /字形/);

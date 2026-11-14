@@ -1,0 +1,310 @@
+[
+  {
+    "slug": "ac-power-converter",
+    "before": "已有單相、三相、UPS 帶入案例與專用教學。",
+    "action": "保留專用案例；新增數值與空欄位瀏覽器驗證。",
+    "overlap": "整併原本多個 A/W/VA 意圖頁的總入口，保留模式選擇。",
+    "verification": {
+      "status": "PASS",
+      "fixture": "tests/tool-audit/electrical-plc.mjs",
+      "report": "outputs/tool-audit-2026-11-15/local/report.json"
+    }
+  },
+  {
+    "slug": "power-factor",
+    "before": "只有公式型說明與一行範例。",
+    "action": "新增 8 kW／10 kVA 的完整工作案例、相角與 kvar 判讀。",
+    "overlap": "與交流功率頁共用 P/S 概念，但本頁專注 PF、相角與 Q。",
+    "verification": {
+      "status": "PASS",
+      "fixture": "tests/tool-audit/electrical-plc.mjs",
+      "report": "outputs/tool-audit-2026-11-15/local/report.json"
+    }
+  },
+  {
+    "slug": "energy-cost",
+    "before": "已有功率、用電量與費率的帶入案例。",
+    "action": "保留專用案例；新增數值與空欄位瀏覽器驗證。",
+    "overlap": "整併舊 kWh、耗電量與電費意圖頁，仍分別支援正反算。",
+    "verification": {
+      "status": "PASS",
+      "fixture": "tests/tool-audit/electrical-plc.mjs",
+      "report": "outputs/tool-audit-2026-11-15/local/report.json"
+    }
+  },
+  {
+    "slug": "va-to-amps",
+    "before": "只有單行 VA→A 範例。",
+    "action": "新增單相 UPS 完整案例，明示三相線電壓與 PF 邊界。",
+    "overlap": "是交流功率頁的快速固定方向，不計算 W。",
+    "verification": {
+      "status": "PASS",
+      "fixture": "tests/tool-audit/electrical-plc.mjs",
+      "report": "outputs/tool-audit-2026-11-15/local/report.json"
+    }
+  },
+  {
+    "slug": "battery-life",
+    "before": "只顯示 Ah/A 公式。",
+    "action": "新增 2000 mAh、0.1 A 的續航案例與降額限制。",
+    "overlap": "與能耗頁都使用時間，但本頁從容量估計，不估電費。",
+    "verification": {
+      "status": "PASS",
+      "fixture": "tests/tool-audit/electrical-plc.mjs",
+      "report": "outputs/tool-audit-2026-11-15/local/report.json"
+    }
+  },
+  {
+    "slug": "capacitor-discharge",
+    "before": "公式與輸出欄位存在，未交代安全解讀。",
+    "action": "新增 24 V、100 µF、10 kΩ 放電案例與不可作為驗電的提示。",
+    "overlap": "與 RC 時間常數皆為指數曲線；本頁固定在放電至目標電壓與初始能量。",
+    "verification": {
+      "status": "PASS",
+      "fixture": "tests/tool-audit/electrical-plc.mjs",
+      "report": "outputs/tool-audit-2026-11-15/local/report.json"
+    }
+  },
+  {
+    "slug": "analog",
+    "before": "已有完整 PLC 導覽與 4–20 mA 案例。",
+    "action": "保留專用導覽；新增實際數值與空欄位瀏覽器驗證。",
+    "overlap": "與 PLC 原始值縮放都做線性比例，但本頁輸入工程訊號而非模組 raw 值。",
+    "verification": {
+      "status": "PASS",
+      "fixture": "tests/tool-audit/electrical-plc.mjs",
+      "report": "outputs/tool-audit-2026-11-15/local/report.json"
+    }
+  },
+  {
+    "slug": "plc-scaling",
+    "before": "已有完整 raw 0–27648 的案例與錯誤處理說明。",
+    "action": "保留專用導覽；新增實際數值與空欄位瀏覽器驗證。",
+    "overlap": "與類比訊號頁分工為 PLC raw 與實體 mA/V。",
+    "verification": {
+      "status": "PASS",
+      "fixture": "tests/tool-audit/electrical-plc.mjs",
+      "report": "outputs/tool-audit-2026-11-15/local/report.json"
+    }
+  },
+  {
+    "slug": "base-converter",
+    "before": "已有 8-bit FF 的完整有號／無號案例。",
+    "action": "保留專用導覽；新增 HEX 正確值與非法字元驗證。",
+    "overlap": "僅進位與二補數，不處理暫存器字序或 Float32。",
+    "verification": {
+      "status": "PASS",
+      "fixture": "tests/tool-audit/electrical-plc.mjs",
+      "report": "outputs/tool-audit-2026-11-15/local/report.json"
+    }
+  },
+  {
+    "slug": "modbus-address",
+    "before": "已有 40010 對應 offset 9 的完整案例。",
+    "action": "保留專用導覽；新增預設起點與空輸入驗證。",
+    "overlap": "只換算參考編號／offset，不產生 CRC 或解碼資料內容。",
+    "verification": {
+      "status": "PASS",
+      "fixture": "tests/tool-audit/electrical-plc.mjs",
+      "report": "outputs/tool-audit-2026-11-15/local/report.json"
+    }
+  },
+  {
+    "slug": "modbus-crc",
+    "before": "已有讀 10 個 Holding Register 的完整封包案例。",
+    "action": "保留專用導覽；新增 CRC 數值與非法 HEX 驗證。",
+    "overlap": "只計算 RTU CRC，位址語意由 Modbus 位址頁處理。",
+    "verification": {
+      "status": "PASS",
+      "fixture": "tests/tool-audit/electrical-plc.mjs",
+      "report": "outputs/tool-audit-2026-11-15/local/report.json"
+    }
+  },
+  {
+    "slug": "register-converter",
+    "before": "已有 Float32 12.5 與四種排列的完整案例。",
+    "action": "保留專用導覽；新增 ABCD 正確值與非法數值驗證。",
+    "overlap": "與進位換算不同：此頁處理 IEEE 754、16/32-bit 與字節排列。",
+    "verification": {
+      "status": "PASS",
+      "fixture": "tests/tool-audit/electrical-plc.mjs",
+      "report": "outputs/tool-audit-2026-11-15/local/report.json"
+    }
+  },
+  {
+    "slug": "voltage-divider",
+    "before": "只有無負載分壓公式。",
+    "action": "新增 24 V→12 V 案例，列出支路電流與兩顆功耗。",
+    "overlap": "與電流分配同用歐姆定律；此頁是串聯分壓，後者是並聯支路。",
+    "verification": {
+      "status": "PASS",
+      "fixture": "tests/tool-audit/electrical-plc.mjs",
+      "report": "outputs/tool-audit-2026-11-15/local/report.json"
+    }
+  },
+  {
+    "slug": "electrical",
+    "before": "僅說可算直流與交流。",
+    "action": "新增 24 V、120 Ω 的 V/I/R/P 案例與平衡三相限制。",
+    "overlap": "交流功率頁涵蓋多方向單位換算；本頁保留基礎歐姆定律與簡易 AC。",
+    "verification": {
+      "status": "PASS",
+      "fixture": "tests/tool-audit/electrical-plc.mjs",
+      "report": "outputs/tool-audit-2026-11-15/local/report.json"
+    }
+  },
+  {
+    "slug": "555-timer",
+    "before": "有模式選擇但缺少可核算帶入步驟。",
+    "action": "新增 RA=RB=10 kΩ、C=1 µF 案例與占空比限制。",
+    "overlap": "與 RC 時間常數共用 RC 概念，但本頁使用 555 拓撲與頻率／占空比。",
+    "verification": {
+      "status": "PASS",
+      "fixture": "tests/tool-audit/electrical-plc.mjs",
+      "report": "outputs/tool-audit-2026-11-15/local/report.json"
+    }
+  },
+  {
+    "slug": "resistor-color",
+    "before": "功能有雙向轉換，缺少讀色方向與容差案例。",
+    "action": "新增棕黑紅金=1 kΩ±5%案例與範圍解讀。",
+    "overlap": "與 SMD 電阻頁都讀阻值；本頁限定色環軸向電阻。",
+    "verification": {
+      "status": "PASS",
+      "fixture": "tests/tool-audit/electrical-plc.mjs",
+      "report": "outputs/tool-audit-2026-11-15/local/report.json"
+    }
+  },
+  {
+    "slug": "resistor-network",
+    "before": "只顯示等效阻值。",
+    "action": "新增 100+220+330 Ω 串聯案例，說明純串／純並邊界。",
+    "overlap": "電阻分壓和支路電流頁以此為基礎，但各自處理電壓或電流。",
+    "verification": {
+      "status": "PASS",
+      "fixture": "tests/tool-audit/electrical-plc.mjs",
+      "report": "outputs/tool-audit-2026-11-15/local/report.json"
+    }
+  },
+  {
+    "slug": "rc-time",
+    "before": "有曲線但缺少工程讀法。",
+    "action": "新增 10 kΩ、100 µF、1 s 充電案例與 5τ 解讀。",
+    "overlap": "與電容放電頁都為 RC；本頁比較充／放電指定時間電壓。",
+    "verification": {
+      "status": "PASS",
+      "fixture": "tests/tool-audit/electrical-plc.mjs",
+      "report": "outputs/tool-audit-2026-11-15/local/report.json"
+    }
+  },
+  {
+    "slug": "capacitor-network",
+    "before": "只列串並聯公式。",
+    "action": "新增雙 100 nF 並聯去耦案例與耐壓非計算項。",
+    "overlap": "與 RC、容抗頁均用 C 值；本頁只給網路理想等效容量。",
+    "verification": {
+      "status": "PASS",
+      "fixture": "tests/tool-audit/electrical-plc.mjs",
+      "report": "outputs/tool-audit-2026-11-15/local/report.json"
+    }
+  },
+  {
+    "slug": "smd-capacitor",
+    "before": "說明代碼但沒有可跟著操作的容差案例。",
+    "action": "新增 104K=100 nF ±10% 案例與無標記 MLCC 限制。",
+    "overlap": "與電容網路頁不同：此頁辨識元件標記，不組合容量。",
+    "verification": {
+      "status": "PASS",
+      "fixture": "tests/tool-audit/electrical-plc.mjs",
+      "report": "outputs/tool-audit-2026-11-15/local/report.json"
+    }
+  },
+  {
+    "slug": "led-resistor",
+    "before": "只給限流公式與選值輸出。",
+    "action": "新增 12 V、3×3 V、20 mA 的 E24 選值與熱風險。",
+    "overlap": "標準電阻頁協助選值；本頁由 LED 壓降與電流先求理想電阻。",
+    "verification": {
+      "status": "PASS",
+      "fixture": "tests/tool-audit/electrical-plc.mjs",
+      "report": "outputs/tool-audit-2026-11-15/local/report.json"
+    }
+  },
+  {
+    "slug": "smd-resistor",
+    "before": "支援格式多但案例不足。",
+    "action": "新增 472=4.7 kΩ 的倍率案例與格式選擇提示。",
+    "overlap": "與色環頁都辨識阻值；本頁限定貼片印字與 EIA-96。",
+    "verification": {
+      "status": "PASS",
+      "fixture": "tests/tool-audit/electrical-plc.mjs",
+      "report": "outputs/tool-audit-2026-11-15/local/report.json"
+    }
+  },
+  {
+    "slug": "current-divider",
+    "before": "有電路圖和結果，未說明可回算的支路案例。",
+    "action": "新增 12 V、100/220/330 Ω 並聯案例與總電流核對。",
+    "overlap": "與分壓器相反：本頁為並聯共用電壓，前者為串聯。",
+    "verification": {
+      "status": "PASS",
+      "fixture": "tests/tool-audit/electrical-plc.mjs",
+      "report": "outputs/tool-audit-2026-11-15/local/report.json"
+    }
+  },
+  {
+    "slug": "shunt-resistor",
+    "before": "功能可反推但缺少額定壓降的實例。",
+    "action": "新增 75 mV/100 A 分流器案例與連續散熱限制。",
+    "overlap": "與電壓電流功率頁共用 P=VI；本頁專注低阻分流量測。",
+    "verification": {
+      "status": "PASS",
+      "fixture": "tests/tool-audit/electrical-plc.mjs",
+      "report": "outputs/tool-audit-2026-11-15/local/report.json"
+    }
+  },
+  {
+    "slug": "rc-filter",
+    "before": "有曲線但缺少 −3 dB 與指定頻率的判讀。",
+    "action": "新增 10 kΩ、10 nF 低通案例與負載影響。",
+    "overlap": "RC 時間常數處理時域；本頁處理頻域截止、增益、相位。",
+    "verification": {
+      "status": "PASS",
+      "fixture": "tests/tool-audit/electrical-plc.mjs",
+      "report": "outputs/tool-audit-2026-11-15/local/report.json"
+    }
+  },
+  {
+    "slug": "reactance",
+    "before": "僅提供公式與曲線。",
+    "action": "新增 1 kHz、100 nF 容抗案例與寄生限制。",
+    "overlap": "LC 諧振由兩個電抗元件交會求 f0；本頁單獨求 X。",
+    "verification": {
+      "status": "PASS",
+      "fixture": "tests/tool-audit/electrical-plc.mjs",
+      "report": "outputs/tool-audit-2026-11-15/local/report.json"
+    }
+  },
+  {
+    "slug": "lc-resonance",
+    "before": "只說可由兩項求第三項。",
+    "action": "新增 1 mH、1 µF 求 f0 案例與實測調校界線。",
+    "overlap": "與容抗／感抗頁不同：本頁求理想 L/C 諧振條件。",
+    "verification": {
+      "status": "PASS",
+      "fixture": "tests/tool-audit/electrical-plc.mjs",
+      "report": "outputs/tool-audit-2026-11-15/local/report.json"
+    }
+  },
+  {
+    "slug": "preferred-resistor",
+    "before": "輸出相鄰值，未解釋最近值未必正確。",
+    "action": "新增 128 Ω 在 E24 的上／下選值案例與方向決策。",
+    "overlap": "LED、分壓等頁使用標準值；本頁只提供系列查找。",
+    "verification": {
+      "status": "PASS",
+      "fixture": "tests/tool-audit/electrical-plc.mjs",
+      "report": "outputs/tool-audit-2026-11-15/local/report.json"
+    }
+  }
+]

@@ -6,6 +6,8 @@ export function numberInput(raw: string, label = '數值'): number {
   }
   const value = Number(text);
   if (!Number.isFinite(value)) throw new Error(`${label}超出可計算範圍。`);
+  if (value === 0 && /[1-9]/.test(text.split(/e/i)[0]))
+    throw new Error(`${label}過小，超出可表示範圍。`);
   return value;
 }
 

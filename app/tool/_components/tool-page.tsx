@@ -2,7 +2,14 @@ import Link from '@/components/site-link';
 import AdSense from '@/components/adsense';
 import PlcGuide from './plc-guide';
 import type { Metadata } from 'next';
-import { getTool, toolExamples, type ToolSlug } from '@/lib/tools/registry';
+import {
+  getTool,
+  toolExamples,
+  tools,
+  type ToolSlug,
+} from '@/lib/tools/registry';
+import { toolGuides } from '@/lib/tools/tool-guides';
+import ToolGuide from './tool-guide';
 import {
   LanguageSwitcher,
   LocalizedDocumentMetadata,
@@ -58,6 +65,19 @@ export default function ToolPage({
 }) {
   const tool = getTool(slug);
   const english = toolEnglish[slug];
+  const guide = toolGuides[slug];
+  const guideLinks =
+    guide?.related?.flatMap((relatedSlug) => {
+      const item = tools.find((candidate) => candidate.slug === relatedSlug);
+      return item
+        ? [
+            {
+              href: `/tool/${item.slug}`,
+              name: { zh: item.name, en: toolEnglish[item.slug].name },
+            },
+          ]
+        : [];
+    }) ?? [];
   const candidateLesson = relatedLessons[slug];
   const relatedLesson =
     candidateLesson &&
@@ -101,7 +121,12 @@ export default function ToolPage({
             </p>
           </div>
           <span className="local-badge">
-            ● <LocalizedText zh="在瀏覽器內運算" en="Runs in your browser" />
+            ●{' '}
+            {slug === 'ip-address' ? (
+              <LocalizedText zh="查詢目前連線" en="Inspect your connection" />
+            ) : (
+              <LocalizedText zh="在瀏覽器內運算" en="Runs in your browser" />
+            )}
           </span>
         </header>
         {[
@@ -170,6 +195,7 @@ export default function ToolPage({
           </p>
         </aside>
         <PlcGuide slug={slug} />
+        {guide && <ToolGuide guide={guide} related={guideLinks} />}
         {relatedLesson ? (
           <aside className="tool-example" aria-label="相關操作教學">
             <strong>
@@ -185,7 +211,7 @@ export default function ToolPage({
             </p>
           </aside>
         ) : null}
-        {tool.category !== '編碼' && <AdSense />}
+        {!['編碼', '日常工具'].includes(tool.category) && <AdSense />}
         <div className="tool-page-end">
           <Link href="/">
             ← <LocalizedText zh="返回工具總覽" en="Back to all tools" />

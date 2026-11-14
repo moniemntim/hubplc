@@ -3,6 +3,8 @@ import { useState } from 'react';
 import { useToolLanguage } from '@/components/tool-language';
 import { unitGroups, convertUnit } from '@/lib/tools/units';
 import { attempt, formatNumber } from '@/lib/tools/core';
+import { convertUnitBatch, MAX_BATCH_ROWS } from '@/lib/tools/unit-batch';
+import { translateToolMessage } from '@/lib/tools/error-i18n';
 import Link from '@/components/site-link';
 import {
   Choice,
@@ -11,8 +13,9 @@ import {
   ResultRows,
   Notice,
   CopyButton,
+  TextField,
 } from '../_components/controls';
-import { UnitConversionGuide } from '../_components/task-guide';
+import './unit-converter.css';
 const dedicatedPages = [
   ['length', '長度'],
   ['temperature', '溫度'],
@@ -102,8 +105,8 @@ function englishUnitLabel(label: string) {
 }
 
 export default function UnitConverter({ fixedGroup }: { fixedGroup?: string }) {
-  const { tr } = useToolLanguage();
-  const initialGroup = fixedGroup ?? 'pressure';
+  const { tr, locale } = useToolLanguage();
+  const initialGroup = fixedGroup ?? 'flow';
   const initialExample = exampleFor(initialGroup);
   const initial =
     unitGroups.find((item) => item.id === initialGroup) ?? unitGroups[0];
@@ -111,6 +114,9 @@ export default function UnitConverter({ fixedGroup }: { fixedGroup?: string }) {
     [fromId, setFromId] = useState(initialExample.fromId),
     [toId, setToId] = useState(initialExample.toId),
     [raw, setRaw] = useState(initialExample.raw);
+  const [entryMode, setEntryMode] = useState('single');
+  const [batchRaw, setBatchRaw] = useState('1\n10\n12');
+  const isBatch = !fixedGroup && entryMode === 'batch';
   const group =
     unitGroups.find((item) => item.id === (fixedGroup ?? groupId)) ?? initial;
   const from = group.units.find((item) => item.id === fromId) ?? group.units[0];
@@ -119,18 +125,37 @@ export default function UnitConverter({ fixedGroup }: { fixedGroup?: string }) {
   );
   const target = compatible.find((item) => item.id === toId) ?? compatible[0];
   const result = attempt(() => convertUnit(raw, from.id, target.id));
+  const batch = isBatch
+    ? attempt(() => convertUnitBatch(batchRaw, from.id, target.id))
+    : undefined;
+  const batchValid = Boolean(
+    batch?.data?.every((row) => row.value !== undefined),
+  );
+  const batchText = batchValid
+    ? [
+        tr(
+          `列號\t來源數值 (${from.label})\t換算結果 (${target.label})`,
+          `Row\tInput (${englishUnitLabel(from.label)})\tResult (${englishUnitLabel(target.label)})`,
+        ),
+        ...batch!.data!.map(
+          (row) => `${row.line}\t${row.input}\t${formatNumber(row.value!)}`,
+        ),
+      ].join('\n')
+    : '';
   function changeGroup(id: string) {
     const selected = exampleFor(id);
     setGroupId(id);
     setFromId(selected.fromId);
     setToId(selected.toId);
     setRaw(selected.raw);
+    setBatchRaw('1\n10\n12');
   }
   function loadExample() {
     const selected = exampleFor(group.id);
     setFromId(selected.fromId);
     setToId(selected.toId);
     setRaw(selected.raw);
+    setBatchRaw('1\n10\n12');
   }
   function changeFrom(id: string) {
     const selected = group.units.find((item) => item.id === id)!;
@@ -156,10 +181,84 @@ export default function UnitConverter({ fixedGroup }: { fixedGroup?: string }) {
             {group.note && (
               <p>{tr(group.note, englishGroupNotes[group.id] ?? group.note)}</p>
             )}
+            {!fixedGroup && (
+              <p>
+                {tr(
+                  '單筆模式專供流量換算；其他物理量請使用下方專頁。批次模式可一次處理同類物理量的整份資料。',
+                  'Single-value mode is for flow. Use the dedicated pages below for other quantities. Batch mode converts a whole list within one physical quantity.',
+                )}
+              </p>
+            )}
+            {!fixedGroup && (
+              <p>
+                {tr(
+                  `批次模式每行一筆，最多 ${MAX_BATCH_ROWS} 筆非空白資料。空白行略過，錯誤保留原列號；全部有效才可複製表格。`,
+                  `Batch mode accepts one value per line, up to ${MAX_BATCH_ROWS} non-empty rows. Blank lines are skipped and errors retain source row numbers. Copy is enabled only when every row is valid.`,
+                )}
+              </p>
+            )}
           </>
         }
         result={
-          result.data !== undefined ? (
+          isBatch ? (
+            batch?.data ? (
+              <>
+                <div className="unit-batch-scroll">
+                  <table
+                    className="unit-batch-table"
+                    aria-label={tr(
+                      '逐列換算結果',
+                      'Row-by-row conversion results',
+                    )}
+                  >
+                    <thead>
+                      <tr>
+                        <th scope="col">{tr('列', 'Row')}</th>
+                        <th scope="col">
+                          {tr('輸入', 'Input')}
+                          <br />
+                          {tr(from.label, englishUnitLabel(from.label))}
+                        </th>
+                        <th scope="col">
+                          {tr('結果', 'Result')}
+                          <br />
+                          {tr(target.label, englishUnitLabel(target.label))}
+                        </th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      {batch.data.map((row) => (
+                        <tr key={row.line} data-valid={row.value !== undefined}>
+                          <th scope="row">{row.line}</th>
+                          <td>{row.input}</td>
+                          <td>
+                            {row.value === undefined ? (
+                              <span className="unit-batch-error">
+                                {translateToolMessage(row.error ?? '', locale)}
+                              </span>
+                            ) : (
+                              formatNumber(row.value)
+                            )}
+                          </td>
+                        </tr>
+                      ))}
+                    </tbody>
+                  </table>
+                </div>
+                {!batchValid && (
+                  <Notice>
+                    {tr(
+                      '請修正錯誤列，再複製換算表格。',
+                      'Correct the invalid rows before copying the conversion table.',
+                    )}
+                  </Notice>
+                )}
+                <CopyButton text={batchText} disabled={!batchValid} />
+              </>
+            ) : (
+              <Notice>{batch?.error}</Notice>
+            )
+          ) : result.data !== undefined ? (
             <>
               <ResultRows
                 rows={[
@@ -182,32 +281,51 @@ export default function UnitConverter({ fixedGroup }: { fixedGroup?: string }) {
         {!fixedGroup && (
           <>
             <Choice
+              label={tr('換算方式', 'Conversion mode')}
+              value={entryMode}
+              onChange={(mode) => {
+                setEntryMode(mode);
+                if (mode === 'single' && groupId !== 'flow')
+                  changeGroup('flow');
+              }}
+              options={[
+                {
+                  value: 'single',
+                  label: tr('單筆流量換算', 'Single flow value'),
+                },
+                { value: 'batch', label: tr('批次換算', 'Batch values') },
+              ]}
+            />
+            <Choice
               label={tr('物理量分類', 'Physical quantity category')}
               value={groupId}
               onChange={changeGroup}
-              options={unitGroups.map((item) => ({
-                value: item.id,
-                label: tr(
-                  item.label,
-                  (
-                    {
-                      長度: 'Length',
-                      溫度: 'Temperature',
-                      質量: 'Mass',
-                      面積: 'Area',
-                      體積: 'Volume',
-                      壓力: 'Pressure',
-                      功率: 'Power',
-                      時間: 'Time',
-                      角度: 'Angle',
-                      電容量: 'Capacitance',
-                      速度: 'Speed',
-                      儲存容量: 'Storage capacity',
-                      流量: 'Flow',
-                    } as Record<string, string>
-                  )[item.label] ?? item.label,
-                ),
-              }))}
+              options={unitGroups
+                .filter((item) => isBatch || item.id === 'flow')
+                .map((item) => ({
+                  value: item.id,
+                  label: tr(
+                    item.label,
+                    (
+                      {
+                        長度: 'Length',
+                        溫度: 'Temperature',
+                        質量: 'Mass',
+                        面積: 'Area',
+                        體積: 'Volume',
+                        壓力: 'Pressure',
+                        功率: 'Power',
+                        時間: 'Time',
+                        角度: 'Angle',
+                        電容量: 'Capacitance',
+                        速度: 'Speed',
+                        儲存容量: 'Storage capacity',
+                        資料容量: 'Storage capacity',
+                        流量: 'Flow',
+                      } as Record<string, string>
+                    )[item.label] ?? item.label,
+                  ),
+                }))}
             />
             <nav
               className="crypto-related"
@@ -242,11 +360,20 @@ export default function UnitConverter({ fixedGroup }: { fixedGroup?: string }) {
             </nav>
           </>
         )}
-        <NumberField
-          label={tr('輸入數值', 'Input value')}
-          value={raw}
-          onChange={setRaw}
-        />
+        {isBatch ? (
+          <TextField
+            label={tr('批次數值（每行一筆）', 'Batch values (one per line)')}
+            value={batchRaw}
+            onChange={setBatchRaw}
+            multiline
+          />
+        ) : (
+          <NumberField
+            label={tr('輸入數值', 'Input value')}
+            value={raw}
+            onChange={setRaw}
+          />
+        )}
         <div className="fields-grid">
           <Choice
             label={tr('來源單位', 'Source unit')}
@@ -269,16 +396,27 @@ export default function UnitConverter({ fixedGroup }: { fixedGroup?: string }) {
         </div>
         <button
           className="action secondary"
+          disabled={isBatch && !batchValid}
           onClick={() => {
             setFromId(target.id);
             setToId(from.id);
-            if (result.data !== undefined) setRaw(String(result.data));
+            if (isBatch && batch?.data && batchValid)
+              setBatchRaw(
+                batch.data.map((row) => String(row.value)).join('\n'),
+              );
+            else if (result.data !== undefined) setRaw(String(result.data));
           }}
         >
           ⇄ {tr('交換方向', 'Swap direction')}
         </button>
         <div className="action-row">
-          <button className="action secondary" onClick={() => setRaw('')}>
+          <button
+            className="action secondary"
+            onClick={() => {
+              setRaw('');
+              setBatchRaw('');
+            }}
+          >
             {tr('清空', 'Clear')}
           </button>
           <button className="action secondary" onClick={loadExample}>
@@ -286,7 +424,6 @@ export default function UnitConverter({ fixedGroup }: { fixedGroup?: string }) {
           </button>
         </div>
       </ToolPanel>
-      {fixedGroup && <UnitConversionGuide group={fixedGroup} />}
     </>
   );
 }

@@ -1,6 +1,10 @@
 import type { Locale } from '@/lib/locale';
+import { everydayErrorEnglish } from './everyday-error-i18n.ts';
 
 const exactEnglish: Record<string, string> = {
+  ...everydayErrorEnglish,
+  '小數最多兩位，請勿四捨五入或截斷輸入金額。':
+    'Use at most two decimal places. Do not round or truncate the input amount.',
   無法表示: 'Not representable',
   '結果超出可表示範圍，請調整輸入。':
     'The result is outside the supported range. Adjust the input.',
@@ -45,6 +49,10 @@ const exactEnglish: Record<string, string> = {
     'The exchange rate must be a finite positive number.',
   '結果超出可表示範圍。': 'The result is outside the supported range.',
   '找不到所選單位。': 'The selected unit was not found.',
+  '結果過小，超出可表示範圍。': 'The result is too small to represent.',
+  '請輸入至少一筆數值。': 'Enter at least one value.',
+  '批次換算最多支援 200 筆非空白資料。':
+    'Batch conversion supports up to 200 non-empty rows.',
   '這兩個單位的物理量不同，不能直接換算。':
     'These units measure different quantities and cannot be converted directly.',
   '溫度不能低於絕對零度（0 K）。':
@@ -94,6 +102,8 @@ export function translateToolMessage(message: string, locale: Locale) {
   if (match) return `${label(match[1])} must be a valid decimal number.`;
   match = message.match(/^(.+)超出可計算範圍。$/);
   if (match) return `${label(match[1])} is outside the supported range.`;
+  match = message.match(/^(.+)過小，超出可表示範圍。$/);
+  if (match) return `${label(match[1])} is too small to represent.`;
   match = message.match(/^(.+)超出可表示範圍。$/);
   if (match) return `${label(match[1])} is outside the representable range.`;
   match = message.match(/^(.+)必須大於 0。$/);

@@ -1,7 +1,9 @@
 import type { ToolSlug } from './registry';
+import { everydayEnglish } from './everyday-registry.ts';
 
 export const categoryEnglish: Record<string, string> = {
   全部: 'All',
+  日常工具: 'Everyday',
   單位: 'Units',
   編碼: 'Encoding',
   電路: 'Electrical',
@@ -11,6 +13,7 @@ export const categoryEnglish: Record<string, string> = {
 type EnglishToolCopy = { name: string; description: string; example: string };
 
 export const toolEnglish = {
+  ...everydayEnglish,
   stopwatch: {
     name: 'Online Stopwatch',
     description:
@@ -421,10 +424,11 @@ export const toolEnglish = {
     example: '“你好” groups as A741 A66E; the full bytes are A7 41 A6 6E.',
   },
   'unit-converter': {
-    name: 'Engineering Unit Converter',
+    name: 'Flow & Batch Unit Converter',
     description:
-      'Convert common units for pressure, flow, time, mass, volume and other quantities.',
-    example: '1 bar = 100 kPa; 1 L/min = 0.06 m³/h; 0 °C = 32 °F.',
+      'Convert flow and 13 unit categories, paste up to 200 values, identify invalid rows, and copy a result table.',
+    example:
+      'Batch values 1, 10, and 12 L/min become 0.06, 0.6, and 0.72 m³/h. Invalid rows are identified separately.',
   },
   'capacitor-network': {
     name: 'Series & Parallel Capacitors',

@@ -1,4 +1,5 @@
 import { conversionTools, conversionExamples } from './conversion-registry.ts';
+import { everydayTools, everydayExamples } from './everyday-registry.ts';
 const powerIntentTools = [
   {
     slug: 'amps-to-watts',
@@ -169,12 +170,14 @@ const powerIntentExamples = {
 } as const;
 export const categories = [
   '全部',
+  '日常工具',
   'PLC 與通訊',
   '電路',
   '編碼',
   '單位',
 ] as const;
 export const tools = [
+  ...everydayTools,
   ...conversionTools,
   {
     slug: 'ac-power-converter',
@@ -404,11 +407,13 @@ export const tools = [
   },
   {
     slug: 'unit-converter',
-    name: '工程單位換算',
+    name: '流量與批次單位換算',
     category: '單位',
     code: 'SI ↔',
-    description: '壓力、流量、時間、質量、體積等九類常用單位。',
-    keywords: '重量 溫度 長度 面積 速度 psi bar kg L',
+    description:
+      '13 類工程單位與流量換算，可逐行貼入最多 200 筆資料，標示錯誤列並複製結果表格。',
+    keywords:
+      '工程單位 批次 多筆 表格 流量 L/min m3/h gpm 重量 溫度 長度 面積 速度 psi bar kg L batch flow',
   },
   {
     slug: 'capacitor-network',
@@ -499,6 +504,7 @@ export function getTool(slug: ToolSlug) {
 }
 
 export const toolExamples: Record<ToolSlug, string> = {
+  ...everydayExamples,
   ...powerIntentExamples,
   'ac-power-converter': '平衡三相 10 kW、380 V、PF 0.8，線電流約為 18.99 A。',
   'power-factor': '實功率 8 kW、視在功率 10 kVA：PF = 0.8，虛功率 6 kvar。',
@@ -559,5 +565,6 @@ export const toolExamples: Record<ToolSlug, string> = {
   qrcode:
     '選擇「文字」並輸入繁體中文即可產生 QR Code；Wi-Fi 模式會建立掃描器可辨識的連線資料。',
   big5: '「你好」每字分組為 A741 A66E；整段位元組為 A7 41 A6 6E。',
-  'unit-converter': '1 bar = 100 kPa；1 L/min = 0.06 m³/h；0 °C = 32 °F。',
+  'unit-converter':
+    '批次輸入 1、10、12 L/min，換成 m³/h 依序為 0.06、0.6、0.72；錯誤列會單獨標示。',
 };

@@ -39,6 +39,24 @@ export default function Privacy() {
         />
       </p>
       <h2>
+        <LocalizedText zh="名單與個資處理" en="Lists and personal-data tools" />
+      </h2>
+      <p>
+        <LocalizedText
+          zh="抽籤、分組、交換禮物、測試資料、個資遮罩、郵件格式及姓名拼音工具在目前瀏覽器處理內容，不上傳名單、不寄信，也不把輸入存入本站資料庫。這些日常工具頁不載入廣告；複製或下載後的檔案由你管理。遮罩結果仍需人工檢查。"
+          en="Draws, groups, gift exchange, test data, masking, email-format and name-pinyin tools process content in the current browser, without uploading lists, sending email or storing inputs in a site database. These everyday-tool pages do not load ads. You control copied or downloaded files; manually review masked output."
+        />
+      </p>
+      <h2>
+        <LocalizedText zh="IP 位址查詢" en="IP address lookup" />
+      </h2>
+      <p>
+        <LocalizedText
+          zh="按下 IP 查詢按鈕時，瀏覽器會向本站發出請求，由 Cloudflare 提供的連線標頭取得目前公網出口位址。本站程式不保存查詢結果，回應禁止快取；Cloudflare 仍可能依下述服務政策處理連線資訊。這不會掃描區網或查詢其他人的 IP。"
+          en="Selecting the IP lookup button sends a request to this site. Cloudflare connection headers provide the current public egress address. The application does not retain lookup results, and responses disable caching; Cloudflare may still process connection information under its service policies below. This does not scan your LAN or look up another person’s IP."
+        />
+      </p>
+      <h2>
         <LocalizedText zh="碼錶與分享連結" en="Stopwatch and share links" />
       </h2>
       <p>
@@ -108,8 +126,8 @@ export default function Privacy() {
       </h2>
       <p>
         <LocalizedText
-          zh="一般計算工具頁與既有文章頁，可能在主要內容後使用 Google AdSense。首頁工具總覽與舊 /tool 轉址頁不載入 AdSense；密碼、加解密、QR Code 與其他編碼分類工具也不載入 AdSense。本站沒有第三方流量分析或會員系統。"
-          en="General calculator pages and existing articles may use Google AdSense after the main content. The tool directory on the home page and the legacy /tool redirect do not load AdSense; password, cryptography, QR Code, and other encoding-category tools do not load AdSense either. The site has no third-party traffic analytics or membership system."
+          zh="一般計算工具頁與既有文章頁，可能在主要內容後使用 Google AdSense。首頁工具總覽與舊 /tool 轉址頁不載入 AdSense；日常工具、密碼、加解密、QR Code 與其他編碼分類工具也不載入 AdSense。本站沒有第三方流量分析或會員系統。"
+          en="General calculator pages and existing articles may use Google AdSense after the main content. The tool directory on the home page and the legacy /tool redirect do not load AdSense; everyday tools, password, cryptography, QR Code, and other encoding-category tools do not load AdSense either. The site has no third-party traffic analytics or membership system."
         />
       </p>
       <p>

@@ -8,6 +8,14 @@ interface Env {
 export default {
   async fetch(request, env): Promise<Response> {
     const url = new URL(request.url);
+    if (url.pathname === '/tool' || url.pathname === '/tool/') {
+      const destination = new URL(url);
+      destination.pathname = '/';
+      return new Response(null, {
+        status: 308,
+        headers: { Location: destination.toString() },
+      });
+    }
     const destination = resolveLegacyToolUrl(url);
     if (destination) {
       return new Response(null, {

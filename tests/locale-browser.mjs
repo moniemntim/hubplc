@@ -30,7 +30,7 @@ try {
   await expect(
     page.getByRole('heading', {
       level: 1,
-      name: /Let the tools handle the math/,
+      name: /Useful tools/,
     }),
   ).toBeVisible();
   assert.equal(await page.locator('html').getAttribute('lang'), 'en');
@@ -42,7 +42,7 @@ try {
 
   await page.getByRole('button', { name: '中文', exact: true }).click();
   await expect(page.getByRole('heading', { level: 1 })).toContainText(
-    '把計算交給工具',
+    '常用工具',
   );
   assert.equal(
     await page.evaluate(() => localStorage.getItem('hubplc:locale')),
@@ -52,7 +52,7 @@ try {
   // The Chinese SSR heading is present before interactive handlers hydrate.
   await page.waitForLoadState('networkidle');
   await expect(page.getByRole('heading', { level: 1 })).toContainText(
-    '把計算交給工具',
+    '常用工具',
   );
 
   await page.getByRole('button', { name: 'EN', exact: true }).click();

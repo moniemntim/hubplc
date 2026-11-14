@@ -45,6 +45,9 @@ export function ToolLanguageProvider({ children }: { children: ReactNode }) {
 
   useEffect(() => {
     if (
+      location.pathname !== '/' &&
+      location.pathname !== '/about' &&
+      location.pathname !== '/privacy' &&
       location.pathname !== '/tool' &&
       !location.pathname.startsWith('/tool/')
     )

@@ -1,10 +1,11 @@
 import fs from 'node:fs/promises';
 import { tools } from '../lib/tools/registry.ts';
+import { SITE_ORIGIN } from '../lib/site.ts';
 const articles = JSON.parse(
   await fs.readFile('lib/articles.generated.json', 'utf8'),
 );
 const entries = [
-  ...['/', '/tool', '/articles', '/excel-formulas', '/about', '/privacy'].map(
+  ...['/', '/articles', '/excel-formulas', '/about', '/privacy'].map(
     (path) => ({
       path,
     }),
@@ -28,7 +29,7 @@ await fs.writeFile(
       .map(
         ({ path, lastmod }) =>
           '<url><loc>' +
-          escape('https://hubplc.com' + path) +
+          escape(SITE_ORIGIN + path) +
           '</loc>' +
           (lastmod ? '<lastmod>' + escape(lastmod) + '</lastmod>' : '') +
           '</url>',

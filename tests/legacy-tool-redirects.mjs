@@ -71,6 +71,26 @@ void test('legacy calculator URLs redirect once with their required preset', asy
 
   try {
     await waitForWorker(base, worker, () => output);
+    for (const source of ['/tool', '/tool/']) {
+      const redirect = await fetch(
+        `${base}${source}?campaign=directory&campaign=repeat`,
+        { redirect: 'manual' },
+      );
+      assert.equal(redirect.status, 308, `${source} is permanent`);
+      const destination = new URL(redirect.headers.get('location'));
+      assert.equal(destination.pathname, '/');
+      assert.deepEqual(destination.searchParams.getAll('campaign'), [
+        'directory',
+        'repeat',
+      ]);
+      const followed = await fetch(destination, { redirect: 'manual' });
+      assert.equal(
+        followed.status,
+        200,
+        `${source} reaches the tool directory`,
+      );
+      assert.notEqual(followed.status, 308, `${source} finishes in one hop`);
+    }
     for (const [source, target] of redirects) {
       for (const trailingSlash of ['', '/']) {
         const redirect = await fetch(
@@ -142,6 +162,8 @@ void test('public tools and worker-first routes cover the consolidation', async 
   assert.equal(tools.length, 57, 'retired presets are not public tool cards');
   const sitemap = await readFile('public/sitemap.xml', 'utf8');
   const wrangler = await readFile('deployment/wrangler.jsonc', 'utf8');
+  assert.match(wrangler, /"\/tool"/);
+  assert.match(wrangler, /"\/tool\/"/);
 
   for (const tool of tools)
     assert.match(

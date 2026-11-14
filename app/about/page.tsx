@@ -1,96 +1,97 @@
-import Link from '@/components/site-link';
-import articles from '@/lib/article-index.generated.json';
+import {
+  LanguageSwitcher,
+  LocalizedDocumentMetadata,
+  LocalizedText,
+} from '@/components/tool-language';
 
 export const metadata = {
-  title: '作者、編輯方式與問題回報',
+  title: '關於 HubPLC',
+  description: 'HubPLC 的瀏覽器工程工具、使用方式與問題回報。',
   alternates: { canonical: 'https://hubplc.com/about' },
 };
 export default function About() {
-  const publishedSlugs = new Set(articles.map((article) => article.slug));
-  const examples = [
-    {
-      slug: 'plc-analog-scaling-pressure-temperature-level',
-      label: '類比訊號換算案例',
-    },
-    { slug: 'blackbox-observable', label: 'Modbus 離線讀取與驗收案例' },
-  ].filter((example) => publishedSlugs.has(example.slug));
   return (
     <main className="prose">
-      <p className="eyebrow">ABOUT / HUBPLC</p>
+      <LocalizedDocumentMetadata
+        titleZh="關於 HubPLC"
+        titleEn="About HubPLC"
+        descriptionZh="HubPLC 的瀏覽器工程工具、使用方式與問題回報。"
+        descriptionEn="Browser-based engineering tools, usage notes, and issue reports for HubPLC."
+      />
+      <LanguageSwitcher />
+      <p className="eyebrow">HUBPLC / ENGINEERING TOOLS</p>
       <h1>
-        作者、編輯方式
-        <br />
-        與問題回報
+        <LocalizedText
+          zh="把工程計算留在瀏覽器裡"
+          en="Keep engineering calculations in your browser"
+        />
       </h1>
       <p>
-        HubPLC 提供 PLC
-        與工業自動化的瀏覽器工具、操作範例與技術筆記，讓讀者核對輸入、計算結果與判讀條件。
+        <LocalizedText
+          zh="HubPLC 集中提供 PLC、電路、資料編碼與工程單位工具。輸入數值後先核對單位、訊號基準與設備資料，再把結果帶回現場或文件。"
+          en="HubPLC brings together PLC, electrical, data-encoding, and engineering-unit tools. Check units, signal references, and equipment data before using a result in the field or in documentation."
+        />
       </p>
-      <h2>作者與維護資訊</h2>
-      <p>本站作者與維護者為茂伯，整理 PLC 工具、操作教學與技術筆記。</p>
-      <p>
-        本次內容整理使用 AI
-        協助盤點重複段落、編修文字與製作計算檢查。文章沒有附設備型號、版本與量測紀錄時，請將範例視為教學資料，不視為作者親歷的現場實測。
-      </p>
-      <h2>內容如何整理與核對</h2>
+      <h2>
+        <LocalizedText zh="怎麼使用工具" en="How to use the tools" />
+      </h2>
       <ul>
         <li>
-          相近主題先區分使用情境；共用步驟集中說明，延伸文章保留自己的問題、條件與判讀方式。
+          <LocalizedText
+            zh="先從工具總覽搜尋工作名稱、單位或關鍵字，確認用途與輸入欄位。"
+            en="Search the tool directory by task, unit, or keyword, then confirm the purpose and input fields."
+          />
         </li>
         <li>
-          核心案例列出工具、輸入欄位、操作順序、預期結果及失敗時的檢查位置。工具算例可核對數值，不代表已測試
-          PLC 硬體。
+          <LocalizedText
+            zh="輸入現場量測值、設備銘牌或已確認的文件值；不要以不明來源的預設值取代設備資料。"
+            en="Use measured values, nameplate data, or confirmed documentation. Do not replace equipment data with an unknown preset."
+          />
         </li>
         <li>
-          型號相關行為附上適用範圍或手冊來源。設備手冊與韌體版本不同時，需重新核對，不能只套用範例值。
-        </li>
-        <li>
-          文章日期是內容標示日期，不是設備實測日期，也不表示每篇文章都已重新驗證。
+          <LocalizedText
+            zh="對照頁面的試算範例與結果單位，確認結果符合你的工作條件。"
+            en="Compare the worked example and result units on the page with your job conditions."
+          />
         </li>
       </ul>
-      <h2>如何分辨驗證方式</h2>
-      <ul>
-        <li>
-          <strong>計算／離線解析：</strong>
-          使用固定輸入檢查公式、位址或資料格式，沒有連接設備。
-        </li>
-        <li>
-          <strong>模擬練習：</strong>
-          提供虛擬訊號與預期狀態；有實際執行紀錄才稱為已通過模擬，單純表格推演會另外說明。
-        </li>
-        <li>
-          <strong>實體設備實測：</strong>
-          需有設備型號、軟體／韌體版本、接線或測試條件、觀察結果與日期。沒有這些紀錄，不標示為實測。
-        </li>
-      </ul>
-      <h2 id="report">問題回報</h2>
+      <h2>
+        <LocalizedText zh="結果的適用範圍" en="Where results apply" />
+      </h2>
       <p>
-        文章勘誤、工具問題與內容建議，請寄至{' '}
+        <LocalizedText
+          zh="工具依頁面列出的公式與輸入條件運算。量程、接線、通訊位址、位元組順序、功率因數與保護設定仍要以設備手冊、現場量測與專案規範為準。"
+          en="Tools calculate from the formulas and conditions shown on each page. Ranges, wiring, communication addresses, byte order, power factor, and protection settings still need confirmation against the equipment manual, field measurements, and project requirements."
+        />
+      </p>
+      <h2 id="report">
+        <LocalizedText zh="維護與回報" en="Maintenance and reports" />
+      </h2>
+      <p>
+        <LocalizedText
+          zh="本站由茂伯維護。工具問題、勘誤與功能建議請寄至"
+          en="HubPLC is maintained by 茂伯. Send tool issues, corrections, and feature suggestions to "
+        />{' '}
         <a className="text-link" href="mailto:ceo@hubplc.com">
           ceo@hubplc.com
         </a>
-        ，由茂伯收件。點擊連結會開啟你的郵件程式，寄出後才會送出回報。
+        <LocalizedText
+          zh="；點擊後會開啟你的郵件程式，寄出後才會送出回報。"
+          en=". Selecting the link opens your mail app; no report is sent until you send the email."
+        />
       </p>
       <p>
-        回報時請附文章或工具網址、錯誤段落、重現步驟、輸入值、預期與實際結果；涉及設備時再附型號與版本。請移除密碼、內網位址及客戶資料。
+        <LocalizedText
+          zh="請附上工具網址、重現步驟、輸入值、預期結果與實際結果。涉及設備時再附型號與版本；請移除密碼、內網位址及客戶資料。"
+          en="Include the tool URL, steps to reproduce, input values, expected result, and actual result. Add model and version when equipment is involved, and remove passwords, private network addresses, and customer data."
+        />
       </p>
       <a className="text-link" href="/content-report-template.txt" download>
-        下載問題回報範本（文字檔） →
+        <LocalizedText
+          zh="下載問題回報範本（文字檔） →"
+          en="Download the issue report template (text file) →"
+        />
       </a>
-      {examples.length > 0 && (
-        <>
-          <h2>從可重現的案例開始</h2>
-          <p>
-            {examples.map((example, index) => (
-              <span key={example.slug}>
-                {index > 0 && '與'}
-                <Link href={`/articles/${example.slug}`}>{example.label}</Link>
-              </span>
-            ))}
-            可搭配本站工具逐步核對。
-          </p>
-        </>
-      )}
     </main>
   );
 }

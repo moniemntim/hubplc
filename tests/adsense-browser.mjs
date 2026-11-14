@@ -5,7 +5,7 @@ import { tools } from '../lib/tools/registry.ts';
 import { ADSENSE_URL, mockAdsense } from './adsense-mock.mjs';
 const base = process.env.TEST_BASE_URL ?? 'http://127.0.0.1:8787';
 const cases = [
-  ['/', true],
+  ['/', false],
   ['/tool', false],
   ['/articles', false],
   ['/articles/excel-average', true],
@@ -111,27 +111,11 @@ try {
   await expect(
     page.getByRole('heading', { name: '誰在整理這些內容？' }),
   ).toHaveCount(0);
-  await expect(page.locator('.home-page')).not.toContainText(
+  await expect(page.locator('.tool-home')).not.toContainText(
     '本站由茂伯整理與維護',
   );
-  await expect(page.locator('ins.adsbygoogle')).toHaveCount(1);
-  assert.equal(
-    await page.locator('ins.adsbygoogle').evaluate((unit) => {
-      const sections = [...document.querySelectorAll('.home-page > section')];
-      return (
-        sections.length > 0 &&
-        sections.every((section) =>
-          Boolean(
-            !section.contains(unit) &&
-            section.compareDocumentPosition(unit) &
-              Node.DOCUMENT_POSITION_FOLLOWING,
-          ),
-        )
-      );
-    }),
-    true,
-    'home ad follows all homepage content sections',
-  );
+  await expect(page.locator('ins.adsbygoogle')).toHaveCount(0);
+  await expect(page.locator('script[src*="adsbygoogle.js"]')).toHaveCount(0);
   await page.goto(base + '/articles/excel-average');
   await expect(page.locator('ins.adsbygoogle')).toHaveCount(1);
   assert.equal(

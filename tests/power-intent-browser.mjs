@@ -171,7 +171,9 @@ try {
     ['electricity', 'energy-cost'],
   ]) {
     await search.fill(query);
-    await expect(page.locator(`a[href="/tool/${slug}"]`)).toBeVisible();
+    await expect(
+      page.locator(`.tool-card[href="/tool/${slug}"]`),
+    ).toBeVisible();
   }
 
   await page.goto(`${base}/tool/ac-power-converter`);

@@ -1,6 +1,6 @@
 # HubPLC
 
-PLC 實用工具與技術文章網站。GitHub 管理原始碼，Cloudflare Workers 提供 Vinext 靜態輸出。
+免費線上工具網站，提供 PLC、電路、編碼、單位換算及時間工具。正式網域為 `hubplc.com`；GitHub 管理原始碼，Cloudflare Workers 提供 Vinext 靜態輸出。
 
 ## 本機使用
 
@@ -32,7 +32,7 @@ npx wrangler deploy --config deployment/wrangler.jsonc --dry-run
 
 ## 工具架構
 
-`/tool` 提供搜尋和分類，目前有 57 個獨立工具頁面，位於 `/tool/<slug>`。工具登錄表在 `lib/tools/registry.ts`；公式在 `lib/tools`；各頁面僅引用自己的計算器。`lib/calculators.ts` 保留原函式介面，類比頁保留 4–20 mA WebMCP 行為。
+首頁 `/` 直接提供搜尋、分類與快速入口，目前有 57 個獨立工具頁面，位於 `/tool/<slug>`。舊目錄 `/tool` 以 308 轉至首頁；首頁與主選單以工具為主，既有 PLC／Excel 文章保留原網址。工具登錄表在 `lib/tools/registry.ts`；公式在 `lib/tools`；各頁面僅引用自己的計算器。`lib/calculators.ts` 保留原函式介面，類比頁保留 4–20 mA WebMCP 行為。
 
 18 個僅切換預設值的電力／用電量頁面已整併至 `/tool/ac-power-converter` 與 `/tool/energy-cost`。`lib/tools/legacy-tool-redirects.ts` 定義舊網址的單次 308 轉址；`?task=` 只接受既有預設，canonical 與 sitemap 使用不含參數的主工具網址。`lib/tools/worked-power-cases.ts` 保存五個中英文教學案例，包含輸入來源、操作、結果解讀及可帶入工具的數值。三相相對中性線換算仍由 `/tool/va-to-amps` 提供。
 

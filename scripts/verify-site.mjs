@@ -5,7 +5,6 @@ const base = process.env.TEST_BASE_URL ?? 'http://127.0.0.1:8787';
 const expected = 'google.com, pub-8014147345117745, DIRECT, f08c47fec0942fa0\n';
 const paths = [
   '/',
-  '/tool',
   '/articles',
   '/excel-formulas',
   '/about',
@@ -30,6 +29,17 @@ const checks = await Promise.all(
   }),
 );
 const ads = await fetch(base + '/ads.txt');
+for (const path of ['/tool', '/tool/']) {
+  const redirect = await fetch(base + path + '?source=bookmark', {
+    redirect: 'manual',
+  });
+  assert.equal(redirect.status, 308, path);
+  assert.equal(new URL(redirect.headers.get('location')).pathname, '/');
+  assert.equal(
+    new URL(redirect.headers.get('location')).searchParams.get('source'),
+    'bookmark',
+  );
+}
 assert.equal(ads.status, 200);
 assert.match(ads.headers.get('content-type'), /^text\/plain(?:;|$)/);
 assert.equal(await ads.text(), expected);

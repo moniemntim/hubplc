@@ -1,6 +1,7 @@
 import type { Metadata } from 'next';
 import Link from '@/components/site-link';
 import './globals.css';
+import { SITE_ORIGIN } from '@/lib/site';
 import {
   LocalizedText,
   LocalizedNav,
@@ -8,11 +9,10 @@ import {
   ToolLanguageProvider,
 } from '@/components/tool-language';
 export const metadata: Metadata = {
-  metadataBase: new URL('https://hubplc.com'),
+  metadataBase: new URL(SITE_ORIGIN),
   icons: { icon: '/favicon.svg' },
-  title: { default: 'HubPLC｜PLC 實用工具與技術筆記', template: '%s｜HubPLC' },
-  description:
-    '免費 PLC、電路、QR Code、Big5 與工程單位換算工具，以及 PLC 技術筆記。',
+  title: { default: 'HubPLC｜免費線上工具箱', template: '%s｜HubPLC' },
+  description: '免費線上計算、PLC 與電路、文字編碼、工程單位換算及時間工具。',
 };
 export default function RootLayout({
   children,
@@ -35,18 +35,18 @@ export default function RootLayout({
             >
               <b>H</b>hub<span>plc</span>
               <small>
-                <LocalizedText zh="工程師的工具箱" en="Engineer's toolbox" />
+                <LocalizedText zh="線上工具箱" en="Online toolbox" />
               </small>
             </LocalizedLink>
             <LocalizedNav zhLabel="主選單" enLabel="Main navigation">
-              <Link href="/tool">
-                <LocalizedText zh="實用工具" en="Tools" />
+              <Link href="/">
+                <LocalizedText zh="全部工具" en="All tools" />
               </Link>
-              <Link href="/articles">
-                <LocalizedText zh="PLC 文章" en="PLC Articles" />
+              <Link href="/about">
+                <LocalizedText zh="使用說明" en="About the tools" />
               </Link>
-              <Link href="/excel-formulas">
-                <LocalizedText zh="Excel 教學" en="Excel Guides" />
+              <Link href="/about#report">
+                <LocalizedText zh="問題回報" en="Report an issue" />
               </Link>
             </LocalizedNav>
           </header>
@@ -57,8 +57,8 @@ export default function RootLayout({
             </Link>
             <p>
               <LocalizedText
-                zh="工具，讓工作更簡單。筆記，讓經驗留下來。"
-                en="Tools simplify the work. Notes preserve the experience."
+                zh="計算、轉換、檢查，讓日常工作更順手。"
+                en="Calculate, convert, and check. Make everyday work easier."
               />
             </p>
             <Link href="/about">

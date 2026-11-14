@@ -182,15 +182,15 @@ try {
     page.locator('.tool-card[href="/tool/dbm-watts"]'),
   ).toBeVisible();
   await page.getByRole('tab', { name: '全部', exact: true }).click();
-  await page.getByRole('link').filter({ hasText: '類比訊號換算' }).click();
+  await page.locator('.tool-card[href="/tool/analog"]').click();
   await page.waitForURL('**/tool/analog');
   await page.getByRole('link', { name: '← 返回工具總覽', exact: true }).click();
-  await page.waitForURL('**/tool');
+  await page.waitForURL(base + '/');
   await page
     .getByRole('navigation', { name: '主選單' })
-    .getByRole('link', { name: 'PLC 文章' })
+    .getByRole('link', { name: '使用說明' })
     .click();
-  await page.waitForURL('**/articles');
+  await page.waitForURL('**/about');
   await page.getByRole('link', { name: 'HubPLC 首頁' }).click();
   await page.waitForURL(base + '/');
   await page.goto(`${base}/tool`);

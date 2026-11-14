@@ -11,6 +11,7 @@ import {
 } from '@/components/tool-language';
 import { categoryEnglish, toolEnglish } from '@/lib/tools/tool-i18n';
 import articles from '@/lib/article-index.generated.json';
+import { SITE_ORIGIN } from '@/lib/site';
 const relatedLessons: Partial<
   Record<ToolSlug, { slug: string; zh: string; en: string }>
 > = {
@@ -45,7 +46,7 @@ export function toolMetadata(slug: ToolSlug): Metadata {
   return {
     title: tool.name,
     description: tool.description,
-    alternates: { canonical: `https://hubplc.com/tool/${slug}` },
+    alternates: { canonical: `${SITE_ORIGIN}/tool/${slug}` },
   };
 }
 export default function ToolPage({
@@ -78,7 +79,7 @@ export default function ToolPage({
           zhLabel="所在位置"
           enLabel="Location"
         >
-          <Link href="/tool">
+          <Link href="/">
             <LocalizedText zh="工具總覽" en="All tools" />
           </Link>
           <span>/</span>
@@ -186,15 +187,11 @@ export default function ToolPage({
         ) : null}
         {tool.category !== '編碼' && <AdSense />}
         <div className="tool-page-end">
-          <Link href="/tool">
+          <Link href="/">
             ← <LocalizedText zh="返回工具總覽" en="Back to all tools" />
           </Link>
-          <Link href="/articles">
-            <LocalizedText
-              zh="閱讀 PLC 技術文章"
-              en="Read PLC articles (Chinese)"
-            />{' '}
-            ↗
+          <Link href="/about#report">
+            <LocalizedText zh="回報工具問題" en="Report a tool issue" /> ↗
           </Link>
         </div>
       </main>

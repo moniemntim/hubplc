@@ -1,6 +1,6 @@
 {
   "purpose": "Truthful article dates from Git history or explicit release records. Publication dates must not be redistributed for appearance.",
-  "generatedAt": "2026-10-18T09:29:21.994Z",
+  "generatedAt": "2026-11-14T23:34:41.763Z",
   "articles": {
     "0-10v-analog-load-ground-response-open-circuit": {
       "publishedDate": "2026-09-17",
@@ -281,7 +281,7 @@
     },
     "excel-large": {
       "publishedDate": "2026-10-18",
-      "updatedDate": "2026-10-18",
+      "updatedDate": "2026-11-15",
       "dateSource": "release-record"
     },
     "excel-left": {
@@ -306,7 +306,7 @@
     },
     "excel-maxifs": {
       "publishedDate": "2026-10-18",
-      "updatedDate": "2026-10-18",
+      "updatedDate": "2026-11-15",
       "dateSource": "release-record"
     },
     "excel-median": {
@@ -326,7 +326,7 @@
     },
     "excel-minifs": {
       "publishedDate": "2026-10-18",
-      "updatedDate": "2026-10-18",
+      "updatedDate": "2026-11-15",
       "dateSource": "release-record"
     },
     "excel-mod": {
@@ -366,17 +366,17 @@
     },
     "excel-rounddown": {
       "publishedDate": "2026-10-18",
-      "updatedDate": "2026-10-18",
+      "updatedDate": "2026-11-15",
       "dateSource": "release-record"
     },
     "excel-roundup": {
       "publishedDate": "2026-10-18",
-      "updatedDate": "2026-10-18",
+      "updatedDate": "2026-11-15",
       "dateSource": "release-record"
     },
     "excel-small": {
       "publishedDate": "2026-10-18",
-      "updatedDate": "2026-10-18",
+      "updatedDate": "2026-11-15",
       "dateSource": "release-record"
     },
     "excel-substitute": {

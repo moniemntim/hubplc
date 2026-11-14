@@ -62,4 +62,4 @@
 - `layout-browser.mjs`：125 頁 × 三寬度共 375 次檢查通過。
 - `task-guides-browser.mjs`、文章公開邊界／證據瀏覽器檢查、72 頁廣告配置檢查與 71 頁 HTTP／索引檢查通過。廣告測試使用 mock，沒有實際廣告曝光。
 
-本地報告在 `outputs/content-remediation-2026-11-15/`。發布後必須等待推送版本的 `Workers Builds: hubplc` 成功，再將正式站應用、內容、響應式與 HTTP／資源檢查存入同目錄 `production/`。文章更新日期由已提交的來源歷史產生；不捏造實測日期、不代送 AdSense 複查。
+本地報告在 `outputs/content-remediation-2026-11-15/`。發布後必須等待推送版本的 `Workers Builds: hubplc` 成功，再將正式站應用、內容、響應式與 HTTP／資源檢查存入同目錄 `production/`。六篇 Excel 原有日期屬 `release-record`，保留初刊日，更新日依來源提交 `24d004326ab078653c1c85dccb20fdf85ffe58f9` 的實際日期改為 2026-11-15；不捏造實測日期、不代送 AdSense 複查。

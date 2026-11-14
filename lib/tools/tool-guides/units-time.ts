@@ -26,10 +26,7 @@ export const unitsTimeGuides: Partial<Record<ToolSlug, ToolGuideData>> = {
     ),
     cases: [
       {
-        title: zhEn(
-          '固定時鐘下記錄兩個循環',
-          'Record two cycles on a fixed clock',
-        ),
+        title: zhEn('比較兩個重複作業循環', 'Compare two repeated task cycles'),
         inputs: [
           input(
             '操作',
@@ -38,8 +35,8 @@ export const unitsTimeGuides: Partial<Record<ToolSlug, ToolGuideData>> = {
               '開始 → 10 秒後單圈 → 再 15 秒後單圈 → 暫停',
               'Start → Lap after 10 s → Lap after another 15 s → Pause',
             ),
-            '以固定測試時鐘重現的作業情境',
-            'A task scenario reproduced with a fixed test clock',
+            '選一段可以重複的操作，依兩次完成時點記錄單圈',
+            'Choose a repeatable task and record a lap at each completion',
           ),
         ],
         steps: [
@@ -54,13 +51,13 @@ export const unitsTimeGuides: Partial<Record<ToolSlug, ToolGuideData>> = {
         ],
         expected: [
           zhEn(
-            '第一圈為 00:00:10.00；第二圈為 00:00:15.00，第二圈累計為 00:00:25.00。',
-            'The first lap is 00:00:10.00; the second lap is 00:00:15.00, with 00:00:25.00 elapsed at lap two.',
+            '若兩次操作約花 10 秒與 15 秒，單圈約為 10 秒、15 秒，累計約為 25 秒；實際小數依按鍵時點而不同。',
+            'If the tasks take about 10 and 15 seconds, laps are about 10 and 15 seconds and elapsed time is about 25 seconds; decimals depend on when you press the button.',
           ),
         ],
         interpretation: zhEn(
-          '固定時鐘用於驗證操作；實際作業用單圈時間比較循環差異，系統時間被調整時不宜作正式工時依據。',
-          'The fixed clock verifies the workflow; in live work compare cycle variation using lap time, and do not use a run as formal timekeeping if the system clock changes.',
+          '用「單圈」比較各次操作，用「累計」核對總時間；第二圈累計 25 秒不代表第二次操作花了 25 秒。',
+          'Compare individual tasks using lap time and check the total with elapsed time; 25 seconds elapsed at lap two does not mean the second task took 25 seconds.',
         ),
       },
     ],
@@ -73,8 +70,8 @@ export const unitsTimeGuides: Partial<Record<ToolSlug, ToolGuideData>> = {
   },
   'world-clock': {
     task: zhEn(
-      '以 IANA 時區比較跨國會議時間。',
-      'Compare international meeting times using IANA zones.',
+      '以 IANA 時區核對兩個城市此刻的時間、日期與時差。',
+      'Use IANA zones to compare the current time, date and offset in two cities.',
     ),
     scope: zhEn(
       '顯示取自裝置時間與瀏覽器時區資料，會依顯示日期套用夏令時間。',
@@ -83,33 +80,41 @@ export const unitsTimeGuides: Partial<Record<ToolSlug, ToolGuideData>> = {
     cases: [
       {
         title: zhEn(
-          '固定日期下的台北與紐約冬季時差',
-          'Taipei and New York winter difference at a fixed date',
+          '暫停同一時刻，比較台北與紐約',
+          'Pause at one instant and compare Taipei with New York',
         ),
         inputs: [
           input(
-            '固定 UTC 時間',
-            'Fixed UTC time',
-            '2026-01-01 16:00:00',
-            '固定測試時鐘；不是畫面可輸入的資料欄位',
-            'Fixed test clock; not a data field in the UI',
+            '比較城市',
+            'Cities to compare',
+            'Asia/Taipei → America/New_York',
+            '向通訊對象確認所在城市；同一國家可能有不同時區',
+            'Confirm the other person’s city; one country may have several zones',
           ),
         ],
         steps: [
           zhEn(
-            '選擇「台灣・台北」，再搜尋並選擇「美國・紐約」。',
-            'Select “Taiwan · Taipei”, then search for and select “United States · New York”.',
+            '在「台灣・台北」畫面按「暫停更新」，記下主畫面的日期與時間，讓比較過程保留同一時刻。',
+            'With Taiwan · Taipei selected, choose Pause updates and note the displayed date and time so both readings refer to the same instant.',
+          ),
+          zhEn(
+            '在「搜尋城市、國家或時區」輸入 America/New_York，點選「美國・紐約」，讀取日期、時間與「比台北慢」的時差。',
+            'Search for America/New_York, select United States · New York, then read its date, time and difference from Taipei.',
           ),
         ],
         expected: [
           zhEn(
-            '在此固定日期，台北為 2026-01-02 00:00；紐約為 2026-01-01 11:00，紐約比台北慢 13 小時。',
-            'At this fixed date, Taipei is 2026-01-02 00:00; New York is 2026-01-01 11:00, 13 hours behind Taipei.',
+            '主畫面切換為紐約，但仍維持暫停時的同一時刻；日期可能與台北不同，兩地秒數應相同。',
+            'The main display changes to New York while keeping the paused instant; its date can differ from Taipei, and both seconds readings should match.',
+          ),
+          zhEn(
+            '時差依畫面日期的時區規則計算。比較完可按「回到台灣・台北」恢復即時顯示。',
+            'The offset follows time-zone rules for the displayed date. Select Return to Taiwan · Taipei to resume live display.',
           ),
         ],
         interpretation: zhEn(
-          '此為條件式範例而非即時承諾：同一 UTC 時刻可跨日，夏季紐約偏移不同，應看當日畫面而非背誦固定時差。',
-          'This is a conditional example, not a live-time promise: one UTC instant can cross a date boundary, and New York’s summer offset differs, so use the date shown rather than a memorized difference.',
+          '先核對日期再比較時間，避免把「紐約前一天」誤當成同日。夏令時間會改變時差，這個操作不用輸入或修改裝置日期。',
+          'Check the dates before comparing clock times so a previous-day New York reading is not mistaken for the same day. Daylight saving time changes the difference; this workflow needs no date input or device-clock changes.',
         ),
       },
     ],
@@ -118,6 +123,12 @@ export const unitsTimeGuides: Partial<Record<ToolSlug, ToolGuideData>> = {
         '同一國家可能有多個時區；此工具不會校正錯誤的系統時間。',
         'A country may have several zones; this tool does not correct an incorrect system clock.',
       ),
+    ],
+    sources: [
+      {
+        label: zhEn('IANA 時區資料庫', 'IANA Time Zone Database'),
+        url: 'https://www.iana.org/time-zones',
+      },
     ],
   },
   'timestamp-converter': {

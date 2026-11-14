@@ -344,8 +344,8 @@ export const encodingGuides: Partial<Record<ToolSlug, ToolGuideData>> = {
           ),
         ],
         interpretation: t(
-          '任何一個原文 byte 改變都會得到不同摘要；若對方提供 HMAC，改用「HMAC（帶金鑰）」並填入雙方約定金鑰。',
-          'Changing any source byte produces a different digest; for an HMAC supplied by another party, choose HMAC and enter the agreed key.',
+          '原文改變通常會改變摘要，但不同內容仍可能產生相同摘要；抗碰撞不代表保證沒有碰撞。若對方提供 HMAC，改用「HMAC（帶金鑰）」並填入雙方約定金鑰。',
+          'Changing the source usually changes the digest, but different contents can share a digest; collision resistance is not a guarantee that collisions do not exist. For a supplied HMAC, choose HMAC and enter the agreed key.',
         ),
       },
     ],
@@ -360,6 +360,12 @@ export const encodingGuides: Partial<Record<ToolSlug, ToolGuideData>> = {
       ),
     ],
     related: ['crypto', 'key-derivation'],
+    sources: [
+      {
+        label: t('NIST：抗碰撞定義', 'NIST: Collision resistance'),
+        url: 'https://csrc.nist.gov/glossary/term/collision_resistance',
+      },
+    ],
   },
   'password-generator': {
     task: t(
@@ -396,8 +402,8 @@ export const encodingGuides: Partial<Record<ToolSlug, ToolGuideData>> = {
           ),
         ],
         interpretation: t(
-          '每次產生都應是新值，僅在需要時按「複製密碼」才會寫入剪貼簿。',
-          'Each generation should be new; it is written to the clipboard only after selecting “Copy password”.',
+          '每次按鈕都會重新抽樣，但不保證與歷次結果不同；按「複製密碼」才會寫入剪貼簿。',
+          'Each click samples again, but a result can repeat an earlier value; it is written to the clipboard only after selecting Copy password.',
         ),
       },
     ],

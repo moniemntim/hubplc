@@ -19,35 +19,8 @@ import {
 import { categoryEnglish, toolEnglish } from '@/lib/tools/tool-i18n';
 import articles from '@/lib/article-index.generated.json';
 import { SITE_ORIGIN } from '@/lib/site';
-const relatedLessons: Partial<
-  Record<ToolSlug, { slug: string; zh: string; en: string }>
-> = {
-  analog: {
-    slug: 'plc-analog-scaling-pressure-temperature-level',
-    zh: 'PLC 類比換算：從訊號、原始值到來源品質',
-    en: 'PLC analog scaling and source quality (Chinese article)',
-  },
-  'plc-scaling': {
-    slug: 'plc-analog-scaling-pressure-temperature-level',
-    zh: 'PLC 類比換算：原始值、工程量與異常判讀',
-    en: 'PLC raw-count scaling and diagnostics (Chinese article)',
-  },
-  'modbus-address': {
-    slug: 'modbus-function-code-01-04-read-list',
-    zh: '從設備資料表建立可驗收的 Modbus 讀取清單',
-    en: 'Build a Modbus read list from a device map (Chinese article)',
-  },
-  'modbus-crc': {
-    slug: 'rs485-no-response-troubleshooting',
-    zh: 'RS485 沒有回應時，先確認封包停在哪一段',
-    en: 'Trace an RS485 request with no response (Chinese article)',
-  },
-  'register-converter': {
-    slug: 'blackbox-observable',
-    zh: '用 FC03 離線驗收表核對位址與 Float32',
-    en: 'Check FC03 address and Float32 with an offline record (Chinese article)',
-  },
-};
+import { getPublicRelatedLessons } from '@/lib/tools/related-lessons';
+import { unitWorkflows } from '@/lib/tools/unit-workflows';
 export function toolMetadata(slug: ToolSlug): Metadata {
   const tool = getTool(slug);
   return {
@@ -65,6 +38,9 @@ export default function ToolPage({
 }) {
   const tool = getTool(slug);
   const english = toolEnglish[slug];
+  const application = unitWorkflows.find(
+    (workflow) => `${workflow.group}-converter` === slug,
+  );
   const guide = toolGuides[slug];
   const guideLinks =
     guide?.related?.flatMap((relatedSlug) => {
@@ -78,12 +54,7 @@ export default function ToolPage({
           ]
         : [];
     }) ?? [];
-  const candidateLesson = relatedLessons[slug];
-  const relatedLesson =
-    candidateLesson &&
-    articles.some((article) => article.slug === candidateLesson.slug)
-      ? candidateLesson
-      : undefined;
+  const relatedLessons = getPublicRelatedLessons(slug, articles);
   return (
     <>
       <main className="shell tool-page">
@@ -129,6 +100,23 @@ export default function ToolPage({
             )}
           </span>
         </header>
+        {application && (
+          <LocalizedNav
+            className="crypto-related"
+            zhLabel="換算與應用入口"
+            enLabel="Conversion and application shortcuts"
+          >
+            <a href="#unit-quick-conversion">
+              <LocalizedText zh="快速單位換算" en="Quick unit conversion" />
+            </a>
+            <a href="#unit-workflow-title">
+              <LocalizedText
+                zh={'應用：' + application.title.zh}
+                en={'Task: ' + application.title.en}
+              />
+            </a>
+          </LocalizedNav>
+        )}
         {[
           'stopwatch',
           'world-clock',
@@ -196,19 +184,24 @@ export default function ToolPage({
         </aside>
         <PlcGuide slug={slug} />
         {guide && <ToolGuide guide={guide} related={guideLinks} />}
-        {relatedLesson ? (
-          <aside className="tool-example" aria-label="相關操作教學">
-            <strong>
+        {relatedLessons.length > 0 ? (
+          <aside
+            className="tool-example"
+            aria-labelledby="related-walkthrough-title"
+          >
+            <strong id="related-walkthrough-title">
               <LocalizedText
-                zh="接著核對實際資料"
-                en="Continue with a worked lesson"
+                zh="相關實作與延伸操作"
+                en="Related walkthroughs"
               />
             </strong>
-            <p>
-              <Link href={'/articles/' + relatedLesson.slug}>
-                <LocalizedText zh={relatedLesson.zh} en={relatedLesson.en} />
-              </Link>
-            </p>
+            {relatedLessons.map((lesson) => (
+              <p key={lesson.slug}>
+                <Link href={'/articles/' + lesson.slug}>
+                  <LocalizedText zh={lesson.zh} en={lesson.en} />
+                </Link>
+              </p>
+            ))}
           </aside>
         ) : null}
         {!['編碼', '日常工具'].includes(tool.category) && <AdSense />}

@@ -77,7 +77,7 @@ try {
       excelFormulaLessons.length,
     );
     await expect(page.locator('.excel-course-evidence')).toContainText(
-      'Windows 版 Microsoft 365 與 Excel 2021 實際操作驗證',
+      '採購、排料與量測紀錄',
     );
     assert.equal(
       await page.locator('link[rel="canonical"]').getAttribute('href'),

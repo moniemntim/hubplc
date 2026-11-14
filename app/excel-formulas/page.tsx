@@ -65,8 +65,7 @@ export default function ExcelFormulas() {
           個常用函數，從實際資料表開始，學會輸入公式、判讀結果並完成練習。
         </p>
         <p className="excel-course-evidence">
-          教材由茂伯編寫，並由作者本人在 Windows 版 Microsoft 365 與 Excel 2021
-          實際操作驗證。
+          從單一公式到採購、排料與量測紀錄，先看資料定義，再核對結果與錯誤處理。
         </p>
         {firstLesson && (
           <Link className="action" href={`/articles/${firstLesson.slug}`}>

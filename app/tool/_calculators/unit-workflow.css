@@ -1,0 +1,39 @@
+.unit-workflow {
+  margin-top: 28px;
+}
+.unit-workflow-heading {
+  padding: 22px 24px;
+  margin-bottom: 14px;
+  border: 1px solid #c9ddd3;
+  border-radius: 10px;
+  background: #eaf4ee;
+  color: #29483e;
+}
+.unit-workflow-heading h2 {
+  margin: 6px 0 10px;
+  font-size: clamp(20px, 3vw, 26px);
+  color: #123a35;
+  line-height: 1.5;
+}
+.unit-workflow-heading p {
+  line-height: 1.8;
+}
+.unit-workflow-hint {
+  font-size: 13px;
+  color: #557165;
+  line-height: 1.7;
+  margin: 6px 0 14px;
+}
+.unit-workflow-sources a {
+  color: #08796b;
+  text-decoration: underline;
+  text-underline-offset: 3px;
+}
+.workflow-result {
+  overflow-wrap: anywhere;
+}
+@media (max-width: 560px) {
+  .unit-workflow-heading {
+    padding: 18px;
+  }
+}

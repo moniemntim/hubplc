@@ -18,9 +18,9 @@ const guidedUnitSlugs = [
   'storage-converter',
 ];
 const unitCases = [
-  ['pressure-converter', '不把表壓與絕對壓互換'],
-  ['temperature-converter', '溫度不是單純倍率'],
-  ['storage-converter', 'GB 為 10^9 B，GiB 為 2^30 B'],
+  ['pressure-converter', '表壓與絕對壓'],
+  ['temperature-converter', '溫差'],
+  ['storage-converter', 'Mbps 是 bit/s'],
 ];
 
 for (const [slug, pitfall] of unitCases) {
@@ -36,6 +36,16 @@ for (const slug of guidedUnitSlugs) {
   const html = await response.text();
   assert.match(html, /class="tool-guide/, `${slug}: guide missing`);
   assert.ok(html.includes('案例'), `${slug}: worked example missing`);
+  assert.match(
+    html,
+    /id="unit-workflow-title"/,
+    `${slug}: usable application task`,
+  );
+  assert.equal(
+    (html.match(/class="tool-guide-case"/g) ?? []).length,
+    2,
+    `${slug}: two application cases`,
+  );
 }
 
 const pressureHtml = await (
@@ -122,9 +132,9 @@ try {
   await expect(
     page.getByRole('combobox', { name: '目標單位', exact: true }),
   ).toContainText('kPa');
-  await expect(page.getByRole('region', { name: '計算結果' })).toContainText(
-    '100',
-  );
+  await expect(
+    page.getByRole('region', { name: '計算結果', exact: true }),
+  ).toContainText('100');
   assert.equal(
     await page.evaluate(
       () => document.documentElement.scrollWidth <= innerWidth,

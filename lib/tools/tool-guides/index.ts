@@ -7,6 +7,8 @@ import { randomTaskGuides } from './random-tasks.ts';
 import { sampleDataGuides } from './sample-data.ts';
 import { dataUtilityGuides } from './data-utilities.ts';
 import { networkInfoGuides } from './network-info.ts';
+import { engineeringApplicationGuides } from './unit-applications-engineering.ts';
+import { materialsApplicationGuides } from './unit-applications-materials.ts';
 
 export const retainedGuideSlugs: readonly string[] = [
   'analog',
@@ -27,4 +29,6 @@ export const toolGuides: Partial<Record<ToolSlug, ToolGuideData>> = {
   ...sampleDataGuides,
   ...dataUtilityGuides,
   ...networkInfoGuides,
+  ...engineeringApplicationGuides,
+  ...materialsApplicationGuides,
 };

@@ -111,13 +111,13 @@ try {
         const input = fields[tool.slug]
           ? page.getByRole('textbox', { name: fields[tool.slug], exact: true })
           : page
-              .getByRole('region', { name: '輸入條件' })
+              .getByRole('region', { name: '輸入條件', exact: true })
               .getByRole('textbox')
               .first();
         await input.fill('');
         assert.equal(
           await page
-            .getByRole('region', { name: '計算結果' })
+            .getByRole('region', { name: '計算結果', exact: true })
             .locator('dd')
             .count(),
           0,
@@ -129,7 +129,7 @@ try {
             .click();
           assert.ok(
             await page
-              .getByRole('region', { name: '計算結果' })
+              .getByRole('region', { name: '計算結果', exact: true })
               .locator('dd')
               .count(),
             `example ${tool.slug}`,
@@ -137,7 +137,7 @@ try {
           await page.getByRole('button', { name: '清空', exact: true }).click();
           assert.equal(
             await page
-              .getByRole('region', { name: '計算結果' })
+              .getByRole('region', { name: '計算結果', exact: true })
               .locator('dd')
               .count(),
             0,

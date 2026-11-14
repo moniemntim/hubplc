@@ -1485,15 +1485,26 @@
     },
     "excel-large": {
       "status": "reviewed-local",
-      "batch": 40,
-      "reviewDate": "2026-10-18",
-      "sha256": "584e5e3c470d4fb9a7c9ef59027ae11bd6251fa5646111207e81936f2d5a761b",
-      "change": "依作者原創教材轉製為可讀HTML；新增用途、適用版本、可重建資料表、可複製公式、步驟、結果解讀、錯誤排查、三題練習與一張對應截圖。",
-      "verification": "作者本人聲明已在 Windows 版 Microsoft 365 與 Excel 2021 實際操作驗證；網站轉製另逐項核對主公式、正確結果、三題練習答案、官方來源與來源內嵌截圖。",
+      "batch": 47,
+      "reviewDate": "2026-11-15",
+      "sha256": "831d76ec6ee3b597afd591b100797f42532963a8c81d0e7b6630714fd652f5d4",
+      "change": "保留舊網址與既有基礎截圖；改寫不同的工作決策、資料、邊界與練習，移除重複公開驗證段落。",
+      "verification": "原作者實機聲明僅保留於原有基礎範例及既有截圖；新應用案例依 Microsoft 官方規格、獨立數學計算與原始資料逐列核對。tests/excel-distinct-lessons.test.mjs；未重新執行 Microsoft Excel 原生引擎。",
       "verificationKind": "software",
       "applicationVerified": true,
       "verifiedApplications": ["Windows 版 Microsoft 365", "Excel 2021"],
-      "verificationSource": "author-attestation"
+      "verificationSource": "author-attestation",
+      "authorAttestationScope": "原有基礎範例及其既有截圖；不擴張為本次新增應用例題的作者實機聲明。",
+      "revisionVerification": {
+        "kind": "offline-formula-review",
+        "reviewDate": "2026-11-15",
+        "checks": [
+          "Microsoft official function documentation",
+          "tests/excel-distinct-lessons.test.mjs"
+        ],
+        "nativeExcelRerun": false,
+        "baselineImageSha256": "a31598448ff3dedd3a7cdf551341e4f7a8a2cefb63ed91b2844234ee6b4d508e"
+      }
     },
     "excel-match": {
       "status": "reviewed-local",
@@ -1509,15 +1520,26 @@
     },
     "excel-maxifs": {
       "status": "reviewed-local",
-      "batch": 40,
-      "reviewDate": "2026-10-18",
-      "sha256": "edd558d81738b3166bb3368260c1b569eea49ba5262f0acdefb9d74d55ca4d70",
-      "change": "依作者原創教材轉製為可讀HTML；新增用途、適用版本、可重建資料表、可複製公式、步驟、結果解讀、錯誤排查、三題練習與一張對應截圖。",
-      "verification": "作者本人聲明已在 Windows 版 Microsoft 365 與 Excel 2021 實際操作驗證；網站轉製另逐項核對主公式、正確結果、三題練習答案、官方來源與來源內嵌截圖。",
+      "batch": 47,
+      "reviewDate": "2026-11-15",
+      "sha256": "8014027a9078e029521e64088bd9946628ce2794278cb14ee272231ed1dd9347",
+      "change": "保留舊網址與既有基礎截圖；改寫不同的工作決策、資料、邊界與練習，移除重複公開驗證段落。",
+      "verification": "原作者實機聲明僅保留於原有基礎範例及既有截圖；新應用案例依 Microsoft 官方規格、獨立數學計算與原始資料逐列核對。tests/excel-distinct-lessons.test.mjs；未重新執行 Microsoft Excel 原生引擎。",
       "verificationKind": "software",
       "applicationVerified": true,
       "verifiedApplications": ["Windows 版 Microsoft 365", "Excel 2021"],
-      "verificationSource": "author-attestation"
+      "verificationSource": "author-attestation",
+      "authorAttestationScope": "原有基礎範例及其既有截圖；不擴張為本次新增應用例題的作者實機聲明。",
+      "revisionVerification": {
+        "kind": "offline-formula-review",
+        "reviewDate": "2026-11-15",
+        "checks": [
+          "Microsoft official function documentation",
+          "tests/excel-distinct-lessons.test.mjs"
+        ],
+        "nativeExcelRerun": false,
+        "baselineImageSha256": "359a957281310c0f7c145c30697ccf438b2e6c54a5dfcc3ccd84c066b4603273"
+      }
     },
     "excel-median": {
       "status": "reviewed-local",
@@ -1533,15 +1555,26 @@
     },
     "excel-minifs": {
       "status": "reviewed-local",
-      "batch": 40,
-      "reviewDate": "2026-10-18",
-      "sha256": "64a36c4f87972540e4f1c04b683ccb90e6e39a01833db1c2f80c7858c1cd16b2",
-      "change": "依作者原創教材轉製為可讀HTML；新增用途、適用版本、可重建資料表、可複製公式、步驟、結果解讀、錯誤排查、三題練習與一張對應截圖。",
-      "verification": "作者本人聲明已在 Windows 版 Microsoft 365 與 Excel 2021 實際操作驗證；網站轉製另逐項核對主公式、正確結果、三題練習答案、官方來源與來源內嵌截圖。",
+      "batch": 47,
+      "reviewDate": "2026-11-15",
+      "sha256": "931f6913f179ed0db209602cae3ce7ee78eaa05a3a3ebe9175f805f277c8ea60",
+      "change": "保留舊網址與既有基礎截圖；改寫不同的工作決策、資料、邊界與練習，移除重複公開驗證段落。",
+      "verification": "原作者實機聲明僅保留於原有基礎範例及既有截圖；新應用案例依 Microsoft 官方規格、獨立數學計算與原始資料逐列核對。tests/excel-distinct-lessons.test.mjs；未重新執行 Microsoft Excel 原生引擎。",
       "verificationKind": "software",
       "applicationVerified": true,
       "verifiedApplications": ["Windows 版 Microsoft 365", "Excel 2021"],
-      "verificationSource": "author-attestation"
+      "verificationSource": "author-attestation",
+      "authorAttestationScope": "原有基礎範例及其既有截圖；不擴張為本次新增應用例題的作者實機聲明。",
+      "revisionVerification": {
+        "kind": "offline-formula-review",
+        "reviewDate": "2026-11-15",
+        "checks": [
+          "Microsoft official function documentation",
+          "tests/excel-distinct-lessons.test.mjs"
+        ],
+        "nativeExcelRerun": false,
+        "baselineImageSha256": "7659d96b573165579e284dfd1549c8e199e6b223b420dad6c9166d70978e31d6"
+      }
     },
     "excel-mod": {
       "status": "reviewed-local",
@@ -1593,39 +1626,72 @@
     },
     "excel-rounddown": {
       "status": "reviewed-local",
-      "batch": 40,
-      "reviewDate": "2026-10-18",
-      "sha256": "64fd636f0dcda069c86613745f3c2f60ef68104448afb10192eb94defb6ec2b8",
-      "change": "依作者原創教材轉製為可讀HTML；新增用途、適用版本、可重建資料表、可複製公式、步驟、結果解讀、錯誤排查、三題練習與一張對應截圖。",
-      "verification": "作者本人聲明已在 Windows 版 Microsoft 365 與 Excel 2021 實際操作驗證；網站轉製另逐項核對主公式、正確結果、三題練習答案、官方來源與來源內嵌截圖。",
+      "batch": 47,
+      "reviewDate": "2026-11-15",
+      "sha256": "01151312aca659edc2ac830374c3eb7b33449348f7e308e0bf0641c1fe6b597f",
+      "change": "保留舊網址與既有基礎截圖；改寫不同的工作決策、資料、邊界與練習，移除重複公開驗證段落。",
+      "verification": "原作者實機聲明僅保留於原有基礎範例及既有截圖；新應用案例依 Microsoft 官方規格、獨立數學計算與原始資料逐列核對。tests/excel-distinct-lessons.test.mjs；未重新執行 Microsoft Excel 原生引擎。",
       "verificationKind": "software",
       "applicationVerified": true,
       "verifiedApplications": ["Windows 版 Microsoft 365", "Excel 2021"],
-      "verificationSource": "author-attestation"
+      "verificationSource": "author-attestation",
+      "authorAttestationScope": "原有基礎範例及其既有截圖；不擴張為本次新增應用例題的作者實機聲明。",
+      "revisionVerification": {
+        "kind": "offline-formula-review",
+        "reviewDate": "2026-11-15",
+        "checks": [
+          "Microsoft official function documentation",
+          "tests/excel-distinct-lessons.test.mjs"
+        ],
+        "nativeExcelRerun": false,
+        "baselineImageSha256": "679c0e9eff18fa496387ab26a7fc0bcbb9b2e16079d19a96e45f26ed08a8183c"
+      }
     },
     "excel-roundup": {
       "status": "reviewed-local",
-      "batch": 40,
-      "reviewDate": "2026-10-18",
-      "sha256": "88239f87e831303728f1b4619d93f986db1f19115f4517aff48aae50c459311b",
-      "change": "依作者原創教材轉製為可讀HTML；新增用途、適用版本、可重建資料表、可複製公式、步驟、結果解讀、錯誤排查、三題練習與一張對應截圖。",
-      "verification": "作者本人聲明已在 Windows 版 Microsoft 365 與 Excel 2021 實際操作驗證；網站轉製另逐項核對主公式、正確結果、三題練習答案、官方來源與來源內嵌截圖。",
+      "batch": 47,
+      "reviewDate": "2026-11-15",
+      "sha256": "f95a5204da1e6bbe62dbef93b32e4c6e4ef81c66a8eb5904de36753ba4c6ce6d",
+      "change": "保留舊網址與既有基礎截圖；改寫不同的工作決策、資料、邊界與練習，移除重複公開驗證段落。",
+      "verification": "原作者實機聲明僅保留於原有基礎範例及既有截圖；新應用案例依 Microsoft 官方規格、獨立數學計算與原始資料逐列核對。tests/excel-distinct-lessons.test.mjs；未重新執行 Microsoft Excel 原生引擎。",
       "verificationKind": "software",
       "applicationVerified": true,
       "verifiedApplications": ["Windows 版 Microsoft 365", "Excel 2021"],
-      "verificationSource": "author-attestation"
+      "verificationSource": "author-attestation",
+      "authorAttestationScope": "原有基礎範例及其既有截圖；不擴張為本次新增應用例題的作者實機聲明。",
+      "revisionVerification": {
+        "kind": "offline-formula-review",
+        "reviewDate": "2026-11-15",
+        "checks": [
+          "Microsoft official function documentation",
+          "tests/excel-distinct-lessons.test.mjs"
+        ],
+        "nativeExcelRerun": false,
+        "baselineImageSha256": "b7f734edc2d9a17460ce66b84d5a7116a3a02c02114d9fa4beb9b39ce2794022"
+      }
     },
     "excel-small": {
       "status": "reviewed-local",
-      "batch": 40,
-      "reviewDate": "2026-10-18",
-      "sha256": "b84e15d0f9f94efd622862cb69717bbca3d38ef159f35a81c29c55f24aa5c8a5",
-      "change": "依作者原創教材轉製為可讀HTML；新增用途、適用版本、可重建資料表、可複製公式、步驟、結果解讀、錯誤排查、三題練習與一張對應截圖。",
-      "verification": "作者本人聲明已在 Windows 版 Microsoft 365 與 Excel 2021 實際操作驗證；網站轉製另逐項核對主公式、正確結果、三題練習答案、官方來源與來源內嵌截圖。",
+      "batch": 47,
+      "reviewDate": "2026-11-15",
+      "sha256": "a4b6b8899882bbe69e90b0004bc6274395cfd148d0ccb1bb401c55e8d3e0ab6f",
+      "change": "保留舊網址與既有基礎截圖；改寫不同的工作決策、資料、邊界與練習，移除重複公開驗證段落。",
+      "verification": "原作者實機聲明僅保留於原有基礎範例及既有截圖；新應用案例依 Microsoft 官方規格、獨立數學計算與原始資料逐列核對。tests/excel-distinct-lessons.test.mjs；未重新執行 Microsoft Excel 原生引擎。",
       "verificationKind": "software",
       "applicationVerified": true,
       "verifiedApplications": ["Windows 版 Microsoft 365", "Excel 2021"],
-      "verificationSource": "author-attestation"
+      "verificationSource": "author-attestation",
+      "authorAttestationScope": "原有基礎範例及其既有截圖；不擴張為本次新增應用例題的作者實機聲明。",
+      "revisionVerification": {
+        "kind": "offline-formula-review",
+        "reviewDate": "2026-11-15",
+        "checks": [
+          "Microsoft official function documentation",
+          "tests/excel-distinct-lessons.test.mjs"
+        ],
+        "nativeExcelRerun": false,
+        "baselineImageSha256": "2a362c0188ccc8e1c8d26bbc93e0c9afc106d8a3f7f921c0345670c677704e52"
+      }
     },
     "excel-substitute": {
       "status": "reviewed-local",

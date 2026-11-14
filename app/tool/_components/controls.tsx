@@ -183,11 +183,15 @@ export function ToolPanel({
   result,
   notes,
   diagram,
+  inputLabel,
+  resultLabel,
 }: {
   children: ReactNode;
   result: ReactNode;
   notes: ReactNode;
   diagram?: ReactNode;
+  inputLabel?: string;
+  resultLabel?: string;
 }) {
   const { tr } = useToolLanguage();
   const [focus, setFocus] = useState('');
@@ -201,7 +205,7 @@ export function ToolPanel({
         >
           <section
             className="calculator-inputs"
-            aria-label={tr('輸入條件', 'Input conditions')}
+            aria-label={inputLabel ?? tr('輸入條件', 'Input conditions')}
             onFocusCapture={(event) =>
               setFocus(
                 (event.target as HTMLElement).closest<HTMLElement>(
@@ -227,11 +231,11 @@ export function ToolPanel({
           {diagram && <div className="tool-diagram">{diagram}</div>}
           <section
             className="result tool-result"
-            aria-label={tr('計算結果', 'Calculation results')}
+            aria-label={resultLabel ?? tr('計算結果', 'Calculation results')}
             aria-live="polite"
           >
             <p className="eyebrow">
-              RESULT / {tr('計算結果', 'CALCULATION RESULTS')}
+              RESULT / {resultLabel ?? tr('計算結果', 'CALCULATION RESULTS')}
             </p>
             {result}
           </section>

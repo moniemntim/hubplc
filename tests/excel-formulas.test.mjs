@@ -374,6 +374,14 @@ const expected = [
     ],
   ],
 ];
+const revisedLessons = new Set([
+  'MAXIFS',
+  'MINIFS',
+  'ROUNDUP',
+  'ROUNDDOWN',
+  'LARGE',
+  'SMALL',
+]);
 
 void test('Excel formula registry preserves the approved 50-lesson order', () => {
   assert.deepEqual(
@@ -388,6 +396,12 @@ void test('Excel formula registry preserves the approved 50-lesson order', () =>
 });
 
 void test('each Excel lesson keeps its formula, results, source, image and evidence text', async () => {
+  const ledger = JSON.parse(
+    await readFile(
+      new URL('../docs/editorial-review/ledger.json', import.meta.url),
+      'utf8',
+    ),
+  );
   for (const [name, formula, mainResult, practices] of expected) {
     const lesson = excelFormulaLessons.find((item) => item.function === name);
     assert.ok(lesson, `${name}: missing registry record`);
@@ -398,38 +412,65 @@ void test('each Excel lesson keeps its formula, results, source, image and evide
     assert.match(source, /^author: 茂伯$/m, `${name}: author`);
     assert.match(source, /^category: Excel 公式教學$/m, `${name}: category`);
     assert.ok(source.includes(formula), `${name}: main formula`);
-    assert.ok(
-      source.includes(`正確結果：${mainResult}`),
-      `${name}: main result`,
-    );
-    for (const [practiceFormula, practiceResult] of practices) {
+    if (revisedLessons.has(name)) {
+      const baseline = source.split('## 快速驗證：保留的基礎範例')[1] ?? '';
       assert.ok(
-        source.includes(practiceFormula),
-        `${name}: practice formula ${practiceFormula}`,
+        baseline.includes(formula),
+        `${name}: original screenshot formula retained`,
       );
       assert.ok(
-        source.includes(`結果：${practiceResult}`),
-        `${name}: practice result ${practiceResult}`,
+        baseline.includes(`**${mainResult}**`),
+        `${name}: original screenshot result retained`,
+      );
+      for (const heading of [
+        '## 主案例',
+        '## 獨立練習',
+        '## 常見失敗與修正',
+        '## 函數語法與參考資料',
+      ])
+        assert.ok(source.includes(heading), `${name}: ${heading}`);
+      assert.match(
+        ledger.articles[lesson.slug].authorAttestationScope,
+        /原有基礎範例/,
+      );
+      assert.equal(
+        ledger.articles[lesson.slug].revisionVerification.nativeExcelRerun,
+        false,
+      );
+    } else {
+      assert.ok(
+        source.includes(`正確結果：${mainResult}`),
+        `${name}: main result`,
+      );
+      for (const [practiceFormula, practiceResult] of practices) {
+        assert.ok(
+          source.includes(practiceFormula),
+          `${name}: practice formula ${practiceFormula}`,
+        );
+        assert.ok(
+          source.includes(`結果：${practiceResult}`),
+          `${name}: practice result ${practiceResult}`,
+        );
+      }
+      for (const heading of [
+        '## 先準備範例資料',
+        '## 輸入這個公式',
+        '## 照著做並核對畫面',
+        '## 常見錯誤',
+        '## 官方參考',
+      ])
+        assert.ok(source.includes(heading), `${name}: ${heading}`);
+      assert.match(
+        source,
+        /## (?:自己試一次|自己練習與完整解答)/,
+        `${name}: practice section`,
+      );
+      assert.match(
+        source,
+        /Windows 版 Microsoft 365 與 Excel 2021 實際操作驗證/,
+        `${name}: author verification statement`,
       );
     }
-    for (const heading of [
-      '## 先準備範例資料',
-      '## 輸入這個公式',
-      '## 照著做並核對畫面',
-      '## 常見錯誤',
-      '## 官方參考',
-    ])
-      assert.ok(source.includes(heading), `${name}: ${heading}`);
-    assert.match(
-      source,
-      /## (?:自己試一次|自己練習與完整解答)/,
-      `${name}: practice section`,
-    );
-    assert.match(
-      source,
-      /Windows 版 Microsoft 365 與 Excel 2021 實際操作驗證/,
-      `${name}: author verification statement`,
-    );
     assert.match(
       source,
       /https:\/\/support\.microsoft\.com\//,

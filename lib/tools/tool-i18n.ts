@@ -44,73 +44,74 @@ export const toolEnglish = {
   'length-converter': {
     name: 'Length Converter',
     description:
-      'Convert metric, imperial and nautical lengths including millimetres, metres, feet and miles.',
+      'Convert lengths, then calculate inch nominal dimensions and limits from drawing tolerances.',
     example: '1 inch = 25.4 mm; 1 ft = 0.3048 m.',
   },
   'temperature-converter': {
     name: 'Temperature Converter',
     description:
-      'Convert Celsius, Fahrenheit, Kelvin, Rankine and Réaumur temperature scales.',
+      'Convert five temperature scales and compare endpoint temperatures with Kelvin and Fahrenheit deltas.',
     example: '0 °C = 32 °F = 273.15 K.',
   },
   'mass-converter': {
     name: 'Weight & Mass Converter',
     description:
-      'Convert milligrams, grams, kilograms, metric tonnes, pounds and ounces.',
+      'Convert mass units and estimate equivalent pieces from gross, tare and standard item mass.',
     example: '1 lb = 0.45359237 kg.',
   },
   'area-converter': {
     name: 'Area Converter',
     description:
-      'Convert square metres, square centimetres, hectares, square feet and other area units.',
+      'Convert areas and estimate material and sheet-count lower bounds from dimensions, quantity and allowance.',
     example: '1 ha = 10000 m².',
   },
   'volume-converter': {
     name: 'Volume Converter',
     description:
-      'Convert millilitres, litres, cubic metres, US gallons and imperial gallons.',
+      'Convert volumes and calculate rectangular tank capacity, contents and free volume from fill height.',
     example: '1 US gallon = 3.785411784 L.',
   },
   'pressure-converter': {
     name: 'Pressure Converter',
     description:
-      'Convert Pa, kPa, MPa, bar, psi, standard atmospheres and water-column pressure.',
+      'Convert pressure units and compare gauge and absolute readings using a stated local atmospheric reference.',
     example: '1 bar = 100 kPa.',
   },
   'power-converter': {
     name: 'Power Unit Converter',
     description:
-      'Convert watts, kilowatts, megawatts, mechanical horsepower and metric horsepower.',
+      'Convert power and horsepower, then estimate shaft power and input from torque, speed and efficiency.',
     example:
       '1 kW = 1000 W. Mechanical and metric horsepower use different definitions.',
   },
   'time-converter': {
     name: 'Time Unit Converter',
     description:
-      'Convert microseconds, milliseconds, seconds, minutes, hours and days.',
+      'Convert time units and estimate complete shift cycles from process, transfer and break durations.',
     example: '1 h = 60 min = 3600 s.',
   },
   'angle-converter': {
     name: 'Angle Converter',
     description:
-      'Convert degrees, radians, gradians, turns, arcminutes and arcseconds.',
+      'Convert angles and check encoder target counts and quantization error using PPR and counting mode.',
     example: '180° = π rad = 0.5 turns.',
   },
   'capacitance-converter': {
     name: 'Capacitance Converter',
     description:
-      'Convert farads, millifarads, microfarads, nanofarads and picofarads.',
+      'Convert capacitance and check measured values against nominal tolerance limits.',
     example: '1 µF = 1000 nF = 1000000 pF.',
   },
   'speed-converter': {
     name: 'Speed Converter',
     description:
-      'Convert metres per second, kilometres per hour, feet per second, miles per hour and knots.',
+      'Convert speeds and estimate belt travel time and part intervals from distance and pitch.',
     example: '1 m/s = 3.6 km/h.',
   },
   'storage-converter': {
     name: 'Data Storage Converter',
-    description: 'Convert bits, bytes, decimal kB/GB and binary KiB/GiB units.',
+    description:
+      'Convert bits, bytes and decimal/binary capacity, then estimate file transfer time at a stated rate.',
     example: '1 GB = 1000000000 bytes; 1 GiB = 1073741824 bytes.',
   },
   'rmb-uppercase': {

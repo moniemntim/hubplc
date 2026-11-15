@@ -176,7 +176,7 @@ export default function ToolPage({
         {children}
         <aside className="tool-example">
           <strong>
-            <LocalizedText zh="試算範例" en="Worked example" />
+            <LocalizedText zh="使用範例" en="Usage example" />
           </strong>
           <p>
             <LocalizedText zh={toolExamples[slug]} en={english.example} />

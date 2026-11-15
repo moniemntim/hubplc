@@ -69,7 +69,7 @@ try {
   await expect(
     page.getByRole('region', { name: 'Input conditions' }),
   ).toBeVisible();
-  await expect(page.getByText('Worked example', { exact: true })).toBeVisible();
+  await expect(page.getByText('Usage example', { exact: true })).toBeVisible();
   assert.equal(await page.title(), 'Voltage Divider Calculator｜HubPLC');
   assert.equal(await page.locator('html').getAttribute('lang'), 'en');
 

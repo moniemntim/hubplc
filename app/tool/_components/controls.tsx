@@ -185,6 +185,7 @@ export function ToolPanel({
   diagram,
   inputLabel,
   resultLabel,
+  notesLabel,
 }: {
   children: ReactNode;
   result: ReactNode;
@@ -192,6 +193,7 @@ export function ToolPanel({
   diagram?: ReactNode;
   inputLabel?: string;
   resultLabel?: string;
+  notesLabel?: string;
 }) {
   const { tr } = useToolLanguage();
   const [focus, setFocus] = useState('');
@@ -241,7 +243,7 @@ export function ToolPanel({
           </section>
         </div>
         <div className="tool-foot">
-          <span>{tr('公式與說明', 'Formula & notes')}</span>
+          <span>{notesLabel ?? tr('使用說明', 'Usage notes')}</span>
           <div>{notes}</div>
         </div>
       </div>

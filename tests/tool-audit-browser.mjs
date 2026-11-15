@@ -95,7 +95,10 @@ try {
       const result =
         tool.category === '編碼'
           ? page.locator('#crypto-output')
-          : page.getByRole('region', { name: '計算結果', exact: true });
+          : page.getByRole('region', {
+              name: item.slug === 'ip-address' ? '查詢結果' : '計算結果',
+              exact: true,
+            });
       await item.run({ page, expect, assert, choose, result });
       const guide = retainedGuideSlugs.includes(item.slug)
         ? page.locator('.plc-guide, .worked-cases')

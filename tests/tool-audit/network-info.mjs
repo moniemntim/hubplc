@@ -2,6 +2,16 @@ export const cases = [
   {
     slug: 'ip-address',
     async run({ page, expect, result }) {
+      await expect(
+        page.getByRole('region', { name: '查詢操作', exact: true }),
+      ).toBeVisible();
+      await expect(page.locator('.tool-foot > span')).toHaveText(
+        '查詢方式與隱私',
+      );
+      await expect(page.locator('.tool-example > strong').first()).toHaveText(
+        '使用範例',
+      );
+      await expect(page.locator('.tool-foot > span')).not.toContainText('公式');
       let calls = 0;
       await page.route('**/api/network-info', async (route) => {
         calls++;

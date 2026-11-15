@@ -54,7 +54,7 @@ try {
         .getByRole('button', { name: actions[tool.slug], exact: true })
         .click();
       const result = page.getByRole('region', {
-        name: '計算結果',
+        name: tool.slug === 'ip-address' ? '查詢結果' : '計算結果',
         exact: true,
       });
       if (tool.slug === 'data-mask')

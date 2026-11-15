@@ -50,6 +50,9 @@ export default function IpAddress() {
   };
   return (
     <ToolPanel
+      inputLabel={tr('查詢操作', 'Lookup controls')}
+      resultLabel={tr('查詢結果', 'Lookup results')}
+      notesLabel={tr('查詢方式與隱私', 'Lookup & privacy')}
       result={
         info ? (
           <ResultRows
@@ -80,10 +83,28 @@ export default function IpAddress() {
           </Notice>
         )
       }
-      notes={tr(
-        '此功能會向本站發出一次請求，由 Cloudflare 連線標頭讀取 IP；程式不保存查詢結果。這是公網出口位址，可能屬於 VPN、代理或共用 NAT，並非裝置區網 IP，也無法推定精確位置。',
-        'This tool sends a request to this site and reads the IP supplied by Cloudflare. The application does not retain lookup results. This is a public egress address, possibly a VPN, proxy or shared NAT; it is not your LAN address and does not establish an exact location.',
-      )}
+      notes={
+        <>
+          <p>
+            {tr(
+              '按下查詢後，瀏覽器會向本站發出請求，由 Cloudflare 提供的連線資訊取得本次公開 IP。',
+              'After you select Look up my IP, the browser sends a request to this site. Connection information supplied by Cloudflare provides the public IP for that request.',
+            )}
+          </p>
+          <p>
+            {tr(
+              '結果是網站看到的公網出口，可能屬於 VPN、代理或共用 NAT；不是裝置的區網 IP，也無法推定精確位置。',
+              'The result is the public egress seen by this site, possibly a VPN, proxy or shared NAT. It is not your device’s LAN address and does not establish an exact location.',
+            )}
+          </p>
+          <p>
+            {tr(
+              '查詢程式不保存結果；清空只移除畫面顯示。網站傳輸仍由 Cloudflare 提供，連線資料處理方式請參閱隱私說明。',
+              'The lookup application does not store results; Clear only removes the displayed result. Cloudflare still handles site delivery; see the privacy notice for connection-data handling.',
+            )}
+          </p>
+        </>
+      }
     >
       <p>
         {tr(
